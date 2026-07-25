@@ -4,6 +4,23 @@
 
 ---
 
+## The story so far
+
+Compensation works ([chapter 7](07-saga.md)). Then someone runs a query nobody had run before:
+
+```sql
+SELECT COUNT(*) FROM orders
+WHERE status = 'Pending' AND placed_at < NOW() - INTERVAL '1 day';
+```
+
+**47 rows.** Orders placed over three weeks, still `Pending`. Never reserved, never charged, never cancelled, never emailed about.
+
+There is no error in any log. No exception. No alert. The orders exist in the database and **their events were never published**.
+
+This chapter finds that bug. It is the single most important chapter in the tutorial, because this bug is almost certainly in your production system right now, making no noise at all.
+
+---
+
 ## In one line
 
 Writing to your database and publishing to a broker are two separate acts, and the gap between them is where data goes wrong forever.
@@ -25,9 +42,9 @@ Writing to your database and publishing to a broker are two separate acts, and t
 
 ---
 
-## The bug almost everyone ships first
+## The investigation
 
-This code looks completely reasonable. It is in production in thousands of companies. It is broken.
+You open `PlaceOrderEndpoint`. Here is the code that has been running for months:
 
 ```csharp
 // ✗ THE DUAL-WRITE BUG
@@ -44,38 +61,48 @@ app.MapPost("/orders", async (PlaceOrderRequest req, OrderingDbContext db, IBus 
 });
 ```
 
+It looks completely reasonable. It has been reviewed by three people. **It is broken.**
+
 There is a gap between ① and ②. Anything can happen in that gap:
 
-- The process is killed (deploy, pod eviction, OOM, scale-down).
+- The process is killed — a deploy, a pod eviction, an out-of-memory kill, a scale-down.
 - The broker is unreachable for 30 seconds.
 - The network drops the publish.
 - The machine loses power.
 
-### What the failures actually look like
+You check the deploy history. **Three weeks of deploys, and the deploy times line up with the stuck orders.** Every rolling restart killed a handful of in-flight requests in exactly that gap.
 
-**Failure A — crash between ① and ②:**
+### What the failure looks like
+
+**Failure A — crash between ① and ②** (this is the store's 47 orders):
+
 ```
-Order o-123 exists in the database.  Status: Pending.
+Order o-456 exists in the database.  Status: Pending.
 OrderPlaced was never published.
-Payments never charges. Notifications never emails.
+Inventory never reserves. Payments never charges. Notifications never emails.
 The order sits at Pending. Forever.
 Nothing in any log says "error", because nothing errored.
 ```
-The customer's order silently disappears into a state nobody monitors. You find out from a support ticket three days later.
+
+The customer's order silently disappears into a state nobody monitors. You find out three weeks later from a query someone ran by chance.
 
 **Failure B — swap the order to publish first:**
+
 ```csharp
 await bus.Publish(new OrderPlaced(order.Id, order.Total));   // ② first
 await db.SaveChangesAsync();                                 // ① crashes here
 ```
+
 ```
-OrderPlaced was published. Payments CHARGED THE CARD.
+OrderPlaced was published. Payments CHARGED PRIYA'S CARD.
 The order does not exist in the database.
-The customer has been billed for an order you have no record of.
+She has been billed ₹49.98 for an order you have no record of.
 ```
-That is worse. There is no ordering of these two lines that is safe.
+
+**That is worse.** There is no ordering of these two lines that is safe.
 
 **Failure C — the "clever" fix:**
+
 ```csharp
 using var tx = await db.Database.BeginTransactionAsync();
 db.Orders.Add(order);
@@ -83,7 +110,8 @@ await db.SaveChangesAsync();
 await bus.Publish(evt);      // if this throws, we roll back. Clever?
 await tx.CommitAsync();
 ```
-Still broken. The publish succeeded and the message is *already gone* to the broker. If `CommitAsync` then fails, you have rolled back the order but the event is out in the world. You cannot un-publish.
+
+Still broken. The publish succeeded and the message is **already gone** to the broker. If `CommitAsync` then fails, you have rolled back the order but the event is out in the world. **You cannot un-publish.**
 
 > **The core truth:** a database transaction cannot include a network call to a different system. Every attempt to make it look like it can is a bug with better camouflage.
 
@@ -106,9 +134,9 @@ COMMIT                              ← both, or neither. One database. Real ato
    UPDATE outbox SET processed_at = now()
 ```
 
-Now the gap has moved somewhere harmless. If the relay crashes before marking a row sent, it republishes on restart. That produces a **duplicate**, not a **loss** — and duplicates are solvable (second half of this chapter). Loss is not.
+Now the gap has moved somewhere harmless. If the relay crashes before marking a row sent, it republishes on restart. That produces a **duplicate**, not a **loss**.
 
-> **Outbox turns an unsolvable problem (loss) into a solvable one (duplication).** That is the whole trick.
+> **The outbox turns an unsolvable problem (loss) into a solvable one (duplication).** That is the whole trick, and it is worth memorising in exactly those words.
 
 ---
 
@@ -125,15 +153,15 @@ Now the gap has moved somewhere harmless. If the relay crashes before marking a 
 // Infrastructure/Outbox/OutboxMessage.cs
 public sealed class OutboxMessage
 {
-    public long      Id          { get; private set; }        // identity, gives us ordering
-    public Guid      MessageId   { get; private set; }        // stable ID for consumer dedupe
-    public string    Type        { get; private set; } = "";  // assembly-qualified event type
-    public string    Payload     { get; private set; } = "";  // JSON
-    public string?   CorrelationId { get; private set; }      // for tracing (chapter 10)
+    public long      Id            { get; private set; }   // identity, gives us ordering
+    public Guid      MessageId     { get; private set; }   // stable ID for consumer dedupe
+    public string    Type          { get; private set; } = "";
+    public string    Payload       { get; private set; } = "";  // JSON
+    public string?   CorrelationId { get; private set; }   // for tracing (chapter 10)
     public DateTime  OccurredAtUtc { get; private set; }
     public DateTime? ProcessedAtUtc { get; private set; }
-    public int       Attempts    { get; private set; }
-    public string?   LastError   { get; private set; }
+    public int       Attempts      { get; private set; }
+    public string?   LastError     { get; private set; }
 
     public static OutboxMessage From(object evt, string? correlationId = null) => new()
     {
@@ -151,22 +179,19 @@ public sealed class OutboxMessage
 
 ```csharp
 // Infrastructure/Configurations/OutboxMessageConfiguration.cs
-public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessage>
+public void Configure(EntityTypeBuilder<OutboxMessage> b)
 {
-    public void Configure(EntityTypeBuilder<OutboxMessage> b)
-    {
-        b.ToTable("OutboxMessages");
-        b.HasKey(x => x.Id);
+    b.ToTable("OutboxMessages");
+    b.HasKey(x => x.Id);
 
-        // THE index that matters. The relay's only query is
-        // "unprocessed rows, oldest first" — this makes it a cheap ranged scan.
-        b.HasIndex(x => new { x.ProcessedAtUtc, x.Id })
-         .HasFilter("[ProcessedAtUtc] IS NULL")
-         .HasDatabaseName("IX_Outbox_Pending");
+    // THE index that matters. The relay's only query is
+    // "unprocessed rows, oldest first" — this makes it a cheap ranged scan.
+    b.HasIndex(x => new { x.ProcessedAtUtc, x.Id })
+     .HasFilter("[ProcessedAtUtc] IS NULL")
+     .HasDatabaseName("IX_Outbox_Pending");
 
-        b.Property(x => x.Payload).HasColumnType("nvarchar(max)");
-        b.Property(x => x.Type).HasMaxLength(500);
-    }
+    b.Property(x => x.Payload).HasColumnType("nvarchar(max)");
+    b.Property(x => x.Type).HasMaxLength(500);
 }
 ```
 
@@ -192,7 +217,7 @@ app.MapPost("/orders", async (
 });
 ```
 
-No `IBus` in the endpoint at all. That absence is the point.
+**No `IBus` in the endpoint at all.** That absence is the point. If you see `IBus` injected next to a `DbContext` in an endpoint, you are probably looking at this bug.
 
 ### The relay
 
@@ -217,10 +242,7 @@ public sealed class OutboxRelay(
                 // Busy? Loop again immediately. Idle? Back off so we are not hammering the DB.
                 if (published == 0) await Task.Delay(Idle, ct);
             }
-            catch (OperationCanceledException) when (ct.IsCancellationRequested)
-            {
-                break;
-            }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested) { break; }
             catch (Exception ex)
             {
                 log.LogError(ex, "Outbox relay pass failed; retrying");
@@ -278,18 +300,18 @@ public sealed class OutboxRelay(
 }
 ```
 
-**The critical line is `c.MessageId = msg.MessageId`.** Because the row keeps the same `MessageId` across republishes, the consumer can recognise a redelivery. If you generated a fresh ID on each publish attempt, every retry would look like a brand-new message and dedupe would be impossible.
+**The critical line is `c.MessageId = msg.MessageId`.** Because the row keeps the same `MessageId` across republishes, the consumer can recognise a redelivery. Generate a fresh ID per attempt and every retry looks like a brand-new message, so dedupe silently never matches — and you are back to charging Priya twice.
 
-### Two ways to get messages out of the outbox
+### Two ways to get messages out
 
 | Approach | How | Pros | Cons |
 |---|---|---|---|
 | **Polling** (above) | Background worker queries every 500 ms | Simple, no extra infrastructure, works anywhere | Small latency; constant light DB load |
-| **CDC** (Debezium) | Read the database transaction log | No polling, very low latency, no app code | Extra infrastructure; DB-specific setup; another thing to operate |
+| **CDC** (Debezium) | Read the database transaction log | No polling, very low latency, no app code | Extra infrastructure; DB-specific; another thing to operate |
 
-Start with polling. A 500 ms delay is invisible next to the eventual consistency you already have. Move to CDC only when you can measure that polling is a problem.
+**Start with polling.** A 500 ms delay is invisible next to the eventual consistency you already have. Move to CDC only when you can measure that polling is a problem.
 
-**Or use a library.** MassTransit has this built in and it is well tested:
+**Or use a library.** MassTransit has this built in and well tested:
 
 ```csharp
 builder.Services.AddMassTransit(x =>
@@ -298,12 +320,10 @@ builder.Services.AddMassTransit(x =>
     {
         o.QueryDelay = TimeSpan.FromMilliseconds(500);
         o.UseSqlServer();
-        o.UseBusOutbox();       // bus.Publish() inside a DbContext transaction → goes to the outbox
+        o.UseBusOutbox();       // bus.Publish() inside a DbContext transaction → outbox
     });
 });
 ```
-
-With this on, `await bus.Publish(evt)` before `SaveChangesAsync` writes to the outbox instead of the broker. Same guarantee, less code you maintain.
 
 ---
 
@@ -315,12 +335,13 @@ The outbox guarantees **at-least-once**. So you will process duplicates. This is
 
 | Cause | Frequency |
 |---|---|
-| Relay crashed after publishing, before marking sent | Every deploy, potentially |
+| Relay crashed after publishing, before marking sent | **Every deploy, potentially** |
 | Broker redelivered because the ack was lost | Regularly |
 | Consumer's lock expired while it was still working | Under load, often |
 | Consumer processed the message, then crashed before acking | Every deploy |
-| Someone replayed a Kafka topic to fix a bug | Whenever you fix a bug |
-| Producer retried a publish that had actually succeeded | Occasionally |
+| Someone replayed a topic to fix a bug | Whenever you fix a bug |
+
+For the store, "duplicate" means **Priya's card charged twice**: ₹99.96 instead of ₹49.98.
 
 ### Level 1 — Natural idempotency (best, if you can get it)
 
@@ -331,10 +352,10 @@ Some operations are already safe to repeat. Prefer these:
 order.Status = OrderStatus.Confirmed;
 
 // ✗ NOT safe. Run it twice and the number is wrong.
-account.Balance -= amount;
+stock.Available -= 2;
 ```
 
-The rule: **set absolute values, do not apply deltas.** When you must apply a delta, you need level 2 or 3.
+**The rule: set absolute values, do not apply deltas.** When you must apply a delta, you need level 2 or 3.
 
 ### Level 2 — The inbox (works for everything)
 
@@ -344,17 +365,17 @@ Record every message ID you have processed, in the same transaction as the work.
 // Infrastructure/Inbox/InboxMessage.cs
 public sealed class InboxMessage
 {
-    public Guid     MessageId    { get; init; }        // primary key
-    public string   Consumer     { get; init; } = "";  // same message, different consumers
+    public Guid     MessageId      { get; init; }        // part of the key
+    public string   Consumer       { get; init; } = "";  // same message, different consumers
     public DateTime ProcessedAtUtc { get; init; }
 }
 ```
 
 ```csharp
-// Infrastructure/Inbox/InboxMessageConfiguration.cs
 b.HasKey(x => new { x.MessageId, x.Consumer });
-// Composite key: OrderPlaced can be processed once by Payments AND once by Notifications.
-// A single-column key would make the second consumer silently skip every message.
+// COMPOSITE key: OrderPlaced must be processed once by Payments AND once by
+// Notifications. A single-column key would make the second consumer silently
+// skip every message — and Priya would never get an email.
 ```
 
 ```csharp
@@ -381,7 +402,7 @@ public sealed class OrderPlacedConsumer(
         var result = await gateway.ChargeAsync(
             ctx.Message.OrderId, ctx.Message.Total, ctx.CancellationToken);
 
-        // 3. Record the work, the outcome event, AND the inbox row — one transaction.
+        // 3. Record the work, the outcome event, AND the inbox row — ONE transaction.
         //    If the process dies before this commit, nothing happened and we retry cleanly.
         db.Payments.Add(new Payment(ctx.Message.OrderId, ctx.Message.Total, result.Status));
 
@@ -411,19 +432,19 @@ try
 catch (DbUpdateException ex) when (ex.IsUniqueConstraintViolation())
 {
     // Another instance won the race and did the same work. Nothing to do.
-    // Do NOT rethrow — rethrowing causes a broker retry, and a third attempt.
+    // Do NOT rethrow — that causes a broker retry, and a third attempt.
     return;
 }
 ```
 
-The check at step 1 is the cheap fast path. The primary key is the correctness guarantee. You need both.
+> **The check at step 1 is the cheap fast path. The primary key is the correctness guarantee. You need both.**
 
 ### Level 3 — Idempotency keys at the boundary
 
 When the side effect is in **someone else's** system, your inbox cannot help — the charge already happened over there. Instead, make *their* API idempotent by sending a key.
 
 ```csharp
-// Infrastructure/Payments/StripeLikeGateway.cs
+// Infrastructure/Payments/AcmePayGateway.cs
 public async Task<ChargeResult> ChargeAsync(Guid orderId, decimal amount, CancellationToken ct)
 {
     var request = new HttpRequestMessage(HttpMethod.Post, "/v1/charges")
@@ -432,8 +453,9 @@ public async Task<ChargeResult> ChargeAsync(Guid orderId, decimal amount, Cancel
     };
 
     // Derived from the order, so it is IDENTICAL on every retry.
-    // The provider returns the original charge instead of creating a second one.
-    // Never use Guid.NewGuid() here — that defeats the entire mechanism.
+    // Acme returns the original charge instead of creating a second one.
+    // Never use Guid.NewGuid() here — that defeats the entire mechanism, and it
+    // looks completely correct in code review.
     request.Headers.Add("Idempotency-Key", $"order-charge-{orderId}");
 
     using var res = await http.SendAsync(request, ct);
@@ -442,9 +464,11 @@ public async Task<ChargeResult> ChargeAsync(Guid orderId, decimal amount, Cancel
 }
 ```
 
-Every serious payment provider supports this header. Use it. It is the difference between "we might double-charge" and "we cannot double-charge".
+Every serious payment provider supports this header. **Use it.** It is the difference between "we might double-charge" and "we cannot double-charge".
 
 ### Also expose idempotency on your own write APIs
+
+Priya is on a train. Her phone loses signal mid-request, retries, and now there are two orders.
 
 ```csharp
 app.MapPost("/orders", async (
@@ -467,16 +491,15 @@ app.MapPost("/orders", async (
 });
 ```
 
-This single header removes an entire class of "the customer tapped Pay twice on a bad connection" bugs.
+This single header removes an entire class of *"the customer tapped Pay twice on a bad connection"* bugs.
 
 ---
 
 ## Sharp edges
 
-**Edge 1 — The outbox table grows without limit.** At 1,000 orders/minute you add ~1.4 million rows a day. Every relay query gets slower. **Fix:** delete processed rows older than a few days, on a schedule:
+**Edge 1 — The outbox table grows without limit.** At 5,000 orders/minute during the sale, the store adds ~7 million rows in a day. Every relay query gets slower. **Fix:** delete processed rows on a schedule:
 
 ```csharp
-// Keep a short window for debugging, then delete. Batch it so you do not lock the table.
 var cutoff = DateTime.UtcNow.AddDays(-3);
 int deleted;
 do
@@ -490,7 +513,7 @@ do
 } while (deleted > 0);
 ```
 
-Same for the inbox — but keep the inbox window **longer than your broker's maximum retention/retry window**, or a very late redelivery will be treated as new. If Kafka retains 7 days, keep inbox rows for at least 8.
+Same for the inbox — but keep the inbox window **longer than your broker's maximum retention**, or a very late redelivery is treated as new.
 
 **Edge 2 — Two relay instances publishing the same row twice.** Both read the same batch. Fix with a row lock:
 
@@ -505,17 +528,15 @@ WHERE processed_at IS NULL ORDER BY id LIMIT 100
 FOR UPDATE SKIP LOCKED;
 ```
 
-Or run a single relay instance and accept that it is a small, restartable single point of failure. Or use a library that already handles it.
+**Edge 3 — Outbox ordering is not guaranteed end to end.** Rows are published in `Id` order, but if consumers process in parallel, order is lost after the broker. If you need ordering, set a partition key ([chapter 3](03-asynchronous.md)) — the outbox alone does not give you ordering.
 
-**Edge 3 — Outbox ordering is not guaranteed end to end.** Rows are published in `Id` order, but if the relay publishes 100 messages and consumers process them in parallel, order is lost after the broker. If you need ordering, set a partition key ([chapter 3](03-asynchronous.md)) — the outbox alone does not give you ordering.
+**Edge 4 — A poison outbox row blocks everything behind it.** A row whose type no longer exists (you deleted the event class) fails forever. Because the relay processes in `Id` order, everything behind it may stall. Cap attempts, then move the row to a `dead` state and alert.
 
-**Edge 4 — A poison outbox row blocks everything behind it.** A row whose type no longer exists (you deleted the event class) fails forever. Because the relay processes in `Id` order, everything behind it may stall. Fix: cap attempts, then move the row to a `dead` state and alert — the same shape as a DLQ, but for outgoing messages.
+**Edge 5 — Forgetting `MessageId` breaks dedupe silently.** If your publish path does not carry a stable `MessageId`, the inbox check never matches and every duplicate is processed. Nothing errors. You just double-charge people. **Assert it in a test.**
 
-**Edge 5 — Forgetting `MessageId` breaks consumer dedupe silently.** If your publish path does not carry a stable `MessageId`, the inbox check never matches and every duplicate is processed. Nothing errors. You just double-charge people. Assert it in a test.
+**Edge 6 — The inbox check without the primary key is a race, not a fix.** A `SELECT` then `INSERT` with no unique constraint lets two concurrent instances both do the work.
 
-**Edge 6 — The inbox check without the primary key is a race, not a fix.** A `SELECT` then `INSERT` with no unique constraint will let two concurrent instances both do the work. The constraint is the guarantee; the `SELECT` is just an optimisation.
-
-**Edge 7 — Non-transactional side effects inside the consumer.** If your handler sends an email *and* writes the inbox row, the email is not in the transaction. A crash between them means a duplicate email on retry. Either accept it (an extra email is survivable), or publish an `EmailRequested` event through your outbox and let a dedicated consumer send it — moving the problem to a place where a duplicate is cheap.
+**Edge 7 — Non-transactional side effects inside the consumer.** If your handler sends an email *and* writes the inbox row, the email is not in the transaction. A crash between them means a duplicate email on retry. Either accept it (an extra email is survivable), or publish an `EmailRequested` event through your outbox — moving the problem to a place where a duplicate is cheap.
 
 ---
 
@@ -537,7 +558,7 @@ You can skip it when:
 
 ## Try it yourself
 
-**Build the bug first.** Write the dual-write version. Then, in `Payments`, kill the process between `SaveChangesAsync` and `Publish`:
+**Build the bug first.** Write the dual-write version. Then kill the process in the gap:
 
 ```csharp
 db.Orders.Add(order);
@@ -546,18 +567,39 @@ Environment.FailFast("simulating a pod eviction");   // ← right in the gap
 await bus.Publish(evt);
 ```
 
-Look at your database. The order is `Pending`. No event was ever sent. Nothing is in the error log. **Sit with that for a moment** — this is the failure you almost certainly have in production right now, and it makes no noise at all.
+Look at your database. The order is `Pending`. No event was sent. **Nothing is in the error log.**
+
+**Sit with that for a moment** — this is the failure the store had 47 times over three weeks, and it makes no noise at all.
 
 **Now fix it and break it again:**
 
-1. Add the outbox. Repeat the `FailFast` test. Restart. Watch the relay publish the event that was waiting. Nothing lost.
-2. Kill the relay *after* `bus.Publish` but *before* `SaveChangesAsync`. Restart. Watch the same message publish twice. That duplicate is the price of the fix.
-3. Confirm the duplicate causes a double charge. Now add the inbox. Repeat. One charge.
-4. Remove `c.MessageId = msg.MessageId` from the relay. Repeat step 3. Watch dedupe stop working with no error anywhere. Put it back.
-5. Run two consumer instances and deliver the same message to both at the same instant. Without the composite primary key, both do the work. Add the key, catch the duplicate-key error, treat it as success.
-6. Add a second consumer for the same event. If your inbox key is only `MessageId`, the second consumer silently processes nothing. Change it to `(MessageId, Consumer)`.
+1. Add the outbox. Repeat the `FailFast` test. Restart. Watch the relay publish the event that was waiting. **Nothing lost.**
+2. Kill the relay *after* `bus.Publish` but *before* `SaveChangesAsync`. Restart. Watch the same message publish twice. *That duplicate is the price of the fix.*
+3. Confirm the duplicate double-charges. Now add the inbox. Repeat. One charge.
+4. Remove `c.MessageId = msg.MessageId` from the relay. Repeat step 3. Watch dedupe stop working **with no error anywhere.** Put it back.
+5. Run two consumer instances and deliver the same message to both simultaneously. Without the composite primary key, both do the work.
+6. Add a second consumer for the same event. If your inbox key is only `MessageId`, the second consumer silently processes nothing.
 7. Insert 5 million processed outbox rows. Measure the relay query. Add the filtered index. Measure again. Add the cleanup job.
 8. Send the same `POST /orders` twice with the same `Idempotency-Key`. Confirm you get one order and the same ID both times.
+
+---
+
+## What is still broken
+
+The 47 orders are found, replayed, and apologised for. The outbox goes in. The inbox goes in. Orders no longer vanish.
+
+Then the next sale arrives — and Acme Pay gets slow again. **Exactly like [chapter 2](02-synchronous.md).**
+
+This time checkout does not collapse, because payment is asynchronous now. But something else does:
+
+- The `Payments` consumer calls Acme Pay and waits 4 seconds per message.
+- Consumer lag climbs from 0 to 40,000 messages.
+- The retry policy fires, tripling the load on a provider that is already struggling.
+- The Payments service holds every thread waiting on Acme, so the `refund` consumer — a completely different queue — stops processing too.
+
+You have moved the 2 a.m. incident from checkout into the consumer. **The pattern is identical: no timeout, no breaker, no isolation.**
+
+The next chapter fixes it properly, in five layers, and finally closes the loop opened in chapter 2.
 
 ---
 

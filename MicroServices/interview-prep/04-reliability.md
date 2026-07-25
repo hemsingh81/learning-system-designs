@@ -220,7 +220,7 @@ await tx.CommitAsync();      // you cannot un-publish
 
 **Follow-up to expect:** *"So what do you do?"* → The transactional outbox — Q8.
 
-📖 [Chapter 8 — The bug almost everyone ships first](../tutorial/08-outbox-and-idempotency.md#the-bug-almost-everyone-ships-first)
+📖 [Chapter 8 — The bug almost everyone ships first](../tutorial/08-outbox-and-idempotency.md#the-investigation)
 
 </details>
 

@@ -110,7 +110,7 @@ The third axis is not a network call at all — it is a modelling decision, and 
 
 **Follow-up to expect:** *"Why is the boundary the hardest?"* → Because moving it is a data migration, not a refactor. Code you can change on a Tuesday; changing which service owns a table is a project.
 
-📖 [Chapter 1 — The three axes](../tutorial/01-three-axes.md#the-three-axes)
+📖 [Chapter 1 — The three axes](../tutorial/01-three-axes.md#the-store-on-one-page)
 
 </details>
 

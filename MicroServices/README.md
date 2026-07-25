@@ -41,7 +41,8 @@ MicroServices/
 │   └── 07-rapid-fire.md
 │
 ├── tutorial/                 ← the teaching material, 11 chapters
-│   ├── README.md             ← chapter index + reading paths
+│   ├── README.md             ← chapter index + the story in one table
+│   ├── 00-the-example.md     ← the running example — read this first
 │   ├── 01-three-axes.md
 │   ├── 02-synchronous.md
 │   ├── 03-asynchronous.md
@@ -71,28 +72,27 @@ MicroServices/
 
 ## The tutorial
 
-Eleven chapters. Each one follows the same shape, so you always know where you are:
+**Eleven chapters, one story.** The tutorial follows a single online store from a checkout that collapses during a sale to one that survives a hundredfold traffic spike. Same services, same customer, same numbers, all the way through — so you never have to rebuild context.
 
-1. **In one line** — the idea, no jargon.
-2. **The words you need** — terms defined before they are used.
-3. **How it works** — mechanics, a diagram, and code.
-4. **Sharp edges** — what breaks, and how it breaks in production.
-5. **When to use it / when not to** — the decision.
-6. **Try it yourself** — a small exercise, usually "now break it".
+**Every chapter fixes a problem the previous chapter's fix created.** That is not a teaching device; it is how real systems evolve.
 
-| # | Chapter | The one thing it teaches |
+Start with **[the running example](tutorial/00-the-example.md)** (5 minutes) — it introduces the store, the six services, and the numbers that stay constant across every chapter.
+
+| Ch | The problem in the story | What it teaches |
 |---|---|---|
-| 1 | [The three axes](tutorial/01-three-axes.md) | Inside, outside, and the boundary — most teams only think about the first |
-| 2 | [Synchronous communication](tutorial/02-synchronous.md) | The caller waits, and inherits every delay downstream |
-| 3 | [Asynchronous communication](tutorial/03-asynchronous.md) | The caller hands off and leaves; duplicates become normal |
-| 4 | [Choosing a broker](tutorial/04-choosing-a-broker.md) | RabbitMQ vs Kafka vs Azure Service Bus vs Dapr, with reasons |
-| 5 | [Gateway and BFF](tutorial/05-gateway-and-bff.md) | One front door, tailored per client |
-| 6 | [Boundaries and data ownership](tutorial/06-boundaries-and-data.md) | Share a database and you have one service with extra latency |
-| 7 | [Sagas](tutorial/07-saga.md) | You cannot roll back across services; you can only apologise correctly |
-| 8 | [Outbox and idempotency](tutorial/08-outbox-and-idempotency.md) | The dual-write bug almost everyone ships first |
-| 9 | [Resilience](tutorial/09-resilience.md) | Timeout → retry → breaker → bulkhead → fallback, in that order |
-| 10 | [Observability](tutorial/10-observability.md) | You cannot debug what you cannot trace |
-| 11 | [The decision framework](tutorial/11-decision-framework.md) | Five questions that pick the pattern for you |
+| [1](tutorial/01-three-axes.md) | Nobody can describe how the store works | East-west, north-south, and the boundary |
+| [2](tutorial/02-synchronous.md) | **The 2 a.m. incident** — checkout dies during the sale | Latency is the sum; availability is the product |
+| [3](tutorial/03-asynchronous.md) | Checkout waits 4 s for a card charge | Commands vs events; 4 s → **40 ms** |
+| [4](tutorial/04-choosing-a-broker.md) | The team argues Kafka vs RabbitMQ for a week | Name the consumer that needs replay |
+| [5](tutorial/05-gateway-and-bff.md) | The mobile app makes 6 calls per screen | One front door, shaped per client |
+| [6](tutorial/06-boundaries-and-data.md) | Inventory adds a column; Ordering breaks | One writer per entity, always |
+| [7](tutorial/07-saga.md) | 340 mice vanish from the catalogue | You cannot roll back — only apologise correctly |
+| [8](tutorial/08-outbox-and-idempotency.md) | **47 orders stuck at `Pending`**, no errors anywhere | The dual-write bug almost everyone ships |
+| [9](tutorial/09-resilience.md) | The 2 a.m. failure moves into the consumer | Timeout → retry → breaker → bulkhead → fallback |
+| [10](tutorial/10-observability.md) | A customer asks about her ₹49.98 and you cannot answer | Correlation IDs and distributed tracing |
+| [11](tutorial/11-decision-framework.md) | A new feature arrives — which pattern applies? | Five questions instead of "it depends" |
+
+Each chapter has the same seven parts: *the story so far* → *in one line* → *the words you need* → *how it works* → *sharp edges* → *when to use it* → *what is still broken*.
 
 ---
 

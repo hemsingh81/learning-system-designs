@@ -4,6 +4,18 @@
 
 ---
 
+## The story so far
+
+Ten chapters ago, checkout took 4 seconds and collapsed during the sale. Today it responds in 40 ms, survives a hundredfold spike, recovers from a dead payment provider without losing an order, and you can answer a customer's question about ₹49.98 in thirty seconds.
+
+Then the product team asks for **loyalty points**: 1 point per ₹100 spent, redeemable at checkout.
+
+> *"Should Ordering call the Loyalty service, or publish an event? And do we need Kafka for this?"*
+
+A year ago that question started a week-long argument. This chapter is why it now takes ten minutes.
+
+---
+
 ## In one line
 
 Five questions, in order, instead of "it depends".
@@ -18,12 +30,12 @@ Ask them **in this order**, for every piece of communication you design. Each on
 
 | Answer | Choose |
 |---|---|
-| **No** — the caller cannot produce a response without it | **Synchronous.** HTTP or gRPC. |
-| **Yes** — the caller can respond now and let the rest happen later | **Asynchronous.** Publish a message. |
+| **No** — the caller cannot produce a response without it | **Synchronous.** HTTP or gRPC |
+| **Yes** — the caller can respond now and let the rest happen later | **Asynchronous.** Publish a message |
 
 This is the biggest fork, and it is a **business** question, not a technical one. Ask the product owner: *"If this step took 30 seconds, would we still accept the order?"*
 
-Watch for the false "no". "The user needs to see the payment confirmed" usually means "the user needs to know we received their order" — which is `202 Accepted` plus a push update, not a blocking charge.
+**Watch for the false "no".** "The user needs to see the payment confirmed" usually means "the user needs to know we received their order" — which is `202 Accepted` plus a push update, not a blocking charge. That single reframing is what saved checkout in [chapter 3](03-asynchronous.md).
 
 → Chapters [2](02-synchronous.md) and [3](03-asynchronous.md).
 
@@ -38,7 +50,7 @@ Only ask this if Q1 said asynchronous.
 | **Yes** — rebuild a read model, onboard a new consumer with history, reprocess after a bug fix, or the log is your audit trail | **Event log**: Kafka |
 | **No** — once processed, it is done | **Queue**: RabbitMQ, Azure Service Bus, SQS |
 
-Be honest. "We might need replay one day" is not a yes. A yes means you can **name the consumer** that needs it.
+Be honest. *"We might need replay one day"* is not a yes. **A yes means you can name the consumer that needs it** — which is exactly the question that ended the store's week-long broker argument in [chapter 4](04-choosing-a-broker.md).
 
 → Chapter [4](04-choosing-a-broker.md).
 
@@ -48,12 +60,12 @@ Be honest. "We might need replay one day" is not a yes. A yes means you can **na
 
 | Answer | Choose |
 |---|---|
-| Exactly one service must act | **Command → queue.** Name it `DoSomething`. |
-| Several services care, or may care later | **Event → topic.** Name it `SomethingHappened`. |
+| Exactly one service must act | **Command → queue.** Name it `DoSomething` |
+| Several services care, or may care later | **Event → topic.** Name it `SomethingHappened` |
 
-The test from chapter 3: *"Would it be a bug if nobody handled this?"* Yes → command. No → event.
+The test from [chapter 3](03-asynchronous.md): *"Would it be a bug if nobody handled this?"* Yes → command. No → event.
 
-Default to events. Adding a consumer to a topic costs nothing. Turning a command into an event later means changing the producer.
+**Default to events.** Adding a consumer to a topic costs nothing. Turning a command into an event later means changing the producer.
 
 → Chapter [3](03-asynchronous.md).
 
@@ -63,12 +75,12 @@ Default to events. Adding a consumer to a topic costs nothing. Turning a command
 
 | Answer | You must |
 |---|---|
-| Nothing — it sets an absolute value | Nothing extra. It is naturally idempotent. |
+| Nothing — it sets an absolute value | Nothing extra. It is naturally idempotent |
 | Money moves twice, stock doubles, an email is duplicated | Add an **inbox** table, or an **idempotency key** at the boundary |
 
-There is no third option, and no broker setting that removes this. At-least-once is the ground truth.
+There is no third option and no broker setting that removes this. At-least-once is the ground truth.
 
-Do this work **before** you go live. Retrofitting idempotency after a double-charge incident is much more expensive, and by then it is a customer-trust problem, not an engineering one.
+Do this work **before** you go live. Retrofitting idempotency after a double-charge incident is far more expensive, and by then it is a customer-trust problem, not an engineering one.
 
 → Chapter [8](08-outbox-and-idempotency.md).
 
@@ -78,11 +90,11 @@ Do this work **before** you go live. Retrofitting idempotency after a double-cha
 
 | Answer | Do this |
 |---|---|
-| One clear owner, others read | Owner exposes an API and publishes events. Readers keep a local snapshot if they need speed. |
-| Two services both write it | **Stop.** The boundary is wrong. Merge them, or split the data so each part has one owner. |
-| Nobody knows | Decide today, and write it down. An undecided owner becomes a shared table within a year. |
+| One clear owner, others read | Owner exposes an API and publishes events. Readers keep a local snapshot if they need speed |
+| Two services both write it | **Stop.** The boundary is wrong. Merge them, or split the data so each part has one owner |
+| Nobody knows | Decide today, and write it down |
 
-This is the question that prevents a distributed monolith, and the one teams skip.
+This is the question that prevents a distributed monolith, and the one teams skip — until a Tuesday afternoon like [chapter 6](06-boundaries-and-data.md).
 
 → Chapter [6](06-boundaries-and-data.md).
 
@@ -129,67 +141,85 @@ This is the question that prevents a distributed monolith, and the one teams ski
 
 ---
 
-## Worked examples
+## The store answers it: loyalty points
 
-### Example 1 — "Send a confirmation email when an order is placed"
+The team runs the five questions on the new feature.
+
+**Q1 — Can Ordering continue without the answer?**
+
+Does Priya's order need to wait for points to be awarded? No. She has bought a mouse; the points are a consequence, not a precondition. If the Loyalty service is down for an hour, the order should still complete.
+
+**→ Asynchronous.**
+
+**Q2 — Does anyone need to replay?**
+
+Someone says yes — "if we change the points formula we would want to recalculate history."
+
+Good instinct, so they test it: **name the consumer.** Loyalty would recalculate from the *orders* table, not by replaying messages. And regulatory retention lives in the database anyway.
+
+**→ No. A queue, not Kafka.** No new infrastructure.
+
+**Q3 — One consumer or many?**
+
+`OrderConfirmed` already exists and already has three subscribers. Loyalty becomes a fourth.
+
+**→ Event, on the existing topic.** And notice: **`Ordering` does not change at all.** No pull request, no deploy, no coordination. That is what chapter 3 bought them.
+
+**Q4 — What breaks if it arrives twice?**
+
+Priya gets 100 points instead of 50. Points are money-adjacent — they are redeemable at checkout.
+
+**→ Inbox table in the Loyalty service**, keyed `(MessageId, "LoyaltyConsumer")`.
+
+**Q5 — Who owns the points balance?**
+
+Loyalty owns it. `Ordering` reads it at checkout to show "you have 340 points" — via an API call with a **fallback**: if Loyalty is down, hide the points widget and let the sale proceed ([chapter 9](09-resilience.md)).
+
+**Nobody else writes points. Ever.**
+
+### The design, in one paragraph
+
+> Loyalty subscribes to the existing `OrderConfirmed` topic, with an inbox table for idempotency. It owns the points balance and exposes a read API that checkout calls with a fallback. No changes to `Ordering`, no new broker, no new infrastructure.
+
+**Ten minutes.** And the only new component is one consumer.
+
+---
+
+## More worked examples
+
+### "Send a confirmation email when an order is placed"
 
 | Q | Answer | Result |
 |---|---|---|
-| Q1 | The user does not wait for SMTP | **Async** |
+| Q1 | Priya does not wait for SMTP | **Async** |
 | Q2 | Nobody replays emails | **Queue**, not Kafka |
 | Q3 | Notifications, Analytics, and Loyalty all care | **Event** on a topic |
-| Q4 | A duplicate email is embarrassing | **Inbox** table in Notifications |
+| Q4 | A duplicate email is embarrassing | **Inbox** table |
 | Q5 | Notifications owns delivery; Ordering owns the order | Clean |
 
-**Design:** `OrderPlaced` event → topic → Notifications subscription with an inbox.
-
----
-
-### Example 2 — "Check stock before accepting an order"
+### "Check stock before accepting an order"
 
 | Q | Answer | Result |
 |---|---|---|
-| Q1 | You cannot accept an order for something you do not have | **Sync** |
-| Q2–Q4 | Not applicable | — |
-| Q5 | Inventory owns stock. Ordering only reads it. | Clean |
+| Q1 | You cannot sell what you do not have | **Sync** |
+| Q5 | Inventory owns stock; Ordering only reads | Clean |
 
-**Design:** `Ordering` → gRPC → `Inventory`, 500 ms timeout, circuit breaker, and a fallback ("allow the order, verify asynchronously") if the business accepts a small oversell risk.
+**Note how Q1 can be re-answered.** Many retailers deliberately accept the order and reconcile stock afterwards, trading a rare oversell for a checkout that never fails. That converts a sync call into an async one — and it is a business decision, not a technical one. **Always ask.**
 
-**Note how Q1 can be re-answered.** Many retailers deliberately accept the order and reconcile stock afterwards — trading a rare oversell for a checkout that never fails. That is a business decision, and it converts a sync call into an async one. Always ask.
-
----
-
-### Example 3 — "Publish every price tick to whoever wants it"
-
-| Q | Answer | Result |
-|---|---|---|
-| Q1 | The feed handler never waits | **Async** |
-| Q2 | Backtesting replays months of ticks | **Kafka**, clearly |
-| Q3 | Charting, risk, alerts, storage — many | **Event** on a topic |
-| Q4 | A duplicate tick corrupts a candle | Dedupe by `(symbol, sequenceNumber)` |
-| Q5 | The feed handler owns raw ticks; everyone else reads | Clean |
-
-**Design:** Kafka topic partitioned by symbol, retention 7 days hot plus cold archive, consumers dedupe on sequence number. This is [case study 3](../case-studies/03-stock-market-data/).
-
----
-
-### Example 4 — "Move money between two accounts"
+### "Move money between two accounts"
 
 | Q | Answer | Result |
 |---|---|---|
 | Q1 | The user must know it succeeded | **Sync API**, async settlement behind it |
-| Q2 | The ledger **is** the audit trail; regulators may ask for replay | **Kafka** or an append-only ledger table |
-| Q3 | Ledger, notifications, fraud, reporting | **Event** |
-| Q4 | A duplicate moves money twice — the worst possible outcome | **Idempotency key**, mandatory, plus an inbox |
-| Q5 | The ledger owns balances. Nothing else writes them. Ever. | Clean, and non-negotiable |
+| Q2 | Regulators may ask years later | **Kafka**, infinite retention |
+| Q4 | A duplicate moves money twice — the worst outcome | **Idempotency key**, mandatory |
+| Q5 | The ledger owns balances. Nothing else writes them. Ever | Non-negotiable |
 
-**Design:** `POST /transfers` with a required `Idempotency-Key`, returns `202`. A saga with orchestration ([chapter 7](07-saga.md)) coordinates debit and credit, with the ledger as the single writer. This is [case study 2](../case-studies/02-banking-payments/).
+This is [case study 2](../case-studies/02-banking-payments/README.md) — and note it reaches **opposite** conclusions from the store on availability, because its constraint is different.
 
 ---
 
 ## The short version, for a whiteboard
-
-Copy this into your design doc template:
 
 ```
 1. Can the caller continue without the answer?      No → sync.  Yes → async.
@@ -211,7 +241,7 @@ Copy this into your design doc template:
 | Replaying a queue to rebuild state | You need a log | Use Kafka |
 | Retry with no circuit breaker | Turns a slowdown into an outage | Add the breaker |
 | The same event handled twice, incorrectly | No idempotency | Add an inbox |
-| Publishing after `SaveChanges` | The dual-write bug | Add an outbox |
+| Publishing after `SaveChanges` | **The dual-write bug** | Add an outbox |
 | A saga with no timeouts | Stuck flows nobody notices | Add a timeout on every wait |
 | A trace that stops at the broker | Context not propagated | Inject and extract at publish/consume |
 | DB check in the liveness probe | Restart storms during a DB blip | Move it to readiness |
@@ -225,39 +255,40 @@ Copy this into your design doc template:
 For every new service or flow, answer these. If you cannot, you are not ready to write code.
 
 **Communication**
-- [ ] For each call, which of the five questions decided it? Write the answer down.
-- [ ] Every sync call has a timeout, and a number you can justify.
-- [ ] Every sync call has a circuit breaker.
-- [ ] Every consumer is idempotent, and you know how (natural / inbox / key).
-- [ ] Every publish that follows a database write goes through an outbox.
+- [ ] For each call, which of the five questions decided it? Write the answer down
+- [ ] Every sync call has a timeout, and a number you can justify
+- [ ] Every sync call has a circuit breaker
+- [ ] Every consumer is idempotent, and you know how (natural / inbox / key)
+- [ ] Every publish that follows a database write goes through an outbox
 
 **Boundaries**
-- [ ] Every entity has exactly one owning service, written in the ownership table.
-- [ ] No service reads another service's database.
-- [ ] Contracts are versioned; you know how you would ship a breaking change.
+- [ ] Every entity has exactly one owning service, written in the ownership table
+- [ ] No service reads another service's database
+- [ ] Contracts are versioned; you know how you would ship a breaking change
 
 **Failure**
-- [ ] You know what happens if each dependency is down for 5 minutes.
-- [ ] You know which features are allowed to degrade, and how.
-- [ ] Every wait in every saga has a timeout.
-- [ ] Every queue has a dead-letter queue, and the DLQ has an alert.
+- [ ] You know what happens if each dependency is down for 5 minutes
+- [ ] You know which features are allowed to degrade, and how
+- [ ] Every wait in every saga has a timeout
+- [ ] Every queue has a DLQ, and the DLQ has an alert
+- [ ] Every async flow that reserves something has a sweeper
 
 **Visibility**
-- [ ] One correlation ID flows end to end, including across the broker.
-- [ ] Traces join up across HTTP **and** messages.
-- [ ] Queue depth, DLQ depth, and outbox pending are on a dashboard with alerts.
-- [ ] You can answer "where is order X right now?" with one query.
+- [ ] One correlation ID flows end to end, **including across the broker**
+- [ ] Traces join up across HTTP **and** messages
+- [ ] Queue depth, DLQ depth, and outbox pending are on a dashboard with alerts
+- [ ] You can answer "where is order X right now?" with one query
 
 **Honesty**
-- [ ] You can name what you bought by splitting this service.
-- [ ] The team can operate what you are about to build.
-- [ ] Local development runs one service without the other twelve.
+- [ ] You can name what you bought by splitting this service
+- [ ] The team can operate what you are about to build
+- [ ] Local development runs one service without the other twelve
 
 ---
 
 ## The closing thought
 
-Go back to the 2 a.m. incident from the start of this tutorial: payments got slow, orders timed out, retries amplified the load, checkout collapsed.
+Go back to where this started. The Diwali sale, 00:02, Acme Pay drifting from 800 ms to 4 seconds. Orders timing out. Retries amplifying the load. Checkout collapsing at 00:08.
 
 What would have prevented it?
 
@@ -265,11 +296,30 @@ What would have prevented it?
 2. **A circuit breaker** — so once payments was clearly struggling, the retries stopped.
 3. **An async handoff** — so an order never depended on a card being charged inside the request.
 
-Three changes. Not a rewrite. Not a new framework. Not a migration.
+**Three changes.** Not a rewrite. Not a new framework. Not a migration.
 
-That is the actual lesson of this whole tutorial: **the hard part of microservices is not splitting the code, it is choosing how the pieces talk.** Almost every serious outage in a distributed system traces back to one of the choices in these eleven chapters — usually a missing timeout, a missing breaker, a missing idempotency check, or a boundary drawn in the wrong place.
+That is the actual lesson of these eleven chapters: **the hard part of microservices is not splitting the code, it is choosing how the pieces talk.** Almost every serious outage in a distributed system traces back to one of the choices in this tutorial — usually a missing timeout, a missing breaker, a missing idempotency check, or a boundary drawn in the wrong place.
 
-Now go and read the [case studies](../case-studies/), where all of it happens at once.
+You now have the store's full history: eleven problems, eleven fixes, and the questions that would have got you there faster.
+
+---
+
+## Where to go next
+
+**[The case studies](../case-studies/README.md).** The store is [case study 1](../case-studies/01-ecommerce/README.md) — same services, same numbers, same order `o-123`, now assembled with folder structure and code.
+
+The other four take these same patterns into businesses with different constraints and reach **opposite conclusions**:
+
+| Case study | Its constraint | Where it disagrees with the store |
+|---|---|---|
+| [Banking](../case-studies/02-banking-payments/README.md) | Money must never move twice | Dependency down → **stop**, do not keep selling |
+| [Market data](../case-studies/03-stock-market-data/README.md) | 200,000 ticks/sec, replayable | Accepts message loss the store never would |
+| [Trading](../case-studies/04-trading-app/README.md) | Risk-check in 8 ms | **Fail closed**, the exact opposite of the store |
+| [Logistics](../case-studies/05-logistics-tracking/README.md) | Latest position + legal history | One stream, three storage models |
+
+**Reading across those rows teaches more than any single one.** The patterns are the same; the constraints decide the answers.
+
+And if you are preparing for an interview, [interview-prep/](../interview-prep/README.md) has 137 questions built on exactly this material.
 
 ---
 

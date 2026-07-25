@@ -328,7 +328,7 @@ Note the duplicate returns **200, not 409**. From the provider's point of view t
 
 **Follow-up to expect:** *"What if the webhook arrives before your own API call has returned?"* → Common, and it catches people out. The provider can call your webhook before your `POST /charges` response arrives. Your code must handle the outcome arriving from either direction, which is another argument for making the state transition idempotent rather than assuming an order of events.
 
-📖 [Chapter 5 — Webhooks](../tutorial/05-gateway-and-bff.md#webhooks--when-they-call-you)
+📖 [Chapter 5 — Webhooks](../tutorial/05-gateway-and-bff.md#webhooks--when-bluedart-calls-you)
 
 </details>
 

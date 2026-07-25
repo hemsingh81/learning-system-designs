@@ -49,7 +49,7 @@ A part of the business where a word has exactly one meaning. "Customer" means so
 
 East-west is service to service inside your network. North-south is the outside world crossing your trust boundary.
 
-📖 [Chapter 1](../tutorial/01-three-axes.md#the-three-axes)
+📖 [Chapter 1](../tutorial/01-three-axes.md#the-store-on-one-page)
 </details>
 
 ---
@@ -95,7 +95,7 @@ Command = "do this", one named receiver, can be rejected. Event = "this happened
 
 "Would it be a bug if nobody handled this?" Yes → command. No → event.
 
-📖 [Chapter 3](../tutorial/03-asynchronous.md#test-for-which-one-you-have)
+📖 [Chapter 3](../tutorial/03-asynchronous.md#the-test-that-settles-it)
 </details>
 
 <details><summary><b>13 · Queue vs topic?</b></summary>
@@ -208,7 +208,7 @@ Not across a broker and your database. Kafka has it within Kafka only. Everywher
 
 Writing to your database and then publishing to a broker. Crash in between and the state and the events disagree, silently and permanently.
 
-📖 [Chapter 8](../tutorial/08-outbox-and-idempotency.md#the-bug-almost-everyone-ships-first)
+📖 [Chapter 8](../tutorial/08-outbox-and-idempotency.md#the-investigation)
 </details>
 
 <details><summary><b>28 · What does the outbox actually buy you?</b></summary>

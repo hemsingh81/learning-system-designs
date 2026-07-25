@@ -4,6 +4,20 @@
 
 ---
 
+## The story so far
+
+The databases are split ([chapter 6](06-boundaries-and-data.md)). Then the warehouse manager calls.
+
+> *"The system says we have 0 wireless mice. I am looking at 340 of them."*
+
+You investigate. Priya ordered 2 mice last week. `Inventory` reserved them. Her card declined. `Ordering` marked the order failed and emailed her.
+
+**Nobody told `Inventory`.** Those 2 mice are still reserved — not on sale, not sold. Multiply by every declined card for six weeks and 340 units have quietly vanished from the catalogue.
+
+This chapter is about finishing what you start, across services that cannot share a transaction.
+
+---
+
 ## In one line
 
 You cannot roll back across services. You can only apologise correctly.
@@ -22,42 +36,44 @@ You cannot roll back across services. You can only apologise correctly.
 | **Choreography** | No coordinator. Each service reacts to events from the others. |
 | **Orchestration** | One coordinator drives the flow and tells each service what to do. |
 | **Pivot step** | The step after which you can no longer cancel, only go forward. |
-| **State machine** | An object that is in exactly one named state, and moves between states on defined events. |
+| **State machine** | An object that is in exactly one named state and moves between states on defined events. |
 
 ---
 
 ## The problem
 
-One database, one transaction, no problem:
+In the old monolith, this was one transaction and it was never wrong:
 
 ```sql
 BEGIN TRANSACTION;
   UPDATE stock   SET available = available - 2 WHERE sku = 'SKU-88';
-  INSERT INTO payments (order_id, amount) VALUES ('o-1', 49.98);
-  UPDATE orders  SET status = 'Confirmed'     WHERE id = 'o-1';
-COMMIT;   -- all three, or none. The database guarantees it.
+  INSERT INTO payments (order_id, amount) VALUES ('o-123', 49.98);
+  UPDATE orders  SET status = 'Confirmed'      WHERE id = 'o-123';
+COMMIT;   -- all three, or none. The database guaranteed it.
 ```
 
-Now split it into three services with three databases. That single `COMMIT` is gone. You have three separate commits, and the process can die between any two of them.
+Now it is three services with three databases. **That single `COMMIT` is gone.** You have three separate commits, and anything can happen between them:
 
 ```
-Inventory commits.  ✓
-Payments commits.   ✓
-Ordering crashes.   ✗   ← stock reserved, card charged, no order. Money taken, nothing sold.
+Inventory commits.  ✓   2 mice reserved
+Payments commits.   ✓   card DECLINED, payment row written as failed
+Ordering commits.   ✓   order marked failed
+
+Nobody ran the undo for step 1.       ← the 340 missing mice
 ```
 
 ---
 
 ## Why two-phase commit does not fit
 
-2PC exists, and it does solve this. It is also almost never the right answer for microservices:
+2PC exists and does solve this. It is also almost never right for microservices:
 
 | Problem | Effect |
 |---|---|
-| **The coordinator is a single point of failure** | If it dies between "prepare" and "commit", every participant holds locks and waits. Forever. |
-| **Locks are held across the network** | A row is locked for the whole protocol — potentially hundreds of milliseconds. Throughput collapses. |
-| **It requires every participant to support it** | Your payment provider's REST API does not. Neither does the email service, or Kafka. |
-| **It trades availability for consistency** | If one of five participants is unreachable, nothing commits. Your uptime is the product of everyone's uptime. |
+| **The coordinator is a single point of failure** | If it dies between "prepare" and "commit", every participant holds locks and waits. Forever |
+| **Locks are held across the network** | A stock row locked for the whole protocol — hundreds of milliseconds. Throughput collapses |
+| **Every participant must support it** | Acme Pay's REST API does not. Neither does your broker |
+| **It trades availability for consistency** | If one of five participants is unreachable, nothing commits |
 
 The saga trade is the opposite: **stay available, accept a short window of inconsistency, and clean up explicitly.**
 
@@ -69,16 +85,16 @@ Break the transaction into local steps. Give each step an undo:
 
 | Step | Do | Undo (compensate) |
 |---|---|---|
-| 1 | Reserve stock | Release stock |
-| 2 | Charge card | Refund card |
+| 1 | Reserve 2 × SKU-88 | Release the reservation |
+| 2 | Charge ₹49.98 | Refund ₹49.98 |
 | 3 | Confirm order | Cancel order |
-| 4 | Ship parcel | *(cannot undo — see pivot step below)* |
+| 4 | Ship parcel | *(cannot undo — see pivot step)* |
 
 If step 2 fails, run step 1's undo. If step 3 fails, undo 2 then 1.
 
-**The key insight:** "refund the card" is not a rollback. The charge really happened. It is on the customer's statement. The refund is a **second, real event** that makes things right. The customer may even see both lines on their bank statement — and that is correct behaviour, not a bug.
+**The key insight:** "refund the card" is not a rollback. The charge really happened. It is on Priya's statement. The refund is a **second, real event** that makes things right. She may even see both lines on her bank statement — and that is correct behaviour, not a bug.
 
-> This is why the section title says *apologise correctly*. You cannot make it as if nothing happened. You can only make the outcome fair.
+> This is why the chapter title says *apologise correctly*. You cannot make it as if nothing happened. You can only make the outcome fair.
 
 ---
 
@@ -95,13 +111,17 @@ If step 2 fails, run step 1's undo. If step 3 fails, undo 2 then 1.
 
 Each service listens for events and reacts. There is no coordinator.
 
+**Priya's declined card, replayed with choreography:**
+
 ```
 Ordering    publishes OrderPlaced
-Inventory   hears it → reserves stock → publishes StockReserved
-Payments    hears it → charges card   → publishes PaymentFailed
-Inventory   hears PaymentFailed → releases stock → publishes StockReleased
+Inventory   hears it → reserves 2 × SKU-88 → publishes StockReserved
+Payments    hears it → charges card → DECLINED → publishes PaymentFailed
+Inventory   hears PaymentFailed → releases 2 × SKU-88 → publishes StockReleased   ← the fix
 Ordering    hears PaymentFailed → cancels order
 ```
+
+That fourth line is the one that was missing. The mice come back.
 
 ### Code
 
@@ -153,18 +173,18 @@ public sealed class PaymentFailedConsumer(InventoryDbContext db) : IConsumer<Pay
 
 **Good:**
 - No extra component to build, deploy, or keep alive.
-- Very loose coupling — each service only knows about events, not about other services.
+- Very loose coupling — each service only knows about events.
 - Adding a step means adding a subscriber. No existing code changes.
 
 **Bad:**
-- **The flow exists nowhere.** To understand the order process you must read five services and build the sequence in your head. There is no file you can point a new joiner at.
-- **Cycles are easy to create by accident.** Service A reacts to B's event; B reacts to A's. Now you have an infinite loop in production.
-- **"Where is order o-123 stuck?"** has no easy answer. You have to search logs across five services.
+- **The flow exists nowhere.** To understand checkout you must read four services and assemble the sequence in your head. There is no file you can point a new joiner at.
+- **Cycles are easy to create by accident.** A reacts to B's event; B reacts to A's. Now you have an infinite loop in production.
+- **"Where is order `o-123` stuck?"** has no easy answer. You search logs across four services.
 - **Testing the whole flow** requires running everything.
 
-**Use choreography when:** 2–4 steps, the flow rarely changes, and each step is genuinely independent.
+**Use choreography when:** 2–4 steps, the flow rarely changes, each step is genuinely independent.
 
-**Stop using it when:** you reach roughly 5+ steps, or someone draws the flow on a whiteboard and gets it wrong. That is the signal to move to orchestration.
+**Stop using it when:** you reach roughly 5+ steps, or someone draws the flow on a whiteboard and gets it wrong. That is the signal.
 
 ---
 
@@ -189,8 +209,8 @@ public sealed class OrderSagaState : SagaStateMachineInstance
     public Guid   CorrelationId { get; set; }        // = OrderId. One saga per order.
     public string CurrentState  { get; set; } = "";
 
-    public Guid     CustomerId { get; set; }
-    public decimal  Total      { get; set; }
+    public Guid     CustomerId   { get; set; }
+    public decimal  Total        { get; set; }
     public DateTime StartedAtUtc { get; set; }
 
     // What has actually happened. This is what makes compensation correct:
@@ -268,7 +288,7 @@ public sealed class OrderSaga : MassTransitStateMachine<OrderSagaState>
                 .TransitionTo(Confirmed)
                 .Finalize(),
 
-            // Payment failed → compensate backwards, but ONLY what actually happened.
+            // Priya's card declined → compensate, but ONLY what actually happened.
             When(PaymentFailed)
                 .Then(c => c.Saga.FailureReason = c.Message.Reason)
                 .If(c => c.Saga.StockReserved,
@@ -287,24 +307,29 @@ public sealed class OrderSaga : MassTransitStateMachine<OrderSagaState>
 }
 ```
 
-Read that once and you know the entire order process. That is the whole value proposition.
+Read that once and you know the entire order process. **That is the whole value proposition.**
+
+And the warehouse question becomes a single query:
+
+```sql
+SELECT CurrentState FROM OrderSagaState WHERE CorrelationId = 'o-123';
+-- 'Compensating'  → we know exactly where it is
+```
 
 ### Orchestration — the honest assessment
 
 **Good:**
 - **The flow is one readable file.** New joiners understand the business process in ten minutes.
-- **It is unit-testable** without any infrastructure — feed it events, assert the state.
-- **"Where is order o-123?"** is a single database query: `SELECT CurrentState FROM OrderSagaState WHERE CorrelationId = 'o-123'`.
-- **Compensation is explicit**, and it can check what actually happened before undoing it.
-- **Timeouts are natural** to express (see below).
+- **It is unit-testable** without infrastructure — feed it events, assert the state.
+- **"Where is order `o-123`?"** is one database query.
+- **Compensation is explicit**, and can check what actually happened before undoing it.
+- **Timeouts are natural** to express.
 
 **Bad:**
 - **One more component** to build, deploy, and monitor.
 - **The coordinator can itself fail** mid-flow, so its state must be persisted after every step.
-- **It can drift into a god object** if you let it contain business rules that belong in services. The saga should decide *sequence*, not *policy*.
-- Services are now slightly more coupled — they accept commands from a known coordinator.
-
-**Use orchestration when:** 5+ steps, compensation logic is non-trivial, you need to answer "where is this stuck?", or the flow is a business process that people discuss in meetings and change every quarter.
+- **It can drift into a god object** if you let it hold business rules.
+- Services are slightly more coupled — they accept commands from a known coordinator.
 
 ---
 
@@ -320,7 +345,11 @@ Read that once and you know the entire order process. That is the whole value pr
 | Compensation complexity | Each service decides alone | Coordinator decides with full context |
 | Risk | Hidden flow, accidental cycles | Coordinator becomes a god object |
 
-**A practical default:** start with choreography. Move to orchestration the first time someone asks "what actually happens after an order is placed?" and three people give three different answers.
+**What the store does:** choreography, for now. Four steps, stable flow, nothing to build.
+
+**What would change their mind:** the fraud team wants a check between reservation and payment, and the loyalty team wants points awarded after confirmation. That is six steps. At six steps, nobody can hold the flow in their head — and that is the moment to switch.
+
+> **A practical default:** start with choreography. Move to orchestration the first time someone asks *"what actually happens after an order is placed?"* and three people give three different answers.
 
 ---
 
@@ -330,7 +359,7 @@ This is where most saga implementations are subtly wrong.
 
 ### Rule 1 — Compensation must be idempotent
 
-The compensating message can arrive twice, just like any other message.
+The compensating message can arrive twice, like any other message.
 
 ```csharp
 public async Task ReleaseAsync(Guid orderId, CancellationToken ct)
@@ -339,14 +368,16 @@ public async Task ReleaseAsync(Guid orderId, CancellationToken ct)
 
     if (r is null)      return;   // never reserved — nothing to do
     if (r.IsReleased)   return;   // already released — do NOT release twice,
-                                  // or you will credit stock you never took
+                                  // or you credit stock you never took
 
     r.Release();
     await db.SaveChangesAsync(ct);
 }
 ```
 
-Without those two guards, a duplicate `ReleaseStock` silently inflates your inventory. That is a very expensive bug to find.
+**Without those two guards, a duplicate `ReleaseStock` silently inflates your inventory.** You now have the *opposite* of the warehouse problem: the system says 342 mice when there are 340. That is a very expensive bug to find, because nothing errors.
+
+> A "do" step that runs twice usually fails loudly — a duplicate key, a rejected charge. An **"undo" that runs twice succeeds silently.** That asymmetry is why compensation deserves more care than the forward path.
 
 ### Rule 2 — Compensation can fail too
 
@@ -360,10 +391,10 @@ cfg.ReceiveEndpoint("payments-refund", e =>
     // Compensation is not allowed to give up quietly. A failed refund is a customer
     // who was charged for nothing, and that becomes a legal problem, not a bug.
     e.UseMessageRetry(r => r.Exponential(
-        retryLimit:      20,
-        minInterval:     TimeSpan.FromSeconds(1),
-        maxInterval:     TimeSpan.FromMinutes(30),
-        intervalDelta:   TimeSpan.FromSeconds(5)));
+        retryLimit:    20,
+        minInterval:   TimeSpan.FromSeconds(1),
+        maxInterval:   TimeSpan.FromMinutes(30),
+        intervalDelta: TimeSpan.FromSeconds(5)));
 
     e.ConfigureConsumer<RefundPaymentConsumer>(ctx);
     // Still failing after all that? → DLQ + page a human. Never silently drop it.
@@ -372,19 +403,19 @@ cfg.ReceiveEndpoint("payments-refund", e =>
 
 ### Rule 3 — Some steps cannot be undone (the pivot step)
 
-You cannot un-send an email. You cannot un-ship a parcel that is on a truck.
+You cannot un-send Priya's email. You cannot un-ship a parcel that is on a BlueDart van.
 
 The **pivot step** is the point of no return. After it, the saga must go forward, not backward.
 
 ```
 Reserve stock   ← can undo
 Charge card     ← can undo (refund)
-────────── PIVOT: hand parcel to courier ──────────
+────────── PIVOT: hand the parcel to BlueDart ──────────
 Send email      ← cannot undo, but harmless
 Deliver         ← must go forward
 ```
 
-Design so that irreversible steps come **last**, after everything that can fail has already succeeded. If a step cannot be undone and it is in the middle of your saga, redesign the order of steps — that is a design bug, not an implementation detail.
+Design so irreversible steps come **last**, after everything that can fail has already succeeded. If a step cannot be undone and it sits in the middle of your saga, **that is a design bug** — reorder the steps.
 
 ### Rule 4 — Add a timeout for every wait
 
@@ -394,7 +425,7 @@ The most common production saga failure is not a failed step. It is a step whose
 // A saga must never wait forever. Ever.
 Schedule(() => PaymentTimeout, x => x.PaymentTimeoutTokenId, s =>
 {
-    s.Delay   = TimeSpan.FromMinutes(5);
+    s.Delay    = TimeSpan.FromMinutes(5);
     s.Received = r => r.CorrelateById(m => m.Message.OrderId);
 });
 
@@ -406,21 +437,39 @@ During(AwaitingPayment,
         .TransitionTo(Compensating));
 ```
 
+**And in a choreographed system you still need this**, just implemented differently — as a sweeper job:
+
+```csharp
+// Inventory/Services/ReservationSweeper.cs — the safety net for a lost event
+var stale = await db.Reservations
+    .Where(r => !r.IsReleased && !r.IsConfirmed && r.ExpiresAtUtc < DateTime.UtcNow)
+    .Take(500)
+    .ToListAsync(ct);
+
+foreach (var r in stale)
+{
+    r.Release();
+    log.LogWarning("Reservation {OrderId} expired and was swept", r.OrderId);
+}
+```
+
+**Every async flow needs a sweeper like this.** Events get lost. The sweep count is a health metric: in a healthy system it is zero, and a rising number means events are being lost upstream.
+
 ---
 
 ## Sharp edges
 
-**Edge 1 — There is no isolation.** ACID's "I" is gone. Halfway through a saga, other users can see the intermediate state: stock reserved but order not confirmed. Design for it — use explicit states (`Pending`, `Reserved`, `Confirmed`) rather than hoping nobody looks.
+**Edge 1 — There is no isolation.** ACID's "I" is gone. Halfway through a saga, other customers can see intermediate state: stock reserved but order not confirmed. Design for it with explicit states rather than hoping nobody looks.
 
-**Edge 2 — Semantic locks.** Sometimes you need to stop others touching a half-done thing. Mark the record: `Order.Status = Processing`, and refuse edits in that state. This is a lock you implement in your domain, and you must handle it never being released (see Rule 4).
+**Edge 2 — Semantic locks.** Sometimes you need to stop others touching a half-done thing. Mark the record: `Order.Status = Processing`, and refuse edits in that state. This is a lock you implement in your domain, and you must handle it never being released (see rule 4).
 
-**Edge 3 — Saga state must be persisted after every step.** If the coordinator crashes between "payment charged" and "saving that fact", it will re-charge on restart. Persist the state in the same transaction that publishes the next command — which is the outbox pattern again ([chapter 8](08-outbox-and-idempotency.md)).
+**Edge 3 — Saga state must be persisted after every step.** If the coordinator crashes between "payment charged" and "saving that fact", it will re-charge on restart. Persist the state in the same transaction that publishes the next command — which is the outbox pattern, and the next chapter.
 
-**Edge 4 — Concurrent messages for the same saga.** `StockReserved` and a `PaymentTimeout` can arrive at the same instant, at two instances. Both load the saga, both decide, both save. One overwrites the other. Fix: optimistic concurrency (the `Version` column) plus retry on conflict. MassTransit and NServiceBus handle this if you configure it; do not assume it is on.
+**Edge 4 — Concurrent messages for the same saga.** `StockReserved` and `PaymentTimeout` can arrive at the same instant, at two instances. Both load the saga, both decide, both save. One silently overwrites the other. Fix: optimistic concurrency (the `Version` column) plus retry on conflict. Do not assume it is on by default.
 
-**Edge 5 — The saga table grows forever.** Finalise completed sagas (`SetCompletedWhenFinalized`) or archive them. A saga table with 40 million rows makes every correlation lookup slow, which slows every message.
+**Edge 5 — The saga table grows forever.** Finalise completed sagas or archive them. A saga table with 40 million rows makes every correlation lookup slow, which slows every message.
 
-**Edge 6 — Do not put business rules in the saga.** "If the customer is Gold tier, skip the credit check" belongs in the credit-check service, not the coordinator. The saga owns *sequence and compensation*. The moment it owns policy, every team must change the saga to ship anything, and you have a new bottleneck.
+**Edge 6 — Do not put business rules in the saga.** *"If the customer is Gold tier, skip the credit check"* belongs in the credit-check service, not the coordinator. The saga owns **sequence and compensation**. The moment it owns policy, every team must change the saga to ship anything, and you have a new bottleneck.
 
 ---
 
@@ -432,12 +481,12 @@ During(AwaitingPayment,
 
 | Situation | Do this instead |
 |---|---|
-| All steps are in one service | Use a database transaction. It is simpler and stronger. |
-| Steps are genuinely independent | Just publish an event. No saga needed. |
-| Only one step can fail, at the end | Handle that one failure directly. |
-| You need real ACID across services | Reconsider the boundary — those two things may belong in one service ([chapter 6](06-boundaries-and-data.md)). |
+| All steps are in one service | Use a database transaction. Simpler and stronger |
+| Steps are genuinely independent | Just publish an event. No saga needed |
+| Only one step can fail, at the end | Handle that one failure directly |
+| You need real ACID across services | Reconsider the boundary |
 
-That last row matters. **"We need a distributed transaction here" is often evidence that you drew the boundary in the wrong place.** Merging two services is a legitimate and often better answer than building a saga.
+That last row matters. **"We need a distributed transaction here" is often evidence that you drew the boundary in the wrong place.** Merging two services is a legitimate and often better answer than building a saga. [Case study 2](../case-studies/02-banking-payments/README.md#why-the-ledger-posting-is-not-a-saga) shows exactly this: a bank's debit and credit stay in **one** transaction in **one** service, with the saga around it, never through it.
 
 ---
 
@@ -447,13 +496,36 @@ That last row matters. **"We need a distributed transaction here" is often evide
 
 **Now break it:**
 
-1. Make payment fail. Confirm stock is released and the order ends `Cancelled`. Query the saga state to prove it.
-2. Make payment fail **and** make the release-stock handler throw. Watch the saga sit in `Compensating`. Now add retries. This is edge 2 in real life.
-3. Deliver `PaymentFailed` **twice**. If your stock is released twice, you have a phantom-inventory bug. Add the `IsReleased` guard and repeat.
-4. Kill the orchestrator process right after `StockReserved`. Restart it. Does it resume, or is the order stuck forever? If stuck, your state is not persisted correctly.
-5. Never send `PaymentSucceeded` at all. Confirm the timeout fires and compensation runs. If nothing happens, you have edge/rule 4 — the most common real-world saga bug.
+1. Make payment fail. Confirm stock is released and the order ends `Cancelled`. Query the saga state to prove it. *This is the 340 missing mice, fixed.*
+2. Make payment fail **and** make the release-stock handler throw. Watch the saga sit in `Compensating`. Now add retries — this is edge/rule 2 in real life.
+3. Deliver `PaymentFailed` **twice**. If stock is released twice, you have the phantom-inventory bug. Add the `IsReleased` guard and repeat.
+4. Kill the orchestrator right after `StockReserved`. Restart. Does it resume, or is the order stuck forever? If stuck, your state is not persisted correctly.
+5. Never send `PaymentSucceeded` at all. Confirm the timeout fires and compensation runs. **If nothing happens, you have the most common real-world saga bug.**
 6. Send `StockReserved` and `PaymentTimeout` simultaneously to two orchestrator instances. Check for a lost update. Add optimistic concurrency and repeat.
-7. Add a 6th step to the choreographed version, then to the orchestrated version. Time yourself for both. That difference is the case for orchestration.
+7. Add a 6th step to the choreographed version, then to the orchestrated version. Time yourself for both. **That difference is the case for orchestration.**
+
+---
+
+## What is still broken
+
+The mice come back. The warehouse manager stops calling.
+
+Then, during a routine check, someone runs a query nobody has run before:
+
+```sql
+SELECT COUNT(*) FROM orders
+WHERE status = 'Pending' AND placed_at < NOW() - INTERVAL '1 day';
+```
+
+**47 rows.**
+
+Forty-seven orders, placed over the last three weeks, still sitting at `Pending`. Never reserved. Never charged. Never cancelled. Never emailed about.
+
+You check the logs for one of them. There is no error. There is no exception. There is no `OrderPlaced` event in the broker at all. The order exists in the database and **the event was never published**.
+
+Nothing in your system is broken. Nothing raised an alert. And 47 customers are waiting for orders that will never move.
+
+The next chapter is the bug that causes this — and it is almost certainly in your production system right now.
 
 ---
 

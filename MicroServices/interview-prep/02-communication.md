@@ -159,7 +159,7 @@ What never works is pretending the gap is not there.
 
 **Follow-up to expect:** *"How long is 'eventually'?"* → Measure it, do not guess. It is your outbox relay interval plus broker latency plus consumer processing. Typically 200 ms–2 s. And you should have a metric for it, because when it becomes 5 minutes you want to know.
 
-📖 [Chapter 3 — Edge 1: eventual consistency in the user's face](../tutorial/03-asynchronous.md#edge-1--eventual-consistency-in-the-users-face)
+📖 [Chapter 3 — Edge 1: eventual consistency in the user's face](../tutorial/03-asynchronous.md#edge-1--eventual-consistency-in-priyas-face)
 
 </details>
 
@@ -635,7 +635,7 @@ Two details that show experience:
 
 **Follow-up to expect:** *"What if the email service is down for an hour?"* → Messages queue up and drain when it recovers. Which is exactly what you wanted: the order was never at risk. Watch queue depth so you know it is happening.
 
-📖 [Chapter 11 — Worked example 1](../tutorial/11-decision-framework.md#example-1--send-a-confirmation-email-when-an-order-is-placed)
+📖 [Chapter 11 — Worked example 1](../tutorial/11-decision-framework.md#more-worked-examples)
 
 </details>
 
