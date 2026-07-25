@@ -1,0 +1,133 @@
+# Banking case study — infrastructure only.
+#
+#   docker compose up -d
+#
+#   Azure Service Bus emulator   localhost:5672
+#   Kafka (the audit log)        localhost:9092
+#   PostgreSQL                   localhost:5432   (postgres / Str0ng!Passw0rd)
+#   Jaeger                       http://localhost:16686
+#   Kafka UI                     http://localhost:8080
+#
+# NOTE the two brokers. That is deliberate, not an accident:
+#
+#   - The QUEUE (Service Bus / RabbitMQ) carries commands. It gives strict FIFO
+#     per account via sessions, plus per-message dead-lettering.
+#
+#   - KAFKA carries the audit log, with INFINITE retention. Regulators can ask
+#     for any period years later, and projections can be rebuilt from zero.
+#
+# One tool cannot do both jobs well here. Using Kafka for the commands would
+# lose per-message ack; using the queue for the audit log would lose replay.
+
+services:
+
+  # ── Commands: strict FIFO per account ─────────────────────────────────────
+  # In production this is Azure Service Bus (sessions give ordering per account).
+  # Locally, RabbitMQ with one consumer per account-hash queue is close enough
+  # to develop against. Do NOT let local convenience become the production design.
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: bank-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      retries: 10
+    volumes:
+      - rabbit-data:/var/lib/rabbitmq
+
+  # ── The audit log: infinite retention ─────────────────────────────────────
+  kafka:
+    image: apache/kafka:latest
+    container_name: bank-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+      # ── THE IMPORTANT LINE ────────────────────────────────────────────────
+      # -1 means keep forever. A 7-day default would silently delete your audit
+      # trail on day 8, and you would discover it during an investigation —
+      # the worst possible moment (chapter 4, edge 2).
+      KAFKA_LOG_RETENTION_MS: -1
+      KAFKA_LOG_RETENTION_BYTES: -1
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: bank-kafka-ui
+    depends_on: [kafka]
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      DYNAMIC_CONFIG_ENABLED: "true"
+
+  # ── The ledger database ───────────────────────────────────────────────────
+  # PostgreSQL, because SERIALIZABLE isolation is well behaved and well
+  # documented here — and PostingService depends on it absolutely.
+  postgres:
+    image: postgres:17
+    container_name: bank-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: "Str0ng!Passw0rd"
+      POSTGRES_DB: ledger
+    command:
+      # Log any statement over 200ms. Serializable transactions that retry a lot
+      # show up here first, and you want to see that in development, not in prod.
+      - "postgres"
+      - "-c"
+      - "log_min_duration_statement=200"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      retries: 10
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+  # ── Observability ─────────────────────────────────────────────────────────
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: bank-jaeger
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+      - "4318:4318"
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+
+  # ── A fake payment network ────────────────────────────────────────────────
+  # Configure mappings that TIME OUT, not just ones that fail. The timeout path
+  # (→ Unknown state, never a guess) is the hardest and most important behaviour
+  # in this whole case study to get right.
+  network-mock:
+    image: wiremock/wiremock:latest
+    container_name: bank-network-mock
+    ports:
+      - "8089:8080"
+    command: ["--global-response-templating", "--verbose"]
+    volumes:
+      - ./mocks/network:/home/wiremock
+
+volumes:
+  rabbit-data:
+  kafka-data:
+  pg-data:

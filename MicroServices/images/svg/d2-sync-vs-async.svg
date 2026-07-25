@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" font-family="Inter, 'Segoe UI', system-ui, -apple-system, Carlito, 'DejaVu Sans', sans-serif">
+  <defs>
+    <style>
+      .bg    { fill:#0F1620; }
+      .panel { fill:#141D28; stroke:#2A3947; stroke-width:1.5; }
+      .h1    { fill:#E8EEF4; font-size:30px; font-weight:700; letter-spacing:-0.4px; }
+      .sub   { fill:#8FA3B5; font-size:15px; }
+      .pt-s  { fill:#FF7A45; font-size:20px; font-weight:700; letter-spacing:1.6px; }
+      .pt-a  { fill:#3DDC97; font-size:20px; font-weight:700; letter-spacing:1.6px; }
+      .pd    { fill:#8FA3B5; font-size:13.5px; }
+      .row   { fill:#C4D2DE; font-size:14px;
+               font-family:ui-monospace,'Cascadia Code',Menlo,Consolas,'DejaVu Sans Mono',monospace; }
+      .tick  { fill:#5C6E80; font-size:11px; }
+      .grid  { stroke:#212C39; stroke-width:1; }
+      .note  { fill:#8FA3B5; font-size:12px; }
+      .bignum-s { fill:#FF7A45; font-size:58px; font-weight:800; letter-spacing:-1px; }
+      .bignum-a { fill:#3DDC97; font-size:58px; font-weight:800; letter-spacing:-1px; }
+      .biglbl   { fill:#8FA3B5; font-size:14px; letter-spacing:0.5px; }
+      .verdict  { fill:#A8BACB; font-size:14.5px; }
+      .foot     { fill:#8FA3B5; font-size:16px; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="900"/>
+
+  <text class="h1"  x="60" y="72">Same work. Different waiter.</text>
+  <text class="sub" x="60" y="102">One order, four services — measured from the moment the customer taps Buy</text>
+
+  <!-- ================= LEFT : SYNCHRONOUS ================= -->
+  <rect class="panel" x="60" y="150" width="710" height="680" rx="14"/>
+  <text class="pt-s" x="84" y="202">SYNCHRONOUS</text>
+  <text class="pd"   x="84" y="230">Every hop is on the critical path. The client holds the line for all of it.</text>
+
+  <rect x="250" y="285" width="453" height="300" fill="#FF7A45" opacity="0.06"/>
+
+  <line class="grid" x1="250"   y1="285" x2="250"   y2="585"/>
+  <line class="grid" x1="356.8" y1="285" x2="356.8" y2="585"/>
+  <line class="grid" x1="463.6" y1="285" x2="463.6" y2="585"/>
+  <line class="grid" x1="570.5" y1="285" x2="570.5" y2="585"/>
+  <line class="grid" x1="677.3" y1="285" x2="677.3" y2="585"/>
+  <text class="tick" x="250"   y="274" text-anchor="middle">0</text>
+  <text class="tick" x="356.8" y="274" text-anchor="middle">1s</text>
+  <text class="tick" x="463.6" y="274" text-anchor="middle">2s</text>
+  <text class="tick" x="570.5" y="274" text-anchor="middle">3s</text>
+  <text class="tick" x="677.3" y="274" text-anchor="middle">4s</text>
+
+  <text class="row" x="84" y="320">Client</text>
+  <rect x="250"   y="300" width="453"   height="30" rx="5" fill="#FF7A45" opacity="0.95"/>
+
+  <text class="row" x="84" y="382">Ordering</text>
+  <rect x="252.1" y="362" width="448.6" height="30" rx="5" fill="#FF7A45" opacity="0.72"/>
+
+  <text class="row" x="84" y="444">Inventory</text>
+  <rect x="256.4" y="424" width="20"    height="30" rx="5" fill="#FF7A45" opacity="0.55"/>
+  <text class="note" x="286" y="444">180 ms</text>
+
+  <text class="row" x="84" y="506">Payments</text>
+  <rect x="277.8" y="486" width="423"   height="30" rx="5" fill="#FF7A45" opacity="0.55"/>
+  <text class="note" x="292" y="506" fill="#0F1620" font-weight="700">3,960 ms — third-party PSP, slow under load</text>
+
+  <text class="bignum-s" x="84" y="700">4,240 ms</text>
+  <text class="biglbl"   x="84" y="728">THE CUSTOMER WAITS FOR ALL OF IT</text>
+  <line x1="84" y1="756" x2="746" y2="756" stroke="#2A3947" stroke-width="1"/>
+  <text class="verdict" x="84" y="786">One slow dependency becomes everyone's outage.</text>
+  <text class="verdict" x="84" y="808">Retries make it worse, not better.</text>
+
+  <!-- ================= RIGHT : ASYNCHRONOUS ================= -->
+  <rect class="panel" x="830" y="150" width="710" height="680" rx="14"/>
+  <text class="pt-a" x="854" y="202">ASYNCHRONOUS</text>
+  <text class="pd"   x="854" y="230">The same work still happens — it just happens after the customer is gone.</text>
+
+  <line class="grid" x1="1020"   y1="285" x2="1020"   y2="647"/>
+  <line class="grid" x1="1126.8" y1="285" x2="1126.8" y2="647"/>
+  <line class="grid" x1="1233.6" y1="285" x2="1233.6" y2="647"/>
+  <line class="grid" x1="1340.5" y1="285" x2="1340.5" y2="647"/>
+  <line class="grid" x1="1447.3" y1="285" x2="1447.3" y2="647"/>
+  <text class="tick" x="1020"   y="274" text-anchor="middle">0</text>
+  <text class="tick" x="1126.8" y="274" text-anchor="middle">1s</text>
+  <text class="tick" x="1233.6" y="274" text-anchor="middle">2s</text>
+  <text class="tick" x="1340.5" y="274" text-anchor="middle">3s</text>
+  <text class="tick" x="1447.3" y="274" text-anchor="middle">4s</text>
+
+  <text class="row" x="854" y="320">Client</text>
+  <rect x="1020"   y="300" width="6" height="30" rx="2" fill="#3DDC97"/>
+
+  <text class="row" x="854" y="382">Ordering</text>
+  <rect x="1022"   y="362" width="6" height="30" rx="2" fill="#3DDC97" opacity="0.85"/>
+
+  <text class="row" x="854" y="444">Broker</text>
+  <rect x="1025"   y="424" width="6" height="30" rx="2" fill="#3DDC97" opacity="0.7"/>
+
+  <text class="row" x="854" y="506">Payments</text>
+  <rect x="1027.5" y="486" width="423" height="30" rx="5" fill="#3DDC97" opacity="0.32"/>
+  <text class="note" x="1042" y="506">3,960 ms — still slow, but nobody is waiting on it</text>
+
+  <text class="row" x="854" y="568">Notifications</text>
+  <rect x="1027.5" y="548" width="6" height="30" rx="2" fill="#3DDC97" opacity="0.7"/>
+  <text class="note" x="1042" y="568">pushes "confirmed" to the client when payment clears</text>
+
+  <line x1="1024" y1="262" x2="1024" y2="600" stroke="#3DDC97" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <text class="note" x="1040" y="624" fill="#3DDC97">↑ client released here — 202 Accepted</text>
+
+  <text class="bignum-a" x="854" y="700">40 ms</text>
+  <text class="biglbl"   x="854" y="728">THE CUSTOMER WAITS FOR THIS MUCH</text>
+  <line x1="854" y1="756" x2="1516" y2="756" stroke="#2A3947" stroke-width="1"/>
+  <text class="verdict" x="854" y="786">Payments can be down for a minute without failing the order.</text>
+  <text class="verdict" x="854" y="808">The cost: the customer learns the outcome later, not now.</text>
+
+  <text class="foot" x="800" y="878" text-anchor="middle">Async doesn't make the work faster. It makes the waiting somebody else's problem — usually the right somebody.</text>
+</svg>

@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" font-family="Inter, 'Segoe UI', system-ui, -apple-system, Carlito, 'DejaVu Sans', sans-serif">
+  <defs>
+    <style>
+      .bg    { fill:#0F1620; }
+      .card  { fill:#18222E; stroke:#2A3947; stroke-width:1.5; }
+      .h1    { fill:#E8EEF4; font-size:30px; font-weight:700; letter-spacing:-0.4px; }
+      .sub   { fill:#8FA3B5; font-size:15px; }
+      .zone  { fill:#5C6E80; font-size:13px; font-weight:700; letter-spacing:3px; }
+      .name  { fill:#E8EEF4; font-size:17px; font-weight:600;
+               font-family:ui-monospace,'Cascadia Code',Menlo,Consolas,'DejaVu Sans Mono',monospace; }
+      .cap   { fill:#8FA3B5; font-size:11.5px; }
+      .lbl   { fill:#A8BACB; font-size:12.5px;
+               font-family:ui-monospace,'Cascadia Code',Menlo,Consolas,'DejaVu Sans Mono',monospace; }
+      .leg   { fill:#8FA3B5; font-size:13px; }
+      .ns    { fill:#141F35; stroke:#6C8EF5; stroke-width:1.6; }
+      .sy    { fill:#241A14; stroke:#FF7A45; stroke-width:1.6; }
+      .as    { fill:#0F241C; stroke:#3DDC97; stroke-width:1.6; }
+      .wire-ns { stroke:#6C8EF5; stroke-width:2.2; fill:none; }
+      .wire-sy { stroke:#FF7A45; stroke-width:2.4; fill:none; }
+      .wire-as { stroke:#3DDC97; stroke-width:2.4; fill:none; }
+      .bound { stroke:#3A4A5C; stroke-width:1.5; stroke-dasharray:7 7; fill:none; }
+    </style>
+    <marker id="aN" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6C8EF5"/></marker>
+    <marker id="aS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#FF7A45"/></marker>
+    <marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3DDC97"/></marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="900"/>
+
+  <text class="h1"  x="60" y="72">How microservices communicate</text>
+  <text class="sub" x="60" y="102">Three axes — north–south at the edge, east–west inside, and the boundary that separates them</text>
+
+  <!-- trust boundary -->
+  <path class="bound" d="M400 175 L400 795"/>
+  <text class="zone" x="60"  y="158">OUTSIDE  ·  NORTH–SOUTH</text>
+  <text class="zone" x="790" y="158">INSIDE  ·  EAST–WEST</text>
+
+  <!-- outside clients -->
+  <rect class="ns" x="80" y="260" width="200" height="70" rx="10"/>
+  <text class="name" x="180" y="292" text-anchor="middle">Web app</text>
+  <text class="cap"  x="180" y="312" text-anchor="middle">REST + live updates</text>
+
+  <rect class="ns" x="80" y="360" width="200" height="70" rx="10"/>
+  <text class="name" x="180" y="392" text-anchor="middle">Mobile app</text>
+  <text class="cap"  x="180" y="412" text-anchor="middle">slim payloads</text>
+
+  <rect class="ns" x="80" y="460" width="200" height="70" rx="10"/>
+  <text class="name" x="180" y="492" text-anchor="middle">Partner</text>
+  <text class="cap"  x="180" y="512" text-anchor="middle">versioned public API</text>
+
+  <!-- gateway -->
+  <rect class="ns" x="470" y="310" width="190" height="190" rx="12"/>
+  <text class="name" x="565" y="372" text-anchor="middle" style="font-size:19px">API Gateway</text>
+  <text class="cap"  x="565" y="402" text-anchor="middle">the single front door</text>
+  <text class="cap"  x="565" y="432" text-anchor="middle">auth · routing</text>
+  <text class="cap"  x="565" y="452" text-anchor="middle">rate limit · TLS</text>
+
+  <path class="wire-ns" marker-end="url(#aN)" d="M280 295 C 370 295, 390 340, 466 348"/>
+  <path class="wire-ns" marker-end="url(#aN)" d="M280 395 L 466 400"/>
+  <path class="wire-ns" marker-end="url(#aN)" d="M280 495 C 370 495, 390 455, 466 452"/>
+
+  <!-- inside -->
+  <rect class="sy" x="780" y="270" width="180" height="70" rx="10"/>
+  <text class="name" x="870" y="302" text-anchor="middle">Ordering</text>
+  <text class="cap"  x="870" y="322" text-anchor="middle">owns order state</text>
+
+  <rect class="sy" x="1080" y="200" width="180" height="70" rx="10"/>
+  <text class="name" x="1170" y="232" text-anchor="middle">Inventory</text>
+  <text class="cap"  x="1170" y="252" text-anchor="middle">owns stock</text>
+
+  <rect class="as" x="1040" y="400" width="220" height="92" rx="12"/>
+  <text class="name" x="1150" y="438" text-anchor="middle">Broker</text>
+  <text class="cap"  x="1150" y="460" text-anchor="middle">RabbitMQ · Kafka</text>
+  <text class="cap"  x="1150" y="478" text-anchor="middle">Service Bus</text>
+
+  <rect class="as" x="1350" y="350" width="180" height="70" rx="10"/>
+  <text class="name" x="1440" y="382" text-anchor="middle">Payments</text>
+  <text class="cap"  x="1440" y="402" text-anchor="middle">owns money</text>
+
+  <rect class="as" x="1350" y="480" width="180" height="70" rx="10"/>
+  <text class="name" x="1440" y="512" text-anchor="middle">Notifications</text>
+  <text class="cap"  x="1440" y="532" text-anchor="middle">owns delivery</text>
+
+  <path class="wire-ns" marker-end="url(#aN)" d="M660 380 C 720 380, 720 305, 776 305"/>
+  <text class="lbl" x="700" y="346" text-anchor="middle">routes</text>
+
+  <path class="wire-sy" marker-end="url(#aS)" d="M960 292 C 1010 292, 1030 235, 1076 235"/>
+  <text class="lbl" x="1018" y="222" text-anchor="middle">sync · gRPC · blocking</text>
+
+  <path class="wire-as" marker-end="url(#aA)" d="M870 340 C 870 410, 950 446, 1036 446"/>
+  <text class="lbl" x="905" y="398">async · publish</text>
+
+  <path class="wire-as" marker-end="url(#aA)" d="M1260 432 C 1310 432, 1310 385, 1346 385"/>
+  <path class="wire-as" marker-end="url(#aA)" d="M1260 460 C 1310 460, 1310 515, 1346 515"/>
+  <text class="lbl" x="1305" y="462" text-anchor="middle">OrderPlaced</text>
+
+  <!-- push back to the client -->
+  <path class="wire-ns" marker-end="url(#aN)" stroke-dasharray="6 6"
+        d="M1440 550 L 1440 720 Q 1440 745 1415 745 L 205 745 Q 180 745 180 720 L 180 344"/>
+  <text class="lbl" x="800" y="731" text-anchor="middle">server-initiated push · SignalR / WebSocket / webhook</text>
+
+  <!-- legend -->
+  <line x1="60"  y1="850" x2="100" y2="850" class="wire-ns"/>
+  <text class="leg" x="112" y="855">north–south · edge</text>
+  <line x1="300" y1="850" x2="340" y2="850" class="wire-sy"/>
+  <text class="leg" x="352" y="855">synchronous · caller blocked</text>
+  <line x1="620" y1="850" x2="660" y2="850" class="wire-as"/>
+  <text class="leg" x="672" y="855">asynchronous · decoupled</text>
+  <line x1="930" y1="850" x2="970" y2="850" class="bound"/>
+  <text class="leg" x="982" y="855">trust boundary</text>
+</svg>

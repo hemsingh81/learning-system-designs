@@ -1,0 +1,155 @@
+# Logistics tracking case study — infrastructure only.
+#
+#   docker compose up -d
+#
+#   Kafka        localhost:9092          ← the ping stream (key = vehicleId)
+#   Redis        localhost:6379          ← latest position per vehicle + SignalR backplane
+#   TimescaleDB  localhost:5432          ← the permanent history
+#   Jaeger       http://localhost:16686
+#
+# Create the topics first (partition count matters — see the README):
+#
+#   docker exec logi-kafka /opt/kafka/bin/kafka-topics.sh --create \
+#     --bootstrap-server localhost:9092 --topic vehicle.pings \
+#     --partitions 24 --replication-factor 1 --config retention.ms=259200000
+#
+#   docker exec logi-kafka /opt/kafka/bin/kafka-topics.sh --create \
+#     --bootstrap-server localhost:9092 --topic vehicle.fence-events \
+#     --partitions 12 --replication-factor 1 --config retention.ms=2592000000
+#
+# 24 partitions for 2,400 pings/sec is deliberately generous. Adding partitions
+# later re-hashes keys and breaks per-vehicle ordering for in-flight vehicles,
+# which is exactly when geo-fence events go wrong. Over-provision now.
+
+services:
+
+  kafka:
+    image: apache/kafka:latest
+    container_name: logi-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+      # 3 days. Long enough for a consumer to recover from a weekend outage;
+      # the PERMANENT record lives in TimescaleDB, not here.
+      KAFKA_LOG_RETENTION_MS: 259200000
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_COMPRESSION_TYPE: lz4
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+
+  # ── Latest position per vehicle ───────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: logi-redis
+    ports:
+      - "6379:6379"
+    command:
+      - "redis-server"
+      # Persistence ON here, unlike the trading case study's risk cache.
+      #
+      # The reason is the geo-fence STATE (which vehicles are currently inside
+      # which fences). Losing that on a restart makes every parked vehicle
+      # re-fire "arrived" — which is a notification storm, not a blank map.
+      #
+      # Losing the positions alone would be harmless; losing the fence state
+      # is not. Same Redis instance, and the stricter requirement wins.
+      - "--appendonly"
+      - "yes"
+      - "--appendfsync"
+      - "everysec"
+      - "--maxmemory"
+      - "1gb"
+      - "--maxmemory-policy"
+      - "volatile-lru"     # evict only keys that HAVE a TTL (positions),
+                           # never the fence state, which has none
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+    volumes:
+      - redis-data:/data
+
+  # ── The permanent history ─────────────────────────────────────────────────
+  # ~200 million rows a day, written once and read rarely — but when it is read,
+  # it is for a legal dispute, so it must be complete and exact.
+  timescaledb:
+    image: timescale/timescaledb:latest-pg17
+    container_name: logi-timescale
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: "Str0ng!Passw0rd"
+      POSTGRES_DB: logistics
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_buffers=1GB"
+      - "-c"
+      - "max_wal_size=4GB"
+    volumes:
+      - ts-data:/var/lib/postgresql/data
+      - ./schema:/docker-entrypoint-initdb.d
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: logi-jaeger
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+      - "4318:4318"
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+
+volumes:
+  kafka-data:
+  redis-data:
+  ts-data:
+
+# ─────────────────────────────────────────────────────────────────────────────
+# THE HISTORY TABLE
+#
+#   CREATE TABLE position_history (
+#     vehicle_id      uuid        NOT NULL,
+#     recorded_at     timestamptz NOT NULL,   -- the DEVICE's clock
+#     received_at     timestamptz NOT NULL,   -- ours. The gap matters in a dispute
+#     latitude        double precision NOT NULL,
+#     longitude       double precision NOT NULL,
+#     speed_kmh       real,
+#     heading_degrees real,
+#     accuracy_metres real,
+#     is_late_arrival boolean NOT NULL DEFAULT false,
+#
+#     -- Makes a re-sent ping harmless. Devices retry on a flaky mobile network,
+#     -- and a duplicate here would double the distance-travelled figure that
+#     -- drives driver pay.
+#     PRIMARY KEY (vehicle_id, recorded_at)
+#   );
+#
+#   SELECT create_hypertable('position_history', 'recorded_at',
+#                            chunk_time_interval => INTERVAL '1 day');
+#
+#   -- Consecutive positions differ by metres, so this compresses ~15:1.
+#   ALTER TABLE position_history SET (
+#     timescaledb.compress,
+#     timescaledb.compress_segmentby = 'vehicle_id'
+#   );
+#   SELECT add_compression_policy('position_history', INTERVAL '7 days');
+#
+#   -- 2 years hot, then export to cold storage before dropping.
+#   SELECT add_retention_policy('position_history', INTERVAL '2 years');
+#
+# NOTE: there is exactly ONE index — the primary key. Every real query filters
+# by vehicle AND time range. Extra indexes on a table taking 200 million inserts
+# a day cost write throughput and buy nothing.
+# ─────────────────────────────────────────────────────────────────────────────
