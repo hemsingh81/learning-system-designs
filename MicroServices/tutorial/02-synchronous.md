@@ -4,6 +4,14 @@
 
 ---
 
+## The story so far
+
+You have drawn the map ([chapter 1](01-three-axes.md)). It showed six services and one arrow that looked risky: `Ordering` calls `Payments` and waits for an answer.
+
+Tonight is the Diwali sale. The campaign email goes out at 00:00. This chapter is what happens next.
+
+---
+
 ## In one line
 
 The caller waits for the answer, and while it waits it can do nothing else.
@@ -21,22 +29,26 @@ The caller waits for the answer, and while it waits it can do nothing else.
 | **Protobuf** | The compact binary format gRPC uses instead of JSON. |
 | **Service discovery** | How a service finds another service's address without hardcoding an IP. |
 | **Temporal coupling** | Two services must be alive at the same moment for the work to happen. |
+| **Thread** | A worker inside your process. Each waiting request usually holds one. You have a limited number. |
+| **Connection pool** | A fixed set of reusable network connections. When it is empty, new calls queue up. |
 | **Idempotent** | Doing it twice has the same effect as doing it once. `GET` is idempotent. Charging a card is not, unless you make it so. |
 
 ---
 
 ## How it works
 
-The whole idea in one sequence: `Ordering` needs stock, so it asks `Inventory` and waits.
+The whole idea in one picture. `Ordering` needs stock, so it asks `Inventory` and waits:
 
 ```
 Ordering ──── GET /stock/SKU-88 ────► Inventory
-   (waiting...)                          (looks up DB, 12ms)
+   (waiting…)                            (looks up DB, 12 ms)
 Ordering ◄─── 200 { available: 42 } ──── Inventory
    (continues)
 ```
 
-That is it. The complexity is not in the mechanism — it is in what happens when the reply is slow or never comes.
+**Think of it like a phone call.** You dial, you wait, they pick up, you get your answer, you hang up. While the phone is ringing you cannot do anything else — you are holding the line.
+
+That is it. The mechanism is simple. All the difficulty is in what happens when the other end is slow or does not pick up.
 
 ---
 
@@ -75,11 +87,12 @@ builder.Services.AddHttpClient<InventoryClient>(c =>
 ```
 
 **Why REST is a good default:**
-- Human-readable. You can debug it with `curl` at 2 a.m.
-- Cacheable. `GET` responses can be cached by the browser, a CDN, or your gateway.
-- Universally supported by proxies, gateways, load balancers, and logging tools.
 
-**What it costs:** JSON is verbose, parsing it takes CPU, and there is no enforced contract — the other team can rename a field and you find out in production.
+- Human-readable. You can debug it with `curl` at 2 a.m. — and tonight, you will.
+- Cacheable. `GET` responses can be cached by the browser, a CDN, or your gateway.
+- Universally supported by proxies, load balancers, and logging tools.
+
+**What it costs:** JSON is verbose, parsing it takes CPU, and there is no enforced contract — the Inventory team can rename `available` to `qty` and you find out in production.
 
 ---
 
@@ -121,17 +134,15 @@ public sealed class InventoryGrpcClient(InventoryService.InventoryServiceClient 
 ```
 
 **Why gRPC:**
+
 - 5–10× smaller on the wire than JSON, and faster to parse.
 - The contract is a real file in source control. Breaking it fails the build, not production.
 - HTTP/2 multiplexing: many calls share one connection.
 - Streaming in both directions is built in.
 
-**What it costs:**
-- Not readable by a human on the wire without tooling.
-- Browsers cannot call it directly (you need gRPC-Web or a gateway to translate).
-- Another build step and another set of generated files.
+**What it costs:** not readable on the wire without tooling; browsers cannot call it directly (you need gRPC-Web or a translating gateway); another build step.
 
-**Rule of thumb:** gRPC inside, REST at the edge.
+**Rule of thumb: gRPC inside, REST at the edge.**
 
 ---
 
@@ -143,7 +154,7 @@ Never write this:
 c.BaseAddress = new Uri("http://10.4.22.17:8080");  // ✗ dies the moment a pod moves
 ```
 
-Instead, use a logical name that the platform resolves:
+Use a logical name the platform resolves:
 
 | Platform | What you use |
 |---|---|
@@ -152,7 +163,7 @@ Instead, use a logical name that the platform resolves:
 | Consul / Eureka | A registry lookup by name |
 | Azure Container Apps | The app name: `https://inventory.internal.<env>.azurecontainerapps.io` |
 
-In every case, the address goes in **configuration**, not code.
+In every case, the address lives in **configuration**, not code.
 
 ---
 
@@ -163,45 +174,146 @@ In every case, the address goes in **configuration**, not code.
 
 ---
 
+## The store's checkout, version 1
+
+Here is how checkout works tonight. Everything is synchronous — the simplest thing that works, and it has worked fine for a year.
+
+```
+Priya taps "Buy now"
+   │
+   ▼
+POST /orders
+   │
+   ├─► Inventory: reserve 2 × SKU-88     (12 ms)
+   ├─► Payments:  charge ₹49.98          (800 ms)
+   ├─► Ordering:  save order             (8 ms)
+   └─► Notifications: send email         (150 ms)
+   │
+   ▼
+201 Created — "Order confirmed!"          total: ~970 ms
+```
+
+Just under a second. Priya sees her confirmation. Everyone is happy.
+
+At 50 orders per minute, this is completely fine. **The design is not wrong — it is untested at scale.**
+
+---
+
+## The 2 a.m. incident
+
+The campaign email lands at 00:00. Traffic goes from 50 orders/minute to 5,000 orders/minute in about ninety seconds.
+
+Here is exactly what happens, step by step.
+
+### 00:02 — Acme Pay gets slow
+
+Not down. **Slow.** Their systems are handling every retailer's Diwali sale at once. Response time drifts from 800 ms to 4 seconds.
+
+Nothing in your system has failed yet. No errors. No alerts.
+
+### 00:03 — Requests start piling up
+
+Every checkout now takes about 4.2 seconds instead of 970 ms. Each one holds a thread while it waits.
+
+Do the arithmetic:
+
+```
+5,000 orders/min  =  83 orders/second
+each holds a thread for 4.2 seconds
+83 × 4.2  =  349 threads needed, all the time
+```
+
+`Ordering` is configured with 200 threads.
+
+### 00:04 — Ordering stops responding to everything
+
+The thread pool is exhausted. The connection pool is exhausted. New requests queue up behind the ones already waiting.
+
+**And here is the part that surprises people:** requests that have nothing to do with payments are now also failing. `GET /orders/o-123` — just reading a row from a database — cannot get a thread. Priya cannot even look at her order history.
+
+> **One slow dependency has taken down the entire service, including the parts that never touch it.**
+
+### 00:05 — The gateway starts timing out
+
+The gateway waits 5 seconds for `Ordering`, gives up, and returns `504 Gateway Timeout`.
+
+### 00:06 — Retries make it much worse
+
+The gateway is configured to retry failed requests 3 times. It seems sensible. Tonight it is the thing that finishes you off.
+
+```
+83 real orders/second
+    × 4 attempts (1 original + 3 retries)
+    = 332 requests/second hitting a system that is already drowning
+```
+
+Traffic to `Payments` has **quadrupled**. Acme Pay goes from slow to refusing connections entirely.
+
+### 00:08 — Total collapse
+
+Checkout is fully down. The error log is 10,000 timeout exceptions per minute. The original cause — one dependency drifting from 800 ms to 4 s — is completely invisible underneath them.
+
+Someone wakes you up.
+
+### What actually went wrong
+
+Read the timeline again and notice: **the payment provider never went down.** It got slower. Everything else was your own system amplifying a small problem into an outage.
+
+| Step | What made it worse |
+|---|---|
+| 00:03 | No timeout tuned for this — threads held for 4 s each |
+| 00:04 | No isolation — one dependency consumed every thread |
+| 00:06 | **Retries with no circuit breaker — you attacked yourself** |
+
+Those three lines become chapter 9. But first, chapter 3 removes the reason you were waiting at all.
+
+---
+
 ## Sharp edges
 
 ### Edge 1 — Temporal coupling
 
-For the work to happen, `Inventory` must be alive **right now**, at this exact millisecond. If it is restarting, your request fails. You have tied your uptime to someone else's uptime.
+For the work to happen, `Payments` must be alive **right now**, this exact millisecond. If it is restarting for a 20-second deploy, your checkout fails for 20 seconds.
 
-If your service depends on 4 services synchronously, and each has 99.9% uptime, your effective uptime is:
+You have tied your uptime to someone else's uptime. And it compounds:
 
 ```
-0.999 ⁴ = 0.996  →  about 3.5 hours of downtime per month, caused entirely by other people
+Ordering depends on Inventory, Payments, Catalog, Notifications
+Each is up 99.9% of the time
+
+Your real availability = 0.999 × 0.999 × 0.999 × 0.999
+                       = 0.996
+                       = about 3.5 hours of downtime per month,
+                         caused entirely by other people's services
 ```
 
 ### Edge 2 — Latency compounds
 
-Every hop adds its own time. They add up, they do not overlap:
+Every hop adds its own time. They add up; they do not overlap:
 
 ```
 Gateway → Ordering → Inventory → Pricing → Tax → Ordering → Gateway
-   10ms  +   15ms   +   40ms    +  35ms   + 60ms +  10ms   +  10ms   = 180ms
+   10ms  +   15ms   +   12ms    +  35ms   + 60ms +  10ms   +  10ms   = 152ms
 ```
 
-That 180 ms is your **floor**. It is what the user pays before any useful work is done. And it is the *good* case — the average. Your 99th percentile will be far worse, because the slowest hop dominates.
+That 152 ms is your **floor**. It is what Priya pays before any useful work happens. And it is the *good* case — the average. Your 99th percentile is far worse, because the slowest hop dominates.
 
-> **The rule:** in a synchronous chain, your latency is the **sum**, and your availability is the **product**. Both get worse with every hop you add.
+> **The rule worth memorising:** in a synchronous chain, latency is the **sum**, and availability is the **product**. Both get worse with every hop you add.
 
 ### Edge 3 — Cascading failure
 
-This is the 2 a.m. incident, step by step:
+This is the 2 a.m. incident above. The general shape:
 
-1. `Payments` gets slow — from 200 ms to 4 s. It is not down. It is just slow.
-2. `Ordering` calls `Payments` and waits 4 s per request.
-3. Each waiting request holds a thread and a connection. `Ordering`'s connection pool fills up.
-4. Now `Ordering` is slow for **every** request, including ones that never touch payments.
-5. The gateway's calls to `Ordering` start timing out.
-6. Retries kick in. Every timed-out request is now sent 3 times.
-7. Traffic to `Payments` has tripled. It goes from slow to dead.
-8. Checkout is fully down. The original cause — a slow query in `Payments` — is now invisible under 10,000 timeout errors.
+```
+one service gets slow
+   → its callers hold threads waiting
+      → its callers get slow for ALL requests
+         → their callers time out
+            → retries multiply the load
+               → the original slow service dies completely
+```
 
-The killer detail: **step 6 made it worse.** A retry against an overloaded service is an attack on your own system.
+Each arrow is your own system making the problem worse.
 
 ### Edge 4 — "Just add a retry" without a circuit breaker
 
@@ -211,12 +323,14 @@ Retries are correct **only** when combined with:
 - **Exponential backoff with jitter**, so retries spread out instead of arriving together.
 - A **circuit breaker**, so once the downstream is clearly dead, you stop calling it at all.
 
-Retry alone turns a slowdown into an outage. This is all of [chapter 9](09-resilience.md).
+Retry alone turns a slowdown into an outage. That is [chapter 9](09-resilience.md).
 
 ### Edge 5 — Chatty calls in a loop
 
+Priya's order has 2 lines. A bulk business order has 200.
+
 ```csharp
-// ✗ 200 orders → 200 HTTP calls → 200 × 40ms = 8 seconds
+// ✗ 200 lines → 200 HTTP calls → 200 × 12ms = 2.4 seconds
 foreach (var line in order.Lines)
     var stock = await inventory.GetStockAsync(line.Sku, ct);
 ```
@@ -226,7 +340,7 @@ foreach (var line in order.Lines)
 var stock = await inventory.GetStockBatchAsync(order.Lines.Select(l => l.Sku), ct);
 ```
 
-This is the N+1 query problem, moved to the network where each "query" costs 100× more. Always give your internal APIs a batch endpoint.
+This is the N+1 query problem moved to the network, where each "query" costs 100× more. **Always give your internal APIs a batch endpoint.**
 
 ---
 
@@ -235,25 +349,24 @@ This is the N+1 query problem, moved to the network where each "query" costs 100
 Use it when **both** are true:
 
 1. The caller genuinely cannot continue without the answer.
-2. The answer is fast and the data is fresh-critical.
+2. The answer is fast and the data must be fresh.
 
-Good fits:
+Good fits in the store:
 
 | Case | Why |
 |---|---|
-| Reading data to render a page | You need it now, to return a response now |
-| Validating a token or permission | The decision blocks everything after it |
-| Looking up a price or a tax rate | Cheap, fast, and the result changes the outcome |
-| A risk check before accepting an order | Legally you may not proceed without it ([case study 4](../case-studies/04-trading-app/)) |
+| Loading a product page | You need the price now, to render now |
+| Validating Priya's login token | The decision blocks everything after it |
+| Looking up a tax rate | Cheap, fast, and it changes the total |
 
 ## When not to use it
 
 | Case | Use instead |
 |---|---|
-| Sending a confirmation email | Async event — the user does not wait for SMTP |
-| Updating a search index | Async event — seconds of staleness is fine |
-| Charging a card during checkout | Async — accept the order, charge in the background ([case study 1](../case-studies/01-ecommerce/)) |
-| Writing to an analytics warehouse | Async — never let reporting slow down the hot path |
+| Sending Priya's confirmation email | Async — she does not wait for SMTP |
+| Updating the search index | Async — a few seconds of staleness is fine |
+| **Charging the card during checkout** | **Async — this is tonight's lesson** |
+| Writing to the analytics warehouse | Async — never let reporting slow the hot path |
 | Anything where the callee being down should not fail the caller | Async |
 
 ---
@@ -262,15 +375,27 @@ Good fits:
 
 **Build it.** Two Minimal API services. `Ordering` calls `Inventory` over HTTP with a 2-second timeout.
 
-**Now break it.** In order, and observe what happens each time:
+**Now break it** — this reproduces tonight, in miniature:
 
 1. Add `await Task.Delay(5000)` in `Inventory`'s handler. Your timeout fires. Good — that is the timeout working.
-2. Remove the timeout (`c.Timeout = Timeout.InfiniteTimeSpan`). Send 200 concurrent requests. Watch `Ordering` stop responding to *everything*. That is thread and connection exhaustion — edge 3, step 4.
-3. Put the timeout back. Add 3 retries with no delay between them. Count the requests arriving at `Inventory`. You just tripled the load on a service that was already struggling — edge 4.
-4. Add exponential backoff with jitter. Count again. Notice the requests now spread out over time instead of arriving in a burst.
-5. Stop `Inventory` completely. Notice that `Ordering` still spends the full timeout on every request before failing. Now add a circuit breaker and watch it fail in under a millisecond instead.
+2. Remove the timeout (`c.Timeout = Timeout.InfiniteTimeSpan`). Send 200 concurrent requests. Watch `Ordering` stop responding to *everything*, including endpoints that never call `Inventory`. **That is 00:04.**
+3. Put the timeout back. Add 3 retries with no delay. Count requests arriving at `Inventory` — you just tripled load on a struggling service. **That is 00:06.**
+4. Add exponential backoff with jitter. Count again. The requests now spread out over time instead of arriving in a burst.
+5. Stop `Inventory` completely. Notice `Ordering` still burns the full 2-second timeout on every request before failing. Add a circuit breaker and watch it fail in under a millisecond instead.
 
 Steps 4 and 5 are [chapter 9](09-resilience.md). Steps 2 and 3 are the reason chapter 9 exists.
+
+---
+
+## What is still broken
+
+You now understand why checkout died: **Priya's order waited for a card charge that had nothing to do with whether her order was valid.**
+
+She does not need the card charged before she gets a confirmation. She needs to know you have her order. The charge can happen a second later.
+
+That single realisation is the fix — and the next chapter builds it. Checkout goes from **4 seconds to 40 milliseconds**, and Acme Pay can be down for a full minute without losing a single order.
+
+It also creates three new problems you have never had before.
 
 ---
 
