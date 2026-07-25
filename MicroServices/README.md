@@ -21,7 +21,7 @@ Written in plain English. Every term is explained the first time it appears. Eve
 ```
 MicroServices/
 ├── README.md                 ← you are here (the map)
-├── 00-article-outline.md     ← the LinkedIn article plan
+├── 00-article-outline.md     ← origin notes — not required reading, see below
 │
 ├── images/                   ← EVERY image lives here, nowhere else
 │   ├── svg/                  ← source diagrams, hand-authored, dark theme
@@ -65,7 +65,7 @@ MicroServices/
 
 **One rule for images.** All image files live in `images/`. A document links to them with a relative path such as `../images/svg/d1-landscape.svg`. If you add a diagram, add it to `images/svg/`, export a PNG to `images/png/`, and link it. Never keep a copy next to a document.
 
-The [article outline](00-article-outline.md) is the original planning doc for the LinkedIn piece this repo grew out of — not required reading, but it's where the "three-layer" structure every tutorial chapter now follows first came from.
+[00-article-outline.md](00-article-outline.md) is a short origin note, not required reading — it maps each planned section of the original outline to where it actually ended up (mostly the tutorial chapters, expanded well beyond what was planned).
 
 ---
 
