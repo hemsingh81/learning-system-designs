@@ -1,0 +1,380 @@
+# =============================================================================
+# dapr-components.yaml — the same application, three brokers
+#
+# The point of this file: the component NAME stays "pubsub" in all three cases.
+# Application code refers to that name and never to a broker. Swapping brokers
+# means applying a different block below and restarting pods — no recompile.
+#
+# Install Dapr first:
+#   dapr init -k --runtime-version 1.15.0
+#   kubectl get pods -n dapr-system
+#
+# Then apply ONE of the three pubsub components, plus the shared resources at
+# the bottom (subscription, resiliency, outbox state store).
+#
+# Concepts and the trade-offs: ../docs/dapr.md
+# =============================================================================
+
+---
+# =============================================================================
+# OPTION A — Apache Kafka
+# =============================================================================
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pubsub                      # ← the name the app uses. Never "kafka".
+  namespace: orders
+spec:
+  type: pubsub.kafka
+  version: v1
+  metadata:
+    - name: brokers
+      value: "orders-kafka-kafka-bootstrap.kafka.svc:9092"
+
+    # The Kafka consumer group. Same rules as tutorial §21: this name is the
+    # identity of your bookmark. Change it and you start reading from scratch.
+    - name: consumerGroup
+      value: "payments-service"
+
+    # earliest | latest. Same trap as the native client — getting this wrong on
+    # first deploy either floods you or silently skips traffic.
+    - name: initialOffset
+      value: "latest"
+
+    - name: authType
+      value: "password"
+    - name: saslMechanism
+      value: "SCRAM-SHA-512"
+    - name: saslUsername
+      secretKeyRef: { name: kafka-auth, key: username }
+    - name: saslPassword
+      secretKeyRef: { name: kafka-auth, key: password }
+    - name: authRequired
+      value: "true"
+
+    - name: maxMessageBytes
+      value: "1048576"
+    - name: consumeRetryInterval
+      value: "200ms"
+
+    # Dapr's disableTls must stay false in production.
+    - name: disableTls
+      value: "false"
+
+  # Only these apps can use this component.
+  scopes:
+    - order-api
+    - payment-worker
+
+# WHAT YOU GIVE UP HERE, and it is the important part:
+#   - No offset reset. No replay to a timestamp. Dapr owns the offsets.
+#   - No transactional producer, so no exactly-once within Kafka.
+#   - No partition assignment strategy, no static membership.
+# If replay is why you chose Kafka, do NOT put that service on Dapr.
+# See ../docs/dapr.md#4-what-you-give-up-per-broker
+
+---
+# =============================================================================
+# OPTION B — RabbitMQ
+# =============================================================================
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pubsub                      # ← identical name. App code unchanged.
+  namespace: orders
+spec:
+  type: pubsub.rabbitmq
+  version: v1
+  metadata:
+    - name: connectionString
+      secretKeyRef: { name: rabbit-auth, key: connectionString }
+
+    # Durability needs BOTH of these, exactly as in the native client.
+    - name: durable
+      value: "true"
+    - name: deliveryMode
+      value: "2"                    # 2 = persistent
+
+    # The setting from tutorial §12c. The native default is UNLIMITED and it
+    # causes real outages; Dapr exposing it here is a genuine convenience.
+    - name: prefetchCount
+      value: "20"
+
+    # Do NOT set this to true. Requeue-on-failure puts the message back at the
+    # head of the queue and a poison message then loops forever. Let the
+    # resiliency policy and the dead letter topic handle failure instead.
+    - name: requeueInFailure
+      value: "false"
+
+    - name: reconnectWait
+      value: "5"
+    - name: concurrencyMode
+      value: "parallel"
+
+  scopes:
+    - order-api
+    - payment-worker
+
+# WHAT YOU GIVE UP HERE:
+#   - Exchange types and custom bindings. Dapr manages its own topology, so the
+#     routing flexibility that is RabbitMQ's main advantage is flattened.
+#   - Priority queues. Nothing in the Dapr API expresses priority.
+#   - Direct control of publisher confirms and mandatory/return handling.
+# If routing or priority is why you chose RabbitMQ, Dapr removes the reason.
+
+---
+# =============================================================================
+# OPTION C — Azure Service Bus
+# =============================================================================
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pubsub                      # ← identical name again.
+  namespace: orders
+spec:
+  type: pubsub.azure.servicebus.topics
+  version: v1
+  metadata:
+    - name: namespaceName
+      value: "orders-sb-eu.servicebus.windows.net"
+
+    # Workload identity. No connection string, matching the guidance in
+    # azure-service-bus-operator.md.
+    - name: azureClientId
+      value: "00000000-0000-0000-0000-000000000000"
+
+    - name: consumerID
+      value: "payments-service"     # becomes the subscription name
+
+    - name: maxDeliveryCount
+      value: "5"                    # then automatic dead-lettering
+    - name: lockDurationInSec
+      value: "60"
+    - name: lockRenewalInSec
+      value: "20"                   # the auto-renewal from §14b, as config
+    - name: maxConcurrentHandlers
+      value: "16"
+    - name: timeoutInSec
+      value: "60"
+    - name: defaultMessageTimeToLiveInSec
+      value: "1209600"              # 14 days
+
+  scopes:
+    - order-api
+    - payment-worker
+
+# WHAT YOU GIVE UP HERE:
+#   - Sessions and session state. Historically unsupported or partial — verify
+#     against your Dapr version. If ordered sagas with session state are why
+#     you chose Service Bus, this is disqualifying.
+#   - Scheduled messages. The one-line "deliver at 09:00 tomorrow" is not
+#     exposed as a first-class API.
+#   - Defer, and explicit DeadLetter with a custom reason string.
+#   - SQL subscription filters — replaced by sidecar-side routing rules, which
+#     means you pay for the delivery and then discard it.
+
+---
+# =============================================================================
+# SUBSCRIPTION — shared across all three brokers
+#
+# Declarative beats programmatic in production: routing changes without a
+# redeploy, and the topology is reviewable in a pull request.
+# =============================================================================
+apiVersion: dapr.io/v2alpha1
+kind: Subscription
+metadata:
+  name: order-events
+  namespace: orders
+spec:
+  pubsubname: pubsub
+  topic: orders
+
+  # This one line gives you a dead letter queue on EVERY broker — including
+  # Kafka, which has no native concept of one. If you are on Kafka and were
+  # going to build DLQ plumbing anyway, this is a real, quantifiable saving.
+  deadLetterTopic: orders-dlq
+
+  # Content-based routing, evaluated in the sidecar. Works on Kafka, which has
+  # no server-side filtering at all. The cost: the message is delivered to the
+  # sidecar and then discarded, so you pay the network and broker cost either
+  # way — unlike a Service Bus SQL filter, which never sends it.
+  routes:
+    rules:
+      - match: 'event.type == "OrderPlaced"'
+        path: /orders/placed
+      - match: 'event.type == "OrderCancelled"'
+        path: /orders/cancelled
+      - match: 'event.type == "OrderPlaced" && event.data.total > 1000'
+        path: /orders/high-value
+    default: /orders/unknown
+
+  scopes:
+    - payment-worker
+
+---
+# The dead letter topic needs a subscriber, or it is just a place messages go
+# to die quietly — the same rule as every other DLQ in this repo.
+apiVersion: dapr.io/v2alpha1
+kind: Subscription
+metadata:
+  name: order-events-dlq
+  namespace: orders
+spec:
+  pubsubname: pubsub
+  topic: orders-dlq
+  routes:
+    default: /orders/dead-letter
+  scopes:
+    - payment-worker
+
+---
+# =============================================================================
+# RESILIENCY — retries, timeouts and circuit breakers as configuration
+#
+# The circuit breaker is the part worth having. Hand-written consumers rarely
+# include one, and it is exactly what stops a failing downstream dependency
+# from burning the entire retry budget.
+# =============================================================================
+apiVersion: dapr.io/v1alpha1
+kind: Resiliency
+metadata:
+  name: messaging-resiliency
+  namespace: orders
+spec:
+  policies:
+    timeouts:
+      publishTimeout: 10s
+      handlerTimeout: 60s           # must exceed your slowest handler
+
+    retries:
+      pubsubRetry:
+        policy: exponential
+        maxInterval: 30s
+        maxRetries: 5               # then the dead letter topic
+      publishRetry:
+        policy: exponential
+        maxInterval: 10s
+        maxRetries: 3
+
+    circuitBreakers:
+      pubsubBreaker:
+        maxRequests: 1
+        interval: 30s
+        timeout: 60s
+        trip: consecutiveFailures > 10
+
+  targets:
+    components:
+      pubsub:
+        outbound:                   # publishing
+          timeout: publishTimeout
+          retry: publishRetry
+        inbound:                    # consuming
+          timeout: handlerTimeout
+          retry: pubsubRetry
+          circuitBreaker: pubsubBreaker
+
+---
+# =============================================================================
+# STATE STORE WITH THE TRANSACTIONAL OUTBOX
+#
+# This is the most valuable thing Dapr offers a team that has not built an
+# outbox. A state write and the resulting publish become atomic, which removes
+# the dual-write problem described in tutorial §19 — the one where the order is
+# saved and the event is never published, and nobody downstream ever knows.
+#
+# The catch: persistence now goes through Dapr's state API. If your data access
+# is EF Core with a rich domain model, keep your own outbox table instead.
+# =============================================================================
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: statestore
+  namespace: orders
+spec:
+  type: state.postgresql
+  version: v1
+  metadata:
+    - name: connectionString
+      secretKeyRef: { name: postgres-auth, key: connectionString }
+
+    - name: outboxPublishPubsub
+      value: "pubsub"
+    - name: outboxPublishTopic
+      value: "orders"
+    - name: outboxDiscardWhenMissingState
+      value: "false"
+
+    - name: actorStateStore
+      value: "true"
+  scopes:
+    - order-api
+
+---
+# =============================================================================
+# DEPLOYMENT — the annotations that matter
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-worker
+  namespace: orders
+spec:
+  replicas: 6
+  selector:
+    matchLabels: { app: payment-worker }
+  template:
+    metadata:
+      labels:
+        app: payment-worker
+        azure.workload.identity/use: "true"
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "payment-worker"
+        dapr.io/app-port: "8080"
+        dapr.io/app-protocol: "http"
+
+        # Size the sidecar deliberately. At 200 pods this is 10-30 GB of
+        # cluster memory spent on abstraction — worth counting before adopting.
+        dapr.io/sidecar-memory-request: "100Mi"
+        dapr.io/sidecar-memory-limit: "300Mi"
+        dapr.io/sidecar-cpu-request: "100m"
+        dapr.io/sidecar-cpu-limit: "500m"
+
+        # SHUTDOWN ORDERING. Without this the sidecar can be killed while your
+        # handler is still working, and those messages fail. Must be shorter
+        # than terminationGracePeriodSeconds below.
+        dapr.io/block-shutdown-duration: "60s"
+        dapr.io/graceful-shutdown-seconds: "60"
+
+        dapr.io/enable-api-logging: "false"    # very chatty; on for debugging only
+        dapr.io/log-level: "info"
+
+        # Scrape these. Sidecar metrics are the only view of Dapr's own
+        # retries, which are silent by design — see ../docs/dapr.md#6-operational-reality
+        dapr.io/enable-metrics: "true"
+        dapr.io/metrics-port: "9090"
+    spec:
+      serviceAccountName: payment-worker
+      terminationGracePeriodSeconds: 90        # > block-shutdown-duration
+      containers:
+        - name: worker
+          image: acr.azurecr.io/payment-worker:1.4.2
+          ports:
+            - containerPort: 8080
+          resources:
+            requests: { memory: 256Mi, cpu: "200m" }
+            limits:   { memory: 512Mi, cpu: "1" }
+
+          # STARTUP ORDERING. Readiness must not pass before the sidecar is up,
+          # or the pod accepts traffic and silently fails to publish — the worst
+          # possible outcome. The app calls WaitForSidecarAsync; see
+          # ../code/csharp/dapr-publisher.cs
+          readinessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            initialDelaySeconds: 30
+            periodSeconds: 15

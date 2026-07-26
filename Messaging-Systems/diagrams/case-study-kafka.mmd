@@ -1,0 +1,58 @@
+%%{init: {"theme":"base","themeVariables":{"background":"#0F1620","primaryColor":"#141D28","primaryTextColor":"#E8EEF4","primaryBorderColor":"#2A3947","lineColor":"#8FA3B5","clusterBkg":"#131B25","clusterBorder":"#2A3947","fontFamily":"Inter, Segoe UI, system-ui, sans-serif"}}}%%
+flowchart TB
+    EDGE["Global edge — Front Door<br/><i>sends the shopper to the nearest region</i>"]
+
+    subgraph EU["Region EU-West — ACTIVE"]
+        direction TB
+        API1["Order API"]
+        OB1[("Order DB<br/>+ outbox table")]
+        CDC1["Debezium<br/><i>turns DB writes into events</i>"]
+        K1["Kafka EU<br/>orders.v1 — 120 partitions<br/>RF 3, min.insync 2"]
+        PAY1["Payment stream app<br/><i>exactly-once v2</i>"]
+        INV1["Inventory reserver<br/><i>keyed by sku</i>"]
+        SHIP1["Shipping"]
+        NOTIF1["Notifications"]
+    end
+
+    subgraph US["Region US-East — ACTIVE"]
+        direction TB
+        API2["Order API"]
+        OB2[("Order DB<br/>+ outbox table")]
+        CDC2["Debezium"]
+        K2["Kafka US<br/>orders.v1 — 120 partitions"]
+        PAY2["Payment stream app"]
+        INV2["Inventory reserver"]
+    end
+
+    MM["Cluster Linking / MirrorMaker 2<br/><i>copies topics between regions,<br/>keeps offsets aligned</i>"]
+
+    subgraph GLOBAL["Global services"]
+        INVAUTH["Inventory authority<br/><i>one region owns each SKU</i>"]
+        LAKE[("Analytics lake<br/><i>7-year retention</i>")]
+        GDPR["Crypto-shredding key vault<br/><i>delete the key = delete the data</i>"]
+    end
+
+    EDGE --> API1
+    EDGE --> API2
+    API1 --> OB1 --> CDC1 --> K1
+    API2 --> OB2 --> CDC2 --> K2
+    K1 --> PAY1 --> K1
+    K1 --> INV1
+    K1 --> SHIP1
+    K1 --> NOTIF1
+    K2 --> PAY2
+    K2 --> INV2
+    K1 <-.->|"async, ~150ms lag"| MM
+    MM <-.-> K2
+    INV1 --> INVAUTH
+    INV2 --> INVAUTH
+    MM --> LAKE
+    K1 -.encrypt PII fields.-> GDPR
+
+    classDef kafka  fill:#221A16,stroke:#FF7A45,color:#F7C9B4
+    classDef app    fill:#141D28,stroke:#2A3947,color:#C4D2DE
+    classDef store  fill:#131B25,stroke:#8FA3B5,color:#C4D2DE
+    classDef edge   fill:#161C2E,stroke:#6C8EF5,color:#C3D2FA
+    class K1,K2,MM kafka
+    class EDGE edge
+    class OB1,OB2,LAKE,GDPR,INVAUTH store

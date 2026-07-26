@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" font-family="Inter, 'Segoe UI', system-ui, -apple-system, Carlito, 'DejaVu Sans', sans-serif">
+  <defs>
+    <style>
+      .bg     { fill:#0F1620; }
+      .panel  { fill:#141D28; stroke:#2A3947; stroke-width:1.5; }
+      .zone   { fill:#131B25; stroke:#2A3947; stroke-width:1.5; stroke-dasharray:5 4; }
+      .h1     { fill:#E8EEF4; font-size:31px; font-weight:700; letter-spacing:-0.4px; }
+      .sub    { fill:#8FA3B5; font-size:15px; }
+      .zlbl   { fill:#8FA3B5; font-size:13px; font-weight:700; letter-spacing:1.8px; }
+      .box    { fill:#141D28; stroke:#2A3947; stroke-width:1.5; }
+      .rbox   { fill:#122420; stroke:#3DDC97; stroke-width:1.8; }
+      .fbox   { fill:#241519; stroke:#F45B69; stroke-width:1.8; }
+      .sbox   { fill:#131B25; stroke:#8FA3B5; stroke-width:1.4; }
+      .name   { fill:#E8EEF4; font-size:15px; font-weight:600; }
+      .rname  { fill:#8DEBC4; font-size:15px; font-weight:700; }
+      .fnamex { fill:#F7B9BF; font-size:15px; font-weight:700; }
+      .mono   { fill:#C4D2DE; font-size:12.5px;
+                font-family:ui-monospace,'Cascadia Code',Menlo,Consolas,'DejaVu Sans Mono',monospace; }
+      .rmono  { fill:#8DEBC4; font-size:12.5px; font-weight:600;
+                font-family:ui-monospace,'Cascadia Code',Menlo,Consolas,'DejaVu Sans Mono',monospace; }
+      .note   { fill:#8FA3B5; font-size:12.5px; }
+      .edge   { stroke:#5C6E80; stroke-width:1.8; fill:none; }
+      .edger  { stroke:#3DDC97; stroke-width:2.2; fill:none; }
+      .edgef  { stroke:#F45B69; stroke-width:2; fill:none; stroke-dasharray:5 4; }
+      .dash   { stroke:#5C6E80; stroke-width:1.5; fill:none; stroke-dasharray:5 5; }
+      .elbl   { fill:#8FA3B5; font-size:12px; }
+      .foot   { fill:#8FA3B5; font-size:14px; }
+      .key    { fill:#3DDC97; font-size:12.5px; font-weight:700; }
+    </style>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5C6E80"/>
+    </marker>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3DDC97"/>
+    </marker>
+    <marker id="af" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#F45B69"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="900"/>
+
+  <text class="h1"  x="56" y="64">RabbitMQ routes first, stores second</text>
+  <text class="sub" x="56" y="94">Publishers never name a queue. They hand a message to an exchange with a routing key, and the exchange decides where copies go. Change the wiring without touching code.</text>
+
+  <!-- ========================= PUBLISHERS ========================= -->
+  <rect class="zone" x="56" y="140" width="250" height="290" rx="14"/>
+  <text class="zlbl" x="78" y="170">PUBLISHERS</text>
+
+  <rect class="box" x="78" y="192" width="206" height="92" rx="10"/>
+  <text class="name" x="98" y="222">Order API</text>
+  <text class="mono" x="98" y="248">confirmSelect()</text>
+  <text class="note" x="98" y="270">waits for broker ack</text>
+
+  <rect class="box" x="78" y="302" width="206" height="66" rx="10"/>
+  <text class="name" x="98" y="330">Scheduler</text>
+  <text class="note" x="98" y="352">nightly reconcile</text>
+
+  <text class="key"  x="78" y="404">Routing key: order.eu.placed</text>
+
+  <!-- ========================= CLUSTER ========================= -->
+  <rect class="zone" x="344" y="140" width="740" height="640" rx="14"/>
+  <text class="zlbl" x="366" y="170">RABBITMQ CLUSTER — 3 NODES · QUORUM QUEUES</text>
+
+  <!-- Exchange -->
+  <path class="rbox" d="M366,214 L560,214 L590,268 L560,322 L366,322 L396,268 Z"/>
+  <text class="rname" x="416" y="256">Exchange: orders</text>
+  <text class="rmono" x="416" y="280">type = topic</text>
+  <text class="note"  x="416" y="302">Stores nothing itself.</text>
+
+  <text class="note" x="366" y="358">topic  → pattern match on the key   ·   direct → exact key   ·   fanout → everyone   ·   headers → match on metadata</text>
+  <text class="note" x="366" y="380">An exchange with no matching queue silently drops the message. Set mandatory=true and handle the return, or it vanishes.</text>
+
+  <!-- Queues -->
+  <rect class="rbox" x="640" y="196" width="212" height="96" rx="10"/>
+  <text class="name" x="660" y="224">payment.work</text>
+  <text class="rmono" x="660" y="248">order.*.placed</text>
+  <text class="note" x="660" y="272">quorum · 3 replicas</text>
+
+  <rect class="rbox" x="640" y="308" width="212" height="96" rx="10"/>
+  <text class="name" x="660" y="336">inventory.work</text>
+  <text class="rmono" x="660" y="360">order.eu.*</text>
+  <text class="note" x="660" y="384">quorum · 3 replicas</text>
+
+  <rect class="rbox" x="640" y="420" width="212" height="96" rx="10"/>
+  <text class="name" x="660" y="448">audit.all</text>
+  <text class="rmono" x="660" y="472">#</text>
+  <text class="note" x="660" y="496">matches everything</text>
+
+  <!-- DLX chain -->
+  <path class="fbox" d="M880,548 L1032,548 L1058,586 L1032,624 L880,624 L906,586 Z"/>
+  <text class="fnamex" x="916" y="582">orders.dlx</text>
+  <text class="note"   x="916" y="604">fanout</text>
+
+  <rect class="fbox" x="640" y="548" width="196" height="76" rx="10"/>
+  <text class="fnamex" x="660" y="576">orders.parked</text>
+  <text class="note"   x="660" y="600">nothing leaves on its own</text>
+
+  <rect class="sbox" x="640" y="648" width="392" height="88" rx="10"/>
+  <text class="name" x="660" y="676">orders.retry — the delay trick</text>
+  <text class="note" x="660" y="700">Queue with message-ttl = 30s and NO consumer. When the TTL expires the</text>
+  <text class="note" x="660" y="720">message dead-letters back into orders. That is how you get delayed retry.</text>
+
+  <!-- ========================= CONSUMERS ========================= -->
+  <rect class="zone" x="1122" y="140" width="422" height="540" rx="14"/>
+  <text class="zlbl" x="1144" y="170">CONSUMERS</text>
+
+  <rect class="panel" x="1144" y="196" width="378" height="112" rx="10"/>
+  <text class="name" x="1164" y="224">Payment workers</text>
+  <text class="mono" x="1164" y="250">prefetch = 20 · manual ack</text>
+  <text class="note" x="1164" y="276">Unlimited prefetch is the classic outage:</text>
+  <text class="note" x="1164" y="294">one worker grabs the queue, the rest idle.</text>
+
+  <rect class="panel" x="1144" y="326" width="378" height="76" rx="10"/>
+  <text class="name" x="1164" y="354">Inventory workers</text>
+  <text class="note" x="1164" y="378">Competing consumers on one queue.</text>
+
+  <rect class="panel" x="1144" y="420" width="378" height="76" rx="10"/>
+  <text class="name" x="1164" y="448">Audit sink</text>
+  <text class="note" x="1164" y="472">Its own queue = its own copy.</text>
+
+  <rect class="fbox" x="1144" y="514" width="378" height="146" rx="10"/>
+  <text class="fnamex" x="1164" y="542">Triage job</text>
+  <text class="note"   x="1164" y="568">basicNack(requeue: false) sends the message</text>
+  <text class="note"   x="1164" y="586">to the dead-letter exchange. requeue: true puts</text>
+  <text class="note"   x="1164" y="604">it back at the HEAD — which is how a single</text>
+  <text class="note"   x="1164" y="622">poison message spins a worker at 100% CPU</text>
+  <text class="note"   x="1164" y="640">forever. Never requeue blindly.</text>
+
+  <!-- ========================= EDGES ========================= -->
+  <path class="edger" marker-end="url(#ar)" d="M284,238 C 320,238 330,258 364,258"/>
+  <path class="edger" marker-end="url(#ar)" d="M284,334 C 320,334 330,286 364,286"/>
+
+  <path class="edger" marker-end="url(#ar)" d="M590,258 C 616,258 616,244 638,244"/>
+  <path class="edger" marker-end="url(#ar)" d="M590,268 C 616,268 616,356 638,356"/>
+  <path class="edger" marker-end="url(#ar)" d="M590,286 C 616,286 616,468 638,468"/>
+
+  <path class="edge" marker-end="url(#a)" d="M852,244 C 990,244 1090,250 1142,250"/>
+  <path class="edge" marker-end="url(#a)" d="M852,356 C 990,356 1090,362 1142,362"/>
+  <path class="edge" marker-end="url(#a)" d="M852,468 C 990,468 1090,456 1142,456"/>
+
+  <path class="edgef" marker-end="url(#af)" d="M1250,660 C 1250,690 1120,660 1058,600"/>
+  <path class="edgef" marker-end="url(#af)" d="M880,586 L838,586"/>
+  <path class="dash"  marker-end="url(#a)"  d="M700,624 L700,646"/>
+  <path class="dash"  marker-end="url(#a)"  d="M640,692 C 540,692 480,400 470,326"/>
+  <text class="elbl" x="490" y="500" transform="rotate(-78 490 500)">TTL expires → back to orders</text>
+
+  <text class="foot" x="56" y="820">The trade RabbitMQ makes: it is the most flexible router of the three and the fastest to stand up, but a queue is a working set, not an archive.</text>
+  <text class="foot" x="56" y="848">Millions of messages sitting in a classic queue will hurt. Quorum queues fixed the durability story; stream queues added replay. Neither turns Rabbit into Kafka.</text>
+  <text class="note" x="56" y="878">Source: diagrams/rabbitmq-architecture.mmd · palette: RabbitMQ #3DDC97 · failure #F45B69</text>
+</svg>

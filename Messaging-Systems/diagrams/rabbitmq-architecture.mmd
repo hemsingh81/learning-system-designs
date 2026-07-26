@@ -1,0 +1,52 @@
+%%{init: {"theme":"base","themeVariables":{"background":"#0F1620","primaryColor":"#141D28","primaryTextColor":"#E8EEF4","primaryBorderColor":"#2A3947","lineColor":"#8FA3B5","clusterBkg":"#131B25","clusterBorder":"#2A3947","fontFamily":"Inter, Segoe UI, system-ui, sans-serif"}}}%%
+flowchart LR
+    subgraph PUB["Publishers"]
+        PB1["Order API<br/><i>publisher confirms ON</i>"]
+        PB2["Scheduler"]
+    end
+
+    subgraph CL["RabbitMQ cluster — 3 nodes, quorum queues"]
+        direction TB
+
+        EX1{{"Exchange: orders<br/><b>topic</b><br/><i>routes by pattern</i>"}}
+        EX2{{"Exchange: orders.dlx<br/><b>fanout</b><br/><i>the parking lot</i>"}}
+
+        QA["Queue: payment.work<br/>key: order.*.placed<br/><i>quorum, 3 replicas</i>"]
+        QB["Queue: inventory.work<br/>key: order.eu.*"]
+        QC["Queue: audit.all<br/>key: #"]
+        QD["Queue: orders.parked<br/><i>dead letters land here</i>"]
+        QR["Queue: orders.retry<br/><i>TTL 30s, then back to orders</i>"]
+    end
+
+    subgraph CONS["Consumers"]
+        CN1["Payment worker<br/><i>prefetch = 20, manual ack</i>"]
+        CN2["Inventory worker"]
+        CN3["Audit sink"]
+        CN4["Triage job"]
+    end
+
+    SH["Shovel / Federation<br/><i>copies messages to another cluster</i>"]
+
+    PB1 --> EX1
+    PB2 --> EX1
+    EX1 -->|"order.*.placed"| QA
+    EX1 -->|"order.eu.*"| QB
+    EX1 -->|"#"| QC
+    QA --> CN1
+    QB --> CN2
+    QC --> CN3
+    CN1 -.nack, requeue=false.-> EX2
+    EX2 --> QD
+    QD --> CN4
+    CN4 -.->|"fix and replay"| QR
+    QR -.->|"TTL expires"| EX1
+    CL -.-> SH
+
+    classDef rmq    fill:#122420,stroke:#3DDC97,color:#B6F0D8
+    classDef ex     fill:#132A24,stroke:#3DDC97,color:#DFF7EC
+    classDef fail   fill:#241519,stroke:#F45B69,color:#F7B9BF
+    classDef neutral fill:#141D28,stroke:#2A3947,color:#C4D2DE
+    class QA,QB,QC rmq
+    class EX1 ex
+    class EX2,QD,CN4 fail
+    class QR,SH neutral

@@ -1,0 +1,22 @@
+# Build output from the C# samples
+code/csharp/**/bin/
+code/csharp/**/obj/
+
+# Rendered diagram output that the render script regenerates.
+# SVGs that are hand-authored are tracked — see images/README.md for which.
+images/png/*.png
+!images/png/.gitkeep
+
+# Local secrets. Never commit a connection string.
+*.env
+appsettings.Local.json
+*.pem
+*.jks
+*.p12
+
+# Editor noise
+.vs/
+.idea/
+*.user
+.DS_Store
+Thumbs.db

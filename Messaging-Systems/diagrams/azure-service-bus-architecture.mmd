@@ -1,0 +1,49 @@
+%%{init: {"theme":"base","themeVariables":{"background":"#0F1620","primaryColor":"#141D28","primaryTextColor":"#E8EEF4","primaryBorderColor":"#2A3947","lineColor":"#8FA3B5","clusterBkg":"#131B25","clusterBorder":"#2A3947","fontFamily":"Inter, Segoe UI, system-ui, sans-serif"}}}%%
+flowchart LR
+    subgraph S["Senders"]
+        S1["Order API<br/><i>SessionId = orderId</i>"]
+        S2["Partner gateway"]
+    end
+
+    subgraph NS["Service Bus namespace — Premium, 4 messaging units"]
+        direction TB
+
+        subgraph TOP["Topic: order-events"]
+            direction TB
+            SUB1["Subscription: payments<br/><i>filter: type = OrderPlaced</i>"]
+            SUB2["Subscription: inventory<br/><i>filter: region = 'eu'</i>"]
+            SUB3["Subscription: audit<br/><i>filter: 1=1 — take all</i>"]
+        end
+
+        Q1["Queue: payment-commands<br/><i>sessions ON — one order at a time</i>"]
+        DLQ1["payment-commands/$DeadLetterQueue<br/><i>messages that kept failing</i>"]
+        SCH["Scheduled messages<br/><i>deliver at a future time</i>"]
+    end
+
+    subgraph R["Receivers"]
+        R1["Payment worker<br/><i>PeekLock + session</i>"]
+        R2["Inventory worker"]
+        R3["Audit sink"]
+        R4["DLQ triage job"]
+    end
+
+    GEODR["Geo-DR pairing<br/><i>metadata only — messages do NOT copy</i>"]
+
+    S1 --> TOP
+    S2 --> TOP
+    TOP --> SUB1 --> Q1
+    TOP --> SUB2 --> R2
+    TOP --> SUB3 --> R3
+    Q1 --> R1
+    Q1 -->|"delivery count > 5"| DLQ1
+    DLQ1 --> R4
+    R4 -.resubmit.-> Q1
+    SCH -.->|"retry after backoff"| Q1
+    NS -.-> GEODR
+
+    classDef asb    fill:#161C2E,stroke:#6C8EF5,color:#C3D2FA
+    classDef fail   fill:#241519,stroke:#F45B69,color:#F7B9BF
+    classDef neutral fill:#141D28,stroke:#2A3947,color:#C4D2DE
+    class SUB1,SUB2,SUB3,Q1 asb
+    class DLQ1,R4 fail
+    class GEODR,SCH neutral

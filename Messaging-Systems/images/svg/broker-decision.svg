@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" font-family="Inter, 'Segoe UI', system-ui, -apple-system, Carlito, 'DejaVu Sans', sans-serif">
+  <defs>
+    <style>
+      .bg     { fill:#0F1620; }
+      .h1     { fill:#E8EEF4; font-size:31px; font-weight:700; letter-spacing:-0.4px; }
+      .sub    { fill:#8FA3B5; font-size:15px; }
+      .q      { fill:#141D28; stroke:#2A3947; stroke-width:1.6; }
+      .qt     { fill:#E8EEF4; font-size:14.5px; font-weight:600; }
+      .qs     { fill:#8FA3B5; font-size:12.5px; }
+      .kbox   { fill:#221A16; stroke:#FF7A45; stroke-width:2; }
+      .abox   { fill:#161C2E; stroke:#6C8EF5; stroke-width:2; }
+      .rbox   { fill:#122420; stroke:#3DDC97; stroke-width:2; }
+      .hbox   { fill:#1A1F33; stroke:#B980F0; stroke-width:2; }
+      .kt     { fill:#FFB48C; font-size:19px; font-weight:800; }
+      .at     { fill:#A8C0FF; font-size:19px; font-weight:800; }
+      .rt     { fill:#8DEBC4; font-size:19px; font-weight:800; }
+      .ht     { fill:#DCC9F7; font-size:19px; font-weight:800; }
+      .cap    { fill:#C4D2DE; font-size:12.5px; }
+      .capm   { fill:#8FA3B5; font-size:12.5px; font-style:italic; }
+      .edge   { stroke:#5C6E80; stroke-width:1.8; fill:none; }
+      .dash   { stroke:#7A5C90; stroke-width:1.6; fill:none; stroke-dasharray:5 5; }
+      .yes    { fill:#3DDC97; font-size:12.5px; font-weight:700; }
+      .no     { fill:#E0B341; font-size:12.5px; font-weight:700; }
+      .foot   { fill:#8FA3B5; font-size:14px; }
+      .start  { fill:#1B2634; stroke:#8FA3B5; stroke-width:1.6; }
+    </style>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5C6E80"/>
+    </marker>
+    <marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7A5C90"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="900"/>
+
+  <text class="h1"  x="56" y="60">Five questions, not a feature matrix</text>
+  <text class="sub" x="56" y="90">Answer these in order. The first three decide it for most systems. Colour here means product identity, not sync/async — every option on this page is asynchronous.</text>
+
+  <!-- START -->
+  <rect class="start" x="56" y="132" width="200" height="52" rx="26"/>
+  <text class="qt" x="90" y="164">You need a broker</text>
+
+  <!-- Q1 -->
+  <rect class="q" x="56" y="216" width="300" height="104" rx="10"/>
+  <text class="qt" x="76" y="244">1 · Many readers, same data?</text>
+  <text class="qs" x="76" y="268">Do several teams need the SAME</text>
+  <text class="qs" x="76" y="286">message, at different times, and</text>
+  <text class="qs" x="76" y="304">the ability to re-read history?</text>
+
+  <!-- Q2 -->
+  <rect class="q" x="440" y="216" width="300" height="86" rx="10"/>
+  <text class="qt" x="460" y="244">2 · Above 50k msg/sec?</text>
+  <text class="qs" x="460" y="268">Sustained peak, not a one-minute</text>
+  <text class="qs" x="460" y="286">spike you can buffer.</text>
+
+  <!-- Q3 -->
+  <rect class="q" x="440" y="352" width="300" height="104" rx="10"/>
+  <text class="qt" x="460" y="380">3 · All-in on Azure?</text>
+  <text class="qs" x="460" y="404">And do you want zero brokers to</text>
+  <text class="qs" x="460" y="422">patch, size, or wake up for at</text>
+  <text class="qs" x="460" y="440">three in the morning?</text>
+
+  <!-- Q4 -->
+  <rect class="q" x="56" y="392" width="300" height="104" rx="10"/>
+  <text class="qt" x="76" y="420">4 · Per-message features?</text>
+  <text class="qs" x="76" y="444">Scheduling, per-message TTL,</text>
+  <text class="qs" x="76" y="462">priority, or routing rules that</text>
+  <text class="qs" x="76" y="480">change without a redeploy.</text>
+
+  <!-- Q5 -->
+  <rect class="q" x="56" y="552" width="300" height="104" rx="10"/>
+  <text class="qt" x="76" y="580">5 · Is a small team the limit?</text>
+  <text class="qs" x="76" y="604">Two people who also own eight</text>
+  <text class="qs" x="76" y="622">other systems is a real constraint,</text>
+  <text class="qs" x="76" y="640">not an excuse.</text>
+
+  <!-- ANSWERS -->
+  <rect class="kbox" x="880" y="180" width="380" height="150" rx="12"/>
+  <text class="kt"   x="904" y="216">Apache Kafka</text>
+  <text class="capm" x="904" y="240">a replayable log</text>
+  <text class="cap"  x="904" y="268">Event streaming, CDC, analytics, many</text>
+  <text class="cap"  x="904" y="288">independent readers, 7-day-plus replay.</text>
+  <text class="cap"  x="904" y="314">Costs you: a team that knows Kafka.</text>
+
+  <rect class="abox" x="880" y="360" width="380" height="150" rx="12"/>
+  <text class="at"   x="904" y="396">Azure Service Bus</text>
+  <text class="capm" x="904" y="420">a managed enterprise queue</text>
+  <text class="cap"  x="904" y="448">Business workflows on Azure. Sessions,</text>
+  <text class="cap"  x="904" y="468">scheduling, DLQ, transactions, no ops.</text>
+  <text class="cap"  x="904" y="494">Costs you: no replay, and lock-in.</text>
+
+  <rect class="rbox" x="880" y="540" width="380" height="150" rx="12"/>
+  <text class="rt"   x="904" y="576">RabbitMQ</text>
+  <text class="capm" x="904" y="600">a smart router</text>
+  <text class="cap"  x="904" y="628">Task queues, RPC, fan-out with rules,</text>
+  <text class="cap"  x="904" y="648">single-digit-ms latency, runs anywhere.</text>
+  <text class="cap"  x="904" y="674">Costs you: it is not an archive.</text>
+
+  <rect class="hbox" x="1300" y="360" width="244" height="330" rx="12"/>
+  <text class="ht"   x="1324" y="396">Hybrid</text>
+  <text class="capm" x="1324" y="420">where most large</text>
+  <text class="capm" x="1324" y="438">systems actually land</text>
+  <text class="cap"  x="1324" y="470">Kafka or Event Hubs for</text>
+  <text class="cap"  x="1324" y="490">the firehose and the</text>
+  <text class="cap"  x="1324" y="510">analytics tail.</text>
+  <text class="cap"  x="1324" y="540">Service Bus or Rabbit for</text>
+  <text class="cap"  x="1324" y="560">commands, retries and</text>
+  <text class="cap"  x="1324" y="580">dead-letter ergonomics.</text>
+  <text class="cap"  x="1324" y="612">Two tools, two jobs.</text>
+  <text class="cap"  x="1324" y="632">One team owns the</text>
+  <text class="cap"  x="1324" y="652">boundary between them.</text>
+
+  <!-- EDGES -->
+  <path class="edge" marker-end="url(#a)" d="M156,184 L156,214"/>
+
+  <path class="edge" marker-end="url(#a)" d="M356,258 L438,258"/>
+  <text class="yes" x="380" y="248">YES</text>
+
+  <path class="edge" marker-end="url(#a)" d="M206,320 L206,390"/>
+  <text class="no"  x="216" y="356">NO</text>
+
+  <path class="edge" marker-end="url(#a)" d="M740,244 C 800,244 820,240 878,240"/>
+  <text class="yes" x="770" y="234">YES</text>
+
+  <path class="edge" marker-end="url(#a)" d="M590,302 L590,350"/>
+  <text class="no"  x="600" y="330">NO, but replay still matters</text>
+
+  <path class="edge" marker-end="url(#a)" d="M740,404 C 800,404 830,420 878,420"/>
+  <text class="yes" x="762" y="396">YES</text>
+
+  <path class="edge" marker-end="url(#a)" d="M740,440 C 800,470 820,300 878,290"/>
+  <text class="no"  x="756" y="466">NO</text>
+
+  <path class="edge" marker-end="url(#a)" d="M356,428 C 400,428 400,398 438,398"/>
+  <text class="yes" x="374" y="418">YES</text>
+
+  <path class="edge" marker-end="url(#a)" d="M206,496 L206,550"/>
+  <text class="no"  x="216" y="526">NO</text>
+
+  <path class="edge" marker-end="url(#a)" d="M356,588 C 500,588 700,440 878,430"/>
+  <text class="yes" x="384" y="578">YES — and we are on Azure</text>
+
+  <path class="edge" marker-end="url(#a)" d="M356,620 C 500,620 700,610 878,610"/>
+  <text class="yes" x="384" y="644">YES — and we are not · or NO, we can run infra</text>
+
+  <path class="dash" marker-end="url(#ap)" d="M1260,255 C 1290,255 1300,330 1330,358"/>
+  <path class="dash" marker-end="url(#ap)" d="M1260,435 C 1284,435 1290,470 1298,470"/>
+  <path class="dash" marker-end="url(#ap)" d="M1260,615 C 1290,615 1300,700 1330,692"/>
+
+  <text class="foot" x="56" y="762">Question zero, asked before all of these: do you need a broker at all? A synchronous call, a database table polled by a worker, or a scheduled batch job beats a</text>
+  <text class="foot" x="56" y="790">broker you have to operate. Add a broker when you need to decouple failure domains, absorb spikes, or fan one event out to readers you have not met yet.</text>
+  <text class="foot" x="56" y="836">Tie-breaker when two options both fit: pick the one your team can debug at 3am. Operational familiarity beats a 15% benchmark win every time.</text>
+  <text class="qs"   x="56" y="872">Source: diagrams/broker-decision.mmd</text>
+</svg>

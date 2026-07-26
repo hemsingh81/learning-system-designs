@@ -1,0 +1,54 @@
+%%{init: {"theme":"base","themeVariables":{"background":"#0F1620","primaryColor":"#141D28","primaryTextColor":"#E8EEF4","primaryBorderColor":"#2A3947","lineColor":"#8FA3B5","clusterBkg":"#131B25","clusterBorder":"#2A3947","fontFamily":"Inter, Segoe UI, system-ui, sans-serif"}}}%%
+flowchart TB
+    subgraph POD1["Pod — order-api"]
+        direction LR
+        APP1["Your app<br/><i>PublishEventAsync</i><br/><b>no broker SDK</b>"]
+        SIDE1["daprd sidecar<br/><i>speaks the broker protocol</i>"]
+        APP1 <-->|"localhost:3500"| SIDE1
+    end
+
+    subgraph POD2["Pod — payment-worker"]
+        direction LR
+        SIDE2["daprd sidecar"]
+        APP2["Your app<br/><i>POST /orders/placed</i><br/><b>no broker SDK</b>"]
+        SIDE2 <-->|"localhost:3500"| APP2
+    end
+
+    subgraph CONF["Configuration — the only thing that names a broker"]
+        direction TB
+        COMP["Component: pubsub<br/><i>spec.type decides everything</i><br/>pubsub.kafka<br/>pubsub.rabbitmq<br/>pubsub.azure.servicebus.topics"]
+        SUB["Subscription<br/><i>topic → route</i><br/>deadLetterTopic: orders-dlq"]
+        RES["Resiliency<br/><i>retries · timeouts<br/>circuit breakers</i>"]
+    end
+
+    subgraph BROKERS["Pick exactly one. Swap by editing YAML."]
+        direction LR
+        K["Apache Kafka"]
+        R["RabbitMQ"]
+        S["Azure Service Bus"]
+    end
+
+    LOST["<b>What the abstraction hides</b><br/>Kafka: offset control, replay, transactions<br/>Service Bus: sessions, scheduling, defer<br/>RabbitMQ: exchange types, priority"]
+
+    COMP -.->|configures| SIDE1
+    COMP -.->|configures| SIDE2
+    SUB  -.->|routes| SIDE2
+    RES  -.->|wraps| SIDE2
+
+    SIDE1 -->|publish| BROKERS
+    BROKERS -->|deliver| SIDE2
+
+    BROKERS -.-> LOST
+
+    classDef dapr  fill:#1A1F33,stroke:#B980F0,color:#DCC9F7
+    classDef app   fill:#141D28,stroke:#2A3947,color:#C4D2DE
+    classDef kafka fill:#221A16,stroke:#FF7A45,color:#F7C9B4
+    classDef rmq   fill:#122420,stroke:#3DDC97,color:#B6F0D8
+    classDef asb   fill:#161C2E,stroke:#6C8EF5,color:#C3D2FA
+    classDef warn  fill:#26200F,stroke:#E0B341,color:#F2DFA8
+    class SIDE1,SIDE2,COMP,SUB,RES dapr
+    class APP1,APP2 app
+    class K kafka
+    class R rmq
+    class S asb
+    class LOST warn

@@ -1,0 +1,46 @@
+MIT License
+
+Copyright (c) 2026 Hem Singh
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Attribution note
+
+**Original work.** The tutorial text, diagrams, C# samples, Kubernetes values,
+runbooks, cheat sheets, incident write-ups and the case study in this folder are
+original and written for this repository. They are covered by the MIT license
+above — copy, adapt and reuse them freely.
+
+**Not original.** Product behaviour, default values, quota numbers, tier limits
+and API surfaces are summaries of vendor documentation. Those belong to their
+owners:
+
+| Source | Owner | Used for |
+|---|---|---|
+| Apache Kafka documentation | Apache Software Foundation (Apache 2.0) | Broker config names, protocol semantics |
+| Azure Service Bus documentation | Microsoft | Tier limits, quotas, SDK surface |
+| RabbitMQ documentation | Broadcom / VMware (Mozilla Public License 2.0) | Exchange types, plugin behaviour |
+| Confluent documentation | Confluent Inc. | Schema Registry, tiered storage notes |
+
+Vendor limits and prices move. Every number in this repo is marked with the date
+it was checked. Verify against the live docs before you put money or an SLA
+behind it. Links are in the References section of
+[`docs/tutorial.md`](docs/tutorial.md#25-references-and-further-reading).

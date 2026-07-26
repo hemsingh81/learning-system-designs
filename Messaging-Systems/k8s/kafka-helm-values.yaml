@@ -1,0 +1,339 @@
+# =============================================================================
+# kafka-helm-values.yaml — Strimzi-managed Kafka on Kubernetes
+#
+# Strimzi is an operator [a controller that teaches Kubernetes how to run a
+# specific piece of software]. You describe the cluster you want; the operator
+# handles rolling restarts, certificate rotation, partition rebalancing and
+# broker replacement.
+#
+# Install the operator first, then apply this:
+#   helm repo add strimzi https://strimzi.io/charts/
+#   helm install strimzi strimzi/strimzi-kafka-operator -n kafka --create-namespace
+#   kubectl apply -f kafka-helm-values.yaml -n kafka
+#
+# This file is a Strimzi CUSTOM RESOURCE, not Helm values — Strimzi's own chart
+# only installs the operator. The name is kept for symmetry with the RabbitMQ
+# file, which really is Helm values.
+#
+# Sized for: ~50k messages/sec sustained, 7-day retention, ~2 TB of data.
+# =============================================================================
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+  name: controller
+  labels:
+    strimzi.io/cluster: orders-kafka
+spec:
+  replicas: 3                     # 3 controllers tolerates losing 1. Never use 2.
+  roles:
+    - controller
+  storage:
+    type: persistent-claim
+    size: 20Gi                    # metadata only — this does not need to be big
+    class: managed-csi-premium
+    deleteClaim: false            # keep the disk if the pod is deleted
+  resources:
+    requests: { memory: 2Gi, cpu: "500m" }
+    limits:   { memory: 2Gi, cpu: "1" }
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+  name: broker
+  labels:
+    strimzi.io/cluster: orders-kafka
+spec:
+  replicas: 6
+  roles:
+    - broker
+  storage:
+    type: jbod                    # one volume per disk, no RAID
+    volumes:
+      - id: 0
+        type: persistent-claim
+        size: 1000Gi
+        class: managed-csi-premium
+        deleteClaim: false
+  resources:
+    # Kafka wants MEMORY for the page cache, not for the JVM heap. Give the
+    # container a lot and the heap a little — the OS does the caching better
+    # than the JVM does. A 6 GB heap on a 32 GB container is normal and correct.
+    requests: { memory: 32Gi, cpu: "4" }
+    limits:   { memory: 32Gi, cpu: "8" }
+  jvmOptions:
+    -Xms: 6g
+    -Xmx: 6g
+    gcLoggingEnabled: false
+  template:
+    pod:
+      # Spread brokers across availability zones. Without this, Kubernetes may
+      # put all six on two nodes and a single node failure takes out a third of
+      # the cluster.
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              strimzi.io/cluster: orders-kafka
+              strimzi.io/pool-name: broker
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  strimzi.io/cluster: orders-kafka
+              topologyKey: kubernetes.io/hostname
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: orders-kafka
+  annotations:
+    strimzi.io/node-pools: enabled
+    strimzi.io/kraft: enabled            # KRaft — no ZooKeeper
+spec:
+  kafka:
+    version: 3.9.0
+    metadataVersion: 3.9-IV0
+
+    listeners:
+      # Internal — plaintext inside the mesh, mTLS at the edge.
+      - name: internal
+        port: 9092
+        type: internal
+        tls: true
+        authentication:
+          type: tls
+
+      # External — for producers outside the cluster.
+      - name: external
+        port: 9094
+        type: loadbalancer
+        tls: true
+        authentication:
+          type: scram-sha-512
+        configuration:
+          bootstrap:
+            annotations:
+              service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+    authorization:
+      type: simple                       # ACLs, enforced by the broker
+
+    config:
+      # ---- Durability. These four lines are the ones that matter. ----
+      default.replication.factor: 3
+      min.insync.replicas: 2             # with acks=all: survive losing 1 broker
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 2
+
+      # Never enable this in a system that cares about data. It lets an
+      # out-of-sync replica become leader, which means silently losing records.
+      unclean.leader.election.enable: false
+
+      # ---- Retention ----
+      log.retention.hours: 168           # 7 days
+      log.retention.bytes: -1            # no size cap; time is the only limit
+      log.segment.bytes: 1073741824      # 1 GB segments
+      log.retention.check.interval.ms: 300000
+
+      # ---- Throughput ----
+      num.network.threads: 8
+      num.io.threads: 16
+      num.replica.fetchers: 4            # raise if replication lags on recovery
+      socket.send.buffer.bytes: 1048576
+      socket.receive.buffer.bytes: 1048576
+      replica.fetch.max.bytes: 10485760
+
+      # ---- Consumer group behaviour ----
+      group.initial.rebalance.delay.ms: 3000   # let a rolling deploy settle
+      offsets.retention.minutes: 20160         # 14 days — the default 7 bites
+                                               # teams with weekend-idle groups
+
+      # ---- Guardrails ----
+      auto.create.topics.enable: false   # a typo should fail, not create a topic
+      delete.topic.enable: true
+      message.max.bytes: 1048576         # 1 MB. Bigger belongs in blob storage
+                                         # with a pointer in the message.
+
+    resources:
+      requests: { memory: 32Gi, cpu: "4" }
+      limits:   { memory: 32Gi, cpu: "8" }
+
+    # Prometheus scrapes this. Wired to the dashboards in docs/monitoring.md.
+    metricsConfig:
+      type: jmxPrometheusExporter
+      valueFrom:
+        configMapKeyRef:
+          name: kafka-metrics
+          key: kafka-metrics-config.yml
+
+  entityOperator:
+    topicOperator:
+      reconciliationIntervalSeconds: 60
+    userOperator:
+      reconciliationIntervalSeconds: 60
+---
+# ---------------------------------------------------------------------------
+# Topics as code. The topic operator reconciles these — edit the YAML, not the
+# CLI. A topic created by hand drifts and nobody knows why prod differs.
+# ---------------------------------------------------------------------------
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: orders.v1
+  labels:
+    strimzi.io/cluster: orders-kafka
+spec:
+  # Partition count is the one setting you cannot lower later. Size it for peak
+  # consumer parallelism, not current load: you can add consumers up to the
+  # partition count and no further.
+  partitions: 120
+  replicas: 3
+  config:
+    retention.ms: "604800000"            # 7 days
+    cleanup.policy: delete
+    compression.type: producer           # keep the producer's choice, do not recompress
+    min.insync.replicas: "2"
+    max.message.bytes: "1048576"
+    segment.ms: "86400000"
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: orders.v1.dlq
+  labels:
+    strimzi.io/cluster: orders-kafka
+spec:
+  partitions: 12                         # DLQ traffic is a fraction of the main flow
+  replicas: 3
+  config:
+    retention.ms: "2592000000"           # 30 days — you need time to triage
+    cleanup.policy: delete
+    min.insync.replicas: "2"
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: inventory.state
+  labels:
+    strimzi.io/cluster: orders-kafka
+spec:
+  partitions: 60
+  replicas: 3
+  config:
+    # Compaction [keep only the newest value per key, drop older ones] turns a
+    # topic into a rebuildable table. Use it for state, never for events.
+    cleanup.policy: compact
+    min.cleanable.dirty.ratio: "0.5"
+    delete.retention.ms: "86400000"      # how long tombstones survive
+    segment.ms: "3600000"
+    min.insync.replicas: "2"
+---
+# ---------------------------------------------------------------------------
+# Users and ACLs. Least privilege: the payment service can read orders and
+# write payments, and nothing else.
+# ---------------------------------------------------------------------------
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: payment-service
+  labels:
+    strimzi.io/cluster: orders-kafka
+spec:
+  authentication:
+    type: scram-sha-512
+  authorization:
+    type: simple
+    acls:
+      - resource: { type: topic, name: orders.v1, patternType: literal }
+        operations: [Read, Describe]
+        host: "*"
+      - resource: { type: topic, name: payments.v1, patternType: literal }
+        operations: [Write, Describe]
+        host: "*"
+      - resource: { type: topic, name: orders.v1.dlq, patternType: literal }
+        operations: [Write, Describe]
+        host: "*"
+      - resource: { type: group, name: payments-service, patternType: literal }
+        operations: [Read, Describe]
+        host: "*"
+---
+# ---------------------------------------------------------------------------
+# MULTI-CLUSTER: MirrorMaker 2 replicating EU -> US.
+#
+# What it does: copies topics, consumer group offsets and ACLs to the other
+# region, continuously and asynchronously.
+#
+# What it does NOT do: make the two clusters one cluster. Offsets are
+# translated, not identical. A consumer that fails over resumes at
+# approximately the right place, not exactly. Design for a few duplicates on
+# failover and let idempotency absorb them.
+#
+# Topics arrive prefixed: orders.v1 in EU becomes eu.orders.v1 in US.
+# ---------------------------------------------------------------------------
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaMirrorMaker2
+metadata:
+  name: eu-to-us
+spec:
+  version: 3.9.0
+  replicas: 3
+  connectCluster: us-target
+
+  clusters:
+    - alias: eu-source
+      bootstrapServers: orders-kafka-kafka-bootstrap.kafka-eu.svc:9093
+      tls:
+        trustedCertificates:
+          - secretName: orders-kafka-cluster-ca-cert
+            certificate: ca.crt
+    - alias: us-target
+      bootstrapServers: orders-kafka-kafka-bootstrap.kafka-us.svc:9093
+      tls:
+        trustedCertificates:
+          - secretName: orders-kafka-cluster-ca-cert
+            certificate: ca.crt
+      config:
+        config.storage.replication.factor: 3
+        offset.storage.replication.factor: 3
+        status.storage.replication.factor: 3
+
+  mirrors:
+    - sourceCluster: eu-source
+      targetCluster: us-target
+      sourceConnector:
+        tasksMax: 8
+        config:
+          replication.factor: 3
+          offset-syncs.topic.replication.factor: 3
+          sync.topic.acls.enabled: "true"
+          refresh.topics.interval.seconds: 60
+      checkpointConnector:
+        tasksMax: 4
+        config:
+          checkpoints.topic.replication.factor: 3
+          sync.group.offsets.enabled: "true"
+          emit.checkpoints.interval.seconds: 10
+      heartbeatConnector:
+        config:
+          heartbeats.topic.replication.factor: 3
+      topicsPattern: "orders\\.v1|payments\\.v1"
+      groupsPattern: ".*"
+---
+# ---------------------------------------------------------------------------
+# Pod disruption budget. Without this, a node drain during a cluster upgrade
+# can take down enough brokers at once to lose quorum.
+# ---------------------------------------------------------------------------
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: orders-kafka-broker-pdb
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      strimzi.io/cluster: orders-kafka
+      strimzi.io/pool-name: broker

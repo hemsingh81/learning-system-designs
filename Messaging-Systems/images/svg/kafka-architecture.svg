@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" font-family="Inter, 'Segoe UI', system-ui, -apple-system, Carlito, 'DejaVu Sans', sans-serif">
+  <defs>
+    <style>
+      .bg     { fill:#0F1620; }
+      .panel  { fill:#141D28; stroke:#2A3947; stroke-width:1.5; }
+      .zone   { fill:#131B25; stroke:#2A3947; stroke-width:1.5; stroke-dasharray:5 4; }
+      .h1     { fill:#E8EEF4; font-size:31px; font-weight:700; letter-spacing:-0.4px; }
+      .sub    { fill:#8FA3B5; font-size:15px; }
+      .zlbl   { fill:#8FA3B5; font-size:13px; font-weight:700; letter-spacing:1.8px; }
+      .box    { fill:#141D28; stroke:#2A3947; stroke-width:1.5; }
+      .kbox   { fill:#221A16; stroke:#FF7A45; stroke-width:1.8; }
+      .kfoll  { fill:#1A1714; stroke:#4A3A30; stroke-width:1.4; }
+      .sbox   { fill:#131B25; stroke:#8FA3B5; stroke-width:1.4; }
+      .name   { fill:#E8EEF4; font-size:15px; font-weight:600; }
+      .kname  { fill:#FFB48C; font-size:15px; font-weight:700; }
+      .fname  { fill:#9C8677; font-size:13.5px; }
+      .mono   { fill:#C4D2DE; font-size:12.5px;
+                font-family:ui-monospace,'Cascadia Code',Menlo,Consolas,'DejaVu Sans Mono',monospace; }
+      .note   { fill:#8FA3B5; font-size:12.5px; }
+      .edge   { stroke:#5C6E80; stroke-width:1.8; fill:none; }
+      .edgek  { stroke:#FF7A45; stroke-width:2.2; fill:none; }
+      .dash   { stroke:#5C6E80; stroke-width:1.5; fill:none; stroke-dasharray:5 5; }
+      .elbl   { fill:#8FA3B5; font-size:12px; }
+      .foot   { fill:#8FA3B5; font-size:14px; }
+      .key    { fill:#FF7A45; font-size:12.5px; font-weight:700; }
+    </style>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5C6E80"/>
+    </marker>
+    <marker id="ak" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#FF7A45"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="900"/>
+
+  <text class="h1"  x="56" y="64">Kafka is a log you can rewind</text>
+  <text class="sub" x="56" y="94">Nothing is deleted when it is read. Every group keeps its own bookmark, so ten teams can read the same order ten times.</text>
+
+  <!-- ========================= PRODUCERS ========================= -->
+  <rect class="zone" x="56" y="140" width="290" height="470" rx="14"/>
+  <text class="zlbl" x="78" y="170">PRODUCERS</text>
+
+  <rect class="box" x="80" y="192" width="242" height="76" rx="10"/>
+  <text class="name" x="100" y="222">Order API</text>
+  <text class="mono" x="100" y="246">key = orderId</text>
+
+  <rect class="box" x="80" y="288" width="242" height="76" rx="10"/>
+  <text class="name" x="100" y="318">Payment API</text>
+  <text class="mono" x="100" y="342">key = orderId</text>
+
+  <rect class="box" x="80" y="384" width="242" height="90" rx="10"/>
+  <text class="name" x="100" y="414">Debezium CDC</text>
+  <text class="note" x="100" y="437">turns database writes</text>
+  <text class="note" x="100" y="455">into events</text>
+
+  <text class="key"  x="80" y="516">Same key → same partition</text>
+  <text class="note" x="80" y="537">Order 42 always lands on p1, so its</text>
+  <text class="note" x="80" y="555">events are read in the order written.</text>
+  <text class="note" x="80" y="578">Different orders go anywhere — that</text>
+  <text class="note" x="80" y="596">is how you get parallelism.</text>
+
+  <!-- ========================= CLUSTER ========================= -->
+  <rect class="zone" x="406" y="140" width="620" height="600" rx="14"/>
+  <text class="zlbl" x="428" y="170">KAFKA CLUSTER — 3 BROKERS · REPLICATION FACTOR 3</text>
+
+  <!-- Broker 1 -->
+  <rect class="panel" x="428" y="196" width="576" height="112" rx="10"/>
+  <text class="name" x="450" y="224">Broker 1</text>
+  <rect class="kbox"  x="600" y="208" width="180" height="42" rx="8"/>
+  <text class="kname" x="618" y="235">orders p0 · LEADER</text>
+  <rect class="kfoll" x="600" y="256" width="180" height="38" rx="8"/>
+  <text class="fname" x="618" y="281">orders p1 · follower</text>
+  <text class="mono" x="800" y="234">accepts writes for p0</text>
+  <text class="note" x="800" y="282">copies p1 from broker 2</text>
+
+  <!-- Broker 2 -->
+  <rect class="panel" x="428" y="324" width="576" height="112" rx="10"/>
+  <text class="name" x="450" y="352">Broker 2</text>
+  <rect class="kbox"  x="600" y="336" width="180" height="42" rx="8"/>
+  <text class="kname" x="618" y="363">orders p1 · LEADER</text>
+  <rect class="kfoll" x="600" y="384" width="180" height="38" rx="8"/>
+  <text class="fname" x="618" y="409">orders p2 · follower</text>
+  <text class="mono" x="800" y="362">accepts writes for p1</text>
+  <text class="note" x="800" y="410">copies p2 from broker 3</text>
+
+  <!-- Broker 3 -->
+  <rect class="panel" x="428" y="452" width="576" height="112" rx="10"/>
+  <text class="name" x="450" y="480">Broker 3</text>
+  <rect class="kbox"  x="600" y="464" width="180" height="42" rx="8"/>
+  <text class="kname" x="618" y="491">orders p2 · LEADER</text>
+  <rect class="kfoll" x="600" y="512" width="180" height="38" rx="8"/>
+  <text class="fname" x="618" y="537">orders p0 · follower</text>
+  <text class="mono" x="800" y="490">accepts writes for p2</text>
+  <text class="note" x="800" y="538">copies p0 from broker 1</text>
+
+  <!-- KRaft -->
+  <rect class="sbox" x="428" y="588" width="576" height="72" rx="10"/>
+  <text class="name" x="450" y="616">KRaft controller quorum</text>
+  <text class="note" x="450" y="640">Holds cluster metadata — which broker leads which partition. Replaced ZooKeeper.</text>
+
+  <text class="note" x="428" y="694">min.insync.replicas = 2 → a write is only confirmed once 2 of the 3 copies have it.</text>
+  <text class="note" x="428" y="716">Lose one broker and you keep writing. Lose two and writes stop rather than risk loss.</text>
+
+  <!-- ========================= CONSUMERS ========================= -->
+  <rect class="zone" x="1086" y="140" width="458" height="470" rx="14"/>
+  <text class="zlbl" x="1108" y="170">CONSUMER GROUPS</text>
+
+  <rect class="panel" x="1108" y="196" width="414" height="150" rx="10"/>
+  <text class="name" x="1130" y="224">group: payments</text>
+  <rect class="box" x="1130" y="240" width="182" height="46" rx="8"/>
+  <text class="mono" x="1148" y="268">instance 1 → p0</text>
+  <rect class="box" x="1322" y="240" width="182" height="46" rx="8"/>
+  <text class="mono" x="1340" y="268">instance 2 → p1,p2</text>
+  <text class="note" x="1130" y="312">Each partition goes to exactly one member.</text>
+  <text class="note" x="1130" y="331">Add a third instance and the group rebalances.</text>
+
+  <rect class="panel" x="1108" y="366" width="414" height="118" rx="10"/>
+  <text class="name" x="1130" y="394">group: analytics</text>
+  <text class="mono" x="1130" y="420">Kafka Connect → data lake</text>
+  <text class="note" x="1130" y="446">Reads the same bytes as payments, at its own</text>
+  <text class="note" x="1130" y="464">pace, with its own bookmark. Neither blocks the other.</text>
+
+  <rect class="sbox" x="1108" y="504" width="414" height="88" rx="10"/>
+  <text class="name" x="1130" y="532">Tiered storage</text>
+  <text class="note" x="1130" y="556">Segments older than 3 days move to object storage.</text>
+  <text class="note" x="1130" y="574">Keep a year of history without a year of local disk.</text>
+
+  <!-- ========================= EDGES ========================= -->
+  <path class="edgek" marker-end="url(#ak)" d="M322,230 C 370,230 380,252 426,252"/>
+  <path class="edgek" marker-end="url(#ak)" d="M322,326 C 370,326 380,380 426,380"/>
+  <path class="edgek" marker-end="url(#ak)" d="M322,429 C 370,429 380,508 426,508"/>
+
+  <path class="edge" marker-end="url(#a)" d="M1006,252 C 1050,252 1060,262 1106,262"/>
+  <path class="edge" marker-end="url(#a)" d="M1006,380 C 1050,380 1060,410 1106,410"/>
+  <path class="dash" marker-end="url(#a)" d="M1006,508 C 1050,508 1060,540 1106,540"/>
+
+  <path class="dash" d="M590,252 C 560,252 560,360 590,360"/>
+  <path class="dash" d="M590,360 C 560,360 560,488 590,488"/>
+  <text class="elbl" x="500" y="300" transform="rotate(-90 500 300)">replicate</text>
+
+  <!-- Schema registry -->
+  <rect class="sbox" x="1108" y="626" width="414" height="88" rx="10"/>
+  <text class="name" x="1130" y="654">Schema Registry</text>
+  <text class="note" x="1130" y="678">The agreed shape of a message. Producers check</text>
+  <text class="note" x="1130" y="696">before writing so consumers never see a surprise field.</text>
+
+  <text class="foot" x="56" y="800">Read path costs the broker almost nothing: consumers ask for "everything after offset N" and the broker streams bytes straight off disk.</text>
+  <text class="foot" x="56" y="828">That is why one cluster serves a firehose and a slow batch job at the same time — but also why Kafka has no per-message TTL, no scheduling, and no cheap "delete this one message".</text>
+  <text class="note" x="56" y="866">Source: diagrams/kafka-architecture.mmd · palette: Kafka #FF7A45 · neutral #8FA3B5</text>
+</svg>

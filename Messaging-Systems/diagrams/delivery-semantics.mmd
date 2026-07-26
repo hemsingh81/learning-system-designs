@@ -1,0 +1,38 @@
+%%{init: {"theme":"base","themeVariables":{"background":"#0F1620","primaryColor":"#141D28","primaryTextColor":"#E8EEF4","primaryBorderColor":"#2A3947","lineColor":"#8FA3B5","fontFamily":"Inter, Segoe UI, system-ui, sans-serif"}}}%%
+sequenceDiagram
+    autonumber
+    participant P as Producer
+    participant B as Broker
+    participant C as Consumer
+    participant D as Database
+
+    rect rgba(244,91,105,0.08)
+    Note over P,D: AT-MOST-ONCE — ack first, work later. Fast, and you can lose messages.
+    P->>B: send
+    B->>C: deliver
+    C->>B: ack immediately
+    C-->>D: write... crash here = message gone forever
+    end
+
+    rect rgba(255,122,69,0.08)
+    Note over P,D: AT-LEAST-ONCE — work first, ack later. Never lose, may repeat.
+    P->>B: send
+    B->>C: deliver
+    C->>D: write
+    C--xB: ack lost / crash before ack
+    B->>C: REDELIVER same message
+    C->>D: write AGAIN — duplicate unless you guard
+    end
+
+    rect rgba(61,220,151,0.10)
+    Note over P,D: EFFECTIVELY-ONCE — at-least-once + an idempotency key. What you actually build.
+    P->>B: send with messageId = order-123-attempt-1
+    B->>C: deliver
+    C->>D: INSERT messageId INTO processed (unique key)
+    D-->>C: OK — first time
+    C->>B: ack
+    B->>C: REDELIVER after a network blip
+    C->>D: INSERT messageId — duplicate key error
+    D-->>C: already seen
+    C->>B: ack and drop. Side effect happened exactly once.
+    end

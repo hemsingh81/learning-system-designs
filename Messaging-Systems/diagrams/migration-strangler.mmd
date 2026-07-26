@@ -1,0 +1,37 @@
+%%{init: {"theme":"base","themeVariables":{"background":"#0F1620","primaryColor":"#141D28","primaryTextColor":"#E8EEF4","primaryBorderColor":"#2A3947","lineColor":"#8FA3B5","clusterBkg":"#131B25","clusterBorder":"#2A3947","fontFamily":"Inter, Segoe UI, system-ui, sans-serif"}}}%%
+flowchart LR
+    subgraph P0["Phase 0 — today"]
+        direction TB
+        A1["Monolith"] --> A2["Old queue<br/>MSMQ / IBM MQ / DB table"] --> A3["Old workers"]
+    end
+
+    subgraph P1["Phase 1 — bridge, weeks 1-4"]
+        direction TB
+        B1["Monolith"] --> B2["Old queue"]
+        B2 --> B3["Old workers<br/><i>still the source of truth</i>"]
+        B2 --> B4["Bridge process<br/><i>copies, never moves</i>"]
+        B4 --> B5["New broker"]
+        B5 --> B6["New workers<br/><b>shadow mode</b><br/><i>compute, compare, do NOT write</i>"]
+    end
+
+    subgraph P2["Phase 2 — cut over, weeks 5-10"]
+        direction TB
+        C1["Monolith"] --> C2{"Feature flag<br/>per message type"}
+        C2 -->|"5% then 50%"| C3["New broker"] --> C4["New workers<br/><b>live</b>"]
+        C2 -->|"the rest"| C5["Old queue"] --> C6["Old workers"]
+    end
+
+    subgraph P3["Phase 3 — retire, weeks 11-14"]
+        direction TB
+        D1["Services"] --> D2["New broker"] --> D3["New workers"]
+        D4["Old queue<br/><i>drained, read-only,<br/>kept 30 days as a rollback</i>"]
+    end
+
+    P0 ==> P1 ==> P2 ==> P3
+
+    classDef old   fill:#26200F,stroke:#E0B341,color:#F2DFA8
+    classDef new   fill:#122420,stroke:#3DDC97,color:#B6F0D8
+    classDef gate  fill:#161C2E,stroke:#6C8EF5,color:#C3D2FA
+    class A2,A3,B2,B3,C5,C6,D4 old
+    class B5,B6,C3,C4,D2,D3 new
+    class B4,C2 gate

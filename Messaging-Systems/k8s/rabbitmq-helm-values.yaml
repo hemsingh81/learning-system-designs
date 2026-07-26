@@ -1,0 +1,230 @@
+# =============================================================================
+# rabbitmq-helm-values.yaml — Bitnami RabbitMQ chart values
+#
+#   helm repo add bitnami https://charts.bitnami.com/bitnami
+#   helm install orders-rabbit bitnami/rabbitmq \
+#     -n messaging --create-namespace \
+#     -f rabbitmq-helm-values.yaml
+#
+# The alternative is the RabbitMQ Cluster Operator, which is better for fleets
+# of clusters. The Bitnami chart is simpler for one or two, and is what most
+# teams start with. Operator equivalent is at the bottom of this file.
+#
+# Sized for: ~20k messages/sec, working-set queues (thousands of messages, not
+# millions), 5 nodes across 3 zones.
+# =============================================================================
+
+replicaCount: 5          # odd number. Quorum queues need a majority to elect.
+
+image:
+  registry: docker.io
+  repository: bitnami/rabbitmq
+  tag: 4.0.5-debian-12-r0
+
+auth:
+  username: orders-admin
+  # Never inline the password. Create the secret out of band:
+  #   kubectl create secret generic rabbit-auth \
+  #     --from-literal=rabbitmq-password=... \
+  #     --from-literal=rabbitmq-erlang-cookie=...
+  existingPasswordSecret: rabbit-auth
+  existingErlangSecret: rabbit-auth
+  tls:
+    enabled: true
+    existingSecret: rabbit-tls
+    failIfNoPeerCert: false
+    sslOptionsVerify: verify_peer
+
+clustering:
+  enabled: true
+  # Kubernetes peer discovery: nodes find each other through the API server
+  # rather than a hardcoded list.
+  addressType: hostname
+  rebalance: true
+  # What to do when a node rejoins after a network split. autoheal picks the
+  # partition with the most clients and restarts the losers. With quorum queues
+  # this rarely matters — Raft already decided who was authoritative — but the
+  # setting still governs classic queues and the metadata store.
+  partitionHandling: autoheal
+
+# ---------------------------------------------------------------------------
+# Resources. RabbitMQ is memory-sensitive in a way Kafka is not: messages live
+# in RAM until they are consumed or paged out, and hitting the memory watermark
+# BLOCKS ALL PUBLISHERS cluster-wide. That is the outage everyone hits once.
+# ---------------------------------------------------------------------------
+resources:
+  requests: { memory: 8Gi, cpu: "2" }
+  limits:   { memory: 8Gi, cpu: "4" }
+
+persistence:
+  enabled: true
+  storageClass: managed-csi-premium
+  size: 200Gi
+  accessModes: [ReadWriteOnce]
+
+# ---------------------------------------------------------------------------
+# The two watermarks. Understand these before going to production.
+#
+#   memoryHighWatermark — at this fraction of the limit, the broker stops
+#                         accepting publishes. Consumers keep draining. It is a
+#                         brake, not a crash, but to a publisher it looks like a
+#                         total outage.
+#   diskFreeLimit       — below this much free disk, publishing also blocks.
+#                         Set it to at least one full memory limit, because a
+#                         memory flush has to fit somewhere.
+# ---------------------------------------------------------------------------
+memoryHighWatermark:
+  enabled: true
+  type: relative
+  value: 0.6              # 60% of 8Gi. Lower than the 0.4 default is tempting;
+                          # resist. Headroom is what stops the block.
+
+diskFreeLimit: "8GB"      # == the memory limit. Do not go lower.
+
+extraConfiguration: |
+  ## Networking
+  heartbeat = 30
+  frame_max = 131072
+  channel_max = 2047
+  handshake_timeout = 10000
+
+  ## Quorum queues — the modern default. Classic mirrored queues are removed
+  ## in 4.x; if you are migrating, this is the change to make first.
+  default_queue_type = quorum
+  quorum_cluster_size = 3          # replicas per queue, not nodes per cluster
+
+  ## Consumer timeout: kill a consumer that holds a message this long without
+  ## acking. Default is 30 minutes. If your handler can legitimately take
+  ## longer, raise it — otherwise the broker cancels the consumer mid-work and
+  ## you get a very confusing redelivery.
+  consumer_timeout = 1800000
+
+  ## Log at info; debug on a busy broker is its own outage.
+  log.console.level = info
+
+  ## Do NOT enable this in production. It makes every queue eligible for
+  ## automatic deletion when the last consumer goes away, which during a rolling
+  ## deploy means your queues vanish.
+  ## queue_master_locator = min-masters
+
+loadDefinition:
+  enabled: true
+  existingSecret: rabbit-definitions
+
+# ---------------------------------------------------------------------------
+# Plugins. Each one is a moving part — enable only what you use.
+# ---------------------------------------------------------------------------
+extraPlugins: >-
+  rabbitmq_management
+  rabbitmq_prometheus
+  rabbitmq_peer_discovery_k8s
+  rabbitmq_shovel
+  rabbitmq_shovel_management
+  rabbitmq_federation
+  rabbitmq_federation_management
+  rabbitmq_stream
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+    interval: 15s
+  prometheusRule:
+    enabled: true
+    rules:
+      # These four cover the failures that actually page you. The full set,
+      # with thresholds and reasoning, is in docs/monitoring.md.
+      - alert: RabbitMQPublishersBlocked
+        expr: rabbitmq_connections_blocked > 0
+        for: 1m
+        labels: { severity: critical }
+        annotations:
+          summary: "RabbitMQ is blocking publishers on {{ $labels.instance }}"
+          description: "Memory or disk watermark hit. Every publisher is stalled."
+
+      - alert: RabbitMQQueueDepthGrowing
+        expr: rabbitmq_queue_messages_ready{queue=~".*\\.work"} > 50000
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "Queue {{ $labels.queue }} has {{ $value }} ready messages"
+
+      - alert: RabbitMQDeadLetterNotEmpty
+        expr: rabbitmq_queue_messages_ready{queue="orders.parked"} > 0
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "Messages are parked in the dead-letter queue"
+
+      - alert: RabbitMQNodeDown
+        expr: rabbitmq_build_info unless on(instance) up == 1
+        for: 2m
+        labels: { severity: critical }
+
+# ---------------------------------------------------------------------------
+# Scheduling. Same reasoning as Kafka: spread across zones, one broker per node.
+# ---------------------------------------------------------------------------
+podAntiAffinityPreset: hard
+
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: DoNotSchedule
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: rabbitmq
+
+pdb:
+  create: true
+  maxUnavailable: 1
+
+# Rolling updates one node at a time, waiting for the cluster to be healthy
+# between each. A parallel update loses quorum.
+podManagementPolicy: OrderedReady
+updateStrategy:
+  type: RollingUpdate
+
+# ---------------------------------------------------------------------------
+# Probes. The default readiness check is too eager: it reports ready before the
+# node has finished joining the cluster, so traffic arrives at a node that
+# cannot serve it.
+# ---------------------------------------------------------------------------
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 120
+  periodSeconds: 30
+  timeoutSeconds: 20
+  failureThreshold: 6
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 20
+  failureThreshold: 3
+
+startupProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  failureThreshold: 60      # allow 10 minutes for a slow first boot
+
+terminationGracePeriodSeconds: 120
+
+service:
+  type: ClusterIP
+  ports:
+    amqp: 5672
+    amqpTls: 5671
+    manager: 15672
+    metrics: 9419
+    stream: 5552
+
+networkPolicy:
+  enabled: true
+  allowExternal: false      # only pods with the right label may connect
+
+serviceAccount:
+  create: true
+  automountServiceAccountToken: true   # needed by k8s peer discovery

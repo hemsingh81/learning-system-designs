@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" font-family="Inter, 'Segoe UI', system-ui, -apple-system, Carlito, 'DejaVu Sans', sans-serif">
+  <defs>
+    <style>
+      .bg     { fill:#0F1620; }
+      .panel  { fill:#141D28; stroke:#2A3947; stroke-width:1.5; }
+      .zone   { fill:#131B25; stroke:#2A3947; stroke-width:1.5; stroke-dasharray:5 4; }
+      .h1     { fill:#E8EEF4; font-size:31px; font-weight:700; letter-spacing:-0.4px; }
+      .sub    { fill:#8FA3B5; font-size:15px; }
+      .zlbl   { fill:#8FA3B5; font-size:13px; font-weight:700; letter-spacing:1.8px; }
+      .box    { fill:#141D28; stroke:#2A3947; stroke-width:1.5; }
+      .abox   { fill:#161C2E; stroke:#6C8EF5; stroke-width:1.8; }
+      .fbox   { fill:#241519; stroke:#F45B69; stroke-width:1.8; }
+      .sbox   { fill:#131B25; stroke:#8FA3B5; stroke-width:1.4; }
+      .name   { fill:#E8EEF4; font-size:15px; font-weight:600; }
+      .aname  { fill:#A8C0FF; font-size:15px; font-weight:700; }
+      .fnamex { fill:#F7B9BF; font-size:15px; font-weight:700; }
+      .mono   { fill:#C4D2DE; font-size:12.5px;
+                font-family:ui-monospace,'Cascadia Code',Menlo,Consolas,'DejaVu Sans Mono',monospace; }
+      .note   { fill:#8FA3B5; font-size:12.5px; }
+      .edge   { stroke:#5C6E80; stroke-width:1.8; fill:none; }
+      .edgea  { stroke:#6C8EF5; stroke-width:2.2; fill:none; }
+      .edgef  { stroke:#F45B69; stroke-width:2; fill:none; stroke-dasharray:5 4; }
+      .dash   { stroke:#5C6E80; stroke-width:1.5; fill:none; stroke-dasharray:5 5; }
+      .elbl   { fill:#8FA3B5; font-size:12px; }
+      .foot   { fill:#8FA3B5; font-size:14px; }
+      .key    { fill:#6C8EF5; font-size:12.5px; font-weight:700; }
+    </style>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5C6E80"/>
+    </marker>
+    <marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6C8EF5"/>
+    </marker>
+    <marker id="af" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#F45B69"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="900"/>
+
+  <text class="h1"  x="56" y="64">Service Bus deletes the message once you say it worked</text>
+  <text class="sub" x="56" y="94">A message is a job, not a fact. It is locked while you work, removed when you finish, and parked in a dead-letter queue when it will not go through.</text>
+
+  <!-- ========================= SENDERS ========================= -->
+  <rect class="zone" x="56" y="140" width="258" height="300" rx="14"/>
+  <text class="zlbl" x="78" y="170">SENDERS</text>
+
+  <rect class="box" x="78" y="192" width="214" height="86" rx="10"/>
+  <text class="name" x="98" y="222">Order API</text>
+  <text class="mono" x="98" y="246">SessionId =</text>
+  <text class="mono" x="98" y="264">orderId</text>
+
+  <rect class="box" x="78" y="298" width="214" height="66" rx="10"/>
+  <text class="name" x="98" y="328">Partner gateway</text>
+  <text class="note" x="98" y="350">AMQP over 5671</text>
+
+  <text class="key"  x="78" y="404">Auth = Entra ID</text>
+  <text class="note" x="78" y="426">No connection strings in code.</text>
+
+  <!-- ========================= NAMESPACE ========================= -->
+  <rect class="zone" x="352" y="140" width="700" height="640" rx="14"/>
+  <text class="zlbl" x="374" y="170">SERVICE BUS NAMESPACE — PREMIUM, 4 MESSAGING UNITS</text>
+
+  <!-- Topic -->
+  <rect class="panel" x="374" y="196" width="656" height="212" rx="10"/>
+  <text class="aname" x="396" y="226">Topic: order-events</text>
+  <text class="note"  x="396" y="248">One copy in, one independent copy per subscription. Filters run on the broker, not in your code.</text>
+
+  <rect class="abox" x="396" y="266" width="200" height="120" rx="9"/>
+  <text class="name" x="414" y="294">payments</text>
+  <text class="mono" x="414" y="320">sys.Label =</text>
+  <text class="mono" x="414" y="338">'OrderPlaced'</text>
+  <text class="note" x="414" y="366">SQL filter</text>
+
+  <rect class="abox" x="616" y="266" width="200" height="120" rx="9"/>
+  <text class="name" x="634" y="294">inventory</text>
+  <text class="mono" x="634" y="320">region = 'eu'</text>
+  <text class="note" x="634" y="348">Correlation filter —</text>
+  <text class="note" x="634" y="366">cheapest kind.</text>
+
+  <rect class="abox" x="836" y="266" width="176" height="120" rx="9"/>
+  <text class="name" x="854" y="294">audit</text>
+  <text class="mono" x="854" y="320">1 = 1</text>
+  <text class="note" x="854" y="348">Takes everything.</text>
+  <text class="note" x="854" y="366">Compliance copy.</text>
+
+  <!-- Queue -->
+  <rect class="abox" x="374" y="430" width="316" height="130" rx="10"/>
+  <text class="aname" x="396" y="460">Queue: payment-commands</text>
+  <text class="mono"  x="396" y="486">requiresSession = true</text>
+  <text class="note"  x="396" y="512">Sessions give you order per orderId —</text>
+  <text class="note"  x="396" y="530">the broker hands one worker exclusive</text>
+  <text class="note"  x="396" y="548">rights to that session's messages.</text>
+
+  <!-- DLQ -->
+  <rect class="fbox" x="712" y="430" width="318" height="130" rx="10"/>
+  <text class="fnamex" x="734" y="460">…/$DeadLetterQueue</text>
+  <text class="note"   x="734" y="486">Automatic. Built in. Nothing to create.</text>
+  <text class="note"   x="734" y="510">A message lands here after 5 failed</text>
+  <text class="note"   x="734" y="528">deliveries, on TTL expiry, or when your</text>
+  <text class="note"   x="734" y="546">code calls DeadLetterMessageAsync.</text>
+
+  <!-- Scheduled -->
+  <rect class="sbox" x="374" y="584" width="316" height="96" rx="10"/>
+  <text class="name" x="396" y="612">Scheduled messages</text>
+  <text class="note" x="396" y="636">"Deliver this at 09:00 tomorrow."</text>
+  <text class="note" x="396" y="656">Per message. No timer service needed.</text>
+
+  <rect class="sbox" x="712" y="584" width="318" height="96" rx="10"/>
+  <text class="name" x="734" y="612">Geo-DR pairing</text>
+  <text class="note" x="734" y="636">Copies queue and topic definitions to a</text>
+  <text class="note" x="734" y="656">second region. Messages do NOT copy.</text>
+
+  <text class="note" x="374" y="722">Premium = dedicated CPU and memory, predictable latency, VNet isolation. Standard = shared, throttled, and cheaper.</text>
+  <text class="note" x="374" y="744">Max message size: 256 KB Standard, 100 MB Premium. Max queue size: 80 GB Premium.</text>
+
+  <!-- ========================= RECEIVERS ========================= -->
+  <rect class="zone" x="1092" y="140" width="452" height="540" rx="14"/>
+  <text class="zlbl" x="1114" y="170">RECEIVERS</text>
+
+  <rect class="panel" x="1114" y="196" width="408" height="112" rx="10"/>
+  <text class="name" x="1136" y="224">Payment worker</text>
+  <text class="mono" x="1136" y="250">PeekLock + AcceptNextSession</text>
+  <text class="note" x="1136" y="276">Lock is 60s. Renew it if the work runs long,</text>
+  <text class="note" x="1136" y="294">or the message comes back to someone else.</text>
+
+  <rect class="panel" x="1114" y="326" width="408" height="76" rx="10"/>
+  <text class="name" x="1136" y="354">Inventory worker</text>
+  <text class="note" x="1136" y="378">Competing consumers — scale out to go faster.</text>
+
+  <rect class="panel" x="1114" y="420" width="408" height="76" rx="10"/>
+  <text class="name" x="1136" y="448">Audit sink</text>
+  <text class="note" x="1136" y="472">Writes to storage. Never blocks the order path.</text>
+
+  <rect class="fbox" x="1114" y="514" width="408" height="146" rx="10"/>
+  <text class="fnamex" x="1136" y="542">DLQ triage job</text>
+  <text class="note"   x="1136" y="568">Runs every 15 minutes. Reads the reason,</text>
+  <text class="note"   x="1136" y="586">fixes what is fixable, resubmits as a NEW</text>
+  <text class="note"   x="1136" y="604">message with the original messageId kept.</text>
+  <text class="note"   x="1136" y="630">A DLQ nobody reads is just a slow data-loss</text>
+  <text class="note"   x="1136" y="648">machine. Alert on depth &gt; 0, always.</text>
+
+  <!-- ========================= EDGES ========================= -->
+  <path class="edgea" marker-end="url(#aa)" d="M292,232 C 330,232 340,290 372,290"/>
+  <path class="edgea" marker-end="url(#aa)" d="M292,330 C 330,330 340,310 372,310"/>
+
+  <path class="edgea" marker-end="url(#aa)" d="M496,388 C 496,412 440,404 440,428"/>
+  <path class="edgea" marker-end="url(#aa)" d="M716,388 C 780,400 1080,370 1112,364"/>
+  <path class="edge"  marker-end="url(#a)"  d="M924,388 C 990,400 1080,450 1112,458"/>
+
+  <path class="edgea" marker-end="url(#aa)" d="M690,470 C 850,470 1060,250 1112,250"/>
+  <path class="edgef" marker-end="url(#af)" d="M690,510 C 700,510 702,495 710,495"/>
+  <path class="edgef" marker-end="url(#af)" d="M1030,530 C 1070,530 1080,580 1112,580"/>
+  <path class="dash"  marker-end="url(#a)"  d="M1114,640 C 1060,700 700,700 560,684"/>
+  <text class="elbl" x="800" y="716">resubmit after fix</text>
+
+  <text class="foot" x="56" y="820">The trade Service Bus makes: you give up replay and raw throughput, and you get ordering, scheduling, dead-lettering, duplicate detection and transactions as broker features.</text>
+  <text class="foot" x="56" y="848">There is no cluster to patch, no disk to size, no rebalance to debug — and no way to re-read yesterday's messages, because they are gone the moment they were completed.</text>
+  <text class="note" x="56" y="878">Source: diagrams/azure-service-bus-architecture.mmd · palette: Service Bus #6C8EF5 · failure #F45B69</text>
+</svg>

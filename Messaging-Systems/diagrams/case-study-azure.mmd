@@ -1,0 +1,60 @@
+%%{init: {"theme":"base","themeVariables":{"background":"#0F1620","primaryColor":"#141D28","primaryTextColor":"#E8EEF4","primaryBorderColor":"#2A3947","lineColor":"#8FA3B5","clusterBkg":"#131B25","clusterBorder":"#2A3947","fontFamily":"Inter, Segoe UI, system-ui, sans-serif"}}}%%
+flowchart TB
+    EDGE["Azure Front Door"]
+
+    subgraph EU["Region EU-West — ACTIVE"]
+        direction TB
+        API1["Order API<br/>Container Apps"]
+        EH1["Event Hubs — order-ingest<br/><i>the firehose: 100k/sec</i>"]
+        FN1["Router function<br/><i>splits firehose into commands</i>"]
+        subgraph SB1["Service Bus Premium — 8 MU"]
+            SBT1["Topic: order-events"]
+            SBQ1["Queue: payment-cmd<br/><i>sessions ON</i>"]
+            SBQ2["Queue: inventory-cmd"]
+            SBD1["DLQ set"]
+        end
+        PAY1["Payment worker"]
+        INV1["Inventory worker"]
+        SHIP1["Shipping worker"]
+    end
+
+    subgraph US["Region US-East — ACTIVE"]
+        direction TB
+        API2["Order API"]
+        EH2["Event Hubs — order-ingest"]
+        subgraph SB2["Service Bus Premium — 8 MU"]
+            SBQ3["Queue: payment-cmd"]
+        end
+        PAY2["Payment worker"]
+    end
+
+    subgraph GLOBAL["Shared"]
+        COSMOS[("Cosmos DB<br/>multi-region write<br/><i>idempotency keys + state</i>")]
+        ADLS[("Data Lake<br/><i>Event Hubs Capture writes<br/>Parquet automatically</i>")]
+        KV["Key Vault<br/><i>customer-managed keys</i>"]
+    end
+
+    EDGE --> API1
+    EDGE --> API2
+    API1 --> EH1 --> FN1 --> SBT1
+    SBT1 --> SBQ1 --> PAY1
+    SBT1 --> SBQ2 --> INV1
+    SBT1 --> SHIP1
+    SBQ1 -.poison.-> SBD1
+    API2 --> EH2 --> SBQ3 --> PAY2
+    EH1 --> ADLS
+    EH2 --> ADLS
+    PAY1 --> COSMOS
+    PAY2 --> COSMOS
+    SB1 -.->|"Geo-DR: metadata only"| SB2
+    SB1 -.-> KV
+
+    classDef asb   fill:#161C2E,stroke:#6C8EF5,color:#C3D2FA
+    classDef eh    fill:#1A1F33,stroke:#B980F0,color:#DCC9F7
+    classDef fail  fill:#241519,stroke:#F45B69,color:#F7B9BF
+    classDef store fill:#131B25,stroke:#8FA3B5,color:#C4D2DE
+    class SBT1,SBQ1,SBQ2,SBQ3 asb
+    class EH1,EH2,FN1 eh
+    class SBD1 fail
+    class COSMOS,ADLS,KV store
+    class EDGE asb

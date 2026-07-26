@@ -1,0 +1,62 @@
+%%{init: {"theme":"base","themeVariables":{"background":"#0F1620","primaryColor":"#141D28","primaryTextColor":"#E8EEF4","primaryBorderColor":"#2A3947","lineColor":"#8FA3B5","clusterBkg":"#131B25","clusterBorder":"#2A3947","fontFamily":"Inter, Segoe UI, system-ui, sans-serif"}}}%%
+flowchart LR
+    subgraph P["Producers — write side"]
+        P1["Order API<br/><i>key = orderId</i>"]
+        P2["Payment API<br/><i>key = orderId</i>"]
+        P3["Debezium CDC<br/><i>reads the DB log</i>"]
+    end
+
+    subgraph C["Kafka cluster — 3 brokers, replication factor 3"]
+        direction TB
+        subgraph B1["Broker 1"]
+            T1P0["orders p0<br/><b>LEADER</b>"]
+            T1P1r["orders p1<br/>follower"]
+        end
+        subgraph B2["Broker 2"]
+            T1P1["orders p1<br/><b>LEADER</b>"]
+            T1P2r["orders p2<br/>follower"]
+        end
+        subgraph B3["Broker 3"]
+            T1P2["orders p2<br/><b>LEADER</b>"]
+            T1P0r["orders p0<br/>follower"]
+        end
+        KR["KRaft controller quorum<br/><i>keeps cluster metadata — who leads what</i>"]
+    end
+
+    SR["Schema Registry<br/><i>the agreed message shape</i>"]
+
+    subgraph G["Consumer groups — read side"]
+        direction TB
+        subgraph CG1["group: payments"]
+            C1["instance 1<br/>reads p0"]
+            C2["instance 2<br/>reads p1, p2"]
+        end
+        subgraph CG2["group: analytics"]
+            C3["Kafka Connect<br/>sink to lake"]
+        end
+    end
+
+    TS[("Tiered storage<br/>object store<br/><i>old segments, cheap</i>")]
+
+    P1 --> C
+    P2 --> C
+    P3 --> C
+    P1 -.validate.-> SR
+    C1 -.validate.-> SR
+
+    C --> CG1
+    C --> CG2
+    B1 <-.replicate.-> B2
+    B2 <-.replicate.-> B3
+    B3 <-.replicate.-> B1
+    KR -.-> B1
+    KR -.-> B2
+    KR -.-> B3
+    C -->|"segments older than 3 days"| TS
+
+    classDef kafka  fill:#221A16,stroke:#FF7A45,color:#F7C9B4
+    classDef neutral fill:#141D28,stroke:#2A3947,color:#C4D2DE
+    classDef store   fill:#131B25,stroke:#8FA3B5,color:#C4D2DE
+    class T1P0,T1P1,T1P2 kafka
+    class T1P0r,T1P1r,T1P2r,KR neutral
+    class TS,SR store

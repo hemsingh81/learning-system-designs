@@ -1,0 +1,46 @@
+%%{init: {"theme":"base","themeVariables":{"background":"#0F1620","primaryColor":"#141D28","primaryTextColor":"#E8EEF4","primaryBorderColor":"#2A3947","lineColor":"#8FA3B5","clusterBkg":"#131B25","clusterBorder":"#2A3947","fontFamily":"Inter, Segoe UI, system-ui, sans-serif"}}}%%
+flowchart TD
+    START(["Start: you need a broker"])
+
+    Q1{"Do several teams need to read<br/>the SAME message,<br/>at different times,<br/>and re-read history later?"}
+    Q2{"Is your peak above<br/>~50,000 messages/sec<br/>sustained?"}
+    Q3{"Are you already all-in on Azure<br/>and want zero brokers to operate?"}
+    Q4{"Do you need per-message<br/>scheduling, per-message TTL,<br/>or complex routing rules?"}
+    Q5{"Is a small ops team<br/>your hard constraint?"}
+
+    KAFKA["<b>Apache Kafka</b><br/><i>a replayable log</i><br/>Best for: event streaming, analytics,<br/>CDC, many independent readers"]
+    ASB["<b>Azure Service Bus</b><br/><i>a managed enterprise queue</i><br/>Best for: business workflows on Azure,<br/>sessions, scheduling, no ops"]
+    RMQ["<b>RabbitMQ</b><br/><i>a smart router</i><br/>Best for: task queues, RPC,<br/>flexible routing, low latency"]
+    HYBRID["<b>Hybrid</b><br/>Kafka or Event Hubs for the firehose<br/>+ Service Bus or Rabbit for commands.<br/><i>Most large systems land here.</i>"]
+
+    START --> Q1
+    Q1 -->|Yes| Q2
+    Q1 -->|No| Q4
+
+    Q2 -->|Yes| KAFKA
+    Q2 -->|"No, but replay still matters"| Q3
+
+    Q3 -->|Yes| ASB
+    Q3 -->|No| KAFKA
+
+    Q4 -->|Yes| Q3
+    Q4 -->|No| Q5
+
+    Q5 -->|"Yes, and we are on Azure"| ASB
+    Q5 -->|"Yes, and we are not"| RMQ
+    Q5 -->|"No, we can run infra"| RMQ
+
+    KAFKA -.->|"but you also need<br/>commands and DLQ ergonomics"| HYBRID
+    ASB -.->|"but you also need<br/>replay and analytics"| HYBRID
+    RMQ -.->|"but you also need<br/>7-day replay"| HYBRID
+
+    classDef kafka  fill:#221A16,stroke:#FF7A45,color:#F7C9B4
+    classDef asb    fill:#161C2E,stroke:#6C8EF5,color:#C3D2FA
+    classDef rmq    fill:#122420,stroke:#3DDC97,color:#B6F0D8
+    classDef hybrid fill:#1A1F33,stroke:#B980F0,color:#DCC9F7
+    classDef q      fill:#141D28,stroke:#2A3947,color:#C4D2DE
+    class KAFKA kafka
+    class ASB asb
+    class RMQ rmq
+    class HYBRID hybrid
+    class Q1,Q2,Q3,Q4,Q5,START q
