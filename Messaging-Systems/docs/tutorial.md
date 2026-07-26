@@ -27,6 +27,7 @@ I made these calls so the document could be concrete instead of hedged. Where yo
 
 | You are | Read this |
 |---|---|
+| **Learning this properly, from zero** | Do not read this file front to back. Follow the **[seven-stage learning path](../README.md#the-learning-path)** — it sequences this file with the code, the exercises and the checkpoints, and it tells you when you have actually got it. |
 | **Picking a broker this week** | TL;DR → [Section 4](#4-the-five-questions) → [17a: choose by workload](#17a-choose-by-workload) → [decision checklist](../cheatsheet/decision-checklist.md). 20 minutes. |
 | **"I'm building X, what do I use?"** | [17a](#17a-choose-by-workload) is a lookup table of 18 workload types. Then [17b](#17b-one-problem-three-ways) to see one requirement solved three ways. |
 | **New to messaging** | Sections [1–4](#part-i--foundations) in order, then the one system you will actually use. Skip the "sharp edges" boxes on the first pass. |

@@ -8,6 +8,196 @@ Plain English throughout. Every technical term is explained the first time it ap
 
 ## Start here
 
+**Two ways in.** If you want to learn this properly, follow the [learning path](#the-learning-path) below — it is sequenced, has exercises, and tells you when you have actually got it. If you have one specific question right now, use the [jump table](#jump-straight-to-what-you-need) instead.
+
+---
+
+## The learning path
+
+Seven stages, roughly **12–14 hours** of reading plus hands-on. You do not have to do all of it — [the shortcuts](#shortcuts-if-you-have-less-time) at the end map common deadlines onto subsets.
+
+> **The one rule that matters: do not start with the comparison.**
+>
+> The instinct is to open the side-by-side table and pick a winner. It does not work — you cannot meaningfully compare three things you do not yet understand, and the table will just confirm whatever you already believed. **Learn one broker properly first (Stage 2), then compare (Stage 4).** Everything after that lands differently.
+
+### Stage 0 — Orientation
+
+**Time: 20 min · Prerequisite: none**
+
+| Do this | Where |
+|---|---|
+| Read the TL;DR and the five questions | [README, above](#tldr) |
+| Read "what a broker actually does" and the vocabulary table | [Tutorial §1](docs/tutorial.md#1-what-a-broker-actually-does) |
+| Read "why not just use a database table?" | [Tutorial §1](docs/tutorial.md#why-not-just-use-a-database-table) |
+
+**✅ You can now:** explain what a broker is for, and — more usefully — say when you do *not* need one.
+
+---
+
+### Stage 1 — The three ideas everything rests on
+
+**Time: 1 hour · Prerequisite: Stage 0**
+
+These three concepts appear in every later section. If any is shaky, the rest will feel arbitrary rather than logical.
+
+| Do this | Where |
+|---|---|
+| **Delivery semantics** — ack before or after the work | [Tutorial §2](docs/tutorial.md#2-delivery-semantics) |
+| **Ordering** — why a key gives you sequence, and what it costs | [Tutorial §3](docs/tutorial.md#3-ordering-and-what-it-costs) |
+| **Idempotency** — the pattern that makes at-least-once survivable | [Tutorial §19](docs/tutorial.md#19-idempotency--the-pattern-that-makes-everything-else-safe) |
+
+> Yes, §19 is out of numerical order. Read it now anyway — everything in Stages 2 and 3 assumes it.
+
+**🔍 Checkpoint.** Answer these out loud *before* opening the collapsed answers: [Q1–15](docs/interview-qa.md#beginner). Aim for 12 of 15. If "what does at-least-once mean" is not instant, re-read §2 — it is the single most load-bearing idea in this repo.
+
+**✅ You can now:** explain why duplicates are normal rather than a bug, and why "exactly-once" is a trap question.
+
+---
+
+### Stage 2 — Learn ONE broker deeply
+
+**Time: 3 hours · Prerequisite: Stage 1**
+
+Pick one. Not three. Depth in one beats a shallow pass over all of them, and it makes Stage 4 possible.
+
+| Pick | If |
+|---|---|
+| **RabbitMQ** | You want to learn fastest. One Docker command, a management UI you can click, immediate feedback. **The best choice for learning**, even if you end up using something else. |
+| **Kafka** | Your job needs it, or streams and replay are your actual problem |
+| **Azure Service Bus** | Your company is on Azure and this is what you will use |
+
+Then read that broker's twelve sections — [Kafka §5–16](docs/tutorial.md#part-ii--apache-kafka), [Service Bus §5b–16b](docs/tutorial.md#part-iii--azure-service-bus), or [RabbitMQ §5c–16c](docs/tutorial.md#part-iv--rabbitmq) — and its two code files in [`code/csharp/`](code/csharp/). Read the plain-English algorithm at the top of each file before the code.
+
+**🔬 Hands-on — this is the part that actually teaches you.** Reading about prefetch does not teach prefetch. Watching one consumer starve nineteen others does.
+
+```bash
+docker run -d --name rabbit -p 5672:5672 -p 15672:15672 rabbitmq:4-management
+# management UI: http://localhost:15672  (guest/guest)
+```
+
+1. Publish a message by hand in the UI. Watch it sit in the queue.
+2. Write a consumer that acks. Watch the queue drain.
+3. **Kill the consumer mid-message.** Watch the message come back. *That is at-least-once, live.*
+4. **Set prefetch to unlimited, start three consumers.** Watch one take everything while two idle. *That is [incident R2](docs/production-incidents.md#r2--unlimited-prefetch-starving-the-fleet).*
+5. **`basicNack(requeue: true)` on a message that always fails.** Watch the CPU pin. Kill it quickly. *That is [incident R3](docs/production-incidents.md#r3--the-requeue-poison-loop).*
+
+Steps 3–5 take twenty minutes and will teach you more than an hour of reading.
+
+**🔍 Checkpoint.** [Q16–30](docs/interview-qa.md#intermediate) — the ones relevant to your broker. Aim for 10 of 15.
+
+**✅ You can now:** build a correct producer and consumer on one broker, and explain its main failure mode.
+
+---
+
+### Stage 3 — The patterns that save you
+
+**Time: 2 hours · Prerequisite: Stage 2**
+
+Broker-independent. These are what separate code that works in dev from code that survives production.
+
+| Do this | Where |
+|---|---|
+| Dead-letter handling and poison messages | [Tutorial §18](docs/tutorial.md#18-dead-letter-handling-and-poison-messages) |
+| **The outbox pattern** — re-read §19, focusing on dual writes | [Tutorial §19](docs/tutorial.md#the-outbox-pattern--for-dual-writes) |
+| Schema evolution | [Tutorial §20](docs/tutorial.md#20-schema-evolution-and-versioning) |
+| Consumer group management | [Tutorial §21](docs/tutorial.md#21-consumer-group-management) |
+
+**🔬 Hands-on.** Write the test that most teams never write:
+
+> Deliver the same message twice. Assert the side effect happened **once**.
+
+If that test does not exist, your idempotency does not work — nobody discovers a broken dedupe check by accident. Then write the outbox: one transaction, two rows, a publisher process that marks rows sent.
+
+**✅ You can now:** design a consumer that survives duplicates, poison messages and a schema change.
+
+---
+
+### Stage 4 — Now compare
+
+**Time: 90 min · Prerequisite: Stage 2 (this is why it was gated)**
+
+| Do this | Where |
+|---|---|
+| The side-by-side table | [Tutorial §17](docs/tutorial.md#17-side-by-side-comparison) |
+| **Choose by workload** — 18 workload types | [§17a](docs/tutorial.md#17a-choose-by-workload) |
+| **One problem, three ways** — the same requirement on all three | [§17b](docs/tutorial.md#17b-one-problem-three-ways) |
+| When two brokers is right | [§17c](docs/tutorial.md#17c-when-two-brokers-is-the-right-answer) |
+| What actually decides it — team, scale, exit cost | [§17d](docs/tutorial.md#17d-the-constraints-that-decide-more-than-features-do) |
+| Wrong reasons and anti-patterns | [§17e](docs/tutorial.md#17e-wrong-reasons-anti-patterns-and-knowing-when-you-were-wrong) |
+| Dapr — abstracting over all three | [§17f](docs/tutorial.md#17f-dapr--not-choosing-for-now) → [`dapr.md`](docs/dapr.md) |
+
+§17b will make far more sense than it would have three hours ago, because you now know one of the three columns from the inside.
+
+**✅ You can now:** choose a broker for a given workload and defend it — including what you gave up.
+
+---
+
+### Stage 5 — Run it in production
+
+**Time: 3 hours · Prerequisite: Stage 3**
+
+The stage most tutorials skip, and the one that decides whether your system survives its first bad week.
+
+| Do this | Where |
+|---|---|
+| Read all 30 incidents. Not skim — read. | [`production-incidents.md`](docs/production-incidents.md) |
+| Set up the five alerts that matter | [`monitoring.md`](docs/monitoring.md#getting-started--the-minimum-viable-setup) |
+| Walk your broker's runbook | [`runbooks/`](runbooks/) |
+| Read the deployment manifests | [`k8s/`](k8s/) |
+
+**🔬 Hands-on — break it on purpose.** Pick three incidents from your broker's section and reproduce them locally. Then follow the runbook to fix them. **An untested runbook is fiction**, and you would rather find that out now than at 3am.
+
+**🔍 Checkpoint.** [Q31–41](docs/interview-qa.md#advanced). These are the ones that separate levels — especially [Q33](docs/interview-qa.md#33-a-consumer-group-is-stuck-walk-through-your-diagnosis) (diagnosis) and [Q40](docs/interview-qa.md#40-you-inherit-a-system-with-40-million-messages-in-one-rabbitmq-queue-what-do-you-do) (the inherited backlog).
+
+**✅ You can now:** take on-call for a messaging system without lying about it.
+
+---
+
+### Stage 6 — Design a whole system
+
+**Time: 2.5 hours · Prerequisite: Stages 4 and 5**
+
+| Do this | Where |
+|---|---|
+| The case study, end to end | [`case-study-ecommerce.md`](docs/case-study-ecommerce.md) |
+| Migration | [Tutorial §22](docs/tutorial.md#22-migration) |
+
+**🔬 Hands-on.** Before reading the recommendation, **design it yourself.** Read the [requirements](docs/case-study-ecommerce.md#1-requirements), sketch an architecture, then compare against the three candidates and the trade-off scoring. Where you differ is where you learn something — and note that RabbitMQ is worked through in full and then *fails* two requirements, which is the most instructive part of the document.
+
+**✅ You can now:** design a multi-region messaging backbone and defend the trade-offs.
+
+---
+
+### Stage 7 — Prove it
+
+**Time: varies**
+
+- Answer all [41 interview questions](docs/interview-qa.md) cold. Anything you fumble points at a section to revisit.
+- Fill in the decision record from [§17e](docs/tutorial.md#17e-wrong-reasons-anti-patterns-and-knowing-when-you-were-wrong) for a system you actually work on. **If the "we gave up ___" line is empty, you are not finished.**
+- Explain the outbox pattern to a colleague without notes. Teaching is the real test.
+
+---
+
+### Shortcuts if you have less time
+
+| You have | Do | Get |
+|---|---|---|
+| **30 minutes** | Stage 0 + [§17a](docs/tutorial.md#17a-choose-by-workload) + [decision checklist](cheatsheet/decision-checklist.md) | A defensible choice, no depth |
+| **2 hours** | Stages 0 and 1 + [§17a](docs/tutorial.md#17a-choose-by-workload), [§17b](docs/tutorial.md#17b-one-problem-three-ways) | The concepts, and a choice you understand |
+| **1 day** | Stages 0–3 | Ship correct code on one broker |
+| **3 days** | Stages 0–5 | Ship it and run it |
+| **1 week** | All seven | Design and own the system |
+| **Interview Monday** | Stage 1 → Stage 4 → [all 41 Q](docs/interview-qa.md) | Skip the hands-on; read [§17b](docs/tutorial.md#17b-one-problem-three-ways) twice |
+| **On call tonight** | [Runbook](runbooks/) triage section + your broker's [10 incidents](docs/production-incidents.md) | Enough to not make it worse |
+
+### If you get stuck
+
+The hard concepts — delivery semantics, ordering, the outbox, PeekLock, exchanges, Dapr — are each written **problem first, then before/after, then the mechanism, then the cost**. If a section leaves you thinking *"I can see what it says, but not why"*, that is a defect in the writing rather than in your reading. Re-read the "first, what goes wrong without it" opening; that is where the reasoning lives.
+
+---
+
+## Jump straight to what you need
+
 | You are | Read this | Time |
 |---|---|---|
 | **"I'm building X — what do I use?"** | [Choose by workload](docs/tutorial.md#17a-choose-by-workload) — 18 workload types, with the reasoning | 5 min |
