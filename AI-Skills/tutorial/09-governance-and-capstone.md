@@ -144,6 +144,8 @@ What you haven't seen yet is this exact process, run by someone else, on a compl
 
 The four case studies are that. Same nine chapters. Four different jobs. Read the one closest to your own work first.
 
+**Then, when you're ready:** [AI-Workflows](../../AI-Workflows/README.md) picks up exactly where a single skill's fixed, linear instructions stop being enough — when a task genuinely needs several coordinated pieces of work, not just one focused pass.
+
 ---
 
 ← [Chapter 8 — Packaging and Sharing](08-packaging-and-sharing.md) · [Learning path](../learning-path.md) · Next: [Case Studies →](../case-studies/README.md)

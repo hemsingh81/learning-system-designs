@@ -127,3 +127,5 @@ Do not skip that caveat. It is the difference between a tutorial you can trust a
 ## Where to go next
 
 Start with [`00-the-story.md`](00-the-story.md), then [`learning-path.md`](learning-path.md).
+
+**Finished this whole repo?** The next rung is [AI-Workflows](../AI-Workflows/README.md) — for when a task genuinely needs several coordinated pieces of work, not just one focused skill. After that, [AI-Agents](../AI-Agents/README.md) — for when even a fixed workflow plan isn't flexible enough. See [`docs/how-the-three-connect.md`](../docs/how-the-three-connect.md) for how all three fit together as one ladder.

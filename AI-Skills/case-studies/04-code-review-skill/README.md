@@ -140,6 +140,8 @@ Same nine chapters. Four different jobs. If you've read all four case studies, y
 
 That's the actual range of problems skills are good for. Go build one for something real on your own team.
 
+**Curious where this specific skill goes next?** This exact `/code-review` skill becomes one stage inside a bigger review in [AI-Workflows Case Study 4](../../../AI-Workflows/case-studies/04-code-review-workflow/README.md) — and that workflow's fixed five angles later become one agent's adaptive choice in [AI-Agents Case Study 4](../../../AI-Agents/case-studies/04-code-review-agent/README.md). Nothing you built here gets thrown away.
+
 ---
 
 ← [QA](../03-qa-skill/README.md) · [All case studies](../README.md) · [Back to README](../../README.md)
