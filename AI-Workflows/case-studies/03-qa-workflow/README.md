@@ -24,6 +24,8 @@ The verification stage is where Ananya's AI-Skills lesson actually mattered. Fol
 
 ## The workflow
 
+The full, ready-to-run script also lives at [`workflow.md`](workflow.md) in this folder.
+
 ```javascript
 meta = {
   name: "multi-angle-test-case-generation",
@@ -86,6 +88,15 @@ Planted-case test, per [Chapter 7](../../tutorial/07-testing-and-iterating.md): 
 ## Where it sits on the sharing ladder
 
 **Level 2 — Project.** Checked into the QA repo, used on every feature that reaches test-planning. Ananya's honest note in the workflow's own description: verification roughly doubles the cost of generation. That's the deliberate trade — a smaller, trustworthy set of test cases beats a larger set nobody can rely on.
+
+---
+
+## References & assets
+
+- **[`workflow.md`](workflow.md)** — the complete, real script. Copy it into your own workflow tool, adapting syntax per the repo's [note on accuracy](../../README.md#a-note-on-accuracy).
+- **[`assets/flow-diagram.md`](assets/flow-diagram.md)** — this case study's own diagram, showing the GENUINE/SHALLOW verification branch explicitly.
+- **Chapters used:** [Chapter 4](../../tutorial/04-parallel-vs-pipeline.md), [Chapter 5](../../tutorial/05-fan-out-and-verify.md) (the wording fix that actually catches shallow findings), [Chapter 7](../../tutorial/07-testing-and-iterating.md), [Chapter 10](../../tutorial/10-lifecycle-of-execution.md).
+- **Where this started, and where it goes next:** built on Ananya's [AI-Skills test-case-generation skill](../../../AI-Skills/case-studies/03-qa-skill/README.md); the same false-coverage risk becomes a hard exploration boundary in [AI-Agents Case Study 3](../../../AI-Agents/case-studies/03-qa-agent/README.md) (bounded autonomous exploration).
 
 ---
 

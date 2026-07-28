@@ -61,8 +61,11 @@ This repo teaches you to build them. Not by reading a reference page, but by fol
 | 7 | [`tutorial/07-testing-and-iterating.md`](tutorial/07-testing-and-iterating.md) | Proving a skill actually works, before anyone relies on it |
 | 8 | [`tutorial/08-packaging-and-sharing.md`](tutorial/08-packaging-and-sharing.md) | Versioning, and three levels of sharing — you, your team, your company |
 | 9 | [`tutorial/09-governance-and-capstone.md`](tutorial/09-governance-and-capstone.md) | Safety review, and the full checklist for "is this ready?" |
+| 10 | [`tutorial/10-lifecycle-of-execution.md`](tutorial/10-lifecycle-of-execution.md) | Bonus: the exact runtime sequence, from listed to loaded to executed |
 
 ### Case studies — the same process, four teams
+Each case study now includes a real, ready-to-use `SKILL.md`, a case-study-specific diagram in its own `assets/` folder, and a references section — see [`case-studies/README.md`](case-studies/README.md#what-each-case-study-contains) for the full shape.
+
 | # | File | The skill it builds |
 |---|---|---|
 | 1 | [`case-studies/01-frontend-skill/`](case-studies/01-frontend-skill/README.md) | An accessibility-review skill for the frontend team |
@@ -97,13 +100,14 @@ AI-Skills/
 │   ├── 06-skills-vs-other-tools.md
 │   ├── 07-testing-and-iterating.md
 │   ├── 08-packaging-and-sharing.md
-│   └── 09-governance-and-capstone.md
+│   ├── 09-governance-and-capstone.md
+│   └── 10-lifecycle-of-execution.md       ← bonus: the runtime trace
 │
 ├── case-studies/                          ← four real skills, four teams
-│   ├── 01-frontend-skill/
-│   ├── 02-backend-skill/
-│   ├── 03-qa-skill/
-│   └── 04-code-review-skill/
+│   ├── 01-frontend-skill/                 ← README + SKILL.md + assets/
+│   ├── 02-backend-skill/                  ← README + SKILL.md + assets/
+│   ├── 03-qa-skill/                       ← README + SKILL.md + assets/
+│   └── 04-code-review-skill/              ← README + SKILL.md + assets/
 │
 ├── templates/                             ← copy-paste starting points
 │   ├── SKILL-template.md

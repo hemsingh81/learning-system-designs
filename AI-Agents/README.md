@@ -66,8 +66,11 @@ This repo teaches you to build agents, through the same continuous story you've 
 | 7 | [`tutorial/07-testing-and-iterating.md`](tutorial/07-testing-and-iterating.md) | Proving an agent reaches its goal, across more than one real path |
 | 8 | [`tutorial/08-packaging-and-sharing.md`](tutorial/08-packaging-and-sharing.md) | Versioning, sharing, and the trust boundary a teammate shouldn't have to take on faith |
 | 9 | [`tutorial/09-governance-and-capstone.md`](tutorial/09-governance-and-capstone.md) | Irreversible-action governance, and the full "is this ready?" checklist |
+| 10 | [`tutorial/10-lifecycle-of-execution.md`](tutorial/10-lifecycle-of-execution.md) | Bonus: the turn-by-turn runtime trace, including both approval and grounding gates |
 
 ### Case studies — the same process, four teams
+Each case study now includes a real, ready-to-use agent definition, a case-study-specific diagram in its own `assets/` folder, and a references section — see [`case-studies/README.md`](case-studies/README.md#what-each-case-study-contains) for the full shape.
+
 | # | File | The agent it builds | The pattern it teaches |
 |---|---|---|---|
 | 1 | [`case-studies/01-frontend-agent/`](case-studies/01-frontend-agent/README.md) | Investigates an intermittent visual regression | Explore, narrow, confirm — an open-ended investigation loop |
@@ -102,13 +105,14 @@ AI-Agents/
 │   ├── 06-agents-vs-other-tools.md
 │   ├── 07-testing-and-iterating.md
 │   ├── 08-packaging-and-sharing.md
-│   └── 09-governance-and-capstone.md
+│   ├── 09-governance-and-capstone.md
+│   └── 10-lifecycle-of-execution.md            ← bonus: the runtime trace
 │
 ├── case-studies/                               ← four real agents, four teams
-│   ├── 01-frontend-agent/
-│   ├── 02-backend-agent/
-│   ├── 03-qa-agent/
-│   └── 04-code-review-agent/
+│   ├── 01-frontend-agent/                      ← README + agent definition + assets/
+│   ├── 02-backend-agent/                       ← README + agent definition + assets/
+│   ├── 03-qa-agent/                            ← README + agent definition + assets/
+│   └── 04-code-review-agent/                   ← README + agent definition + assets/
 │
 ├── templates/                                  ← copy-paste starting points
 │   ├── AGENT-template.md

@@ -25,6 +25,7 @@ Same nine chapters. Four different people at Kestrel, four different jobs — an
 4. **What went wrong the first time** — every one of these got the parallel-vs-pipeline decision wrong on the first draft. Included on purpose.
 5. **How it was tested**, before anyone else used it.
 6. **Where it sits on the sharing ladder**, and what its cost profile looks like.
+7. **References & assets** — the real, standalone workflow script, a case-study-specific diagram in its own `assets/` folder, and links to the same team member's counterpart in AI-Skills and AI-Agents.
 
 ---
 

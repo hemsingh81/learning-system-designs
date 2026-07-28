@@ -22,6 +22,8 @@ So the goal is deliberately narrow — not "explore this feature," but "find com
 
 ## The agent
 
+The full, ready-to-run definition also lives at [`agent.md`](agent.md) in this folder.
+
 ```javascript
 meta = {
   name: "discount-combination-explorer",
@@ -69,6 +71,15 @@ Per [Chapter 7](../../tutorial/07-testing-and-iterating.md): planted three real 
 ## Where it sits on the sharing ladder
 
 **Level 2 — Project.** Entirely read-only, staging-only by its explicit `boundary`, so no approval gate is needed — but the boundary itself is written into the agent's own definition, not left as an assumption. Checked into the QA repo. Ananya's honest note in its documentation: this agent explores *this specific* interaction — discounts × bundles × currency — not "the feature" broadly. A new feature needs a new, equally narrow goal, not a request to "explore everything."
+
+---
+
+## References & assets
+
+- **[`agent.md`](agent.md)** — the complete, real definition, including the stricter dual-tool grounding check. Copy it into your own agent tool, adapting syntax per the repo's [note on accuracy](../../README.md#a-note-on-accuracy).
+- **[`assets/flow-diagram.md`](assets/flow-diagram.md)** — this case study's own diagram, showing the independent-calculation check explicitly.
+- **Chapters used:** [Chapter 4](../../tutorial/04-tools-and-grounding.md) (independent evidence, not the same code path agreeing with itself), [Chapter 9](../../tutorial/09-governance-and-capstone.md) (the explicit `boundary` field), [Chapter 10](../../tutorial/10-lifecycle-of-execution.md).
+- **Where this started:** built on Ananya's [AI-Skills test-case-generation skill](../../../AI-Skills/case-studies/03-qa-skill/README.md) and [AI-Workflows generate-and-verify pipeline](../../../AI-Workflows/case-studies/03-qa-workflow/README.md) — the same false-coverage lesson, carried into a hard exploration boundary.
 
 ---
 

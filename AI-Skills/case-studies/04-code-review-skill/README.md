@@ -26,6 +26,8 @@ The real thinking here went into something [Chapter 6](../../tutorial/06-skills-
 
 Rahul's answer: separate the skill's *instructions* from the *actual rules*, the same way your commit-message skill's format could, in principle, live in a separate file instead of being typed directly into the instructions. Here, with fifteen real rules instead of six, that separation stops being optional.
 
+The full pair also lives at [`SKILL.md`](SKILL.md) and [`review-standards.md`](review-standards.md) in this folder — copy both into your own skills directory to use it as-is.
+
 ```markdown
 ---
 name: kestrel-code-review
@@ -131,6 +133,14 @@ Output testing included a deliberate check specific to this skill: Rahul updated
 ## Where it sits on the sharing ladder
 
 **Level 2 — Project**, checked into the main repo, where every engineer at Kestrel already works. This is the skill your very first week started with — and now you know exactly how it's built, why it's shaped the way it is, and what almost went wrong before it got there.
+
+---
+
+## References & assets
+
+- **[`SKILL.md`](SKILL.md)** + **[`review-standards.md`](review-standards.md)** — the complete, real files, kept deliberately separate. Copy both into your own skills directory to use it exactly as built here.
+- **[`assets/flow-diagram.md`](assets/flow-diagram.md)** — this case study's own diagram, including the staleness check between the policy file and the skill's own version number.
+- **Chapters used:** [Chapter 6](../../tutorial/06-skills-vs-other-tools.md), [Chapter 7](../../tutorial/07-testing-and-iterating.md), [Chapter 8](../../tutorial/08-packaging-and-sharing.md) (one real home for shared state), [Chapter 10](../../tutorial/10-lifecycle-of-execution.md).
 
 ---
 

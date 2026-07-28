@@ -32,6 +32,8 @@ Skill.
 
 ## The skill
 
+The full file also lives at [`SKILL.md`](SKILL.md), with its bundled script at [`scripts/validate-scaffold.sh`](scripts/validate-scaffold.sh) — copy the whole folder into your own skills directory to use it as-is.
+
 ```markdown
 ---
 name: kestrel-api-scaffold
@@ -134,6 +136,15 @@ Output testing on 3 different endpoint types — a simple read, a write with val
 ## Where it sits on the sharing ladder
 
 **Level 2 — Project.** Checked into the backend repo. It encodes Kestrel's own specific layered structure, so it wouldn't transfer meaningfully to a team using a different backend architecture — Level 2 is the right, and final, home for it.
+
+---
+
+## References & assets
+
+- **[`SKILL.md`](SKILL.md)** + **[`scripts/validate-scaffold.sh`](scripts/validate-scaffold.sh)** — the complete, real files. Copy the whole folder into your own skills directory to use it exactly as built here.
+- **[`assets/flow-diagram.md`](assets/flow-diagram.md)** — this case study's own diagram, including the validation-script branch that catches a silently-skipped layer.
+- **Chapters used:** [Chapter 5](../../tutorial/05-tools-and-scripts.md) (bundling a real script), [Chapter 6](../../tutorial/06-skills-vs-other-tools.md), [Chapter 7](../../tutorial/07-testing-and-iterating.md), [Chapter 10](../../tutorial/10-lifecycle-of-execution.md).
+- **Where Vikram's work goes next:** the same layered-structure problem becomes a genuinely different shape in [AI-Workflows Case Study 2](../../../AI-Workflows/case-studies/02-backend-workflow/README.md) (pipeline with overlapping stages, scaffold → test → document), and an open-ended diagnosis in [AI-Agents Case Study 2](../../../AI-Agents/case-studies/02-backend-agent/README.md) (hypothesize, test, revise).
 
 ---
 

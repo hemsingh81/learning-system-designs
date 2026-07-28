@@ -26,6 +26,8 @@ The barrier — waiting for all three before writing one combined report — is 
 
 ## The workflow
 
+The full, ready-to-run script also lives at [`workflow.md`](workflow.md) in this folder.
+
 ```javascript
 meta = {
   name: "cross-size-component-check",
@@ -86,6 +88,15 @@ Output testing on 3 real components: a product card, a navigation bar, and a che
 ## Where it sits on the sharing ladder
 
 **Level 2 — Project.** Checked into the frontend repo. The pattern (three independent size checks, one combined report) is common enough that other teams *might* want it, but the specific sizes and the specific rendering setup are Kestrel-specific for now.
+
+---
+
+## References & assets
+
+- **[`workflow.md`](workflow.md)** — the complete, real script. Copy it into your own workflow tool, adapting syntax per the repo's [note on accuracy](../../README.md#a-note-on-accuracy).
+- **[`assets/flow-diagram.md`](assets/flow-diagram.md)** — this case study's own diagram, showing the barrier explicitly.
+- **Chapters used:** [Chapter 3](../../tutorial/03-your-first-workflow.md), [Chapter 4](../../tutorial/04-parallel-vs-pipeline.md) (the earned-barrier case), [Chapter 7](../../tutorial/07-testing-and-iterating.md), [Chapter 10](../../tutorial/10-lifecycle-of-execution.md).
+- **Where this started, and where it goes next:** built on Divya's [AI-Skills accessibility skill](../../../AI-Skills/case-studies/01-frontend-skill/README.md); the same team's problem becomes an open-ended investigation in [AI-Agents Case Study 1](../../../AI-Agents/case-studies/01-frontend-agent/README.md) (explore, narrow, confirm).
 
 ---
 

@@ -31,8 +31,9 @@ Same five parts as AI-Skills, so the habit carries over:
 | 7 | Testing and Iterating | 30 min | You're about to share this — does it hold up at real scale? | [`tutorial/07-testing-and-iterating.md`](tutorial/07-testing-and-iterating.md) |
 | 8 | Packaging and Sharing | 35 min | Divya wants this pattern for her own check | [`tutorial/08-packaging-and-sharing.md`](tutorial/08-packaging-and-sharing.md) |
 | 9 | Governance and Capstone | 30 min | Someone's workflow quietly spawns forty agents on a small PR | [`tutorial/09-governance-and-capstone.md`](tutorial/09-governance-and-capstone.md) |
+| 10 | The Execution Lifecycle (bonus) | 25 min | Rahul asks you to trace the whole run, including its failure paths | [`tutorial/10-lifecycle-of-execution.md`](tutorial/10-lifecycle-of-execution.md) |
 
-**Total: about 4.5 hours**, including every exercise.
+**Total: about 5 hours**, including every exercise.
 
 ---
 
@@ -143,6 +144,18 @@ Same five parts as AI-Skills, so the habit carries over:
 3. Use the full "is this ready?" checklist, from thought process to sharing.
 
 **You'll try:** Run the pre-distribution checklist against your own workflow. Check specifically: what stops this from spawning more work than intended?
+
+---
+
+### Chapter 10 — The Execution Lifecycle (bonus)
+**File:** [`tutorial/10-lifecycle-of-execution.md`](tutorial/10-lifecycle-of-execution.md)
+
+**You'll be able to:**
+1. Trace a real multi-phase workflow's full runtime, from invocation to return value.
+2. Explain exactly what happens inside a `parallel()` barrier and a `pipeline()`, moment to moment.
+3. Predict what happens when a stage fails, for both orchestration shapes.
+
+**You'll try:** Trace your own workflow the way this chapter traced the five-angle review — every `phase()`, every `parallel()`/`pipeline()` call, and what a single failed stage would do at each one.
 
 ---
 

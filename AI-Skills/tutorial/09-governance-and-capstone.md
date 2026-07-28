@@ -1,6 +1,6 @@
 # Chapter 9 — Governance and Capstone
 
-← [Chapter 8 — Packaging and Sharing](08-packaging-and-sharing.md) · [Learning path](../learning-path.md) · Next: [Case Studies →](../case-studies/README.md)
+← [Chapter 8 — Packaging and Sharing](08-packaging-and-sharing.md) · [Learning path](../learning-path.md) · Next: [Chapter 10 — The Execution Lifecycle →](10-lifecycle-of-execution.md)
 
 ---
 
@@ -144,8 +144,10 @@ What you haven't seen yet is this exact process, run by someone else, on a compl
 
 The four case studies are that. Same nine chapters. Four different jobs. Read the one closest to your own work first.
 
+Before that, one bonus chapter worth reading: [Chapter 10 — The Execution Lifecycle](10-lifecycle-of-execution.md) traces the exact runtime sequence — listed, matched, loaded, executed, reset — that everything in this tutorial has been building toward.
+
 **Then, when you're ready:** [AI-Workflows](../../AI-Workflows/README.md) picks up exactly where a single skill's fixed, linear instructions stop being enough — when a task genuinely needs several coordinated pieces of work, not just one focused pass.
 
 ---
 
-← [Chapter 8 — Packaging and Sharing](08-packaging-and-sharing.md) · [Learning path](../learning-path.md) · Next: [Case Studies →](../case-studies/README.md)
+← [Chapter 8 — Packaging and Sharing](08-packaging-and-sharing.md) · [Learning path](../learning-path.md) · Next: [Chapter 10 — The Execution Lifecycle →](10-lifecycle-of-execution.md)

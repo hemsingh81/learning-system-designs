@@ -29,6 +29,7 @@ Every case study follows the same shape, on purpose — so once you know how to 
 4. **What went wrong the first time** — every one of these skills failed on its first draft, exactly like yours did in Chapter 3. That's included on purpose, not smoothed over.
 5. **How it was tested** before anyone else used it.
 6. **Where it sits on the sharing ladder** from Chapter 8, and why.
+7. **References & assets** — the real, standalone `SKILL.md` (plus any bundled scripts or policy files), a case-study-specific diagram in its own `assets/` folder, and links to the same team member's counterpart in AI-Workflows and AI-Agents.
 
 ---
 

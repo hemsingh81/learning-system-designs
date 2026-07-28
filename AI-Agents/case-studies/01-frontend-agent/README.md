@@ -22,6 +22,8 @@ That's the shape [Chapter 1](../../tutorial/01-what-is-an-agent.md) calls a real
 
 ## The agent
 
+The full, ready-to-run definition also lives at [`agent.md`](agent.md) in this folder.
+
 ```javascript
 meta = {
   name: "chart-overlap-investigator",
@@ -64,6 +66,15 @@ Per [Chapter 7](../../tutorial/07-testing-and-iterating.md): run against three r
 ## Where it sits on the sharing ladder
 
 **Level 2 — Project.** Entirely read-only tools, so it skips [Chapter 9](../../tutorial/09-governance-and-capstone.md)'s approval-gate requirement. Checked into the frontend repo, documented with its known blind spot (CSS timing issues) so the next person who reaches for it knows exactly when to trust an `EXHAUSTED` result versus dig further by hand.
+
+---
+
+## References & assets
+
+- **[`agent.md`](agent.md)** — the complete, real definition. Copy it into your own agent tool, adapting syntax per the repo's [note on accuracy](../../README.md#a-note-on-accuracy).
+- **[`assets/flow-diagram.md`](assets/flow-diagram.md)** — this case study's own diagram, tracing the 3-turn resolved path.
+- **Chapters used:** [Chapter 2](../../tutorial/02-anatomy-of-an-agent.md), [Chapter 4](../../tutorial/04-tools-and-grounding.md) (the tool-selection fix), [Chapter 5](../../tutorial/05-stopping-conditions-and-budgets.md) (the honest `EXHAUSTED` exit), [Chapter 10](../../tutorial/10-lifecycle-of-execution.md).
+- **Where this started:** built on Divya's [AI-Skills accessibility skill](../../../AI-Skills/case-studies/01-frontend-skill/README.md) and [AI-Workflows cross-size check](../../../AI-Workflows/case-studies/01-frontend-workflow/README.md) — same team, same growing problem, three genuinely different tools.
 
 ---
 

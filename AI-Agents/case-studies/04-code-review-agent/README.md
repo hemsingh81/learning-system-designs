@@ -24,6 +24,8 @@ But — and this is the part that answers Goal 3's real question — **the five-
 
 ## The agent
 
+The full, ready-to-run definition also lives at [`agent.md`](agent.md) in this folder.
+
 ```javascript
 meta = {
   name: "adaptive-pr-review-agent",
@@ -67,6 +69,15 @@ Per [Chapter 7](../../tutorial/07-testing-and-iterating.md): the exact planted c
 ## Where it sits on the sharing ladder
 
 **Level 3 — Company-wide.** Entirely read-only — it decides scope and calls an existing, already-governed workflow, taking no action itself — so it clears [Chapter 9](../../tutorial/09-governance-and-capstone.md)'s approval-gate requirement without needing one. Its real cost is now variable per PR instead of fixed, and that's stated plainly in its own documentation. Small PRs cost a fraction of what the fixed five-angle workflow used to cost every time. Large ones cost exactly the same as before.
+
+---
+
+## References & assets
+
+- **[`agent.md`](agent.md)** — the complete, real definition, including the guard requiring `read_full_diff` before any angle-selection decision. Copy it into your own agent tool, adapting syntax per the repo's [note on accuracy](../../README.md#a-note-on-accuracy).
+- **[`assets/flow-diagram.md`](assets/flow-diagram.md)** — this case study's own diagram, showing the narrow-PR and broad-PR paths side by side.
+- **Chapters used:** [Chapter 4](../../tutorial/04-tools-and-grounding.md) (grounding the scope decision in real content, not file names), [Chapter 6](../../tutorial/06-agents-vs-other-tools.md), [Chapter 10](../../tutorial/10-lifecycle-of-execution.md).
+- **The full thread this closes:** [AI-Skills `/code-review` skill](../../../AI-Skills/case-studies/04-code-review-skill/README.md) → [AI-Workflows five-angle workflow](../../../AI-Workflows/case-studies/04-code-review-workflow/README.md) → this agent. See [`docs/how-the-three-connect.md`](../../../docs/how-the-three-connect.md) for the complete trace.
 
 ---
 

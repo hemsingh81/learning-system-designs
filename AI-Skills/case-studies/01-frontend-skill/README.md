@@ -34,6 +34,8 @@ Skill, then partly-hook. Divya keeps the existing automated scanner as the hook 
 
 ## The skill
 
+The full file also lives at [`SKILL.md`](SKILL.md) in this folder — copy it directly into your own skills directory to use it as-is.
+
 ```markdown
 ---
 name: kestrel-a11y-review
@@ -121,6 +123,15 @@ Output testing, on three real components: a login form, a modal dialog, and a da
 ## Where it sits on the sharing ladder
 
 **Level 2 — Project.** Checked into the frontend repo, so every frontend engineer at Kestrel gets it automatically, the same way they get the lint config. It's specific to Kestrel's own component patterns and doesn't make sense outside this codebase, so it stays at Level 2 rather than becoming a company-wide package.
+
+---
+
+## References & assets
+
+- **[`SKILL.md`](SKILL.md)** — the complete, real file. Copy it into your own skills directory to use it exactly as built here.
+- **[`assets/flow-diagram.md`](assets/flow-diagram.md)** — this case study's own diagram, tracing a real request from trigger match through all four checks to the final report.
+- **Chapters used:** [Chapter 3](../../tutorial/03-your-first-skill.md) (the vague-instructions fix), [Chapter 6](../../tutorial/06-skills-vs-other-tools.md) (the skill-vs-hook split), [Chapter 7](../../tutorial/07-testing-and-iterating.md) (trigger + output testing), [Chapter 10](../../tutorial/10-lifecycle-of-execution.md) (what actually happens when this skill runs).
+- **Where Divya's work goes next:** the same cross-size checking problem gets a genuinely different tool in [AI-Workflows Case Study 1](../../../AI-Workflows/case-studies/01-frontend-workflow/README.md) (parallel fan-out with a barrier), and an open-ended investigation version in [AI-Agents Case Study 1](../../../AI-Agents/case-studies/01-frontend-agent/README.md) (explore, narrow, confirm).
 
 ---
 

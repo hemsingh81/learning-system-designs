@@ -24,6 +24,8 @@ Skill. But this case study's real lesson isn't the trigger decision — it's wha
 
 ## The skill
 
+The full file also lives at [`SKILL.md`](SKILL.md) in this folder — copy it directly into your own skills directory to use it as-is.
+
 ```markdown
 ---
 name: kestrel-test-case-gen
@@ -104,6 +106,15 @@ But the output testing here needed an extra layer beyond Chapter 7's usual line-
 ## Where it sits on the sharing ladder
 
 **Level 2 — Project**, for now. Ananya suspects this one could genuinely reach Level 3 eventually — the categories (empty input, boundaries, duplicates, dependency failure) aren't Kestrel-specific, they're just good testing practice. But per [Chapter 8](../../tutorial/08-packaging-and-sharing.md)'s honest rule, she's holding it at Level 2 until at least two other teams have actually asked for it unmodified — not before.
+
+---
+
+## References & assets
+
+- **[`SKILL.md`](SKILL.md)** — the complete, real file. Copy it into your own skills directory to use it exactly as built here.
+- **[`assets/flow-diagram.md`](assets/flow-diagram.md)** — this case study's own diagram, including the two guard checks (testable expected result, no invented answers) that fix the false-coverage risk.
+- **Chapters used:** [Chapter 6](../../tutorial/06-skills-vs-other-tools.md), [Chapter 7](../../tutorial/07-testing-and-iterating.md) (extended with the pass/fail-checkable rule), [Chapter 8](../../tutorial/08-packaging-and-sharing.md) (the honest two-teams-first sharing rule), [Chapter 10](../../tutorial/10-lifecycle-of-execution.md).
+- **Where Ananya's work goes next:** the same false-coverage risk carries forward into [AI-Workflows Case Study 3](../../../AI-Workflows/case-studies/03-qa-workflow/README.md) (fan-out plus adversarial verification), and becomes a hard exploration boundary in [AI-Agents Case Study 3](../../../AI-Agents/case-studies/03-qa-agent/README.md) (bounded autonomous exploration).
 
 ---
 

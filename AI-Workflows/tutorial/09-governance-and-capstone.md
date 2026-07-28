@@ -1,6 +1,6 @@
 # Chapter 9 — Governance and Capstone
 
-← [Chapter 8 — Packaging and Sharing](08-packaging-and-sharing.md) · [Learning path](../learning-path.md) · Next: [Case Studies →](../case-studies/README.md)
+← [Chapter 8 — Packaging and Sharing](08-packaging-and-sharing.md) · [Learning path](../learning-path.md) · Next: [Chapter 10 — The Execution Lifecycle →](10-lifecycle-of-execution.md)
 
 ---
 
@@ -154,10 +154,12 @@ Run your own workflow — the one you've been building since Chapter 3 — throu
 
 Nothing, for this one workflow. Same as your last capstone — you've done the whole thing, start to end.
 
+Before the case studies, one bonus chapter worth reading: [Chapter 10 — The Execution Lifecycle](10-lifecycle-of-execution.md) traces a real multi-phase run, moment to moment, including what happens when a stage fails.
+
 Read the [case studies](../case-studies/README.md) next — four different teams, four genuinely different orchestration shapes, including the one where Rahul's original skill becomes a real stage inside a real workflow.
 
 **Then, when you're ready:** [AI-Agents](../../AI-Agents/README.md) picks up exactly where this chapter's honest limit leaves off — for the tasks where even a fixed, deterministic plan isn't flexible enough.
 
 ---
 
-← [Chapter 8 — Packaging and Sharing](08-packaging-and-sharing.md) · [Learning path](../learning-path.md) · Next: [Case Studies →](../case-studies/README.md)
+← [Chapter 8 — Packaging and Sharing](08-packaging-and-sharing.md) · [Learning path](../learning-path.md) · Next: [Chapter 10 — The Execution Lifecycle →](10-lifecycle-of-execution.md)

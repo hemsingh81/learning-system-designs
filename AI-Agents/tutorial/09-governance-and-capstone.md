@@ -1,6 +1,6 @@
 # Chapter 9 — Governance and Capstone
 
-← [Chapter 8 — Packaging and Sharing](08-packaging-and-sharing.md) · [Learning path](../learning-path.md) · Next: [Case Studies →](../case-studies/README.md)
+← [Chapter 8 — Packaging and Sharing](08-packaging-and-sharing.md) · [Learning path](../learning-path.md) · Next: [Chapter 10 — The Execution Lifecycle →](10-lifecycle-of-execution.md)
 
 ---
 
@@ -156,10 +156,12 @@ Run your own agent — the one you've been building since Chapter 3 — through 
 
 Nothing, for this one agent. Same as your last two capstones — you've done the whole thing, start to end.
 
+Before the case studies, one bonus chapter worth reading: [Chapter 10 — The Execution Lifecycle](10-lifecycle-of-execution.md) traces a real agent's run turn by turn, including exactly what happens at its repeat guard, grounding gate, and approval gate.
+
 Read the [case studies](../case-studies/README.md) next — four different teams, four genuinely different investigations, including the one where Rahul's five-angle workflow becomes one agent's adaptive choice.
 
 **Then, when you're ready:** see [`docs/how-the-three-connect.md`](../../docs/how-the-three-connect.md) — how Skills, Workflows, and Agents fit together as one continuous ladder, start to finish.
 
 ---
 
-← [Chapter 8 — Packaging and Sharing](08-packaging-and-sharing.md) · [Learning path](../learning-path.md) · Next: [Case Studies →](../case-studies/README.md)
+← [Chapter 8 — Packaging and Sharing](08-packaging-and-sharing.md) · [Learning path](../learning-path.md) · Next: [Chapter 10 — The Execution Lifecycle →](10-lifecycle-of-execution.md)

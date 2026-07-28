@@ -24,6 +24,8 @@ Vikram checked Step 2 of the [phase-planning checklist](../../templates/phase-pl
 
 ## The workflow
 
+The full, ready-to-run script also lives at [`workflow.md`](workflow.md) in this folder.
+
 ```javascript
 meta = {
   name: "endpoint-scaffold-test-document",
@@ -91,6 +93,15 @@ Output testing on a real sprint batch of 6 endpoints. One real gap surfaced. The
 ## Where it sits on the sharing ladder
 
 **Level 2 — Project.** Checked into the backend repo. Vikram's team runs this every time a sprint adds new endpoints in a batch.
+
+---
+
+## References & assets
+
+- **[`workflow.md`](workflow.md)** — the complete, real script. Copy it into your own workflow tool, adapting syntax per the repo's [note on accuracy](../../README.md#a-note-on-accuracy).
+- **[`assets/flow-diagram.md`](assets/flow-diagram.md)** — this case study's own diagram, showing 3 endpoints overlapping across stages with no barrier.
+- **Chapters used:** [Chapter 2](../../tutorial/02-anatomy-of-a-workflow.md) (the per-item `index`/`endpoint` argument), [Chapter 4](../../tutorial/04-parallel-vs-pipeline.md) (the unearned-barrier fix), [Chapter 7](../../tutorial/07-testing-and-iterating.md), [Chapter 10](../../tutorial/10-lifecycle-of-execution.md).
+- **Where this started, and where it goes next:** built on Vikram's [AI-Skills endpoint-scaffolding skill](../../../AI-Skills/case-studies/02-backend-skill/README.md); the same layered-structure problem becomes an open-ended diagnosis in [AI-Agents Case Study 2](../../../AI-Agents/case-studies/02-backend-agent/README.md) (hypothesize, test, revise).
 
 ---
 

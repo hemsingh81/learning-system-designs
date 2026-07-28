@@ -31,8 +31,9 @@ Every chapter has the same five parts, so you always know where you are:
 | 7 | Testing and Iterating | 30 min | You're about to share this — is it actually reliable? | [`tutorial/07-testing-and-iterating.md`](tutorial/07-testing-and-iterating.md) |
 | 8 | Packaging and Sharing | 35 min | Divya wants your skill for her own team | [`tutorial/08-packaging-and-sharing.md`](tutorial/08-packaging-and-sharing.md) |
 | 9 | Governance and Capstone | 30 min | A teammate's skill almost does something risky | [`tutorial/09-governance-and-capstone.md`](tutorial/09-governance-and-capstone.md) |
+| 10 | The Execution Lifecycle (bonus) | 20 min | Rahul asks you to trace the whole runtime, in order | [`tutorial/10-lifecycle-of-execution.md`](tutorial/10-lifecycle-of-execution.md) |
 
-**Total: about 4.5 hours**, including every exercise.
+**Total: about 5 hours**, including every exercise.
 
 ---
 
@@ -143,6 +144,18 @@ Every chapter has the same five parts, so you always know where you are:
 3. Use the full "is this ready?" checklist from thought process to sharing.
 
 **You'll try:** Run the pre-distribution checklist against your own skill. Fix whatever it flags.
+
+---
+
+### Chapter 10 — The Execution Lifecycle (bonus)
+**File:** [`tutorial/10-lifecycle-of-execution.md`](tutorial/10-lifecycle-of-execution.md)
+
+**You'll be able to:**
+1. Trace the exact runtime sequence from "listed" to "loaded" to "executed" to "reset."
+2. Explain why only a skill's description is present most of the time — not its instructions.
+3. Predict what happens, step by step, for a clean match, a near-miss, and no match at all.
+
+**You'll try:** Pick two of your own skills. Trace, on paper, which lifecycle stage would catch a deliberately ambiguous request between them.
 
 ---
 

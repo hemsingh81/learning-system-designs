@@ -26,6 +26,8 @@ This is the direct, concrete answer to the question this whole tutorial exists t
 
 ## The workflow
 
+The full, ready-to-run script also lives at [`workflow.md`](workflow.md) in this folder.
+
 ```javascript
 meta = {
   name: "pr-five-angle-review",
@@ -98,6 +100,15 @@ Real-world test: the same 600-line PR from this tutorial's opening story. Five a
 ## Where it sits on the sharing ladder
 
 **Level 3 — Company-wide**, with the cost documented up front, per [Chapter 9](../../tutorial/09-governance-and-capstone.md)'s Part 4. This workflow is 5 parallel calls plus up to 5 verification calls — roughly 10 pieces of work per PR. There's no nested nesting, so it stays well within a sensible cap. The number itself is written into the workflow's own description, so nobody discovers it by surprise.
+
+---
+
+## References & assets
+
+- **[`workflow.md`](workflow.md)** — the complete, real script. Copy it into your own workflow tool, adapting syntax per the repo's [note on accuracy](../../README.md#a-note-on-accuracy).
+- **[`assets/flow-diagram.md`](assets/flow-diagram.md)** — this case study's own diagram, with the `run_skill()` stage marked explicitly.
+- **Chapters used:** [Chapter 1](../../tutorial/01-what-is-a-workflow.md), [Chapter 4](../../tutorial/04-parallel-vs-pipeline.md), [Chapter 5](../../tutorial/05-fan-out-and-verify.md), [Chapter 9](../../tutorial/09-governance-and-capstone.md) (the documented cost that earns Level 3), [Chapter 10](../../tutorial/10-lifecycle-of-execution.md).
+- **Where this started:** the exact skill this workflow's style angle calls is [AI-Skills Case Study 4](../../../AI-Skills/case-studies/04-code-review-skill/README.md).
 
 ---
 

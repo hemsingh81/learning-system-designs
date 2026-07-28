@@ -64,8 +64,11 @@ This repo teaches you to build them, through one continuous story: you, a backen
 | 7 | [`tutorial/07-testing-and-iterating.md`](tutorial/07-testing-and-iterating.md) | Proving a workflow actually works, before anyone relies on it |
 | 8 | [`tutorial/08-packaging-and-sharing.md`](tutorial/08-packaging-and-sharing.md) | Versioning, sharing, and why workflows need explicit consent to run |
 | 9 | [`tutorial/09-governance-and-capstone.md`](tutorial/09-governance-and-capstone.md) | Cost governance, and the full "is this ready?" checklist |
+| 10 | [`tutorial/10-lifecycle-of-execution.md`](tutorial/10-lifecycle-of-execution.md) | Bonus: the exact runtime sequence, phase by phase, including failure paths |
 
 ### Case studies — the same process, four teams
+Each case study now includes a real, ready-to-use workflow script, a case-study-specific diagram in its own `assets/` folder, and a references section — see [`case-studies/README.md`](case-studies/README.md#what-each-case-study-contains) for the full shape.
+
 | # | File | The workflow it builds | The pattern it teaches |
 |---|---|---|---|
 | 1 | [`case-studies/01-frontend-workflow/`](case-studies/01-frontend-workflow/README.md) | Checks a component across screen sizes | Parallel fan-out with a barrier |
@@ -100,13 +103,14 @@ AI-Workflows/
 │   ├── 06-workflows-vs-other-tools.md
 │   ├── 07-testing-and-iterating.md
 │   ├── 08-packaging-and-sharing.md
-│   └── 09-governance-and-capstone.md
+│   ├── 09-governance-and-capstone.md
+│   └── 10-lifecycle-of-execution.md            ← bonus: the runtime trace
 │
 ├── case-studies/                               ← four real workflows, four teams
-│   ├── 01-frontend-workflow/
-│   ├── 02-backend-workflow/
-│   ├── 03-qa-workflow/
-│   └── 04-code-review-workflow/
+│   ├── 01-frontend-workflow/                   ← README + workflow script + assets/
+│   ├── 02-backend-workflow/                    ← README + workflow script + assets/
+│   ├── 03-qa-workflow/                         ← README + workflow script + assets/
+│   └── 04-code-review-workflow/                ← README + workflow script + assets/
 │
 ├── templates/                                  ← copy-paste starting points
 │   ├── WORKFLOW-template.md

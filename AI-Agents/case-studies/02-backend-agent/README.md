@@ -20,6 +20,8 @@ This is the case that answers [Chapter 6](../../tutorial/06-agents-vs-other-tool
 
 ## The agent
 
+The full, ready-to-run definition also lives at [`agent.md`](agent.md) in this folder.
+
 ```javascript
 meta = {
   name: "flaky-test-triage-agent",
@@ -62,6 +64,15 @@ Per [Chapter 7](../../tutorial/07-testing-and-iterating.md): four planted scenar
 ## Where it sits on the sharing ladder
 
 **Level 2 — Project.** Entirely read-only after removing the auto-edit tool — diagnosis only, proposed fixes reviewed by a human before anything changes. Checked into the backend repo; Vikram's team runs it as the first step on any newly-reported flaky test, before anyone spends their own time chasing it by hand.
+
+---
+
+## References & assets
+
+- **[`agent.md`](agent.md)** — the complete, real definition, diagnosis-only by design. Copy it into your own agent tool, adapting syntax per the repo's [note on accuracy](../../README.md#a-note-on-accuracy).
+- **[`assets/flow-diagram.md`](assets/flow-diagram.md)** — this case study's own diagram, showing how turn 1 rules out two theories at once.
+- **Chapters used:** [Chapter 3](../../tutorial/03-your-first-agent.md) (why this genuinely needed an agent, not a 4-phase workflow), [Chapter 9](../../tutorial/09-governance-and-capstone.md) (why the auto-edit tool was removed), [Chapter 10](../../tutorial/10-lifecycle-of-execution.md).
+- **Where this started:** built on Vikram's [AI-Skills endpoint-scaffolding skill](../../../AI-Skills/case-studies/02-backend-skill/README.md) and [AI-Workflows scaffold-test-document pipeline](../../../AI-Workflows/case-studies/02-backend-workflow/README.md).
 
 ---
 

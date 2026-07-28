@@ -31,8 +31,9 @@ Same five parts as AI-Skills and AI-Workflows, so the habit carries over:
 | 7 | Testing and Iterating | 30 min | You're about to share this — but it never takes the same path twice | [`tutorial/07-testing-and-iterating.md`](tutorial/07-testing-and-iterating.md) |
 | 8 | Packaging and Sharing | 35 min | Vikram wants this pattern, but wants to know what it's allowed to touch | [`tutorial/08-packaging-and-sharing.md`](tutorial/08-packaging-and-sharing.md) |
 | 9 | Governance and Capstone | 30 min | An agent takes an action nobody explicitly approved | [`tutorial/09-governance-and-capstone.md`](tutorial/09-governance-and-capstone.md) |
+| 10 | The Execution Lifecycle (bonus) | 25 min | Rahul asks if you can trace the run in advance — you can't, and that's the point | [`tutorial/10-lifecycle-of-execution.md`](tutorial/10-lifecycle-of-execution.md) |
 
-**Total: about 4.5 hours**, including every exercise.
+**Total: about 5 hours**, including every exercise.
 
 ---
 
@@ -143,6 +144,18 @@ Same five parts as AI-Skills and AI-Workflows, so the habit carries over:
 3. Use the full "is this ready?" checklist, from thought process to sharing.
 
 **You'll try:** Run the pre-distribution checklist against your own agent. Check specifically: what stops this from taking an action nobody agreed to?
+
+---
+
+### Chapter 10 — The Execution Lifecycle (bonus)
+**File:** [`tutorial/10-lifecycle-of-execution.md`](tutorial/10-lifecycle-of-execution.md)
+
+**You'll be able to:**
+1. Trace a real agent's full runtime, turn by turn, including its repeat guard, grounding gate, and approval gate.
+2. Explain why an agent's turn count genuinely can't be known in advance, even though its lifecycle's shape is fixed.
+3. Predict exactly which of the three exits — DONE, EXHAUSTED, or budget — a given run will hit, and why.
+
+**You'll try:** Run your own agent once, writing down turn by turn what `think()` decided and why. Run it again on a harder input and confirm the lifecycle's shape stayed identical even though its length changed.
 
 ---
 
