@@ -6,7 +6,7 @@ A comprehensive collection of hands-on tutorials and case studies on building so
 
 ## The AI series
 
-Four books, in order. Each stands alone, but they're one continuous story and they build on each other.
+Five books, in order. Each stands alone, but they're one continuous story and they build on each other.
 
 | | Book | The idea | Scope | Tutorials |
 |---|---|---|---|---|
@@ -14,12 +14,14 @@ Four books, in order. Each stands alone, but they're one continuous story and th
 | 2 | [**AI-Workflows**](AI-Workflows/README.md) | A fixed plan, written in advance, coordinating several pieces of work | One job | [10 chapters](#ai-workflows-tutorials) |
 | 3 | [**AI-Agents**](AI-Agents/README.md) | A goal and a loop that decides its own next step from what it discovers | One investigation | [10 chapters](#ai-agents-tutorials) |
 | 4 | [**AI-Agile-Development**](AI-Agile-Development/README.md) | Seven roles, thirty-six prompts, and the seams between them | One project | [36 prompts](#ai-agile-development-prompts) |
+| 5 | [**AI-Sets**](AI-Sets/README.md) | All four levels in runnable Python — Skill → Workflow → Agent → Agentic AI — with 140+ tests and zero API cost | One codebase | [5 lessons + 16 examples](#ai-sets-tutorials) |
 
 **[How the books connect](docs/how-the-three-connect.md)** — the single decision framework, and the one piece of logic followed across all of them.
 
 ### Where to start
 
 - **Never built any of this** → [AI-Skills](AI-Skills/README.md), [Chapter 1](AI-Skills/tutorial/01-what-is-a-skill.md)
+- **Want to learn by reading code, not prose** → [AI-Sets](AI-Sets/README.md), [Concepts](AI-Sets/docs/01-concepts.md)
 - **You prompt well alone and want to run a team that way** → [AI-Agile-Development](AI-Agile-Development/README.md)
 - **You have code an AI wrote and QA says it's broken** → [P27 — Fix from a QA bug report](AI-Agile-Development/AI-Prompts-Library/phase-6-rework/P27-fix-from-a-qa-bug-report.md)
 - **You want an Azure ETL architecture more than a prompting method** → [Python ETL case study](AI-Agile-Development/Case-Study/Python-ETL/README.md)
@@ -99,6 +101,26 @@ Four books, in order. Each stands alone, but they're one continuous story and th
 | 10 | [Lifecycle of Execution](AI-Agents/tutorial/10-lifecycle-of-execution.md) | Bonus: the turn-by-turn runtime trace, including both approval and grounding gates |
 
 **Case Studies:** [Frontend](AI-Agents/case-studies/01-frontend-agent/README.md) | [Backend](AI-Agents/case-studies/02-backend-agent/README.md) | [QA](AI-Agents/case-studies/03-qa-agent/README.md) | [Code Review](AI-Agents/case-studies/04-code-review-agent/README.md)
+
+---
+
+### AI-Sets Tutorials
+
+**Start here:** [Concepts](AI-Sets/docs/01-concepts.md) | [Setup (Windows)](AI-Sets/docs/02-setup-windows.md) | [Master Plan](AI-Sets/docs/00-PLAN.md)
+
+> A **skill** does one thing. A **workflow** is a path **you** chose. An **agent** is a path the **model** chooses. **Agentic AI** is an agent that owns a **goal**, with memory, safety limits, and an escape hatch to a human.
+
+| # | Lesson | What you'll build |
+|---|---|---|
+| 1 | [Skills](AI-Sets/tutorial/01-skills/README.md) | 5 AI skills — classify, extract, score, draft, summarize |
+| 2 | [Workflows](AI-Sets/tutorial/02-workflows/README.md) | A 4-step pipeline with branching, retries, and a circuit breaker |
+| 3 | [Agents](AI-Sets/tutorial/03-agents/README.md) | An agent that investigates by calling tools, with a step budget and loop detection |
+| 4 | [Agentic AI](AI-Sets/tutorial/04-agentic/README.md) | Goal, Plan, Critic, Budget, Escalation, and multi-agent orchestration |
+| 5 | [Case Study](AI-Sets/tutorial/05-case-study/README.md) | Capstone: a backend incident-triage system wiring everything together |
+
+**16 Runnable Examples:** [`01_skill_hello`](AI-Sets/examples/01_skill_hello.py) through [`16_serve_agent_api`](AI-Sets/examples/16_serve_agent_api.py) — all run offline with `FakeLLM`, zero API cost.
+
+**Docs:** [LLM Basics](AI-Sets/docs/03-llm-basics.md) | [Prompting Guide](AI-Sets/docs/04-prompting-guide.md) | [Testing AI Code](AI-Sets/docs/05-testing-ai-code.md) | [Security & Privacy](AI-Sets/docs/06-security-and-privacy.md) | [Cost & Latency](AI-Sets/docs/07-cost-and-latency.md) | [Troubleshooting](AI-Sets/docs/08-troubleshooting.md) | [Frameworks](AI-Sets/docs/09-frameworks-and-when-to-use-them.md) | [Glossary](AI-Sets/docs/10-glossary.md)
 
 ---
 
@@ -252,7 +274,9 @@ Every one of them is written the same way, on purpose:
 
 ## The cast
 
-The AI series shares a cast across all four books. [Kestrel Software](AI-Agile-Development/the-cast.md) is a consultancy; **Rahul Nair** (team lead) and **Divya Menon** (QA) appear throughout. Book four adds a project manager, product owner, architect and two engineers, plus **Priya Raman** — the operations analyst at the client who is the reason any of it exists.
+The AI narrative series (books 1–4) shares a cast across all four books. [Kestrel Software](AI-Agile-Development/the-cast.md) is a consultancy; **Rahul Nair** (team lead) and **Divya Menon** (QA) appear throughout. Book four adds a project manager, product owner, architect and two engineers, plus **Priya Raman** — the operations analyst at the client who is the reason any of it exists.
+
+Book five — [AI-Sets](AI-Sets/README.md) — is the code companion: no narrative cast, just runnable Python that implements every concept the first three books describe in prose.
 
 ---
 

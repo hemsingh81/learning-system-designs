@@ -1,0 +1,6 @@
+2026-06-15T02:09:00 INFO  checkout       new deployment v42 rolled out
+2026-06-15T02:10:00 INFO  payments       request handled ok in 90ms
+2026-06-15T02:14:00 INFO  payments       routine cache refresh completed
+2026-06-15T02:14:30 ERROR checkout       failed to render cart summary, unhandled exception in v42
+2026-06-15T02:15:00 ERROR checkout       failed to render cart summary, unhandled exception in v42
+2026-06-15T02:20:00 INFO  payments       request handled ok in 95ms

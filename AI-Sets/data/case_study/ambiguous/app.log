@@ -1,0 +1,6 @@
+2026-06-15T02:10:00 INFO  payments       request handled ok in 95ms
+2026-06-15T02:13:50 INFO  payments       request handled ok in 100ms
+2026-06-15T02:14:00 WARN  payments       gateway response time degraded, p99=650ms (threshold=500ms)
+2026-06-15T02:14:30 WARN  payments       connection pool at 85% utilization (18/20 connections in use)
+2026-06-15T02:15:00 INFO  payments       request handled ok in 110ms
+2026-06-15T02:19:00 INFO  payments       request handled ok in 90ms

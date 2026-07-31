@@ -1,0 +1,28 @@
+{
+  "payments": [
+    {
+      "timestamp": "2026-06-15T02:10:00",
+      "latency_ms_p99": 100,
+      "error_rate": 0.01,
+      "cpu_pct": 30.0
+    },
+    {
+      "timestamp": "2026-06-15T02:14:00",
+      "latency_ms_p99": 610,
+      "error_rate": 0.07,
+      "cpu_pct": 55.0
+    },
+    {
+      "timestamp": "2026-06-15T02:17:00",
+      "latency_ms_p99": 590,
+      "error_rate": 0.06,
+      "cpu_pct": 52.0
+    },
+    {
+      "timestamp": "2026-06-15T02:22:00",
+      "latency_ms_p99": 105,
+      "error_rate": 0.01,
+      "cpu_pct": 28.0
+    }
+  ]
+}

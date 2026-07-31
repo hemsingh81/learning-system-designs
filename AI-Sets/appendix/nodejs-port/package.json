@@ -1,0 +1,17 @@
+{
+  "name": "aisets-nodejs-port",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Reference-only Node.js port of one AI-Sets skill (classify_ticket). See README.md.",
+  "type": "module",
+  "main": "run.js",
+  "scripts": {
+    "start": "node run.js"
+  },
+  "dependencies": {
+    "zod": "^3.23.0"
+  },
+  "optionalDependencies": {
+    "@anthropic-ai/sdk": "^0.32.0"
+  }
+}

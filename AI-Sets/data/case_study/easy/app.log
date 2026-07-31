@@ -1,0 +1,9 @@
+2026-06-15T02:10:00 INFO  payments       request handled ok in 80ms
+2026-06-15T02:13:55 INFO  payments       request handled ok in 90ms
+2026-06-15T02:14:00 WARN  payments       gateway response time degraded, p99=4200ms (threshold=1500ms)
+2026-06-15T02:14:03 ERROR payments       upstream call to payment-gateway timed out after 5000ms (order_id=9000)
+2026-06-15T02:14:06 ERROR payments       upstream call to payment-gateway timed out after 5000ms (order_id=9001)
+2026-06-15T02:14:09 ERROR payments       circuit breaker OPEN for payment-gateway, failing fast
+2026-06-15T02:16:00 ERROR payments       upstream call to payment-gateway timed out after 5000ms (order_id=9002)
+2026-06-15T02:20:00 INFO  payments       payment-gateway connectivity restored, response times normalizing
+2026-06-15T02:25:00 INFO  payments       request handled ok in 85ms

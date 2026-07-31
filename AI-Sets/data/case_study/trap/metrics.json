@@ -1,0 +1,42 @@
+{
+  "payments": [
+    {
+      "timestamp": "2026-06-15T02:10:00",
+      "latency_ms_p99": 90,
+      "error_rate": 0.01,
+      "cpu_pct": 25.0
+    },
+    {
+      "timestamp": "2026-06-15T02:14:00",
+      "latency_ms_p99": 105,
+      "error_rate": 0.02,
+      "cpu_pct": 27.0
+    },
+    {
+      "timestamp": "2026-06-15T02:20:00",
+      "latency_ms_p99": 92,
+      "error_rate": 0.01,
+      "cpu_pct": 24.0
+    }
+  ],
+  "checkout": [
+    {
+      "timestamp": "2026-06-15T02:10:00",
+      "latency_ms_p99": 80,
+      "error_rate": 0.01,
+      "cpu_pct": 20.0
+    },
+    {
+      "timestamp": "2026-06-15T02:14:00",
+      "latency_ms_p99": 700,
+      "error_rate": 0.61,
+      "cpu_pct": 90.0
+    },
+    {
+      "timestamp": "2026-06-15T02:20:00",
+      "latency_ms_p99": 82,
+      "error_rate": 0.01,
+      "cpu_pct": 22.0
+    }
+  ]
+}
