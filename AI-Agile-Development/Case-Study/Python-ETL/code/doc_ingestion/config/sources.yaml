@@ -1,0 +1,246 @@
+# -----------------------------------------------------------------------------
+# Per-counterparty configuration for the Northwind counterparty ingestion
+# pipeline.
+#
+# This file is the whole point of the design. Onboarding a new counterparty is
+# a block in `sources:` plus a trained Document Intelligence model — never a
+# code change. If you find yourself editing Python to add a broker, the config
+# schema is missing something; extend the schema, not the pipeline.
+#
+# Everything under `defaults:` is deep-merged into every source, so a source
+# only states what makes it different. `rules:` is the exception: a list cannot
+# be deep-merged sensibly, so a source ADDS rules through `extra_rules:` and
+# only replaces the default set by restating `rules:` wholesale.
+# -----------------------------------------------------------------------------
+
+defaults:
+  container: "raw"
+
+  classifier:
+    classifier_id: "counterparty-doc-classifier-v2"
+    # Below this, we do not guess the layout — the document goes to review.
+    min_confidence: 0.75
+
+  confidence:
+    default: 0.80
+    by_field_type:
+      currency: 0.90      # money gets the tightest gate
+      number: 0.90        # quantities are money by another name
+      date: 0.85
+      string: 0.75        # a slightly wrong security NAME does not break a
+                          # reconciliation keyed on identifier and quantity
+
+  max_pages: 50
+  redact_pii: true
+
+  # NWD-138: translation must never touch a field the matching logic keys on.
+  # These names are the canonical (post-field_map) names, not the model's.
+  no_translate_fields:
+    - account_number
+    - security_id
+    - isin
+    - cusip
+    - sedol
+    - ticker
+    - currency
+    - trade_id
+  # Only these Document Intelligence field types are ever sent to Translator.
+  translate_field_types:
+    - string
+
+  # ---------------------------------------------------------------------------
+  # The rules engine. Order matters: normalisation runs before validation, and
+  # within each phase the rules run in the order declared here.
+  # `severity: error` sends the document to the exception queue.
+  # `severity: warning` is recorded on the row and logged, but still loads.
+  # ---------------------------------------------------------------------------
+  rules:
+    # -- normalisation -------------------------------------------------------
+    - id: trim_all_text
+      type: trim_whitespace
+      severity: warning
+      params:
+        fields: []          # empty = every string-valued field
+
+    - id: currency_codes_upper
+      type: upper_case
+      severity: warning
+      params:
+        fields: [currency]
+
+    - id: strip_number_grouping
+      type: strip_thousands_separators
+      severity: warning
+      params:
+        fields: [quantity, price, market_value]
+
+    # -- validation ----------------------------------------------------------
+    - id: confidence_gate
+      type: confidence_gate
+      severity: error
+      params: {}
+
+    - id: header_required
+      type: required_fields
+      severity: error
+      params:
+        scope: header
+        fields: [account_number]
+
+    - id: line_required
+      type: required_fields
+      severity: error
+      params:
+        scope: line_item
+        fields: [security_id, quantity]
+
+    - id: quantity_sane
+      type: numeric_range
+      severity: error
+      params:
+        scope: line_item
+        field: quantity
+        min: -1000000000
+        max: 1000000000
+
+    - id: currency_known
+      type: allowed_values
+      severity: error
+      params:
+        scope: line_item
+        field: currency
+        values: [USD, EUR, GBP, CHF, JPY, BRL, MXN, ZAR, INR, HKD, SGD]
+        allow_missing: true
+
+    - id: no_future_dates
+      type: date_not_future
+      severity: error
+      params:
+        scope: header
+        fields: [statement_date, trade_date]
+        grace_days: 1       # counterparty clocks and time zones disagree
+
+    - id: at_least_one_line
+      type: min_line_items
+      severity: error
+      params:
+        minimum: 1
+
+    # -- completeness (the NWD-142 class) ------------------------------------
+    - id: declared_line_item_count
+      type: line_item_count
+      severity: error
+      params: {}
+
+    - id: page_continuation
+      type: page_continuation
+      severity: error
+      params: {}
+
+sources:
+  broker_alpha:
+    display_name: "Broker Alpha - Daily Position Statement"
+    prefix: "broker_alpha/"
+    model_id: "broker-alpha-position-v3"
+    doc_type: "position_statement"
+    language: "en"
+
+    field_map:
+      AccountNumber: account_number
+      StatementDate: statement_date
+      PositionCount: declared_line_item_count
+      Positions: positions            # array field -> line items
+
+    line_item_map:
+      SecurityId: security_id
+      SecurityName: security_name
+      Quantity: quantity
+      Price: price
+      MarketValue: market_value
+      Currency: currency
+
+    # The header field that tells us how many line items the document CLAIMS to
+    # contain. This is what turns NWD-142 from an invisible bug into a rule.
+    line_item_count_field: declared_line_item_count
+
+    confidence:
+      by_field_type:
+        currency: 0.92      # override: this broker's scan quality is weaker
+
+    extra_rules:
+      - id: statement_date_required
+        type: required_fields
+        severity: error
+        params:
+          scope: header
+          fields: [statement_date]
+
+      # quantity x price should reconcile to the stated market value. When it
+      # does not, one of the three numbers was misread even though all three
+      # cleared the confidence gate individually.
+      - id: value_consistency
+        type: cross_field_product
+        severity: error
+        params:
+          scope: line_item
+          left: quantity
+          right: price
+          product: market_value
+          tolerance_pct: 0.005      # 50bps, same tolerance reconciliation uses
+
+  broker_beta_em:
+    display_name: "Broker Beta - EM Trade Confirmations"
+    prefix: "broker_beta/"
+    model_id: "broker-beta-confirm-v1"
+    doc_type: "trade_confirmation"
+    language: "es"
+    translate_to: "en"                # EM documents pass through Translator first
+
+    field_map:
+      AccountNumber: account_number
+      TradeDate: trade_date
+      SettlementDate: settlement_date
+      TradeCount: declared_line_item_count
+      Trades: trades                  # array field -> line items
+
+    line_item_map:
+      SecurityId: security_id
+      SecurityName: security_name
+      Quantity: quantity
+      Price: price
+      Currency: currency
+      Side: side
+
+    line_item_count_field: declared_line_item_count
+
+    extra_rules:
+      - id: trade_dates_required
+        type: required_fields
+        severity: error
+        params:
+          scope: header
+          fields: [trade_date, settlement_date]
+
+      - id: settlement_after_trade
+        type: date_order
+        severity: error
+        params:
+          scope: header
+          earlier: trade_date
+          later: settlement_date
+
+      # Spanish confirmations say COMPRA / VENTA. Normalise before anything
+      # downstream tries to reason about direction.
+      - id: side_vocabulary
+        type: map_values
+        severity: warning
+        params:
+          scope: line_item
+          field: side
+          mapping:
+            COMPRA: BUY
+            COMPRAR: BUY
+            VENTA: SELL
+            VENDER: SELL
+            BUY: BUY
+            SELL: SELL

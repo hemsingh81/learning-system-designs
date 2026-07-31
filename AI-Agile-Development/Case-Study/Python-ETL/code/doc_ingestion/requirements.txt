@@ -1,0 +1,48 @@
+# -----------------------------------------------------------------------------
+# Pin the SDK versions. Document Intelligence in particular went through a
+# rename from Form Recognizer and a v3 -> v4 API change:
+#   azure-ai-formrecognizer      = the OLD package (v3 API)
+#   azure-ai-documentintelligence = the CURRENT package (v4 API)
+# Tutorials written before the rename still apply, but the package name and the
+# request/response models do not. Do not mix them.
+#
+# Requires Python 3.11+ (match statements, PEP 604 unions in annotations).
+# -----------------------------------------------------------------------------
+
+# --- Azure Functions host --------------------------------------------------
+azure-functions==1.21.*
+
+# --- Authentication: managed identity everywhere, zero API keys ------------
+azure-identity==1.19.*
+azure-keyvault-secrets==4.9.*
+
+# --- Storage: raw / bronze / review containers, and the analysis queue ------
+azure-storage-blob==12.24.*
+azure-storage-queue==12.12.*
+
+# --- Azure AI services -----------------------------------------------------
+azure-ai-documentintelligence==1.0.*
+azure-ai-textanalytics==5.3.*
+azure-ai-translation-text==1.0.*
+
+# --- Sinks -----------------------------------------------------------------
+pyodbc==5.2.*
+snowflake-connector-python==3.12.*
+
+# --- Data ------------------------------------------------------------------
+# pandas is required by snowflake write_pandas and by recon/reconcile.py.
+pandas==2.2.*
+
+# --- Aladdin REST client ---------------------------------------------------
+httpx==0.27.*
+
+# --- Configuration and reliability -----------------------------------------
+pydantic==2.9.*
+PyYAML==6.0.*
+tenacity==9.0.*
+
+# --- Tests -----------------------------------------------------------------
+# Kept in the same file because this project ships one environment. If the
+# deployed Function package size ever matters, split these into
+# requirements-dev.txt and exclude them from the deployment artefact.
+pytest==8.3.*

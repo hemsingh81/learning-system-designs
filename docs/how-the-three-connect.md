@@ -1,14 +1,16 @@
-# How Skills, Workflows, and Agents Connect
+# How Skills, Workflows, Agents and Teams Connect
 
-[AI-Skills](../AI-Skills/README.md) · [AI-Workflows](../AI-Workflows/README.md) · [AI-Agents](../AI-Agents/README.md)
+[AI-Skills](../AI-Skills/README.md) · [AI-Workflows](../AI-Workflows/README.md) · [AI-Agents](../AI-Agents/README.md) · [AI-Agile-Development](../AI-Agile-Development/README.md)
 
-This page is the map that ties three separate tutorials into one story. If you've read all three — or even just want to know how they fit together before you start — this is where that picture lives.
+This page is the map that ties the tutorials into one story. If you've read them — or even just want to know how they fit together before you start — this is where that picture lives.
 
 ---
 
 ## The one-sentence version
 
 **A skill is one focused set of instructions. A workflow is a fixed plan that coordinates several. An agent is a goal-driven loop that decides its own steps.** Each one is the right tool for a genuinely different kind of task, and none of them replaces the one before it — each new tool *reuses* the last one, it doesn't discard it.
+
+Then there's a fourth book, and it changes the question rather than the answer. **[AI-Agile-Development](../AI-Agile-Development/README.md) is about seven people each doing all of the above at once, and the seams between them.** The first three teach you to get one AI to do one thing well. The fourth is about what happens when that stops being the hard part.
 
 ---
 
@@ -105,10 +107,51 @@ None of these risks are reasons to avoid the tool. They're reasons to build the 
 
 ---
 
+## The fourth book — when the tool stops being the problem
+
+The three tutorials above share one assumption that nobody states out loud: **one person, one AI, one task.**
+
+A skill is one person's focused instruction set. A workflow is one person's plan. An agent is one person's goal, looping. Read all three and you become genuinely excellent at getting an AI to do a thing well.
+
+Then you put seven of those people on one project and something new breaks — and it isn't any of the three tools.
+
+[**AI-Agile-Development**](../AI-Agile-Development/README.md) is about that. Kestrel takes on a client — Northwind Asset Management — with a pipeline that reads counterparty PDFs with Azure AI and reconciles them against a portfolio system. Seven roles. Everyone prompting well. Six weeks in, the project is a mess, and not one prompt was bad.
+
+Two things caused it, and neither is a prompting problem:
+
+**The handoff.** When you hand incomplete work to a human, they get confused, and their confusion is your error-checking. Hand the same thing to an AI and you get a confident, complete-looking output built on the gap. **The AI never tells you that you handed it the wrong thing.** The fix is a written [handoff contract](../AI-Agile-Development/AI-Prompts-Library/02-the-handoff-contract.md) — what each artifact guarantees the next person will find in it.
+
+**The loop.** Every prompt library, including the first three books, describes a straight line: plan, build, test, ship. Real software goes build → test → wrong → diagnose → fix → still wrong → *the spec was wrong* → update spec → fix → review → argue → fix → ship. That's [Phase 6](../AI-Prompts-Library/03-the-rework-loop.md), it's the longest phase in the book, and it exists because of one question:
+
+> *"Dev A's story is code-generated. After testing there are issues. What prompt do we use?"*
+
+### How the ladder extends
+
+| | The unit of work | The thing that's hard | The unique risk |
+|---|---|---|---|
+| [Skill](../AI-Skills/README.md) | One task | Writing instructions that trigger correctly | Triggering on the wrong thing |
+| [Workflow](../AI-Workflows/README.md) | One job | Deciding the plan in advance | Cost multiplying invisibly |
+| [Agent](../AI-Agents/README.md) | One investigation | Knowing when to stop | An unapproved irreversible action |
+| [**Agile Development**](../AI-Agile-Development/README.md) | **One project** | **The seams between people** | **Seven excellent outputs that don't fit together** |
+
+The pattern from the governance chapters holds at this level too: **the thing that makes it more capable is what makes its risk possible.** Seven people prompting well is what makes the project fast, and it's exactly what lets it diverge faster than anyone can see.
+
+### Rahul's line, one level up
+
+Across the first three books Rahul keeps saying some version of *"that's not a workflow, that's an agent."* In the fourth he says it again, about something else:
+
+> **"That's not a prompting problem. That's a handoff problem."**
+
+Same move. Different layer.
+
+---
+
 ## Where to start
 
-New to all three? Start at [AI-Skills](../AI-Skills/README.md).
+New to all of it? Start at [AI-Skills](../AI-Skills/README.md).
 
 Already know skills, want to coordinate more than one thing at once? Start at [AI-Workflows](../AI-Workflows/README.md).
 
 Already have a solid workflow, but the right next step keeps depending on what you find? Start at [AI-Agents](../AI-Agents/README.md).
+
+Already prompt well on your own, and now you need a **team** to do it without diverging — or you have code an AI wrote that QA says is broken? Start at [AI-Agile-Development](../AI-Agile-Development/README.md).
