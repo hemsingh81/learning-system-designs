@@ -7,30 +7,30 @@
 | | |
 |---|---|
 | **Phase** | 4 — Build |
-| **Who runs it** | Backend Engineer (Tomas Vargas) |
+| **Who runs it** | Backend Engineer (Ravi Mullick) |
 | **When** | Every build day, once per step of the implementation plan |
 | **Takes in** | `artifacts/stories/NWD-103.md`, `artifacts/acceptance-criteria-NWD-103.md`, `artifacts/spec-confidence-gate.md`, `artifacts/implementation-plan-NWD-103.md`, `artifacts/definition-of-done.md`, `artifacts/CLAUDE.md` |
 | **Produces** | Working code — for the worked example, `code/doc_ingestion/core/confidence.py` and its tests |
-| **Hands off to** | Frontend Engineer (Ji-woo Park) for [P19](P19-build-the-ui-from-the-brief.md); the same author for [P20](P20-write-tests-alongside-the-code.md) |
+| **Hands off to** | Frontend Engineer (Dzmitry ) for [P19](P19-build-the-ui-from-the-brief.md); the same author for [P20](P20-write-tests-alongside-the-code.md) |
 | **Time to run** | 15–40 minutes per step, including reading what came back |
 
 ---
 
 ## 1. The scene
 
-Tuesday, day two of Sprint 2. Tomas Vargas has NWD-101 finished — PDFs land immutably in the raw zone — and he's opening NWD-103, the flagship story of the whole project: gate every extracted field on its confidence score.
+Tuesday, day two of Sprint 2. Ravi Mullick has NWD-101 finished — PDFs land immutably in the raw zone — and he's opening NWD-103, the flagship story of the whole project: gate every extracted field on its confidence score.
 
-He has more supporting material than he's ever had for a story. Sofia's spec says what the gate must do. Amara's acceptance criteria say when it's finished. Rahul's implementation plan from [P15](../phase-3-planning/P15-implementation-plan.md) has eight steps, and Step 0 — the spike — came back yesterday afternoon with an answer: yes, line items carry per-cell confidence, but only on fields the custom model was labelled for, and one of Broker Alpha's columns wasn't. Half a day of relabelling, already done.
+He has more supporting material than he's ever had for a story. Hem's spec says what the gate must do. Preetinka's acceptance criteria say when it's finished. Gautam's implementation plan from [P15](../phase-3-planning/P15-implementation-plan.md) has eight steps, and Step 0 — the spike — came back yesterday afternoon with an answer: yes, line items carry per-cell confidence, but only on fields the custom model was labelled for, and one of Broker Alpha's columns wasn't. Half a day of relabelling, already done.
 
 So he's at Step 1. And Step 1 says something that looks, at first glance, a bit odd:
 
 > Add the default threshold table, an `ExtractedField` value type and a `GateResult` value type. **No Azure imports, no I/O, no config reading — this module takes everything it needs as arguments.**
 
-Tomas's first instinct is to argue with it. The gate needs the per-broker overrides from `config/sources.yaml`. Why not just read the file? It's one import and one function call. Passing thresholds in from the caller means `core/rules.py` has to do the resolving, which makes the call site messier.
+Ravi's first instinct is to argue with it. The gate needs the per-broker overrides from `config/sources.yaml`. Why not just read the file? It's one import and one function call. Passing thresholds in from the caller means `core/rules.py` has to do the resolving, which makes the call site messier.
 
-He raises it with Rahul, who gives him an answer that takes about forty seconds and turns out to matter more than either of them expects: **if this module imports nothing, you can test it with four lines of setup instead of a mocking framework.** And a gate you can't easily test is a gate nobody will extend.
+He raises it with Gautam, who gives him an answer that takes about forty seconds and turns out to matter more than either of them expects: **if this module imports nothing, you can test it with four lines of setup instead of a mocking framework.** And a gate you can't easily test is a gate nobody will extend.
 
-Three weeks later, when Ananya files NWD-142 and Tomas has to change how line items are counted, that decision is why the fix takes an afternoon instead of two days.
+Three weeks later, when Pankaj files NWD-142 and Ravi has to change how line items are counted, that decision is why the fix takes an afternoon instead of two days.
 
 The temptation on day two is to paste the whole spec into a chat window and type "implement this". That gets you four hundred lines in ninety seconds and comprehension debt that comes due in Sprint 3. **This prompt exists to make you build the same thing in eight pieces you can actually check.**
 
@@ -145,11 +145,11 @@ The trade is real and worth stating honestly: **the caller gets slightly uglier.
 
 Fifteen lines of slight awkwardness in one file, in exchange for a core business rule that can be tested in four lines and understood in one sitting.
 
-**Why it pays off in the rework chapter.** When Ananya files NWD-142 — the bug where line items on page two of a Broker Alpha statement are silently dropped — Tomas has to change how the gate counts and validates line items. Because the gate is pure, he can write a failing test for the new behaviour in about ninety seconds, watch it go red, change the module, and watch it go green. The whole fix cycle is minutes.
+**Why it pays off in the rework chapter.** When Pankaj files NWD-142 — the bug where line items on page two of a Broker Alpha statement are silently dropped — Ravi has to change how the gate counts and validates line items. Because the gate is pure, he can write a failing test for the new behaviour in about ninety seconds, watch it go red, change the module, and watch it go green. The whole fix cycle is minutes.
 
 Had the gate been tangled up with the Azure client and the YAML loader, that same fix would have required updating the fake Azure response builder, re-checking three mocks, and running a test suite that takes ninety seconds instead of two. Not impossible — just slow enough that you'd be tempted to test it by hand instead. And "I tested it by hand" is how a fix ships without a regression test, which is how the same bug comes back.
 
-The general rule, which Sofia states in her ADR and which is worth stealing:
+The general rule, which Hem states in her ADR and which is worth stealing:
 
 > **Push the decisions to the edges and keep the rules in the middle.** I/O, configuration and network calls live at the boundary of your system. Business rules live in the middle, where they can be tested without any of it.
 
@@ -173,7 +173,7 @@ Three distinct activities, needing different amounts of your scepticism:
 
 **Deciding what the code should do when the spec is silent.** This is the dangerous one. The spec doesn't say what happens when a field has a value but a null confidence. The model will decide — probably sensibly, possibly not — and it will not tell you it decided. The prompt therefore requires an explicit "Assumptions I had to make" section, which turns a silent decision into a line you can read and either accept or override.
 
-That section is worth its weight. In the sample output below it surfaces two real gaps in Sofia's spec, both of which end up as one-line spec updates under D9 of the Definition of Done.
+That section is worth its weight. In the sample output below it surfaces two real gaps in Hem's spec, both of which end up as one-line spec updates under D9 of the Definition of Done.
 
 ### The one idea to keep
 
@@ -279,7 +279,7 @@ command passes, every assumption is listed, and nothing outside the step changed
 
 ## 5. The filled-in example
 
-Tomas runs this on Tuesday morning, day two, in a session opened at the repository root with the Sprint 1 artifacts committed. Step 0's spike is already deleted.
+Ravi runs this on Tuesday morning, day two, in a session opened at the repository root with the Sprint 1 artifacts committed. Step 0's spike is already deleted.
 
 ```text
 You are a Python 3.11 engineer implementing ONE step of an agreed implementation
@@ -698,7 +698,7 @@ this only proves you have not broken anything.
    defaulting to False, and straight_through is False whenever it is True. A
    document a human fixed cost a human something and must not count toward the
    85% target. This is a business decision, not a technical one — confirm with
-   Amara.
+   Preetinka.
 
 3. EMPTY VALUE STRING. I treat "" as missing, the same as None. The spec says
    "no value extracted" without defining it. An empty string from OCR is not a
@@ -732,13 +732,13 @@ Three things carry the weight, and one is commonly wrong.
 
 **The `straight_through` field and the `prior_review` argument.** This is the most interesting thing in the file and it came out of Assumption 2. `passed` and `straight_through` differ in exactly one case: a document a human already fixed. That case is the whole reason the headline metric — 61% today, 85% target — means anything. Without it, every analyst correction inflates the number the project is judged by.
 
-**The part that is commonly wrong:** the `UNKNOWN_FIELD_TYPE` reason is only reported when the field also fails the strict threshold. A strong unknown-type field passes silently and nobody learns that an unrecognised type appeared. Tomas spotted this on the read-through and it became a one-line addition in Step 4, where the caller logs unknown types regardless of outcome. **That is exactly what reading every line is for** — the code is not wrong, it's just quieter than it should be, and no test would have told you.
+**The part that is commonly wrong:** the `UNKNOWN_FIELD_TYPE` reason is only reported when the field also fails the strict threshold. A strong unknown-type field passes silently and nobody learns that an unrecognised type appeared. Ravi spotted this on the read-through and it became a one-line addition in Step 4, where the caller logs unknown types regardless of outcome. **That is exactly what reading every line is for** — the code is not wrong, it's just quieter than it should be, and no test would have told you.
 
 ---
 
 ## 7. Why this is the final prompt
 
-**What "done" means here.** The step is done when the green command passes, you have read every line, and you could explain any function in the file to Rahul without opening it again.
+**What "done" means here.** The step is done when the green command passes, you have read every line, and you could explain any function in the file to Gautam without opening it again.
 
 That last condition is D7 of the Definition of Done and it's the real gate. Everything else can be checked by a machine.
 
@@ -856,7 +856,7 @@ most damage without failing a test, and why.
 Do not add code. Do not add tests. Explain only.
 ```
 
-What changes: you get a map from behaviour to line, which is what your understanding was actually missing. Section 4 is where the value is — it's how Tomas learned that the gate validates every field it is *given* and has no opinion whatsoever about whether it was given all of them.
+What changes: you get a map from behaviour to line, which is what your understanding was actually missing. Section 4 is where the value is — it's how Ravi learned that the gate validates every field it is *given* and has no opinion whatsoever about whether it was given all of them.
 
 **That sentence, in Sprint 2, was the whole of NWD-142 sitting in plain view, and nobody acted on it.** It wasn't ignored out of carelessness — it was true and it sounded obvious, and there was no reason yet to think the extractor might hand over an incomplete set of rows. [P20](P20-write-tests-alongside-the-code.md) takes apart exactly why the tests didn't catch it either, and [Chapter 8](../../Case-Study/Python-ETL/08-sprint-3-rework.md) is the fix.
 
@@ -885,7 +885,7 @@ Do not change the code yet. I want the list first.
 
 What changes: you typically get two or three more assumptions, and at least one of them is genuinely contested. The "include decisions that feel obvious" clause is the important half — models under-report because they filter for interestingness, and the boring decisions are the ones that bite.
 
-Each surviving assumption becomes either a one-line spec update under DoD clause D9, or a question for Amara. Both are cheap now.
+Each surviving assumption becomes either a one-line spec update under DoD clause D9, or a question for Preetinka. Both are cheap now.
 
 ### 8.5 "It wrote helpers nothing calls"
 
@@ -938,7 +938,7 @@ Steps 1, 2 and 3 get read carefully. By step 4 the model has been right three ti
 
 This is not laziness. It's calibration — you've built a reasonable model of the tool's reliability and you're acting on it. The problem is that the failure you're watching for isn't random. Code that looks like previously-correct code is exactly what a subtly wrong version looks like.
 
-Rahul's countermeasure is blunt and works: **the reviewer picks one line and asks the author what it does.** Ten seconds, and it converts D7 from a promise into a check. It's in the Definition of Done for that reason.
+Gautam's countermeasure is blunt and works: **the reviewer picks one line and asks the author what it does.** Ten seconds, and it converts D7 from a promise into a check. It's in the Definition of Done for that reason.
 
 The other countermeasure is structural: if the steps are getting easier to skim, they're probably too similar, which means the plan is over-decomposed. Merge some.
 
@@ -948,7 +948,7 @@ You can execute eight steps perfectly and end up with something that doesn't fit
 
 The tell: three steps in, you notice you're passing the same four arguments through every function. That's the design telling you something wants to be an object, and no step will say so because no step can see the shape.
 
-When you feel it, stop building and talk to the architect. A design conversation on day three is cheap; the same conversation on day nine involves rewriting six files. Sofia's line — "what does this look like when it's wrong?" — is a good prompt for the conversation.
+When you feel it, stop building and talk to the architect. A design conversation on day three is cheap; the same conversation on day nine involves rewriting six files. Hem's line — "what does this look like when it's wrong?" — is a good prompt for the conversation.
 
 ### The tests are written by the same session that wrote the code
 
@@ -956,7 +956,7 @@ Ask the same session for the code and then the tests, and you get tests that agr
 
 This is why the prompt says **do not write tests unless the step names test files**, and why [P20](P20-write-tests-alongside-the-code.md) exists separately with a hard rule: tests are written from the acceptance criteria, not from the implementation.
 
-It's also Ananya's argument in the Definition of Done session for why D7 requires reading the *code*, not just the tests. Reading the tests instead gives you the same check twice, from the same misunderstanding.
+It's also Pankaj's argument in the Definition of Done session for why D7 requires reading the *code*, not just the tests. Reading the tests instead gives you the same check twice, from the same misunderstanding.
 
 ### Everything is a step, including the two-line ones
 
@@ -980,13 +980,13 @@ And if the same step comes back wrong three times in a row, stop prompting. More
 
 Two people pick this up, and they pick up different things.
 
-**Tomas himself, immediately**, with [P20](P20-write-tests-alongside-the-code.md). Step 1 of the plan names `tests/test_confidence.py`, and the four tests that go in it are written from Amara's acceptance criteria, not from the module that just appeared. That ordering is the whole point of P20 and it's why it's a separate prompt rather than a paragraph in this one.
+**Ravi himself, immediately**, with [P20](P20-write-tests-alongside-the-code.md). Step 1 of the plan names `tests/test_confidence.py`, and the four tests that go in it are written from Preetinka's acceptance criteria, not from the module that just appeared. That ordering is the whole point of P20 and it's why it's a separate prompt rather than a paragraph in this one.
 
-**Ji-woo, on day one and again on day six**, for [P19](P19-build-the-ui-from-the-brief.md). What she needs from this file is `GateResult` and `FieldFailure` — specifically `reason`, `field_name`, `line_item_index`, `confidence`, `threshold` and `describe()`. Those field names are the wire contract between the gate and her exception queue screen, which is why the prompt's design constraints told the model to name them carefully. She built against a fixture in that exact shape from day one; on day six she swaps the fixture for the real endpoint and, if the agreement held, changes one import.
+**Dzmitry, on day one and again on day six**, for [P19](P19-build-the-ui-from-the-brief.md). What she needs from this file is `GateResult` and `FieldFailure` — specifically `reason`, `field_name`, `line_item_index`, `confidence`, `threshold` and `describe()`. Those field names are the wire contract between the gate and her exception queue screen, which is why the prompt's design constraints told the model to name them carefully. She built against a fixture in that exact shape from day one; on day six she swaps the fixture for the real endpoint and, if the agreement held, changes one import.
 
-**Rahul, at review**, with [P23](../phase-5-verify/P23-review-someone-elses-code.md). He reads the test diff before the code diff (D8), picks a line and asks Tomas what it does (D7), and greps every new public name for a call site (D2). Roughly fifteen minutes for a step this size.
+**Gautam, at review**, with [P23](../phase-5-verify/P23-review-someone-elses-code.md). He reads the test diff before the code diff (D8), picks a line and asks Ravi what it does (D7), and greps every new public name for a call site (D2). Roughly fifteen minutes for a step this size.
 
-**Ananya, before she writes an E2E test**, reads the Assumptions sections across all eight steps. They're the fastest available map of where the spec is thin, and thin spec is where bugs live. She reads Assumption 2 — straight-through on resubmission — and immediately writes a test case for a document corrected and resubmitted, because that's a path nobody has exercised.
+**Pankaj, before she writes an E2E test**, reads the Assumptions sections across all eight steps. They're the fastest available map of where the spec is thin, and thin spec is where bugs live. She reads Assumption 2 — straight-through on resubmission — and immediately writes a test case for a document corrected and resubmitted, because that's a path nobody has exercised.
 
 > **Artifact contract — `code/doc_ingestion/core/confidence.py`**
 > Anyone reading this file can rely on finding:
@@ -1006,21 +1006,21 @@ Two people pick this up, and they pick up different things.
 
 This runs throughout [Chapter 5 — Sprint 2 Build (Backend)](../../Case-Study/Python-ETL/05-sprint-2-build-backend.md), once per step, eight times for NWD-103 alone. The artifact is [`core/confidence.py`](../../Case-Study/Python-ETL/code/doc_ingestion/core/confidence.py).
 
-The moment worth recording happened at Step 3, the line-item loop. Tomas ran the prompt, got the code, ran the tests, all green. Then he ran the §8.3 follow-up — "explain it, don't change it" — mostly out of habit, and section 4 of the answer came back with this line:
+The moment worth recording happened at Step 3, the line-item loop. Ravi ran the prompt, got the code, ran the tests, all green. Then he ran the §8.3 follow-up — "explain it, don't change it" — mostly out of habit, and section 4 of the answer came back with this line:
 
 > **Not checked:** whether the set of line items passed to the gate is complete. This module validates the rows it is given and has no way to know how many rows the source document contained.
 
 He read it. He agreed with it. It was obviously true — the gate takes a list, it can't know what isn't in the list. He moved on to Step 4.
 
-Nineteen days later Ananya filed NWD-142: a Broker Alpha statement whose positions table spans a page boundary loads into Snowflake with only page one's rows. Every field that *was* extracted had high confidence, so the gate passed it cleanly. Reconciliation then reported `MISSING_EXTERNAL` breaks for the dropped positions, indistinguishable from a genuine settlement failure. Priya spent most of a morning chasing three of them.
+Nineteen days later Pankaj filed NWD-142: a Broker Alpha statement whose positions table spans a page boundary loads into Snowflake with only page one's rows. Every field that *was* extracted had high confidence, so the gate passed it cleanly. Reconciliation then reported `MISSING_EXTERNAL` breaks for the dropped positions, indistinguishable from a genuine settlement failure. Preeti spent most of a morning chasing three of them.
 
-The sentence describing the bug had been sitting in Tomas's terminal since day three of Sprint 2.
+The sentence describing the bug had been sitting in Ravi's terminal since day three of Sprint 2.
 
-This is not a story about Tomas being careless. He did more than most engineers would: he ran the explanation follow-up, he read the answer, and he understood it. **The gap was that "the gate cannot know if rows are missing" read as a definition rather than a risk** — it's true of any function that takes a list, so it sounds like a tautology rather than a warning. Turning it into a risk requires knowing that the extractor sometimes returns fewer rows than the document has, and nobody knew that yet.
+This is not a story about Ravi being careless. He did more than most engineers would: he ran the explanation follow-up, he read the answer, and he understood it. **The gap was that "the gate cannot know if rows are missing" read as a definition rather than a risk** — it's true of any function that takes a list, so it sounds like a tautology rather than a warning. Turning it into a risk requires knowing that the extractor sometimes returns fewer rows than the document has, and nobody knew that yet.
 
-What the team changed afterwards is in [Chapter 10 — Retrospective](../../Case-Study/Python-ETL/10-retrospective.md): every "What is NOT checked" line from an §8.3 run now goes onto the story as a comment, and Ananya reads them when she writes test cases. It's a two-minute habit that would have caught NWD-142 in Sprint 2 rather than Sprint 3.
+What the team changed afterwards is in [Chapter 10 — Retrospective](../../Case-Study/Python-ETL/10-retrospective.md): every "What is NOT checked" line from an §8.3 run now goes onto the story as a comment, and Pankaj reads them when she writes test cases. It's a two-minute habit that would have caught NWD-142 in Sprint 2 rather than Sprint 3.
 
-The other, smaller thing: Assumption 2 — `prior_review` and the straight-through metric — went to Amara on day three. She confirmed it and added one sentence to the PRD. If it had gone unasked, the headline metric the entire business case rests on would have counted analyst-corrected documents as straight-through, and Northwind would have been shown a number that was wrong in the flattering direction. Two minutes of asking.
+The other, smaller thing: Assumption 2 — `prior_review` and the straight-through metric — went to Preetinka on day three. She confirmed it and added one sentence to the PRD. If it had gone unasked, the headline metric the entire business case rests on would have counted analyst-corrected documents as straight-through, and Northwind would have been shown a number that was wrong in the flattering direction. Two minutes of asking.
 
 ---
 

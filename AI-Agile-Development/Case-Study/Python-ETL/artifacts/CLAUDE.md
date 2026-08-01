@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Produced by** | Rahul Nair, Team Lead |
+| **Produced by** | Gautam , Team Lead |
 | **Using** | [P01 — Generate the Project Context File](../../../AI-Prompts-Library/phase-0-foundation/P01-generate-the-project-context-file.md) |
 | **Date** | 2026-04-14 (Sprint 0) · **Revised** 2026-08-03 after NWD-142 |
 | **Status** | Active |
@@ -131,8 +131,8 @@ If you find a parsing bug next month, reprocess from bronze. Extraction is bille
 
 ## What to ask about rather than decide
 
-- Any change to a confidence threshold. Those numbers came from a threshold sweep against a labelled ground-truth set, not from judgement. Ask Sofia.
-- Any change to what reaches the warehouse vs the exception queue. Ask Amara — it changes Priya's working day.
+- Any change to a confidence threshold. Those numbers came from a threshold sweep against a labelled ground-truth set, not from judgement. Ask Hem.
+- Any change to what reaches the warehouse vs the exception queue. Ask Preetinka — it changes Preeti's working day.
 - Anything touching `sql/schema.sql`, Snowflake DDL, or `config/sources.yaml`.
 - Adding a dependency.
 
@@ -140,8 +140,8 @@ If you find a parsing bug next month, reprocess from bronze. Extraction is bille
 
 > **Artifact contract — `CLAUDE.md`**
 >
-> Produced by: Rahul Nair (Team Lead), using [P01](../../../AI-Prompts-Library/phase-0-foundation/P01-generate-the-project-context-file.md)
-> Approved by: Sofia Marchetti, 2026-04-15
+> Produced by: Gautam  (Team Lead), using [P01](../../../AI-Prompts-Library/phase-0-foundation/P01-generate-the-project-context-file.md)
+> Approved by: Hem Singh, 2026-04-15
 >
 > Any AI session opening in this repo can rely on finding:
 > - The stack with the versions that actually matter

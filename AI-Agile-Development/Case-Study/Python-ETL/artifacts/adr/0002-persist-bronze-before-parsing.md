@@ -2,12 +2,12 @@
 
 | | |
 |---|---|
-| **Produced by** | Sofia Marchetti, Architect |
+| **Produced by** | Hem Singh, Architect |
 | **Using** | [P12 — Record an Architecture Decision](../../../../AI-Prompts-Library/phase-2-design/P12-record-an-architecture-decision.md) |
 | **Date** | 2026-06-16 |
 | **Status** | Accepted |
 | **Version** | 1.0 |
-| **In the room** | Sofia Marchetti (Architect), Tomas Vargas (Backend), Rahul Nair (Team Lead) |
+| **In the room** | Hem Singh (Architect), Ravi Mullick (Backend), Gautam  (Team Lead) |
 
 ---
 
@@ -82,7 +82,7 @@ The reasons, in order of weight:
 
 ### What this gives us
 
-- Reprocessing is free and fast. During the [NWD-142](../bug-NWD-142.md) fix, Tomas replayed 340 stored Broker Alpha responses through the corrected parser in under four minutes at zero cost, and confirmed the fix against real documents rather than fixtures.
+- Reprocessing is free and fast. During the [NWD-142](../bug-NWD-142.md) fix, Ravi replayed 340 stored Broker Alpha responses through the corrected parser in under four minutes at zero cost, and confirmed the fix against real documents rather than fixtures.
 - `MIN_CONFIDENCE` plus `BRONZE_PATH` on a warehouse row is a complete audit chain: how sure the model was, and the original response it came from, without leaving SQL.
 - Rejected documents are as well evidenced as accepted ones.
 - The parser can be rewritten with confidence, because its input is a stored corpus we can regression-test against.
@@ -100,7 +100,7 @@ The reasons, in order of weight:
 
 ### Objections on the record
 
-- **Tomas Vargas, 2026-06-16:** none on the decision. Raised that storing the SDK's response objects requires an explicit serialisation step because they are not plain JSON, and that a naive `str()` would produce something unparseable later. Accepted and built as `sinks/blob_sink.py`'s bronze writer, with the API version recorded in the envelope.
+- **Ravi Mullick, 2026-06-16:** none on the decision. Raised that storing the SDK's response objects requires an explicit serialisation step because they are not plain JSON, and that a naive `str()` would produce something unparseable later. Accepted and built as `sinks/blob_sink.py`'s bronze writer, with the API version recorded in the envelope.
 
 ## Revisit when
 
@@ -118,8 +118,8 @@ The reasons, in order of weight:
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/adr/0002-persist-bronze-before-parsing.md`**
 >
-> Produced by: Architect (Sofia Marchetti) using P12 — Record an Architecture Decision
-> Approved by: Rahul Nair (Team Lead) 2026-06-16 · Northwind compliance for the unredacted-bronze consequence 2026-06-25
+> Produced by: Architect (Hem Singh) using P12 — Record an Architecture Decision
+> Approved by: Gautam  (Team Lead) 2026-06-16 · Northwind compliance for the unredacted-bronze consequence 2026-06-25
 >
 > Anyone consuming this file can rely on finding:
 > - The context, with per-page cost and monthly volume stated

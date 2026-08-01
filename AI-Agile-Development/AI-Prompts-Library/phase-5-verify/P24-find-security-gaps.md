@@ -7,26 +7,26 @@
 | | |
 |---|---|
 | **Phase** | 5 — Verify |
-| **Who runs it** | QA Engineer (Ananya Iyer) and Architect (Sofia Marchetti), together |
+| **Who runs it** | QA Engineer (Pankaj ) and Architect (Hem Singh), together |
 | **When** | Sprint 3, day 4. The pipeline works end to end. Release readiness is two weeks out and Northwind's information security team wants a document. |
 | **Takes in** | The whole `code/doc_ingestion/` tree, `artifacts/adr/0002-managed-identity.md`, `artifacts/data-contract-counterparty-position.md`, the Bicep/Terraform for the Azure resources, `requirements.txt` |
 | **Produces** | `Case-Study/Python-ETL/artifacts/security-review-doc-ingestion.md` |
-| **Hands off to** | Backend Engineer (Tomas) for the fixes, Architect (Sofia) for anything that changes the design, and [P32](../phase-7-release/P32-release-readiness-check.md) at release |
-| **Time to run** | 45 minutes to generate. A full day with Sofia and Ananya verifying each finding by hand. |
+| **Hands off to** | Backend Engineer (Ravi) for the fixes, Architect (Hem) for anything that changes the design, and [P32](../phase-7-release/P32-release-readiness-check.md) at release |
+| **Time to run** | 45 minutes to generate. A full day with Hem and Pankaj verifying each finding by hand. |
 
 ---
 
 ## 1. The scene
 
-Thursday. Ananya has spent three days finding functional defects — five of them, filed as NWD-138 through NWD-142. Rahul's review yesterday found two blockers in the confidence gate. The system works, mostly.
+Thursday. Pankaj has spent three days finding functional defects — five of them, filed as NWD-138 through NWD-142. Gautam's review yesterday found two blockers in the confidence gate. The system works, mostly.
 
-Then Farhan forwards an email. Northwind's information security team has heard that a consultancy is building something that touches counterparty statements, and they have questions. Specifically: *"Please provide a security assessment covering credential management, data classification and third-party dependencies prior to any production deployment."*
+Then Atul forwards an email. Northwind's information security team has heard that a consultancy is building something that touches counterparty statements, and they have questions. Specifically: *"Please provide a security assessment covering credential management, data classification and third-party dependencies prior to any production deployment."*
 
-Sofia reads it and says the thing she always says. "What does this look like when it's wrong?"
+Hem reads it and says the thing she always says. "What does this look like when it's wrong?"
 
 She has a specific reason for asking here. The documents flowing through this pipeline contain account numbers, sometimes client names, sometimes both, on a statement from a prime broker. The pipeline persists the raw API response to `bronze/` before anything is parsed — deliberately, so a parsing bug next month can be reprocessed for free instead of re-paying Azure per page. That's a good design decision and it also means **there is a container full of unredacted broker statements sitting in Northwind's storage account, and its access rules had better be right.**
 
-Ananya's instinct is different from Sofia's and that's why they run this together. Sofia thinks about the architecture: who can reach what, what the trust boundaries are, what happens when a component is compromised. Ananya thinks like an attacker with a browser: what happens if I change the ID in this URL, what happens if I upload something that isn't a PDF, what does the error message tell me that it shouldn't.
+Pankaj's instinct is different from Hem's and that's why they run this together. Hem thinks about the architecture: who can reach what, what the trust boundaries are, what happens when a component is compromised. Pankaj thinks like an attacker with a browser: what happens if I change the ID in this URL, what happens if I upload something that isn't a PDF, what does the error message tell me that it shouldn't.
 
 Both perspectives produce different findings. The prompt below is written to get both, because a security review that only does one of them misses half of what matters.
 
@@ -38,7 +38,7 @@ Nothing here is a penetration test. Nobody is running exploits against Northwind
 
 ### The problem: security bugs don't look like bugs
 
-A functional bug announces itself. Something crashes, a number is wrong, a page doesn't load. Ananya finds those by using the system.
+A functional bug announces itself. Something crashes, a number is wrong, a page doesn't load. Pankaj finds those by using the system.
 
 A security bug is usually the system working exactly as written. The exception queue loads a document when you ask for a document ID — that's the feature. The fact that it will load *anyone's* document when you ask for *any* document ID is the bug, and no test fails, no log line appears, and nothing looks wrong until someone tries it.
 
@@ -78,9 +78,9 @@ The review's job on this one is to find every path where text can reach persiste
 
 **IDOR** stands for Insecure Direct Object Reference, and the name is worse than the idea.
 
-Here is the idea. Priya opens a document in the exception queue. The URL is `/queue/document/4471`. She changes the number to `4472` and presses enter. Does she see a document she shouldn't?
+Here is the idea. Preeti opens a document in the exception queue. The URL is `/queue/document/4471`. She changes the number to `4472` and presses enter. Does she see a document she shouldn't?
 
-If the server takes the ID, looks it up, and returns it — yes. That's IDOR. The check that should be there is: *is this document one this user is allowed to see?* It's easy to leave out because the feature works perfectly without it. Every test passes. Priya never notices, because Priya doesn't type random numbers into URLs.
+If the server takes the ID, looks it up, and returns it — yes. That's IDOR. The check that should be there is: *is this document one this user is allowed to see?* It's easy to leave out because the feature works perfectly without it. Every test passes. Preeti never notices, because Preeti doesn't type random numbers into URLs.
 
 The reason this matters at Northwind specifically: the exception queue will eventually be used by analysts on both the EM book and the EQ book, and there are entitlement rules about who sees which counterparty's data. Right now there's one analyst and the question feels academic. It stops being academic the day the second team is onboarded, and by then the code has been "working" for eight months.
 
@@ -154,7 +154,7 @@ The prompt demands each finding carry both impact and likelihood, stated separat
 - **Attacker's-eye phrasing.** "Try to read another analyst's document" produces better findings than "check authorisation." The first is a goal with a test; the second is a category.
 - **Evidence required per finding.** File and line, or a resource name from the infrastructure definition. A security finding without a location is a lecture.
 - **Explicit instruction to say when a control is present and working.** Unusual for a review prompt — [P23](P23-review-someone-elses-code.md) bans praise. Here it's necessary, because Northwind's infosec team asked for an assessment, and "we checked credential management and found managed identity correctly used with no static secrets" is a required answer, not padding.
-- **A "false positive" instruction.** Security scanners and models both over-report. Telling it to mark anything it's unsure of as `NEEDS VERIFICATION` rather than asserting it is the difference between a report Sofia can use and one she has to re-check line by line.
+- **A "false positive" instruction.** Security scanners and models both over-report. Telling it to mark anything it's unsure of as `NEEDS VERIFICATION` rather than asserting it is the difference between a report Hem can use and one she has to re-check line by line.
 - **Ban on running exploits.** Worth saying out loud. The AI has tool access; you do not want it probing a live Azure tenant or a client's storage account. This is a reading exercise.
 
 ### What the AI is genuinely good and bad at here
@@ -163,13 +163,13 @@ Good: finding hardcoded secrets, spotting a missing authorisation check in a rou
 
 Bad: knowing whether your Azure tenant's network configuration makes something unreachable anyway. Knowing whether the person who can read the storage account is already trusted with the data. Judging real-world likelihood. Any question where the answer depends on organisational context it cannot see.
 
-The consequence, which §8 leans on: **treat every finding as a hypothesis until you have verified it by hand.** Sofia's rule on this project was that no finding went into the document sent to Northwind's infosec team until she or Ananya had reproduced it. Three of the AI's twelve findings didn't survive that.
+The consequence, which §8 leans on: **treat every finding as a hypothesis until you have verified it by hand.** Hem's rule on this project was that no finding went into the document sent to Northwind's infosec team until she or Pankaj had reproduced it. Three of the AI's twelve findings didn't survive that.
 
 ### The one idea to keep
 
 **A security review asks a different question from every other kind of review: not "does this do what it should?" but "what else does this let someone do?"**
 
-Every feature is also a capability. The exception queue lets Priya fix a field — and lets anyone who can call that endpoint change a number in the warehouse. The bronze container gives you free reprocessing — and gives anyone who reaches it a pile of unredacted broker statements. Neither is a bug. Both are surface, and surface is what you're inventorying.
+Every feature is also a capability. The exception queue lets Preeti fix a field — and lets anyone who can call that endpoint change a number in the warehouse. The bronze container gives you free reprocessing — and gives anyone who reaches it a pile of unredacted broker statements. Neither is a bug. Both are surface, and surface is what you're inventorying.
 
 ---
 
@@ -300,13 +300,13 @@ Save the assessment as [OUTPUT PATH].
 | `[REDACTION MODULE]` | The specific module that must sit on every persistence path. | `core/redact.py` | The data-leakage trace has no anchor. It reports every log line as a risk instead of the ones that bypass redaction. |
 | `[MOST SENSITIVE CONTAINER]` | The one storage location you'd least like to be public. | the `bronze/` container — full unredacted extraction responses | Storage findings get spread evenly across containers instead of focused where it matters. |
 | `[DOMAIN CONSEQUENCE]` | How to phrase impact so your organisation feels it. | "exposure of a counterparty's positions, or of an account holder's identity, or an unauthorised change to a number that reaches the reconciliation" | Impact reads as "data could be exposed," which does not help anyone prioritise. |
-| `[OUTPUT PATH]` | Where it's saved. Infosec asked for a document. | `Case-Study/Python-ETL/artifacts/security-review-doc-ingestion.md` | The assessment lives in a chat window and Farhan has nothing to send. |
+| `[OUTPUT PATH]` | Where it's saved. Infosec asked for a document. | `Case-Study/Python-ETL/artifacts/security-review-doc-ingestion.md` | The assessment lives in a chat window and Atul has nothing to send. |
 
 ---
 
 ## 5. The filled-in example
 
-Ananya and Sofia, Thursday afternoon of Sprint 3, one laptop between them.
+Pankaj and Hem, Thursday afternoon of Sprint 3, one laptop between them.
 
 ```text
 You are a **security engineer reviewing a system before its first production release.** This
@@ -370,7 +370,7 @@ Abridged. The full document runs to about 400 lines; this is the ranked table an
 # Security assessment — Counterparty document ingestion
 
 **Reviewed:** `code/doc_ingestion/` @ `feature/NWD-103` · `infra/` @ `main`
-**Reviewers:** Ananya Iyer (QA), Sofia Marchetti (Architect), AI-assisted first pass
+**Reviewers:** Pankaj  (QA), Hem Singh (Architect), AI-assisted first pass
 **Date:** 2026-03-12
 **Method:** source and configuration review. No live testing performed.
 
@@ -518,7 +518,7 @@ field values are written to Application Insights before redaction runs.
 
 **Impact:** account holder names and account numbers in telemetry with 90-day retention,
 readable by anyone holding Monitoring Reader on the workspace — a broader group than those
-entitled to the source documents. Rahul's code review flagged the same line as Minor 7.
+entitled to the source documents. Gautam's code review flagged the same line as Minor 7.
 
 **Evidence:**
 
@@ -622,11 +622,11 @@ to Northwind infosec's question about credential management.
 
 **The two High findings are in completely different places and neither is in the "security code."** SEC-01 is a missing line in a route handler. SEC-02 is one word in a Bicep file. Nobody wrote anything insecure — in both cases somebody wrote the straightforward version and the strict version was one small step further. That is what almost all real findings look like.
 
-**Section 4 is the section Farhan actually forwards.** Northwind's infosec team asked about credential management. "We checked these seven specific things and here is what we found" is an answer. "We found no issues" is not, because it's unfalsifiable and everyone knows it.
+**Section 4 is the section Atul actually forwards.** Northwind's infosec team asked about credential management. "We checked these seven specific things and here is what we found" is an answer. "We found no issues" is not, because it's unfalsifiable and everyone knows it.
 
 **Notice SEC-06's split confidence.** The version is CONFIRMED; the reachability is NEEDS VERIFICATION. That's the honest shape of most dependency findings, and it's why the severity is Medium rather than High. A report that marked it High because the CVE says High would have had the team stop work on a code path this application never executes.
 
-**The part that is commonly wrong:** the likelihood reasoning. The AI's first draft rated SEC-02 as Critical on the strength of "can read all blobs," and Sofia argued it down to High. Reading every blob in the resource group requires already having code execution as the function identity — at which point you have quite a lot regardless. Impact was Critical; likelihood was not; the product is High. Models systematically over-rate likelihood on findings with alarming impact, and this is the number you should expect to argue about.
+**The part that is commonly wrong:** the likelihood reasoning. The AI's first draft rated SEC-02 as Critical on the strength of "can read all blobs," and Hem argued it down to High. Reading every blob in the resource group requires already having code execution as the function identity — at which point you have quite a lot regardless. Impact was Critical; likelihood was not; the product is High. Models systematically over-rate likelihood on findings with alarming impact, and this is the number you should expect to argue about.
 
 ---
 
@@ -636,7 +636,7 @@ to Northwind infosec's question about credential management.
 
 Done is: **all six areas reported on including the ones that came back empty, every finding located and rated with impact and likelihood stated separately, every CONFIRMED finding verified by a human, and a "controls verified" section specific enough to send to somebody who is going to check it.**
 
-Verified by a human is the load-bearing clause. Ananya and Sofia reproduced SEC-01 by hand in the test environment with two accounts. That took twenty minutes and it is the difference between a finding and an allegation.
+Verified by a human is the load-bearing clause. Pankaj and Hem reproduced SEC-01 by hand in the test environment with two accounts. That took twenty minutes and it is the difference between a finding and an allegation.
 
 ### The checklist
 
@@ -653,7 +653,7 @@ Verified by a human is the load-bearing clause. Ananya and Sofia reproduced SEC-
 
 Two over-prompting failures here, and the first is expensive.
 
-**Asking "anything else?" produces false positives, not new findings.** Once the real issues are out, further prompting fills the gap with plausible-sounding generic advice: add rate limiting, add a WAF, consider certificate pinning. Each one costs Sofia twenty minutes to evaluate and reject. A security report with three real findings and twelve invented ones is worse than one with three, because the team learns to discount the whole document.
+**Asking "anything else?" produces false positives, not new findings.** Once the real issues are out, further prompting fills the gap with plausible-sounding generic advice: add rate limiting, add a WAF, consider certificate pinning. Each one costs Hem twenty minutes to evaluate and reject. A security report with three real findings and twelve invented ones is worse than one with three, because the team learns to discount the whole document.
 
 **Asking it to be more thorough produces longer explanations of the same findings.** The finding does not get better. It gets four paragraphs of context about what IDOR is, which belongs in this file, not in a report going to Northwind.
 
@@ -725,7 +725,7 @@ whatever its impact is.
 At most two Critical. If you have three, one of them is a High.
 ```
 
-What changes: the list becomes sortable, and the arguments become about numbers rather than about adjectives. Sofia's version of this conversation took four minutes instead of forty.
+What changes: the list becomes sortable, and the arguments become about numbers rather than about adjectives. Hem's version of this conversation took four minutes instead of forty.
 
 ### 8.3 "Some of these findings are wrong"
 
@@ -809,21 +809,21 @@ Twelve findings, four of them real, eight of them generic hardening advice. It g
 
 The mechanism is dilution. Every low-value finding costs the reader attention, and the reader has a fixed amount. A report with three findings gets three fixed. A report with twelve gets four fixed and eight ignored, and nobody can tell you which four.
 
-The fix is the ranking, taken seriously, plus a rule Sofia imposed here: **anything rated Low goes on the tech-debt list, not in the report.** The report carries what has to be fixed before release. SEC-08 through SEC-10 went to [P36](../phase-8-improve/P36-tech-debt-triage.md) and the release document had seven findings, not ten.
+The fix is the ranking, taken seriously, plus a rule Hem imposed here: **anything rated Low goes on the tech-debt list, not in the report.** The report carries what has to be fixed before release. SEC-08 through SEC-10 went to [P36](../phase-8-improve/P36-tech-debt-triage.md) and the release document had seven findings, not ten.
 
 ### You trust CONFIRMED without checking
 
 The confidence field is there so you know what to verify. It's tempting to treat CONFIRMED as meaning verified.
 
-It doesn't. It means the model believes its evidence is conclusive. On SEC-01 it was right, and Ananya reproduced it in twenty minutes with two accounts. On a finding in an earlier run it was wrong — it reported that the SQL sink built a query by string concatenation, quoting a line that turned out to be a logging format string three lines above the actual parameterised query.
+It doesn't. It means the model believes its evidence is conclusive. On SEC-01 it was right, and Pankaj reproduced it in twenty minutes with two accounts. On a finding in an earlier run it was wrong — it reported that the SQL sink built a query by string concatenation, quoting a line that turned out to be a logging format string three lines above the actual parameterised query.
 
-The fix is procedural and boring: **nothing goes in the document sent outside the team until a human has reproduced it or read the code themselves.** Sofia's rule. It cost a day and it's why nobody at Northwind has had to argue about a finding.
+The fix is procedural and boring: **nothing goes in the document sent outside the team until a human has reproduced it or read the code themselves.** Hem's rule. It cost a day and it's why nobody at Northwind has had to argue about a finding.
 
 ### You find something real and it turns into a design argument
 
 SEC-02's fix is one word. SEC-01's fix is a design question: what *is* the entitlement model? Which analysts see which counterparties? Does the EM/EQ split map to entitlements or is there something more granular?
 
-Nobody had decided. The data contract mentions `book` as a column and says nothing about who can see what. So a security finding turned into an afternoon with Amara working out the actual rule, which turned into an ADR.
+Nobody had decided. The data contract mentions `book` as a column and says nothing about who can see what. So a security finding turned into an afternoon with Preetinka working out the actual rule, which turned into an ADR.
 
 That's not a failure of this prompt — it's a genuinely good outcome — but budget for it. Some fraction of security findings are undecided design questions wearing a bug's clothes, and they take days, not hours. If you're running this the week before release, that's a problem. Run it earlier.
 
@@ -837,7 +837,7 @@ Be honest about the limit. This prompt reads source code and configuration. It c
 - Timing attacks, race conditions under load, or anything else that only appears at runtime.
 - A logic flaw that requires chaining three legitimate behaviours together, which is what a good human tester finds and nothing else does.
 
-If the system handles money movement, if it's internet-facing, or if a regulator is going to ask, you need a real penetration test by people who do it for a living. This prompt is what you do first so the pen test finds interesting things instead of the obvious ones. Sofia's framing to Farhan, which is the right one: *"This gets us from careless to careful. It doesn't get us to assured. Assured costs money and takes three weeks."*
+If the system handles money movement, if it's internet-facing, or if a regulator is going to ask, you need a real penetration test by people who do it for a living. This prompt is what you do first so the pen test finds interesting things instead of the obvious ones. Hem's framing to Atul, which is the right one: *"This gets us from careless to careful. It doesn't get us to assured. Assured costs money and takes three weeks."*
 
 ---
 
@@ -845,15 +845,15 @@ If the system handles money movement, if it's internet-facing, or if a regulator
 
 The assessment splits three ways, and the split matters more than the document.
 
-**SEC-01 and SEC-02 go to Tomas as work**, immediately, through [P27](../phase-6-rework/P27-fix-from-a-qa-bug-report.md) — the same route as a QA bug, because that's what they are. SEC-02 is a one-word Bicep change and a redeploy. SEC-01 is not, because it needs the entitlement model decided first.
+**SEC-01 and SEC-02 go to Ravi as work**, immediately, through [P27](../phase-6-rework/P27-fix-from-a-qa-bug-report.md) — the same route as a QA bug, because that's what they are. SEC-02 is a one-word Bicep change and a redeploy. SEC-01 is not, because it needs the entitlement model decided first.
 
-**The entitlement question goes to Sofia and Amara.** It becomes ADR-0004 through [P12](../phase-2-design/P12-record-an-architecture-decision.md), and it changes the data contract, because `book` needs to be on the document row and it isn't. That's a Sprint 4 item and Farhan gets to ask his favourite question about it.
+**The entitlement question goes to Hem and Preetinka.** It becomes ADR-0004 through [P12](../phase-2-design/P12-record-an-architecture-decision.md), and it changes the data contract, because `book` needs to be on the document row and it isn't. That's a Sprint 4 item and Atul gets to ask his favourite question about it.
 
 **SEC-08, SEC-09 and SEC-10 go to the tech-debt list** for [P36](../phase-8-improve/P36-tech-debt-triage.md). They are real and none of them is worth a day in Sprint 3.
 
 The document itself becomes an input to [P32](../phase-7-release/P32-release-readiness-check.md). At release, the question is not "is it secure" but "are the findings from the assessment closed, and if not, which are we accepting and who signed that off." A finding accepted with a name against it is a legitimate outcome. A finding forgotten is not.
 
-Ananya moves on to the last thing in Phase 5, and it's the one that has been bothering her since the E2E suite went green. The tests pass. The security review is clean enough. And she still doesn't know whether the numbers loading into Snowflake are *right*. That's [P25](P25-data-quality-validation.md), and it's the prompt that finds NWD-142 properly.
+Pankaj moves on to the last thing in Phase 5, and it's the one that has been bothering her since the E2E suite went green. The tests pass. The security review is clean enough. And she still doesn't know whether the numbers loading into Snowflake are *right*. That's [P25](P25-data-quality-validation.md), and it's the prompt that finds NWD-142 properly.
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/security-review-doc-ingestion.md`**
 >
@@ -874,13 +874,13 @@ Ananya moves on to the last thing in Phase 5, and it's the one that has been bot
 
 Sprint 3, day 4, in [`07-sprint-3-verify.md`](../../Case-Study/Python-ETL/07-sprint-3-verify.md).
 
-The thing that stuck with the team wasn't SEC-01, which everyone agreed was a real gap the moment they saw it. It was SEC-02 — the word `resourceGroup()` in a Bicep file that Tomas had written in Sprint 0 and nobody had looked at since.
+The thing that stuck with the team wasn't SEC-01, which everyone agreed was a real gap the moment they saw it. It was SEC-02 — the word `resourceGroup()` in a Bicep file that Ravi had written in Sprint 0 and nobody had looked at since.
 
-Sofia had written ADR-0002 specifically about least privilege. The ADR says, in as many words, that the Function App's identity gets `Storage Blob Data Contributor` on the ingestion storage account. The infrastructure granted it on the resource group. The decision was right, it was written down, it was reviewed, and the implementation quietly did something broader — because scoping to the resource group is what every Bicep example on the internet does, and it works, and nothing complains.
+Hem had written ADR-0002 specifically about least privilege. The ADR says, in as many words, that the Function App's identity gets `Storage Blob Data Contributor` on the ingestion storage account. The infrastructure granted it on the resource group. The decision was right, it was written down, it was reviewed, and the implementation quietly did something broader — because scoping to the resource group is what every Bicep example on the internet does, and it works, and nothing complains.
 
 **An ADR is a decision, not a control.** Nothing was checking that the code matched it. That gap is now a test in the deployment pipeline: a script that reads the deployed role assignments and fails the build if any scope is broader than the ADR allows.
 
-The other thing worth recording: the AI's first draft rated SEC-02 as Critical. Sofia argued it to High on likelihood grounds — you need code execution as the managed identity before it's worth anything — and Ananya disagreed with her for about ten minutes. That argument was the most useful part of the day, and neither of them would have had it without a document to argue about. In the retrospective ([`10-retrospective.md`](../../Case-Study/Python-ETL/10-retrospective.md)) Sofia listed it as the sprint's best hour.
+The other thing worth recording: the AI's first draft rated SEC-02 as Critical. Hem argued it to High on likelihood grounds — you need code execution as the managed identity before it's worth anything — and Pankaj disagreed with her for about ten minutes. That argument was the most useful part of the day, and neither of them would have had it without a document to argue about. In the retrospective ([`10-retrospective.md`](../../Case-Study/Python-ETL/10-retrospective.md)) Hem listed it as the sprint's best hour.
 
 ---
 

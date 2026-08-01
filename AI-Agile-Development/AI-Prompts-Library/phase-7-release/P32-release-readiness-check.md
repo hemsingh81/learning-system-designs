@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | **Phase** | 7 — Release |
-| **Who runs it** | Project Manager (Farhan Qureshi) with the Team Lead (Rahul Nair) |
+| **Who runs it** | Project Manager (Atul) with the Team Lead (Gautam ) |
 | **When** | Sprint 4, one week before the proposed go-live date. Not the day before |
 | **Takes in** | `artifacts/definition-of-done.md`, the story list NWD-101…NWD-108, the bug list NWD-138…NWD-142, `artifacts/spec-confidence-gate.md`, clean git history from [P31](P31-write-clean-git-commits.md) |
 | **Produces** | `Case-Study/Python-ETL/artifacts/release-readiness-v1.0.md` |
@@ -18,17 +18,17 @@
 
 ## 1. The scene
 
-Monday morning, Sprint 4. Farhan has a date in a plan and a client who has started using the word "launch" in emails.
+Monday morning, Sprint 4. Atul has a date in a plan and a client who has started using the word "launch" in emails.
 
-The evidence looks good. All eight stories from NWD-101 to NWD-108 are marked done against the definition of done the team agreed in [P17](../phase-3-planning/P17-definition-of-done.md). Ananya's five defects are closed, including NWD-142, whose fix Tomas committed on Thursday and Rahul reviewed on Friday. The straight-through rate — the percentage of documents that need zero human touch, the headline metric for this whole project — has climbed from 61% to 84% against a target of 85%. The test suite is green. Azure costs are running at about $420 a month, near enough to the estimate.
+The evidence looks good. All eight stories from NWD-101 to NWD-108 are marked done against the definition of done the team agreed in [P17](../phase-3-planning/P17-definition-of-done.md). Pankaj's five defects are closed, including NWD-142, whose fix Ravi committed on Thursday and Gautam reviewed on Friday. The straight-through rate — the percentage of documents that need zero human touch, the headline metric for this whole project — has climbed from 61% to 84% against a target of 85%. The test suite is green. Azure costs are running at about $420 a month, near enough to the estimate.
 
 By any normal software standard this is a release.
 
-Then Amara says the thing that changes the meeting. She spent nine years on the operations floor at a custodian bank before she became a product owner, and what she says is: "Priya has been keying these statements by hand for four years. On the day we go live, she stops. If we are wrong about anything, nobody is checking. What exactly is our evidence that we are not wrong?"
+Then Preetinka says the thing that changes the meeting. She spent nine years on the operations floor at a custodian bank before she became a product owner, and what she says is: "Preeti has been keying these statements by hand for four years. On the day we go live, she stops. If we are wrong about anything, nobody is checking. What exactly is our evidence that we are not wrong?"
 
-Farhan's answer is "the tests pass," and he hears how thin it sounds as he says it.
+Atul's answer is "the tests pass," and he hears how thin it sounds as he says it.
 
-**Tests prove the code does what you told it to do. They cannot prove you told it the right thing — and this system is replacing a human control, not adding a feature.** NWD-142 was precisely a case where every test passed and the system was wrong, and it was found by a person looking at output, not by a suite. Farhan opens a new file and starts the readiness review.
+**Tests prove the code does what you told it to do. They cannot prove you told it the right thing — and this system is replacing a human control, not adding a feature.** NWD-142 was precisely a case where every test passed and the system was wrong, and it was found by a person looking at output, not by a suite. Atul opens a new file and starts the readiness review.
 
 ---
 
@@ -43,7 +43,7 @@ That sounds obvious and it is not what usually happens. What usually happens is 
 Three things distinguish it from a status update:
 
 1. **It has a verdict.** Go, no-go, or go-with-conditions. Not "we're about 90% there."
-2. **It is evidence-based.** Every green item points at something you can look at — a test run, a document, a measurement. "Tomas says it's fine" is not evidence.
+2. **It is evidence-based.** Every green item points at something you can look at — a test run, a document, a measurement. "Ravi says it's fine" is not evidence.
 3. **It includes the things nobody wants to raise.** The half-finished monitoring, the runbook that does not exist, the fact that nobody has tested what happens when Document Intelligence returns a 429 at month-end. A readiness review where nothing is amber is a readiness review that was not honest.
 
 The document that comes out is not for you. It is for the person six weeks from now asking "who decided this was safe, and what did they know at the time?" That person might be an auditor. It might be you.
@@ -54,7 +54,7 @@ Most release checklists assume you are adding something. New feature, new screen
 
 Northwind is not that. Northwind is **replacing a manual control process in a regulated context**, and both halves of that phrase change the maths.
 
-**Manual control process** means there is a human today who catches things. Priya does not just type numbers. She notices when a Broker Alpha statement has fourteen positions and last month had twenty-three. She notices when a currency looks wrong. Nobody wrote that down as a requirement, nobody specified it, and she does it anyway. When you automate her keying, you also automate away that noticing, and the system has to replace it — or you have quietly removed a control that nobody documented and everybody depended on.
+**Manual control process** means there is a human today who catches things. Preeti does not just type numbers. She notices when a Broker Alpha statement has fourteen positions and last month had twenty-three. She notices when a currency looks wrong. Nobody wrote that down as a requirement, nobody specified it, and she does it anyway. When you automate her keying, you also automate away that noticing, and the system has to replace it — or you have quietly removed a control that nobody documented and everybody depended on.
 
 **Regulated context** means the firm has obligations about the accuracy and timeliness of its books, and being able to demonstrate to a regulator or an auditor that a control operates effectively. "We ran some tests" is not a demonstration of control effectiveness. "We ran both processes side by side for three weeks and they agreed on every row" is.
 
@@ -70,15 +70,15 @@ A **parallel run** is a period where **both** the old manual process and the new
 
 For Northwind, concretely:
 
-- Priya keeps opening PDFs and keying them into her spreadsheet, exactly as she has for four years. Her output is still the one the business uses.
+- Preeti keeps opening PDFs and keying them into her spreadsheet, exactly as she has for four years. Her output is still the one the business uses.
 - Every one of those same PDFs also lands in `raw/{broker}/{yyyy-mm-dd}/{file}.pdf` and runs the full pipeline: classify, translate, extract, redact, rules engine, Azure SQL, Snowflake.
-- Each morning a comparison job joins Priya's spreadsheet against the pipeline's Snowflake rows on the natural key and reports every field that differs.
+- Each morning a comparison job joins Preeti's spreadsheet against the pipeline's Snowflake rows on the natural key and reports every field that differs.
 - Every difference gets investigated and classified: pipeline wrong, human wrong, or a legitimate tolerance difference.
 - This runs for **two to four weeks** — long enough to include a month-end, because month-end is when volume spikes and where the interesting failures live.
 
 **The exit condition is the part people get wrong.** It is not "few enough differences." It is: **zero divergence on auto-accepted rows.**
 
-That qualifier carries the whole design. The pipeline produces two kinds of output. Rows that passed the confidence gate go straight to the warehouse with no human involvement — those are *auto-accepted*. Rows that failed the gate go to the exception queue for Priya to fix in Ji-woo's UI — those are *human-reviewed*.
+That qualifier carries the whole design. The pipeline produces two kinds of output. Rows that passed the confidence gate go straight to the warehouse with no human involvement — those are *auto-accepted*. Rows that failed the gate go to the exception queue for Preeti to fix in Dzmitry's UI — those are *human-reviewed*.
 
 You are only asserting one thing at cutover: **when this system says "I am confident, no human needed," it is right.** So divergence on an auto-accepted row is a hard failure — the gate let something through that was wrong, which is the exact scenario the whole design exists to prevent. Divergence on a row that went to the exception queue is not a failure at all. The system said "I am not sure about this" and it was right not to be sure. That is the design working.
 
@@ -94,13 +94,13 @@ A parallel run that measures overall accuracy instead of auto-accepted accuracy 
 
 This is the failure mode worth dwelling on, because it is common, it is understandable, and it is fatal.
 
-The pressure to skip is real and it comes from good places. The parallel run costs Priya's time — she is doing the manual work for another month when the entire point of the project was to stop her doing it. It delays the benefit. It feels like a lack of confidence in the team's own work, which is uncomfortable to argue for out loud. And every metric on the dashboard is green, so what exactly are you expecting to find?
+The pressure to skip is real and it comes from good places. The parallel run costs Preeti's time — she is doing the manual work for another month when the entire point of the project was to stop her doing it. It delays the benefit. It feels like a lack of confidence in the team's own work, which is uncomfortable to argue for out loud. And every metric on the dashboard is green, so what exactly are you expecting to find?
 
 What you are expecting to find is the thing you did not think to test. That is not a rhetorical answer, it is the literal one. NWD-142 is the proof: nobody thought to test a positions table that spans a page boundary, because nobody knew Document Intelligence returned a continued table as a separate object with no relationship marker. It was not in the spec. It could not have been in the test suite, because you cannot write a test for a case you do not know exists. It was found by a human comparing real output against reality.
 
 A parallel run is a machine for finding the cases you did not think of, running on real production data, with a human checking every answer, before anyone depends on it.
 
-**And when it goes wrong without one, it goes wrong in the worst possible order.** You switch off the manual process. Two weeks later someone notices the EM book has been quietly short on some Broker Beta confirmations. Now you have bad data in the warehouse, you do not know how far back it goes, the manual process you would use to check has been switched off, Priya's spreadsheet from before cutover is the last known-good state, and you are reconstructing a month of positions by hand under time pressure. In a regulated firm you are also now explaining to an auditor how a control failed and why it was not detected for a fortnight.
+**And when it goes wrong without one, it goes wrong in the worst possible order.** You switch off the manual process. Two weeks later someone notices the EM book has been quietly short on some Broker Beta confirmations. Now you have bad data in the warehouse, you do not know how far back it goes, the manual process you would use to check has been switched off, Preeti's spreadsheet from before cutover is the last known-good state, and you are reconstructing a month of positions by hand under time pressure. In a regulated firm you are also now explaining to an auditor how a control failed and why it was not detected for a fortnight.
 
 The parallel run is the answer to "how did you know it was safe to switch the manual process off." If you cannot answer that question with something concrete, you did not know. You hoped.
 
@@ -110,7 +110,7 @@ Parallel run is the headline, not the whole list. The prompt asks for eight area
 
 | Area | The question it answers | Northwind specifics |
 |---|---|---|
-| **Scope** | Did we build what we said? | All of NWD-101…108 against `artifacts/definition-of-done.md`. Anything descoped, named and agreed by Amara |
+| **Scope** | Did we build what we said? | All of NWD-101…108 against `artifacts/definition-of-done.md`. Anything descoped, named and agreed by Preetinka |
 | **Defects** | What is broken, and what did we accept? | NWD-138…142 all closed. Any open defect carries a severity and an explicit accept/fix decision |
 | **Non-functional** | Does it survive real conditions? | 200 docs/day, month-end spike, 429 back-off, the Function timeout on a large document |
 | **Security** | Can it leak or be abused? | No API keys anywhere, managed identity, redaction fails closed, [P24](../phase-5-verify/P24-find-security-gaps.md) findings closed |
@@ -137,7 +137,7 @@ The most common corruption of this ceremony is colour inflation under deadline p
 
 The gate here is: **produce the assessment, and stop before writing the verdict.**
 
-The AI can assemble evidence, spot gaps, and colour items honestly. It should not be the thing that says go. That decision needs a human who will be in the room when it goes wrong, and in this case it needs three of them: Farhan for delivery risk, Rahul for technical readiness, Amara for whether the business can actually live with the exceptions.
+The AI can assemble evidence, spot gaps, and colour items honestly. It should not be the thing that says go. That decision needs a human who will be in the room when it goes wrong, and in this case it needs three of them: Atul for delivery risk, Gautam for technical readiness, Preetinka for whether the business can actually live with the exceptions.
 
 There is a second reason. An AI asked for a verdict tends to produce a favourable one, because the input it was given is your team's own evidence, written by people who want to ship. Asking it to assess and stop keeps it in the role where it is genuinely good — noticing that operability has no evidence at all — and out of the role where it is worse than useless.
 
@@ -242,7 +242,7 @@ Write the document to [OUTPUT PATH].
 | `[ONE LINE ON WHAT IT DOES]` | Plain English, no service names | `Turns counterparty PDF statements into reconciled position rows without manual keying` | Assessment drifts toward component health instead of business outcome |
 | `[VERSION]` | The release tag | `v1.0` | Nothing serious, but the document cannot be tied to a specific deployment later |
 | `[TARGET DATE]` | The proposed go-live | `2 December` | Without it the AI cannot judge whether an amber's remediation date is even feasible |
-| `[THE CURRENT PROCESS AND WHO PERFORMS IT]` | The manual thing being replaced, and the human's name | `Priya Raman, operations analyst at Northwind, opens each counterparty PDF and types the positions into a spreadsheet before reconciliation can run` | **The most load-bearing placeholder.** Leave it vague and you get a generic software checklist with no parallel run, which defeats the entire purpose |
+| `[THE CURRENT PROCESS AND WHO PERFORMS IT]` | The manual thing being replaced, and the human's name | `Preeti Singh, operations analyst at Northwind, opens each counterparty PDF and types the positions into a spreadsheet before reconciliation can run` | **The most load-bearing placeholder.** Leave it vague and you get a generic software checklist with no parallel run, which defeats the entire purpose |
 | `[CONSTRAINT, OR "none"]` | The audit or regulatory obligation | `Books and records accuracy; the firm must evidence that the control operates effectively` | Audit trail, evidence retention and sign-off requirements silently drop out |
 | `[STORY IDS]` | Everything in the release | `NWD-101 … NWD-108` | Scope assessment becomes guesswork off the git log |
 | `[BUG IDS]` | Everything raised during verification, closed or not | `NWD-138, 139, 140, 141, 142` | Closed defects get missed, and worse, open ones do |
@@ -255,7 +255,7 @@ Write the document to [OUTPUT PATH].
 
 ## 5. The filled-in example
 
-Farhan runs this on the Monday morning of Sprint 4, with Rahul next to him, a week before the proposed 2 December go-live.
+Atul runs this on the Monday morning of Sprint 4, with Gautam next to him, a week before the proposed 2 December go-live.
 
 ```text
 You are a delivery lead preparing a release readiness review. **Assess whether
@@ -271,7 +271,7 @@ CONTEXT
   and trade confirmations into reconciled position rows in Snowflake without
   manual keying.
 - Release: v1.0 targeting 2 December
-- What it replaces: Priya Raman, operations analyst at Northwind Asset
+- What it replaces: Preeti Singh, operations analyst at Northwind Asset
   Management, currently opens each counterparty PDF and types the positions into
   a spreadsheet before the reconciliation can run. That manual step is why breaks
   surface on T+2 instead of T+1.
@@ -356,8 +356,8 @@ Abridged, but this is the shape and the substance of what lands in `artifacts/re
 # Release Readiness Review — Counterparty Document Ingestion v1.0
 
 **Target date:** 2 December
-**Prepared:** 25 November by Farhan Qureshi and Rahul Nair
-**Replaces:** manual keying of counterparty PDFs by Priya Raman, Northwind operations
+**Prepared:** 25 November by Atuland Gautam 
+**Replaces:** manual keying of counterparty PDFs by Preeti Singh, Northwind operations
 **Verdict:** _(not filled — human decision, see sign-off)_
 
 ## Summary of colours
@@ -388,9 +388,9 @@ All eight stories delivered and meeting `artifacts/definition-of-done.md`.
 | NWD-105 | Redact PII before persistence | Done | `core/redact.py`; fails closed, marker persisted on error |
 | NWD-106 | Transform to canonical schema | Done | `core/transform.py` against `data-contract-counterparty-position.md` |
 | NWD-107 | Load to Azure SQL and Snowflake idempotently | Done | `sinks/`; SHA-256 content hash, `MIN_CONFIDENCE` and `BRONZE_PATH` carried to gold |
-| NWD-108 | Exception queue screen | Done | Ji-woo; accepted by Amara 21 Nov against `ui-brief-exception-queue.md` |
+| NWD-108 | Exception queue screen | Done | Dzmitry; accepted by Preetinka 21 Nov against `ui-brief-exception-queue.md` |
 
-**Descoped, agreed by Amara Osei 12 Nov:** bulk-approve in the exception queue,
+**Descoped, agreed by Preetinka Sharma 12 Nov:** bulk-approve in the exception queue,
 and a third counterparty layout. Both moved to v1.1. The classifier ships knowing
 two layouts: `broker_alpha` and `broker_beta_em`.
 
@@ -399,7 +399,7 @@ two layouts: `broker_alpha` and `broker_beta_em`.
 | ID | Summary | State | Evidence |
 |---|---|---|---|
 | NWD-138 | Translation applied to identifier fields broke matching | Closed | `test_transform.py::TestIdentifierNotTranslated` |
-| NWD-139 | Confidence shown as `0.8234567` not `82%` | Closed | Ji-woo, one line, verified by Ananya 19 Nov |
+| NWD-139 | Confidence shown as `0.8234567` not `82%` | Closed | Dzmitry, one line, verified by Pankaj 19 Nov |
 | NWD-140 | Resent statement under new filename duplicated a row | Closed | Idempotency now hashes content; `test_reconcile.py::TestResentStatement` |
 | NWD-141 | 429 from Document Intelligence killed the run | Closed | Exponential back-off in `core/clients.py`; **see Non-functional — not load-tested** |
 | NWD-142 | Line items on page 2 dropped silently | Closed | `test_extract.py::TestTableContinuation`; spec rule added; row-count check added |
@@ -421,7 +421,7 @@ No open defects. No accepted-with-known-issue defects.
 429. It has never been exercised against a real throttled Document Intelligence
 endpoint under real month-end concurrency. Month-end is exactly when it fires.
 
-**Owner:** Tomas Vargas. **Date:** 29 November. Run a load test at 3x normal
+**Owner:** Ravi Mullick. **Date:** 29 November. Run a load test at 3x normal
 concurrency against the real endpoint and record the result here.
 
 ## 4. Security — GREEN
@@ -450,9 +450,9 @@ concurrency against the real endpoint and record the result here.
 
 This is **not** a correctness problem — those documents go to the exception
 queue, which is the design working. It is a workload problem: it means roughly
-30 more documents a day reach Priya than the business case assumed.
+30 more documents a day reach Preeti than the business case assumed.
 
-**Owner:** Amara Osei. **Date:** 29 November. Decide whether to accept 84% for
+**Owner:** Preetinka Sharma. **Date:** 29 November. Decide whether to accept 84% for
 v1.0 or hold. Recommendation: accept. Chasing the last point by loosening a date
 threshold trades a real correctness guarantee for a workload convenience.
 
@@ -471,10 +471,10 @@ threshold trades a real correctness guarantee for a workload convenience.
 
 **This is a go-live blocker.** On 3 December this system becomes the only way
 counterparty positions reach the warehouse. Today, if it stops at 2am, the first
-person who finds out is Priya at 8am when the exception queue is empty and so is
+person who finds out is Preeti at 8am when the exception queue is empty and so is
 the warehouse.
 
-**Owner:** Tomas Vargas (runbook and alerts), Farhan Qureshi (on-call rota).
+**Owner:** Ravi Mullick (runbook and alerts), Atul(on-call rota).
 **Date:** 29 November. Runbook per P33. Minimum alert set: pipeline failure rate,
 straight-through rate below 70%, exception queue depth over 50, poison queue
 non-empty.
@@ -484,7 +484,7 @@ non-empty.
 Rollback is cheap here and that is a deliberate design property, not luck.
 
 1. Disable the blob trigger. Documents keep landing in `raw/`, nothing processes.
-2. Priya resumes manual keying. Her spreadsheet process is unchanged and will
+2. Preeti resumes manual keying. Her spreadsheet process is unchanged and will
    still exist — she is not being retrained away from it before the parallel run
    completes.
 3. Warehouse rows already loaded stay. Each carries `MIN_CONFIDENCE` and
@@ -502,7 +502,7 @@ Time to roll back: under 5 minutes. Data lost: none.
 
 ### Why tests are not sufficient here
 
-This release removes a human control. Priya does not only type numbers — she
+This release removes a human control. Preeti does not only type numbers — she
 notices when a statement has fourteen positions and last month had twenty-three.
 That check was never specified, never tested, and the business has depended on it
 for four years. NWD-142 is the proof of what happens when it is absent: every
@@ -515,8 +515,8 @@ output.
 | | |
 |---|---|
 | **Duration** | 4 weeks, minimum 3, and **must span a month-end** |
-| **Both processes live** | Priya keys every document exactly as today. Her spreadsheet remains the record the business uses. The pipeline processes the same documents in the same period |
-| **Comparison** | Daily 09:00. `recon/parallel_compare.py` joins Priya's spreadsheet to Snowflake `POSITIONS_GOLD` on (broker, statement_date, security_id, account). Compares quantity, market value, currency, trade date |
+| **Both processes live** | Preeti keys every document exactly as today. Her spreadsheet remains the record the business uses. The pipeline processes the same documents in the same period |
+| **Comparison** | Daily 09:00. `recon/parallel_compare.py` joins Preeti's spreadsheet to Snowflake `POSITIONS_GOLD` on (broker, statement_date, security_id, account). Compares quantity, market value, currency, trade date |
 | **Tolerances** | Quantity 0.0001 (float noise). Market value 0.005 (50bp, pricing source differences). Anything outside is a divergence |
 | **Exit condition** | **ZERO divergences on auto-accepted rows** across the full period |
 
@@ -530,13 +530,13 @@ confident, no human needed," it is right. A divergence here is a hard failure,
 because it means the gate approved something wrong, which is the one outcome the
 entire design exists to prevent.
 
-**Human-reviewed** — failed the gate, went to the exception queue, Priya fixed it
-in Ji-woo's UI. A divergence here is **not a failure**. The system said "I am not
+**Human-reviewed** — failed the gate, went to the exception queue, Preeti fixed it
+in Dzmitry's UI. A divergence here is **not a failure**. The system said "I am not
 sure" and it was correct not to be sure. That is the design working as intended,
 and counting it as a failure would push us toward loosening thresholds, which is
 the opposite of what we want.
 
-We track a third number for information only: rows sent to review where Priya
+We track a third number for information only: rows sent to review where Preeti
 agreed with the value the pipeline had already extracted. A high count means the
 thresholds are tighter than they need to be — real, but a v1.1 tuning question,
 not a go-live question.
@@ -548,12 +548,12 @@ not a go-live question.
    cause, then run a further 10 clean business days minimum.
 3. Human wrong → record it. It is evidence for the business case, not against
    the system.
-4. Tolerance → adjust the tolerance in the comparison, with Sofia's agreement,
+4. Tolerance → adjust the tolerance in the comparison, with Hem's agreement,
    and note it here.
 
 ### Sign-off that the parallel run passed
 
-Amara Osei (business), Ananya Iyer (QA evidence), Sofia Marchetti (architecture
+Preetinka Sharma (business), Pankaj  (QA evidence), Hem Singh (architecture
 and audit trail). All three, in writing, in this document.
 
 ### Effect on the date
@@ -565,7 +565,7 @@ and audit trail). All three, in writing, in this document.
 | 2 Dec | Parallel run **starts**. Pipeline live, nothing depends on it |
 | 2 Dec – 3 Jan | Daily comparison, spanning the December month-end |
 | ~6 Jan | Parallel run review, three sign-offs |
-| ~8 Jan | Cutover. Priya stops manual keying |
+| ~8 Jan | Cutover. Preeti stops manual keying |
 | 8 Jan – 5 Feb | 4-week heightened monitoring, manual process available for 90 days |
 
 ---
@@ -574,11 +574,11 @@ and audit trail). All three, in writing, in this document.
 
 | Role | Name | Verdict | Date | Signature |
 |---|---|---|---|---|
-| Project Manager | Farhan Qureshi | | | |
-| Team Lead | Rahul Nair | | | |
-| Product Owner | Amara Osei | | | |
-| Architect | Sofia Marchetti | | | |
-| QA | Ananya Iyer | | | |
+| Project Manager | Atul| | | |
+| Team Lead | Gautam  | | | |
+| Product Owner | Preetinka Sharma | | | |
+| Architect | Hem Singh | | | |
+| QA | Pankaj  | | | |
 
 _Verdict deliberately blank. This assessment is input to a human decision._
 ```
@@ -685,7 +685,7 @@ with nothing depending on it.
     coverage is lost, especially month-end
 (b) keep the full parallel run and move the cutover date
 
-**Do not recommend one.** Farhan takes both to Northwind.
+**Do not recommend one.** Atul takes both to Northwind.
 ```
 
 *What changes:* you get a schedule you can put in front of a client, and the shortening option is written down with its cost attached rather than being proposed informally in a meeting.
@@ -705,8 +705,8 @@ Several amber and red items name no owner, or name a team rather than a person.
   DATE: <a specific date before [TARGET DATE]>
   DONE WHEN: <the checkable condition>
 
-Owners must be from: Farhan Qureshi, Rahul Nair, Sofia Marchetti, Tomas Vargas,
-Ji-woo Park, Ananya Iyer, Amara Osei.
+Owners must be from: Atul, Gautam , Hem Singh, Ravi Mullick,
+Dzmitry , Pankaj , Preetinka Sharma.
 
 **If you cannot identify a plausible owner or a feasible date, promote the item
 to RED** and say why. An amber nobody owns is a red with better manners.
@@ -734,7 +734,7 @@ and nothing here tells them how.
    category.
 6. Where the daily results are recorded so they are auditable afterwards.
 
-**Then write** the one-paragraph explanation, aimed at Amara, of why divergence
+**Then write** the one-paragraph explanation, aimed at Preetinka, of why divergence
 on a human-reviewed row is not a failure. She has to defend this to Northwind.
 ```
 
@@ -798,13 +798,13 @@ flowchart TD
 
 By far the most common mistake, and it makes the whole ceremony theatre.
 
-The point of a readiness review is to surface gaps while there is time to close them. Run it a week out and the operability red is a genuine problem with a genuine solution: Tomas writes the runbook, someone configures six alert rules, Farhan agrees the rota with Northwind, and the release goes ahead. Run it the day before and the identical finding produces one of two outcomes, both bad. Either you slip publicly, having told the client for a month that everything was on track. Or you go live anyway, having written down in a permanent document that you knew there was no runbook and no alerting — which is materially worse than not having reviewed at all, because now the gap is evidenced.
+The point of a readiness review is to surface gaps while there is time to close them. Run it a week out and the operability red is a genuine problem with a genuine solution: Ravi writes the runbook, someone configures six alert rules, Atul agrees the rota with Northwind, and the release goes ahead. Run it the day before and the identical finding produces one of two outcomes, both bad. Either you slip publicly, having told the client for a month that everything was on track. Or you go live anyway, having written down in a permanent document that you knew there was no runbook and no alerting — which is materially worse than not having reviewed at all, because now the gap is evidenced.
 
 **The fix:** put the readiness review in the sprint plan as a dated activity a week before the release, in [P16](../phase-3-planning/P16-sprint-plan-and-assignment.md). Not as a checklist item on release day.
 
 ### You shorten the parallel run to hit the date
 
-The pressure is real. Priya is doing double work. The client is waiting for a benefit they have already paid for. Every dashboard is green. Four weeks feels like an eternity of not-shipping.
+The pressure is real. Preeti is doing double work. The client is waiting for a benefit they have already paid for. Every dashboard is green. Four weeks feels like an eternity of not-shipping.
 
 So it becomes three weeks. Then it becomes two. Then somebody notices the two weeks fall between month-ends, so the run covers only quiet days at normal volume — which means it has tested precisely the conditions that were never going to fail. NWD-141 exists because Document Intelligence returns a 429 at month-end. A parallel run that skips month-end does not test the thing NWD-141 taught you to worry about.
 
@@ -818,19 +818,19 @@ Version one has two reds and four ambers. Version three has no reds and two ambe
 
 This happens through entirely reasonable-sounding moves. "We'll have the runbook by Friday, so that's amber not red." "The load test is planned, so amber." "Alerting is a day's work, call it green." Each step is defensible. The cumulative effect is a document that says the system is ready when it is not, signed by five people who each nudged it slightly.
 
-**The fix:** keep every draft. Put a revision table at the top of the document listing what changed and, crucially, what work was done to justify the change. A colour may only improve when there is a commit, a configured resource, or a completed test attached to it. Farhan enforces this at Northwind and it is not popular.
+**The fix:** keep every draft. Put a revision table at the top of the document listing what changed and, crucially, what work was done to justify the change. A colour may only improve when there is a commit, a configured resource, or a completed test attached to it. Atul enforces this at Northwind and it is not popular.
 
 ### Nobody outside the team reads it
 
 The readiness review is written by the delivery team, assessing the delivery team's own work, using evidence the delivery team produced. That is fine as a starting point and inadequate as a finish.
 
-The most valuable reviewer of this document at Northwind is Amara, because she came off an operations floor and knows what a reconciliation break actually costs to chase. She is the one who asks whether the exception queue at 30 documents a day is a workload Priya can absorb alongside her other duties, or whether it quietly becomes a two-hour daily job that nobody budgeted for. Sofia is the second, because her recurring question — "what does this look like when it's wrong?" — is the exact question a readiness review is trying to answer, and she asks it about things engineers consider settled.
+The most valuable reviewer of this document at Northwind is Preetinka, because she came off an operations floor and knows what a reconciliation break actually costs to chase. She is the one who asks whether the exception queue at 30 documents a day is a workload Preeti can absorb alongside her other duties, or whether it quietly becomes a two-hour daily job that nobody budgeted for. Hem is the second, because her recurring question — "what does this look like when it's wrong?" — is the exact question a readiness review is trying to answer, and she asks it about things engineers consider settled.
 
 **The fix:** the sign-off block is not decoration. Five named signatories from three different perspectives is the mechanism that forces the document out of the engineering room.
 
 ### This is the wrong tool: you are shipping a UI tweak
 
-If the release is NWD-139 — the exception queue formatting confidence as `82%` instead of `0.8234567` — you do not need a readiness review, a parallel run, or a sign-off block. You need Ananya to look at the screen and say yes.
+If the release is NWD-139 — the exception queue formatting confidence as `82%` instead of `0.8234567` — you do not need a readiness review, a parallel run, or a sign-off block. You need Pankaj to look at the screen and say yes.
 
 The weight of this ceremony should scale with the consequence of being wrong. Replacing a manual control in a regulated firm sits at the top of that scale. A cosmetic fix sits at the bottom, and applying the full ceremony there devalues it everywhere — people learn the ritual is noise and start skipping it on the release where it mattered.
 
@@ -840,13 +840,13 @@ The weight of this ceremony should scale with the consequence of being wrong. Re
 
 ## 10. The handoff
 
-Tomas picks this up, and he picks up the worst item in the document.
+Ravi picks this up, and he picks up the worst item in the document.
 
 Operability is red, and the largest piece of that red is that no runbook exists. That is his next job, and it is [P33](P33-write-the-runbook.md). What he is guaranteed to find in the readiness document is unusually specific: not "write some docs" but a named list of what is missing — no alert rules, no on-call rota, nothing watching the straight-through rate, an unread poison queue, no documented way to reprocess a document. That list is the runbook's table of contents, already written, by a document whose job was to notice the absence.
 
-The parallel run section hands off differently, to three people at once. Tomas or Ananya builds `recon/parallel_compare.py` to the join and tolerances specified in §8. Amara takes the schedule table to Northwind, because "2 December is when the pipeline goes live and 8 January is when Priya stops keying" is a conversation with the client, not an internal decision. And Sofia reads the exit condition, because "zero divergence on auto-accepted rows" is an assertion about the confidence gate she designed in Sprint 1, and she is the one who will be asked to defend it.
+The parallel run section hands off differently, to three people at once. Ravi or Pankaj builds `recon/parallel_compare.py` to the join and tolerances specified in §8. Preetinka takes the schedule table to Northwind, because "2 December is when the pipeline goes live and 8 January is when Preeti stops keying" is a conversation with the client, not an internal decision. And Hem reads the exit condition, because "zero divergence on auto-accepted rows" is an assertion about the confidence gate she designed in Sprint 1, and she is the one who will be asked to defend it.
 
-Farhan keeps the document itself as a living artefact through the parallel run. Every daily comparison result is appended. When the three sign-offs land in January, the file is the complete evidence trail from "all stories done" to "the manual control was safely switched off" — which is precisely the artefact an auditor asks for, and precisely the artefact nobody has when they skipped this.
+Atul keeps the document itself as a living artefact through the parallel run. Every daily comparison result is appended. When the three sign-offs land in January, the file is the complete evidence trail from "all stories done" to "the manual control was safely switched off" — which is precisely the artefact an auditor asks for, and precisely the artefact nobody has when they skipped this.
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/release-readiness-v1.0.md`**
 > Anyone reading this file can rely on finding:
@@ -866,11 +866,11 @@ Farhan keeps the document itself as a living artefact through the parallel run. 
 
 This is the opening scene of [09-sprint-4-release.md](../../Case-Study/Python-ETL/09-sprint-4-release.md), and it is the chapter where the project's date changes.
 
-The moment that matters is Amara's question. Farhan had walked into that room genuinely believing the release was a formality — eight stories done, five defects closed, straight-through rate at 84%, tests green, costs on budget. Every number he had was good. What he did not have was an answer to "what is our evidence that we are not wrong," and the reason he did not have one is that every piece of evidence he was holding had been produced by the team that built the thing.
+The moment that matters is Preetinka's question. Atul had walked into that room genuinely believing the release was a formality — eight stories done, five defects closed, straight-through rate at 84%, tests green, costs on budget. Every number he had was good. What he did not have was an answer to "what is our evidence that we are not wrong," and the reason he did not have one is that every piece of evidence he was holding had been produced by the team that built the thing.
 
-The readiness review came back with two reds, and the operability red was the one that stung, because it was not a hard problem. Nobody had configured a single alert rule. Application Insights was collecting telemetry that nothing was watching. If the pipeline had stopped at 2am on 3 December, the first person to notice would have been Priya at 8am, looking at an empty exception queue and an empty warehouse, with no idea whether that meant "no exceptions today" or "nothing ran." That gap existed for the ordinary reason: it was nobody's story, so it was nobody's job.
+The readiness review came back with two reds, and the operability red was the one that stung, because it was not a hard problem. Nobody had configured a single alert rule. Application Insights was collecting telemetry that nothing was watching. If the pipeline had stopped at 2am on 3 December, the first person to notice would have been Preeti at 8am, looking at an empty exception queue and an empty warehouse, with no idea whether that meant "no exceptions today" or "nothing ran." That gap existed for the ordinary reason: it was nobody's story, so it was nobody's job.
 
-The parallel run finding moved the date by five weeks and Farhan had to take that to Northwind. It went better than he expected, and the reason is worth noting. He did not present it as a delay. He presented the schedule table from §8 — pipeline live on 2 December as originally promised, manual keying stops on 8 January once four weeks of daily comparison show zero divergence on auto-accepted rows. Northwind's head of operations, who had lived through a cutover at a previous firm that went the other way, approved it in the meeting.
+The parallel run finding moved the date by five weeks and Atul had to take that to Northwind. It went better than he expected, and the reason is worth noting. He did not present it as a delay. He presented the schedule table from §8 — pipeline live on 2 December as originally promised, manual keying stops on 8 January once four weeks of daily comparison show zero divergence on auto-accepted rows. Northwind's head of operations, who had lived through a cutover at a previous firm that went the other way, approved it in the meeting.
 
 The document is [`artifacts/release-readiness-v1.0.md`](../../Case-Study/Python-ETL/artifacts/release-readiness-v1.0.md). Its final sign-off block was completed on 6 January, and the parallel run found two divergences — both on rows that had gone to the exception queue, neither a failure, both of which are described in [10-retrospective.md](../../Case-Study/Python-ETL/10-retrospective.md).
 

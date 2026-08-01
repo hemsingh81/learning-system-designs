@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | **Phase** | 4 — Build |
-| **Who runs it** | Frontend Engineer (Ji-woo Park) |
+| **Who runs it** | Frontend Engineer (Dzmitry ) |
 | **When** | Day one of the build sprint, as soon as the data shape is agreed — not when the backend is ready |
 | **Takes in** | `artifacts/ui-brief-exception-queue.md`, `artifacts/stories/NWD-108.md`, `artifacts/data-contract-counterparty-position.md`, `artifacts/definition-of-done.md`, the agreed fixture |
 | **Produces** | The exception queue screen under `code/exception-queue/src/features/exceptions/` |
@@ -18,17 +18,17 @@
 
 ## 1. The scene
 
-Monday afternoon, day one of Sprint 2. Ji-woo Park has just come out of a thirty-five minute conversation with Tomas Vargas that Farhan scheduled in the sprint plan, and she has a file: `exceptions.sample.json`, seven fake rows, committed to the repo.
+Monday afternoon, day one of Sprint 2. Dzmitry  has just come out of a thirty-five minute conversation with Ravi Mullick that Atul scheduled in the sprint plan, and she has a file: `exceptions.sample.json`, seven fake rows, committed to the repo.
 
-That file is the reason she is not blocked. Her story, NWD-108, is a screen that shows an analyst the documents the confidence gate rejected and lets her fix them. The confidence gate doesn't exist yet — Tomas is on Step 1 of eight and won't have an endpoint until day five. Without the agreed shape she'd be waiting, or guessing.
+That file is the reason she is not blocked. Her story, NWD-108, is a screen that shows an analyst the documents the confidence gate rejected and lets her fix them. The confidence gate doesn't exist yet — Ravi is on Step 1 of eight and won't have an endpoint until day five. Without the agreed shape she'd be waiting, or guessing.
 
 She also has the UI brief from [P14](../phase-2-design/P14-ui-ux-design-brief.md), and the brief has one line in it that has been bothering her since she read it:
 
-> Priya opens this screen roughly forty times a day and spends between ninety seconds and four minutes on each document. She does not have a second monitor.
+> Preeti opens this screen roughly forty times a day and spends between ninety seconds and four minutes on each document. She does not have a second monitor.
 
-Forty times a day. That single number changes the whole design. It means the screen is not a form Priya visits — it's the tool she lives in. It means keyboard navigation isn't an accessibility nice-to-have, it's the primary interaction. It means an empty state that says "No results" is a small insult, because "no exceptions in the queue" is the *good* outcome and should look like it.
+Forty times a day. That single number changes the whole design. It means the screen is not a form Preeti visits — it's the tool she lives in. It means keyboard navigation isn't an accessibility nice-to-have, it's the primary interaction. It means an empty state that says "No results" is a small insult, because "no exceptions in the queue" is the *good* outcome and should look like it.
 
-And it means something less obvious that Ji-woo has learned the hard way: **the states she'll spend the most time in are the ones that aren't the happy path.** Loading. Errors. The document that won't render. The row that's already been fixed by someone else. Build the happy path first and those get bolted on at the end of the sprint, badly, in whatever time is left.
+And it means something less obvious that Dzmitry has learned the hard way: **the states she'll spend the most time in are the ones that aren't the happy path.** Loading. Errors. The document that won't render. The row that's already been fixed by someone else. Build the happy path first and those get bolted on at the end of the sprint, badly, in whatever time is left.
 
 So she starts with the states.
 
@@ -38,11 +38,11 @@ So she starts with the states.
 
 ### What we're building
 
-**The exception queue** is a screen. On the left, a list of documents the confidence gate rejected. Click one and you get a split view: the original PDF on one side, the extracted fields on the other, with the failing ones marked. Priya reads the PDF, corrects the fields the machine got wrong, and submits. The document goes back through the pipeline.
+**The exception queue** is a screen. On the left, a list of documents the confidence gate rejected. Click one and you get a split view: the original PDF on one side, the extracted fields on the other, with the failing ones marked. Preeti reads the PDF, corrects the fields the machine got wrong, and submits. The document goes back through the pipeline.
 
 That's the entire feature. It exists because of the design invariant that runs through this whole project: **a wrong number is worse than no number.** When the extraction service isn't sure, the document doesn't quietly enter the warehouse — it comes here, to a human.
 
-Ji-woo's screen is where that principle stops being architecture and becomes somebody's Tuesday.
+Dzmitry's screen is where that principle stops being architecture and becomes somebody's Tuesday.
 
 ### Why a UI prompt is different from a backend prompt
 
@@ -60,7 +60,7 @@ This is the core instruction of the prompt, so it's worth being precise.
 
 A screen has **states**: the different things it can be showing depending on what's happened. The exception queue has at least six:
 
-| State | What Priya sees | When |
+| State | What Preeti sees | When |
 |---|---|---|
 | **Loading** | The list is being fetched | First paint, and after every refresh |
 | **Empty** | There are no exceptions | Good morning. The pipeline had a clean run |
@@ -73,25 +73,25 @@ Most people build "populated" first. It's the interesting one, it's what the des
 
 **Build them in the other order and three things change.**
 
-First, **you find out on day one what the states need**, not on day nine. The error state needs an error message, which means the API needs to return one, which means Tomas needs to know that. That's a five-minute conversation on Monday and a redesign on Thursday of week two.
+First, **you find out on day one what the states need**, not on day nine. The error state needs an error message, which means the API needs to return one, which means Ravi needs to know that. That's a five-minute conversation on Monday and a redesign on Thursday of week two.
 
 Second, **the component's shape comes out right.** A component built happy-path-first usually holds its data in a way that has no room for "loading" or "failed", and retrofitting means restructuring. Built states-first, the data model has a slot for every outcome from the beginning.
 
-Third, and most practically: **you can build all of them without a backend.** A loading state is a component and a boolean. An error state is a component and an error object. You do not need an API to build either. By the time Tomas's endpoint arrives on day five, the hard parts are done and you're wiring, not designing.
+Third, and most practically: **you can build all of them without a backend.** A loading state is a component and a boolean. An error state is a component and an error object. You do not need an API to build either. By the time Ravi's endpoint arrives on day five, the hard parts are done and you're wiring, not designing.
 
 The order in the prompt is deliberate: loading, empty, error, then populated. Empty comes second because it's the one most often forgotten entirely, and because on this screen an empty queue is a *success* and should feel like one.
 
-> **Watch out.** "Empty" and "loading" look the same for the first 200 milliseconds and teams routinely ship a screen that flashes "No exceptions to review" before the data arrives. Priya sees that forty times a day. It has to be a distinct state from the first line of code, not a `data.length === 0` check bolted on later.
+> **Watch out.** "Empty" and "loading" look the same for the first 200 milliseconds and teams routinely ship a screen that flashes "No exceptions to review" before the data arrives. Preeti sees that forty times a day. It has to be a distinct state from the first line of code, not a `data.length === 0` check bolted on later.
 
 ### Keeping the PDF and the field list in sync
 
-The detail view has two halves. Left: the original PDF, the thing Priya is reading from. Right: the extracted fields, the thing she's correcting.
+The detail view has two halves. Left: the original PDF, the thing Preeti is reading from. Right: the extracted fields, the thing she's correcting.
 
 They have to agree with each other at all times, and that's harder than it sounds.
 
-Here's the concrete requirement from the brief. Priya clicks the `market_value` field on row 34 of the field list. Three things must happen: the PDF scrolls to the page that field came from, the region of the page the value was read from is highlighted, and the field gets focus for editing. And it has to work the other way too — if she scrolls the PDF to page 2, the field list should indicate which fields are on the page she's looking at.
+Here's the concrete requirement from the brief. Preeti clicks the `market_value` field on row 34 of the field list. Three things must happen: the PDF scrolls to the page that field came from, the region of the page the value was read from is highlighted, and the field gets focus for editing. And it has to work the other way too — if she scrolls the PDF to page 2, the field list should indicate which fields are on the page she's looking at.
 
-Why this matters at all: **without it, Priya is doing the synchronisation herself, in her head, forty times a day.** She reads "quantity: 1,250" in the field list, then hunts down the PDF looking for where that number lives, then compares. That hunt is most of the ninety seconds. Removing it is most of the value of the screen.
+Why this matters at all: **without it, Preeti is doing the synchronisation herself, in her head, forty times a day.** She reads "quantity: 1,250" in the field list, then hunts down the PDF looking for where that number lives, then compares. That hunt is most of the ninety seconds. Removing it is most of the value of the screen.
 
 The technical shape is straightforward once you name it. Every extraction carries a **bounding region** — the page number and the rectangle on that page the value was read from. Azure AI Document Intelligence returns these; the data contract carries them through. So the sync is:
 
@@ -106,7 +106,7 @@ The mistake to avoid is letting each half keep its own idea of "current". Two so
 
 The gate returns confidence as a float between 0 and 1. `0.8234567`.
 
-Priya does not think in floats. She thinks in percentages, because everyone does, and because the thresholds she's been told about are "90% for money, 85% for dates". A number that reads `0.8234567` requires her to do a conversion, every time, on every field, forty times a day.
+Preeti does not think in floats. She thinks in percentages, because everyone does, and because the thresholds she's been told about are "90% for money, 85% for dates". A number that reads `0.8234567` requires her to do a conversion, every time, on every field, forty times a day.
 
 So the rule is absolute: **no raw confidence float ever reaches the DOM.** Every one goes through a single formatter that turns `0.8234567` into `82%`.
 
@@ -114,7 +114,7 @@ One formatter, in one file, used everywhere. Not a formatting call inline in eac
 
 Somebody eventually forgot. That's **NWD-139**, and it's worth telling now because it's the most instructive small bug in the book.
 
-Ji-woo built the field list correctly. `formatConfidence(field.confidence)` everywhere, tested, reviewed, done. On the last day of the sprint she added a compact summary table showing the line items in a document, wrote `{item.confidence}` in a cell because she was typing quickly at four in the afternoon, and shipped it. Ananya found it in Sprint 3. Priya saw `0.8234567` in one table and `82%` in another and reasonably assumed they were different things.
+Dzmitry built the field list correctly. `formatConfidence(field.confidence)` everywhere, tested, reviewed, done. On the last day of the sprint she added a compact summary table showing the line items in a document, wrote `{item.confidence}` in a cell because she was typing quickly at four in the afternoon, and shipped it. Pankaj found it in Sprint 3. Preeti saw `0.8234567` in one table and `82%` in another and reasonably assumed they were different things.
 
 One line. Cosmetic. And it took a bug report, a triage, a fix, a review and a re-test — call it ninety minutes of five people's time for a character count you could fit in a tweet.
 
@@ -238,13 +238,13 @@ the DOM.
 | Placeholder | What to put in it | Northwind example | What happens if you get it wrong |
 |---|---|---|---|
 | `[WHAT THIS RUN COVERS]` | One component or one tight group | `the exception queue list: types, states and the row component. Not the detail view.` | Give it the whole screen and you get 600 lines of TSX across nine files that you will skim, which is the [P18](P18-implement-a-story.md) failure in a different language |
-| `[UI BRIEF PATH]` | The brief from [P14](../phase-2-design/P14-ui-ux-design-brief.md) | `artifacts/ui-brief-exception-queue.md` | The model designs the screen. It will be a competent generic screen and it will not be the one Priya needs |
+| `[UI BRIEF PATH]` | The brief from [P14](../phase-2-design/P14-ui-ux-design-brief.md) | `artifacts/ui-brief-exception-queue.md` | The model designs the screen. It will be a competent generic screen and it will not be the one Preeti needs |
 | `[STORY PATH]` | The story | `artifacts/stories/NWD-108.md` | You lose the acceptance criteria, so you can't tell when it's finished |
 | `[DATA CONTRACT PATH]` | The agreed shape from [P13](../phase-2-design/P13-design-the-data-contract.md) | `artifacts/data-contract-counterparty-position.md` | Field names get invented. The fixture and the real API then disagree and you find out on day six |
 | `[DEFINITION OF DONE PATH]` | The DoD from [P17](../phase-3-planning/P17-definition-of-done.md) | `artifacts/definition-of-done.md` | The no-PII-in-fixtures and no-dead-code clauses go unenforced during generation |
 | `[PROJECT CONTEXT PATH]` | Repo conventions from [P01](../phase-0-foundation/P01-generate-the-project-context-file.md) | `artifacts/CLAUDE.md` | Wrong folder structure, wrong styling approach, a state library you don't use |
 | `[FIXTURE PATH]` | The file you and the backend agreed | `src/features/exceptions/fixtures/exceptions.sample.json` | Without it the model invents data, and its invented data is all happy path |
-| `[WHO USES THIS, HOW OFTEN, IN WHAT CONDITIONS]` | The real user, in one honest sentence | `Priya Raman, operations analyst at Northwind. Opens this ~40 times a day, 90 seconds to 4 minutes each, single monitor, keyboard-heavy, under time pressure before the T+1 cutoff.` | The highest-value line in the prompt. Without it you get a screen designed for a demo rather than for a shift |
+| `[WHO USES THIS, HOW OFTEN, IN WHAT CONDITIONS]` | The real user, in one honest sentence | `Preeti Singh, operations analyst at Northwind. Opens this ~40 times a day, 90 seconds to 4 minutes each, single monitor, keyboard-heavy, under time pressure before the T+1 cutoff.` | The highest-value line in the prompt. Without it you get a screen designed for a demo rather than for a shift |
 | `[FORMATTING RULES]` | The non-negotiables | `Confidence is never rendered raw. formatConfidence(0.8234567) → "82%". The component prop type is a branded FormattedConfidence that only that function can produce.` | NWD-139, in production, in front of the client |
 | `[SYNC REQUIREMENT]` | What must stay in step with what | `Selecting a field scrolls the PDF to its page, highlights its bounding region, and focuses the input. One shared selection state; both halves read and write it.` | Two sources of truth, drifting. The most expensive UI bug class there is because it's intermittent |
 
@@ -252,7 +252,7 @@ the DOM.
 
 ## 5. The filled-in example
 
-Ji-woo runs this on Monday afternoon, day one, immediately after committing the fixture. Tomas has written no gate code yet.
+Dzmitry runs this on Monday afternoon, day one, immediately after committing the fixture. Ravi has written no gate code yet.
 
 ```text
 You are a React and TypeScript engineer building one screen from an agreed UI brief.
@@ -271,7 +271,7 @@ end; do not build it.
 - Repository conventions: artifacts/CLAUDE.md
 - The agreed fixture: src/features/exceptions/fixtures/exceptions.sample.json
 
-**The user.** Priya Raman, operations analyst at Northwind Asset Management. She
+**The user.** Preeti Singh, operations analyst at Northwind Asset Management. She
 opens this screen roughly 40 times a day and spends between 90 seconds and 4
 minutes per document. Single monitor, no second screen. She is fast on a keyboard
 and reaches for the mouse reluctantly. She is working against the T+1 break
@@ -285,7 +285,7 @@ in a screenshot.
 2. The loading state — a skeleton shaped like the rows, not a spinner.
 3. The empty state. Distinct from loading. An empty queue means the pipeline had
    a clean run; it should read as good news, not as "no results found".
-4. The error state — what failed, in words Priya can act on, plus a retry, and
+4. The error state — what failed, in words Preeti can act on, plus a retry, and
    announced to assistive technology.
 5. Only then the populated list.
 
@@ -343,7 +343,7 @@ Four files. Trimmed of repetitive markup, otherwise real.
  * artifacts/data-contract-counterparty-position.md §4.
  *
  * Field names here match the wire format exactly. Renaming one is a contract
- * change and needs Tomas.
+ * change and needs Ravi.
  */
 
 /** Reason codes produced by core/confidence.py. Closed set — do not widen here. */
@@ -411,7 +411,7 @@ export type QueueState =
 /**
  * The ONLY place a confidence float becomes something a human reads.
  *
- * Confidence arrives as 0..1. Priya thinks in percentages, and the thresholds
+ * Confidence arrives as 0..1. Preeti thinks in percentages, and the thresholds
  * she has been trained on are stated as percentages ("90% for money"). Rendering
  * 0.8234567 makes her do the conversion herself, 40 times a day.
  *
@@ -508,7 +508,7 @@ export function ExceptionQueue({
   }, []);
 
   // 1. Loading — a skeleton shaped like six rows, so the layout does not jump
-  //    when the real rows arrive. Never a bare spinner: Priya opens this 40
+  //    when the real rows arrive. Never a bare spinner: Preeti opens this 40
   //    times a day and a moving layout costs her a beat every time.
   if (state.status === 'loading') {
     return <QueueSkeleton rows={6} />;
@@ -528,7 +528,7 @@ export function ExceptionQueue({
   }
 
   // 3. Error — say what failed and offer the way out. role="alert" so a screen
-  //    reader announces it without Priya having to go looking.
+  //    reader announces it without Preeti having to go looking.
   if (state.status === 'error') {
     return (
       <div className="queue-error" role="alert">
@@ -604,7 +604,7 @@ export function ExceptionRow({
   return (
     <li className="queue-row">
       {/*
-        A real button, not a div with onClick. Priya works from the keyboard;
+        A real button, not a div with onClick. Preeti works from the keyboard;
         a button is focusable, activates on Enter and Space, and announces
         itself. Tab order follows document order, which follows queue order,
         which is the order she works in.
@@ -683,13 +683,13 @@ file that changes when the real endpoint lands.
 2. NULL MIN_CONFIDENCE. The contract allows minConfidence to be null (no field
    carried a score). I render "—" rather than "0%". "0%" would read as "the
    model was certain and wrong", which is a different and more alarming claim
-   than "no score was returned". Confirm the wording with Priya.
+   than "no score was returned". Confirm the wording with Preeti.
 
 3. ROW ORDER. The brief does not specify. I preserve the order the API returns
-   and do not sort client-side, so the server owns priority. If Priya needs
+   and do not sort client-side, so the server owns priority. If Preeti needs
    oldest-first this is a backend change, not a UI one.
 
-4. TIMEZONE. Rendered in the browser's local timezone. Priya is in London and
+4. TIMEZONE. Rendered in the browser's local timezone. Preeti is in London and
    the Los Angeles desk also uses this screen, so a document received at 14:32
    London shows as 06:32 in LA. This is probably right and is worth confirming —
    the alternative is to pin everything to London, which is where the T+1
@@ -712,7 +712,7 @@ never change.
 
 **Then `formatConfidence.ts`, specifically the branded type.** `FormattedConfidence` is a string that carries an invisible marker only that module can attach. The practical effect is that `<span>{exception.minConfidence}</span>` doesn't compile if the span's type demands a `FormattedConfidence`. That's NWD-139 prevented by the compiler rather than by somebody remembering at four in the afternoon.
 
-**The part that is commonly wrong:** the empty state's wording. The model's first attempt was "No exceptions found." Ji-woo rewrote it to "Nothing to review — every document processed today passed the confidence gate." The difference matters: "No results" is what a failed search says, and an analyst arriving at an empty queue should immediately know whether that's *good* or whether something is broken upstream. The line about documents still landing safely, in the error state, does the same job — it answers the question Priya would otherwise have to Slack somebody to ask.
+**The part that is commonly wrong:** the empty state's wording. The model's first attempt was "No exceptions found." Dzmitry rewrote it to "Nothing to review — every document processed today passed the confidence gate." The difference matters: "No results" is what a failed search says, and an analyst arriving at an empty queue should immediately know whether that's *good* or whether something is broken upstream. The line about documents still landing safely, in the error state, does the same job — it answers the question Preeti would otherwise have to Slack somebody to ask.
 
 ---
 
@@ -733,9 +733,9 @@ Not "when it looks like the mockup". The mockup only shows one state.
 - [ ] Only one file knows where the data comes from
 - [ ] Nothing was added that the brief doesn't specify
 
-**Why you should stop rather than keep prompting.** UI is where over-prompting does the most damage, because there's always something to improve. Ask again and you'll get spacing tweaks, a transition, a slightly different empty-state illustration, an extracted sub-component. Each is defensible. None of them is the thing Priya needs, and each one is a fresh file you have to read.
+**Why you should stop rather than keep prompting.** UI is where over-prompting does the most damage, because there's always something to improve. Ask again and you'll get spacing tweaks, a transition, a slightly different empty-state illustration, an extracted sub-component. Each is defensible. None of them is the thing Preeti needs, and each one is a fresh file you have to read.
 
-There's a specific trap worth naming: **asking the model to "polish" or "make it more professional".** That reliably produces added visual complexity — gradients, shadows, a status pill where a word would do — on a screen whose entire job is to be scanned quickly forty times a day. Ji-woo's rule is that any change she can't justify against the forty-times-a-day sentence doesn't ship.
+There's a specific trap worth naming: **asking the model to "polish" or "make it more professional".** That reliably produces added visual complexity — gradients, shadows, a status pill where a word would do — on a screen whose entire job is to be scanned quickly forty times a day. Dzmitry's rule is that any change she can't justify against the forty-times-a-day sentence doesn't ship.
 
 **The signal that you are NOT done:** you cannot see a state without running the backend. That means the data seam isn't clean, and §8.2 fixes it.
 
@@ -854,7 +854,7 @@ Say what happens when the bounding region is null — the field was extracted bu
 Azure returned no location. The viewer must not scroll to page 0 or throw.
 ```
 
-What changes: the derived copies disappear. The null-region question is the one that actually bites — it happens on merged table cells and on some scanned pages, and if nobody asks, the viewer scrolls somewhere arbitrary and Priya loses her place.
+What changes: the derived copies disappear. The null-region question is the one that actually bites — it happens on merged table cells and on some scanned pages, and if nobody asks, the viewer scrolls somewhere arbitrary and Preeti loses her place.
 
 ### 8.5 "There's a raw float on screen"
 
@@ -933,7 +933,7 @@ The countermeasure is the build order in this prompt, and a review habit: **the 
 
 ### The fixture is all happy path
 
-Ji-woo's fixture has seven rows and four of them are awkward on purpose: a document with three failures, a header failure with a null line-item index, a null confidence, and a field with no bounding region.
+Dzmitry's fixture has seven rows and four of them are awkward on purpose: a document with three failures, a header failure with a null line-item index, a null confidence, and a field with no bounding region.
 
 The default fixture — the one a model generates if you don't specify — has five clean rows that all look the same. You build against it, everything works, and every awkward case arrives on day six with the real API.
 
@@ -941,9 +941,9 @@ The default fixture — the one a model generates if you don't specify — has f
 
 ### The screen is designed for the demo, not the shift
 
-This is the failure Ji-woo cares most about and it's invisible in review. A screen with generous whitespace, a big heading and a card layout demos beautifully and is slightly worse to use for the two-hundredth time. Every extra pixel of vertical rhythm is one fewer row visible, and one more scroll, forty times a day.
+This is the failure Dzmitry cares most about and it's invisible in review. A screen with generous whitespace, a big heading and a card layout demos beautifully and is slightly worse to use for the two-hundredth time. Every extra pixel of vertical rhythm is one fewer row visible, and one more scroll, forty times a day.
 
-There's no prompt that fixes this. The fix is the sentence in `[WHO USES THIS, HOW OFTEN]` and the discipline of judging every decision against it. When Ji-woo can't decide between two options she asks: which one is better on the fortieth document of the day? The answer is nearly always the denser, plainer one.
+There's no prompt that fixes this. The fix is the sentence in `[WHO USES THIS, HOW OFTEN]` and the discipline of judging every decision against it. When Dzmitry can't decide between two options she asks: which one is better on the fortieth document of the day? The answer is nearly always the denser, plainer one.
 
 Worth being honest: this is also the thing most likely to cause friction with whoever wrote the visual design. That conversation is easier if the usage number is written down in the brief, which is why [P14](../phase-2-design/P14-ui-ux-design-brief.md) asks for it.
 
@@ -957,23 +957,23 @@ The cost is about fifteen lines of TypeScript once. The bug cost five people nin
 
 ### When this prompt is the wrong tool entirely
 
-If you don't have a UI brief, this prompt will design the screen for you. It'll be a competent generic screen — a table, some filters, a modal — and it won't be shaped by anything about Priya. Go to [P14](../phase-2-design/P14-ui-ux-design-brief.md) first; it takes an hour and it's the difference between a screen that works and a screen that works *here*.
+If you don't have a UI brief, this prompt will design the screen for you. It'll be a competent generic screen — a table, some filters, a modal — and it won't be shaped by anything about Preeti. Go to [P14](../phase-2-design/P14-ui-ux-design-brief.md) first; it takes an hour and it's the difference between a screen that works and a screen that works *here*.
 
-If you're exploring an interaction — you genuinely don't know whether the split view or a stacked layout is better — don't build it with this prompt. Build two throwaway versions, put them in front of Priya for ten minutes, and then build the winner properly. Prototypes want speed, not structure, and the states-first discipline is wasted on something you're about to delete.
+If you're exploring an interaction — you genuinely don't know whether the split view or a stacked layout is better — don't build it with this prompt. Build two throwaway versions, put them in front of Preeti for ten minutes, and then build the winner properly. Prototypes want speed, not structure, and the states-first discipline is wasted on something you're about to delete.
 
 ---
 
 ## 10. The handoff
 
-Ji-woo hands off to herself first, with [P20](P20-write-tests-alongside-the-code.md). The components exist; now they need tests written from NWD-108's acceptance criteria rather than from the components. That ordering matters as much on the frontend as on the backend — a test written by reading the component will assert whatever the component does, including the bugs.
+Dzmitry hands off to herself first, with [P20](P20-write-tests-alongside-the-code.md). The components exist; now they need tests written from NWD-108's acceptance criteria rather than from the components. That ordering matters as much on the frontend as on the backend — a test written by reading the component will assert whatever the component does, including the bugs.
 
 The tests that matter most are the ones for the states, because those are the ones that will be broken by a refactor six months from now and nobody will notice by eye. There's a specific one worth writing that catches the flash-of-empty: assert that the empty state is *not* rendered while the fetch is pending.
 
 On day six she swaps the fixture for the real endpoint. If the agreement from day one held, that's a change to `exceptionsSource.ts` and nothing else — which is the whole return on the seam. If it isn't, the sync-up cost gets raised at standup ([P21](P21-daily-standup-summary.md)) rather than absorbed quietly, because a data-shape disagreement discovered on day six is a sprint-level fact, not a personal one.
 
-Ananya picks the screen up around day eight for [P22](../phase-5-verify/P22-e2e-test-the-application.md). What she needs is stable selectors, which is why Ji-woo's spare capacity in the sprint plan was committed partly to pairing with her on them. E2E tests hung off CSS class names break every time someone touches the styling; tests hung off roles and accessible names survive, which is a second, unadvertised return on doing the keyboard work properly.
+Pankaj picks the screen up around day eight for [P22](../phase-5-verify/P22-e2e-test-the-application.md). What she needs is stable selectors, which is why Dzmitry's spare capacity in the sprint plan was committed partly to pairing with her on them. E2E tests hung off CSS class names break every time someone touches the styling; tests hung off roles and accessible names survive, which is a second, unadvertised return on doing the keyboard work properly.
 
-And Priya sees it at the sprint demo. Her first question, recorded in the case study, is not about the layout.
+And Preeti sees it at the sprint demo. Her first question, recorded in the case study, is not about the layout.
 
 > **Artifact contract — `code/exception-queue/src/features/exceptions/`**
 > Anyone reading this feature can rely on finding:
@@ -993,15 +993,15 @@ And Priya sees it at the sprint demo. Her first question, recorded in the case s
 
 This runs in [Chapter 6 — Sprint 2 Build (Frontend)](../../Case-Study/Python-ETL/06-sprint-2-build-frontend.md), across five runs over six days: types and list states, the row, the detail shell, the PDF pane, the field editor.
 
-The swap on day six took eleven minutes. One file, `exceptionsSource.ts`, and one field name that had drifted — Tomas had shipped `line_item_index` in snake case where the fixture used `lineItemIndex`, because the fixture was hand-written and the API serialises from Python. They found it in eleven minutes instead of two days precisely because everything else matched, so the one mismatch stood out. Ji-woo added a camel-case mapping in the source module and moved on.
+The swap on day six took eleven minutes. One file, `exceptionsSource.ts`, and one field name that had drifted — Ravi had shipped `line_item_index` in snake case where the fixture used `lineItemIndex`, because the fixture was hand-written and the API serialises from Python. They found it in eleven minutes instead of two days precisely because everything else matched, so the one mismatch stood out. Dzmitry added a camel-case mapping in the source module and moved on.
 
-The demo moment worth recording is Priya's first question. Ji-woo showed the populated queue, opened a document, corrected a market value and resubmitted. Priya watched, and then asked: *"What happens if I open one and someone else is already fixing it?"*
+The demo moment worth recording is Preeti's first question. Dzmitry showed the populated queue, opened a document, corrected a market value and resubmitted. Preeti watched, and then asked: *"What happens if I open one and someone else is already fixing it?"*
 
 Nobody had an answer. The brief didn't cover it, the data contract had a `status` field with an `in_review` value that nothing ever set, and the screen would have let two analysts fix the same document twice. It became a story in Sprint 3. It is the single best argument in the book for demoing to the actual user rather than to a stakeholder — the person who does the job forty times a day asks the question the design review didn't.
 
 And NWD-139. The line-items table was added at 16:10 on day nine, reviewed at 16:40, merged at 16:55. `{item.confidence}`. The branded type was in `formatConfidence.ts` from day one and the summary table's cell was typed `string`, so the compiler had nothing to object to — the brand only protects components that ask for it, and a plain `<td>{value}</td>` asks for nothing.
 
-Ji-woo's fix in Sprint 3 was two characters of formatter call and, more usefully, a lint rule flagging any JSX expression whose identifier ends in `confidence` and isn't wrapped. That rule has fired twice since. [Chapter 8](../../Case-Study/Python-ETL/08-sprint-3-rework.md) has the full loop.
+Dzmitry's fix in Sprint 3 was two characters of formatter call and, more usefully, a lint rule flagging any JSX expression whose identifier ends in `confidence` and isn't wrapped. That rule has fired twice since. [Chapter 8](../../Case-Study/Python-ETL/08-sprint-3-rework.md) has the full loop.
 
 ---
 

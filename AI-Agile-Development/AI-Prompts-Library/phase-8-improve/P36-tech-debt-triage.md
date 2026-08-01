@@ -7,18 +7,18 @@
 | | |
 |---|---|
 | **Phase** | 8 — Improve |
-| **Who runs it** | Architect (Sofia Marchetti) with the Team Lead (Rahul Nair) |
+| **Who runs it** | Architect (Hem Singh) with the Team Lead (Gautam ) |
 | **When** | Sprint 4, after the retrospective and before v1.1 planning |
 | **Takes in** | `artifacts/retrospective-sprint-3.md`, `artifacts/release-readiness-v1.0.md`, `artifacts/adr/0001–0003`, the codebase, the dead code inventory from [P34](P34-clean-up-dead-code.md) |
 | **Produces** | A ranked technical debt register, feeding the v1.1 backlog |
 | **Hands off to** | Product Owner — the v1.1 backlog, and the case study end to end |
-| **Time to run** | Two hours to inventory, then a 90-minute session with Sofia and Rahul arguing about the ranking |
+| **Time to run** | Two hours to inventory, then a 90-minute session with Hem and Gautam arguing about the ranking |
 
 ---
 
 ## 1. The scene
 
-Sofia has three documents open and they are all telling her the same thing from different directions.
+Hem has three documents open and they are all telling her the same thing from different directions.
 
 The retrospective says the team had no data-completeness check anywhere, and that a good control created a blind spot precisely by being good. The readiness review says the 429 back-off has never been exercised at real month-end concurrency, and that the parallel run will not finish until January. The dead code inventory says two extraction helpers survived three sprints from an approach that was rejected in an ADR she wrote herself.
 
@@ -26,11 +26,11 @@ None of those are bugs. Everything works. The straight-through rate is 84%, the 
 
 What they are is **a list of places where the system is not what she designed it to be, and where the difference is going to cost somebody something.**
 
-The one bothering her most is the blob trigger. The architecture is explicit and has been since Sprint 1: a blob arriving enqueues a message, and a separate queue worker does the analysis. That separation exists so that a slow document cannot block the arrival of the next one, and so that a failure can be retried without re-triggering on the blob. In Sprint 2, under pressure to get NWD-101 and NWD-102 landing together, Tomas shipped the trigger doing the analysis inline. It was meant to be temporary. It has been in production-shaped code for six weeks and it is what is running on 2 December.
+The one bothering her most is the blob trigger. The architecture is explicit and has been since Sprint 1: a blob arriving enqueues a message, and a separate queue worker does the analysis. That separation exists so that a slow document cannot block the arrival of the next one, and so that a failure can be retried without re-triggering on the blob. In Sprint 2, under pressure to get NWD-101 and NWD-102 landing together, Ravi shipped the trigger doing the analysis inline. It was meant to be temporary. It has been in production-shaped code for six weeks and it is what is running on 2 December.
 
-Right now it does not matter. Three-page documents finish in seconds. But the Function timeout section Tomas wrote into the runbook last week describes exactly what happens when a 60-page quarterly statement arrives, and the answer is that the Function is killed mid-run, the blob trigger fires again, and it is killed again, five times, into the poison queue.
+Right now it does not matter. Three-page documents finish in seconds. But the Function timeout section Ravi wrote into the runbook last week describes exactly what happens when a 60-page quarterly statement arrives, and the answer is that the Function is killed mid-run, the blob trigger fires again, and it is killed again, five times, into the poison queue.
 
-**Technical debt is not code you dislike. It is a shortcut you took, deliberately or by accident, whose interest you pay on every future change — and the whole skill is telling the difference between the two.** Sofia books ninety minutes with Rahul and starts the inventory.
+**Technical debt is not code you dislike. It is a shortcut you took, deliberately or by accident, whose interest you pay on every future change — and the whole skill is telling the difference between the two.** Hem books ninety minutes with Gautam and starts the inventory.
 
 ---
 
@@ -81,7 +81,7 @@ Notice the pattern: the right column always names a *thing you will do again* an
 
 Debt comes in two kinds, and they need different treatment.
 
-**Deliberate debt** is a decision. You knew the right approach, you chose a shortcut, you had a reason — usually a date. The inline blob trigger is deliberate: Tomas knew the design said enqueue, and shipped inline to get NWD-101 and NWD-102 out together.
+**Deliberate debt** is a decision. You knew the right approach, you chose a shortcut, you had a reason — usually a date. The inline blob trigger is deliberate: Ravi knew the design said enqueue, and shipped inline to get NWD-101 and NWD-102 out together.
 
 Deliberate debt is not a failure. It is often correct. The failure mode is not recording it, because an unrecorded deliberate shortcut becomes indistinguishable from a design decision within about a month. Six weeks later someone reads the code, sees inline processing, and concludes that is how the system works. It stops being debt and becomes architecture, which is how systems rot without anybody doing anything wrong.
 
@@ -159,7 +159,7 @@ Three passes: read the code and the artefacts to find divergences between what w
 
 The AI is good at the first pass, because divergence between an ADR and a codebase is exactly the kind of cross-referencing it does well and humans do badly. It is mediocre at the second, because frequency estimates need to come from people who know how often they actually touch things. It is poor at the third without a roadmap, because ranking requires knowing what is coming.
 
-So: let it find and describe, supply the roadmap, and argue about the ranking yourselves. That argument is the ninety minutes with Rahul and it is not delegable.
+So: let it find and describe, supply the roadmap, and argue about the ranking yourselves. That argument is the ninety minutes with Gautam and it is not delegable.
 
 ### If you remember one thing
 
@@ -183,7 +183,7 @@ not go on the register.
 
 **STOP GATE:** produce the register with costs and a proposed ranking, then
 **STOP**. Do NOT write stories, do NOT propose fixes in code, do NOT edit
-anything. Sofia and Rahul rank it in the room.
+anything. Hem and Gautam rank it in the room.
 
 CONTEXT
 - System: [SYSTEM NAME] — [ONE LINE]
@@ -272,7 +272,7 @@ Output the register as markdown to the chat.
 
 ## 5. The filled-in example
 
-Sofia runs this on the Friday of Sprint 4, before her session with Rahul.
+Hem runs this on the Friday of Sprint 4, before her session with Gautam.
 
 ```text
 You are an architect building a technical debt register. **Inventory the
@@ -286,7 +286,7 @@ not go on the register.
 
 **STOP GATE:** produce the register with costs and a proposed ranking, then
 **STOP**. Do NOT write stories, do NOT propose fixes in code, do NOT edit
-anything. Sofia and Rahul rank it in the room.
+anything. Hem and Gautam rank it in the room.
 
 CONTEXT
 - System: Counterparty Document Ingestion — turns counterparty PDF statements and
@@ -410,7 +410,7 @@ enqueues a message and a separate queue worker does the analysis. `function_app.
 `on_blob_landed()` calls `classify()`, `extract()`, the rules engine and the sinks
 directly, in the trigger.
 
-**Why it is like this.** Tomas shipped it inline in Sprint 2 to get NWD-101 and
+**Why it is like this.** Ravi shipped it inline in Sprint 2 to get NWD-101 and
 NWD-102 landing in the same week. Recorded nowhere. **The date pressure that
 justified it is gone; the trade has expired.**
 
@@ -571,7 +571,7 @@ Revisit 31 January, after the alerts have run through a month-end.
 
 **Item 1 is the ranking rule made visible.** Modest interest — four to eight hours a quarter — and it ranks first. It ranks first because the default is likely and lands in cutover week. If you ranked this register by running cost, item 1 would sit fourth or fifth, and a quarterly statement in January would poison-queue during the week nobody can afford a surprise. **That gap between "what annoys us" and "what will hurt us" is the entire value of pricing the default separately.**
 
-**Item 2 is the one to argue about.** It is the only item that directly contradicts design invariant 1, and its interest is not expressible in hours — it is a per-document probability of a wrong value. Sofia would put it first. Rahul would point out that item 1 has a date attached and item 2 does not. That argument is the ninety minutes, and the register's job is to make it a good argument rather than to settle it.
+**Item 2 is the one to argue about.** It is the only item that directly contradicts design invariant 1, and its interest is not expressible in hours — it is a per-document probability of a wrong value. Hem would put it first. Gautam would point out that item 1 has a date attached and item 2 does not. That argument is the ninety minutes, and the register's job is to make it a good argument rather than to settle it.
 
 **Item 3's real value is not the fix.** Read the last line: the useful action now is writing down that invariant 8 has an exception. Northwind will plan a third counterparty on the assumption that onboarding is a YAML change, because that is what the design says. It is not, for classification. **A debt item whose whole payload is "correct someone's mental model before they plan around it" is a legitimate and underrated kind.**
 
@@ -602,7 +602,7 @@ Revisit 31 January, after the alerts have run through a month-end.
 
 Ask for more items and you will get them, and they will be progressively more speculative, until the register contains forty entries and nobody reads it. A register's usefulness peaks somewhere around eight to twelve items — enough to be honest, few enough that the top three are obvious.
 
-The second is asking the AI to settle the ranking. It will produce an order, confidently. But ranking debt is a judgement about what your business is going to do next, and the AI knows your roadmap only as a paragraph you typed. Sofia and Rahul disagreeing about whether item 1 or item 2 goes first is not a failure of the process — it is the process. The register exists to make that disagreement well-informed.
+The second is asking the AI to settle the ranking. It will produce an order, confidently. But ranking debt is a judgement about what your business is going to do next, and the AI knows your roadmap only as a paragraph you typed. Hem and Gautam disagreeing about whether item 1 or item 2 goes first is not a failure of the process — it is the process. The register exists to make that disagreement well-informed.
 
 **The signal that you are NOT done.** Every verdict is FIX NOW. That means the register recorded problems and made no decisions, and a list of everything that is wrong is not a plan.
 
@@ -732,7 +732,7 @@ A divergence on an auto-accepted row resets the clock and moves the cutover date
 which makes it the most expensive kind of failure available to us right now.
 ```
 
-*What changes:* the order becomes defensible to Farhan and Amara, because every position has an event next to it. The parallel-run flag usually promotes the correctness items.
+*What changes:* the order becomes defensible to Atul and Preetinka, because every position has an event next to it. The parallel-run flag usually promotes the correctness items.
 
 ### The loop
 
@@ -751,7 +751,7 @@ flowchart TD
     G -- yes --> I{Any ACCEPTs?}
     I -- no --> J[8.2 force a distribution]
     J --> I
-    I -- yes --> K[Sofia + Rahul<br/>argue, 90 minutes]
+    I -- yes --> K[Hem + Gautam<br/>argue, 90 minutes]
     K --> L[Top 3 → v1.1 backlog<br/>ACCEPTs → revisit dates]
 ```
 
@@ -779,11 +779,11 @@ So the register gets sorted by effort, and the quick wins go first. That feels p
 
 This is the quiet one, and it is how systems drift.
 
-Tomas shipped the blob trigger inline for a good reason under a real deadline. He did not write it down, because at the time it was obviously temporary and obviously his to fix. Six weeks later it is just how the system works. A new engineer reads `function_app.py`, sees inline processing, and builds their mental model on it. Someone writes a document describing the pipeline and describes what the code does. Now the shortcut is documented as the design.
+Ravi shipped the blob trigger inline for a good reason under a real deadline. He did not write it down, because at the time it was obviously temporary and obviously his to fix. Six weeks later it is just how the system works. A new engineer reads `function_app.py`, sees inline processing, and builds their mental model on it. Someone writes a document describing the pipeline and describes what the code does. Now the shortcut is documented as the design.
 
 Nobody did anything wrong at any step. The system's design and the system's behaviour simply diverged, and the divergence was never written down at the moment it was created — which is the only moment anybody knows about it.
 
-**The fix:** deliberate debt gets recorded when it is taken, not when it is discovered. A one-line entry with a reason and an expiry: "trigger processes inline to hit the Sprint 2 date; revisit before go-live." That line would have saved this entire triage item, and it costs thirty seconds. Rahul added it to the definition of done afterwards.
+**The fix:** deliberate debt gets recorded when it is taken, not when it is discovered. A one-line entry with a reason and an expiry: "trigger processes inline to hit the Sprint 2 date; revisit before go-live." That line would have saved this entire triage item, and it costs thirty seconds. Gautam added it to the definition of done afterwards.
 
 ### You fix debt nobody is paying interest on
 
@@ -799,7 +799,7 @@ Two neighbouring things that look like debt and are not.
 
 **A bug** is wrong behaviour now. NWD-142 was a bug — half a statement in the warehouse is incorrect output, today. Debt is *correct* behaviour that costs too much to change. If it is producing wrong answers, it gets a defect ID and goes through [P27](../phase-6-rework/P27-fix-from-a-qa-bug-report.md), not through a quarterly ranking exercise. Debt triage runs on a quarter's cadence and bugs do not have that long.
 
-**Dead code** is code nothing calls. It has no interest rate, because you never touch it — you delete it. [P34](P34-clean-up-dead-code.md) handles it with a much safer method, built around search evidence, and it should have run before this prompt. Sofia ran the triage after Rahul's cleanup deliberately, so the register describes the system as it now is rather than including four items about code that no longer exists.
+**Dead code** is code nothing calls. It has no interest rate, because you never touch it — you delete it. [P34](P34-clean-up-dead-code.md) handles it with a much safer method, built around search evidence, and it should have run before this prompt. Hem ran the triage after Gautam's cleanup deliberately, so the register describes the system as it now is rather than including four items about code that no longer exists.
 
 **The rule:** wrong behaviour now, defect. Unreachable, dead code. Correct but expensive to live with, debt.
 
@@ -807,15 +807,15 @@ Two neighbouring things that look like debt and are not.
 
 ## 10. The handoff
 
-Amara picks this up, and it is the handoff that closes the loop back to the start of the book.
+Preetinka picks this up, and it is the handoff that closes the loop back to the start of the book.
 
 The top three items go into the v1.1 backlog as stories, and they go through exactly the same treatment as any other story — [P07](../phase-1-discovery/P07-slice-the-prd-into-stories.md) to slice them, [P08](../phase-1-discovery/P08-write-acceptance-criteria.md) to get acceptance criteria, [P09](../phase-1-discovery/P09-estimate-and-rank-the-backlog.md) to rank them against feature work. **That last part is the point.** Debt that lives in a separate document, competing for "spare capacity," never gets done, because there is no spare capacity. Debt that is a story with acceptance criteria, sitting in the same ranked backlog as a feature Northwind asked for, gets an honest conversation about what matters more.
 
-Amara is well placed for that conversation. She came off an operations floor at a custodian bank, so "a wrong number reaches the warehouse and nobody catches it" is not an abstraction to her — she has chased that break. Item 2, the page-level quality check, will get a fairer hearing from her than from most product owners, and item 6's ACCEPT will get a harder time.
+Preetinka is well placed for that conversation. She came off an operations floor at a custodian bank, so "a wrong number reaches the warehouse and nobody catches it" is not an abstraction to her — she has chased that break. Item 2, the page-level quality check, will get a fairer hearing from her than from most product owners, and item 6's ACCEPT will get a harder time.
 
-Sofia keeps two items herself. Item 3's real deliverable is not code, it is a correction to the design record: invariant 8 has an exception for classification, and it needs writing into the architecture documentation before anyone plans a two-day counterparty onboarding. Item 4's real deliverable is two hours of measurement, so the next conversation about the reconciliation has a curve rather than two opinions.
+Hem keeps two items herself. Item 3's real deliverable is not code, it is a correction to the design record: invariant 8 has an exception for classification, and it needs writing into the architecture documentation before anyone plans a two-day counterparty onboarding. Item 4's real deliverable is two hours of measurement, so the next conversation about the reconciliation has a curve rather than two opinions.
 
-And Rahul takes the process lesson. The blob trigger item exists because a deliberate shortcut was never recorded, and the fix for that is not in this register at all — it is a line in the definition of done saying that any knowingly-temporary implementation gets a register entry with a reason and an expiry, on the day it is written. That is a [P17](../phase-3-planning/P17-definition-of-done.md) change, and it is the kind of thing that stops the next triage having an item like this one.
+And Gautam takes the process lesson. The blob trigger item exists because a deliberate shortcut was never recorded, and the fix for that is not in this register at all — it is a line in the definition of done saying that any knowingly-temporary implementation gets a register entry with a reason and an expiry, on the day it is written. That is a [P17](../phase-3-planning/P17-definition-of-done.md) change, and it is the kind of thing that stops the next triage having an item like this one.
 
 > **Artifact contract — the technical debt register**
 > Anyone reading this register can rely on finding:
@@ -835,15 +835,15 @@ And Rahul takes the process lesson. The blob trigger item exists because a delib
 
 This closes [10-retrospective.md](../../Case-Study/Python-ETL/10-retrospective.md) and it is the last working session in the book.
 
-The argument between Sofia and Rahul over items 1 and 2 is the scene worth reading, because neither of them is wrong. Sofia wants the page-quality check first: it is the only item on the register that directly contradicts design invariant 1, and her recurring question — what does this look like when it's wrong? — has an unusually bad answer here, which is that it looks like nothing at all. A confidently wrong number sits in Snowflake and no check the system has will ever object to it.
+The argument between Hem and Gautam over items 1 and 2 is the scene worth reading, because neither of them is wrong. Hem wants the page-quality check first: it is the only item on the register that directly contradicts design invariant 1, and her recurring question — what does this look like when it's wrong? — has an unusually bad answer here, which is that it looks like nothing at all. A confidently wrong number sits in Snowflake and no check the system has will ever object to it.
 
-Rahul's counter is that item 1 has a date attached and item 2 does not. Quarterly statements land in January. The blob trigger's default is not a probability, it is a calendar entry, and it lands in cutover week when the team's tolerance for surprises is at its lowest.
+Gautam's counter is that item 1 has a date attached and item 2 does not. Quarterly statements land in January. The blob trigger's default is not a probability, it is a calendar entry, and it lands in cutover week when the team's tolerance for surprises is at its lowest.
 
 They settled it the way these things get settled properly: both go into v1.1, item 1 first because of the date, and item 2 gets a smaller immediate action — during the parallel run, every `broker_alpha` divergence gets checked against page quality specifically, so that by January they have data rather than a theory. That compromise is only available because the register priced both, and it is a better answer than either opening position.
 
 The item that changed the most in the room was item 3. It arrived on the register as "the classifier only knows two layouts," which reads like a feature gap. It left as "invariant 8 has an exception nobody has written down," which is a completely different kind of problem with a completely different fix. Northwind's account team had already told the client that adding a counterparty was a configuration change. That is true for extraction and false for classification, and finding it out during a v1.1 planning meeting would have been considerably more expensive than finding it out here.
 
-And Rahul's line at the end of the session is the one the team kept, because it names the thing this whole phase has been circling: **"Every item on this list is something we knew at the time. We just didn't write any of it down."**
+And Gautam's line at the end of the session is the one the team kept, because it names the thing this whole phase has been circling: **"Every item on this list is something we knew at the time. We just didn't write any of it down."**
 
 That is where the story ends and where the [case study](../../Case-Study/Python-ETL/README.md) picks it up from the beginning — thirty-six prompts, one pipeline, and a team that got better at writing things down.
 

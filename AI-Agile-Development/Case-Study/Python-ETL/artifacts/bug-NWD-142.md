@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Raised by** | Ananya Iyer, QA Engineer |
+| **Raised by** | Pankaj , QA Engineer |
 | **Date raised** | 2026-07-24 |
 | **Severity** | **Critical** |
 | **Priority** | P1 — blocks release |
@@ -143,7 +143,7 @@ Five breaks. Aladdin holds the position, the counterparty statement appears not 
 ## 5. Business impact
 
 1. **Wrong data in the warehouse, marked as trustworthy.** The loaded rows carry `MIN_CONFIDENCE = 0.9412` and a `BRONZE_PATH`. Every audit signal says this row is good. The audit trail is intact and the data is still incomplete.
-2. **False breaks that consume analyst time.** Five fabricated `MISSING_EXTERNAL` breaks per affected document. Priya investigates them as real.
+2. **False breaks that consume analyst time.** Five fabricated `MISSING_EXTERNAL` breaks per affected document. Preeti investigates them as real.
 3. **It erodes the control.** The break report only works if operations trust it. A report that regularly contains fabricated breaks gets ignored, and then a real one gets ignored too. This is the failure mode we were most trying to avoid.
 4. **Scope is not one broker.** Any counterparty whose statement runs past one page is affected. On a spot check of last month's volume that is roughly **31% of Broker Alpha documents**, and effectively **all month-end statements**.
 
@@ -184,13 +184,13 @@ Two things I would push on beyond the immediate fix.
 
 A regression test needs to assert the **count**, not the content. Every existing test in `tests/test_confidence.py` asserts things about rows that are present. None of them could ever have caught this, including the one I would have bet on — `test_one_bad_line_item_fails_whole_document` checks that a *present* bad row is caught, and says nothing about an *absent* row.
 
-— Ananya
+— Pankaj
 
 ---
 
 ## 9. Resolution
 
-**Fixed** 2026-07-31 by Tomas Vargas. Merged in three commits (see [P31](../../../AI-Prompts-Library/phase-7-release/P31-write-clean-git-commits.md) for the split):
+**Fixed** 2026-07-31 by Ravi Mullick. Merged in three commits (see [P31](../../../AI-Prompts-Library/phase-7-release/P31-write-clean-git-commits.md) for the split):
 
 1. `test: reproduce NWD-142 line-item loss on multi-page tables` — the failing test first
 2. `fix(extract): fold continuation tables into the line-item array`
@@ -210,14 +210,14 @@ A regression test needs to assert the **count**, not the content. Every existing
 
 **Regression tests added:** 8, including `test_the_gate_alone_would_have_missed_nwd_142`, which asserts that this exact document **passes the confidence gate and fails the completeness rules** — pinning the distinction the bug was made of.
 
-**Verified** 2026-08-03 by Ananya Iyer. 14 positions in, 14 rows out. Fixture retained as `tests/fixtures/broker_alpha_2page.json`.
+**Verified** 2026-08-03 by Pankaj . 14 positions in, 14 rows out. Fixture retained as `tests/fixtures/broker_alpha_2page.json`.
 
 ---
 
 > **Artifact contract — `artifacts/bug-NWD-142.md`**
 >
-> Produced by: Ananya Iyer (QA Engineer), using the bug-report standard in [P22](../../../AI-Prompts-Library/phase-5-verify/P22-e2e-test-the-application.md)
-> Approved by: Rahul Nair, 2026-07-24
+> Produced by: Pankaj  (QA Engineer), using the bug-report standard in [P22](../../../AI-Prompts-Library/phase-5-verify/P22-e2e-test-the-application.md)
+> Approved by: Gautam , 2026-07-24
 >
 > Anyone fixing from this report can rely on finding:
 > - Exact reproduction steps, including the fixture and the commands to run it

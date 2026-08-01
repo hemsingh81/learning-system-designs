@@ -2,32 +2,32 @@
 
 | | |
 |---|---|
-| **Produced by** | Ji-woo Park (Frontend Engineer) with Amara Osei (Product Owner) |
+| **Produced by** | Dzmitry  (Frontend Engineer) with Preetinka Sharma (Product Owner) |
 | **Using** | [P14 — UI/UX Design Brief](../../../AI-Prompts-Library/phase-2-design/P14-ui-ux-design-brief.md) |
 | **Date** | 2026-06-19 |
 | **Status** | Approved |
 | **Version** | 1.1 |
 | **Story** | [NWD-108](stories/NWD-108.md) |
 | **Input contract** | [`spec-confidence-gate.md` §5](spec-confidence-gate.md#5-failure-output-shape) — the failure record shape this screen renders |
-| **Research** | Two shadowing sessions with Priya Raman, Northwind operations, 2026-06-15 and 2026-06-17 |
+| **Research** | Two shadowing sessions with Preeti Singh, Northwind operations, 2026-06-15 and 2026-06-17 |
 
 ---
 
 ## 1. Who this is for, and what her morning actually looks like
 
-Priya Raman is an operations analyst at Northwind's London office. She is not a power user, she is not a novice, and she has done this job for six years. She knows what a settlement break costs.
+Preeti Singh is an operations analyst at Northwind's London office. She is not a power user, she is not a novice, and she has done this job for six years. She knows what a settlement break costs.
 
 **Today, before this screen exists:** she arrives at 07:30. A folder holds the counterparty PDFs that landed overnight — 60 to 80 of them on her share. She opens each one, finds the account number, finds the positions table, types the rows into a spreadsheet, saves it to the recs share. Three and a half hours, four mornings out of five, longer at month-end. Two colleagues do the same for the other counterparties; one is in Los Angeles and covers the EM overnight arrivals.
 
 **After this screen exists:** she opens one queue. Most documents are not there — they went straight through. What is there is the ones the system could not read confidently.
 
-**The design number is 40 exceptions in a morning.** That comes from Amara's planning estimate of a 20% exception rate against ~200 documents a day, split across analysts, with month-end worse. In the first parallel-run week the real number was higher — 61% straight-through meant roughly 78 exceptions a day across two analysts — and it is expected to fall towards 30 a day as the straight-through rate reaches 85%.
+**The design number is 40 exceptions in a morning.** That comes from Preetinka's planning estimate of a 20% exception rate against ~200 documents a day, split across analysts, with month-end worse. In the first parallel-run week the real number was higher — 61% straight-through meant roughly 78 exceptions a day across two analysts — and it is expected to fall towards 30 a day as the straight-through rate reaches 85%.
 
 Forty exceptions in a three-hour morning is **four and a half minutes each**, including the ones that need a phone call to the broker. So:
 
 > **Design target: median 90 seconds from opening a document to releasing it.** Anything that adds a click to the common path fails this brief.
 
-### What Priya actually said
+### What Preeti actually said
 
 Three things from shadowing, kept verbatim because paraphrasing them loses the point:
 
@@ -56,7 +56,7 @@ flowchart LR
     style H fill:#122B22,stroke:#3DDC97,color:#E8EEF4
 ```
 
-The load-bearing edge is `F → C`: after releasing, the next document opens automatically with focus on its first failing field. Priya never returns to the list unless she wants to. Removing that edge would add two interactions to every document — 80 extra interactions a morning.
+The load-bearing edge is `F → C`: after releasing, the next document opens automatically with focus on its first failing field. Preeti never returns to the list unless she wants to. Removing that edge would add two interactions to every document — 80 extra interactions a morning.
 
 ## 3. Layout
 
@@ -76,7 +76,7 @@ Full width. A dense table, oldest first.
 | Account | 120px | **Masked — last four digits only.** `••••4417`. |
 | Pages | 56px | Right-aligned. |
 
-Filter bar above: counterparty (multi-select), reason class (multi-select), age. Filters persist per user across sessions. No search box in v1 — Priya works the queue in order and does not look documents up. That's a nice-to-have.
+Filter bar above: counterparty (multi-select), reason class (multi-select), age. Filters persist per user across sessions. No search box in v1 — Preeti works the queue in order and does not look documents up. That's a nice-to-have.
 
 ### 3.2 Document review — the split view
 
@@ -101,7 +101,7 @@ Filter bar above: counterparty (multi-select), reason class (multi-select), age.
 
 Three rules govern this screen and they are the whole design:
 
-1. **The PDF opens at the page the failure was found on.** Not page one. Priya's second quote is about exactly this. Page provenance is on every failure record (`spec-confidence-gate.md` §5), so we have the page and there is no excuse for opening at the wrong one.
+1. **The PDF opens at the page the failure was found on.** Not page one. Preeti's second quote is about exactly this. Page provenance is on every failure record (`spec-confidence-gate.md` §5), so we have the page and there is no excuse for opening at the wrong one.
 2. **The two panels stay in sync, in both directions.** Selecting a field scrolls the PDF to its bounding region and highlights it. Clicking a highlighted region on the PDF selects the field. Neither direction is optional; an analyst reads in both.
 3. **Every failing field is shown at once, expanded, in document order.** The 80-odd fields that passed are collapsed behind one disclosure row and are read-only until expanded. Fixing one field, resubmitting, and finding the next is the interaction we are specifically preventing.
 
@@ -141,9 +141,9 @@ Every component defines four states. **A state that has not been designed will b
 
 ### The empty queue is the primary state
 
-Ji-woo's argument in refinement, and it held: **the success condition for this entire project is an empty queue.** At the 85% straight-through target, Priya will open this screen and find nothing to do most mornings. An empty page with a grey "No items" is the wrong answer to the best possible outcome.
+Dzmitry's argument in refinement, and it held: **the success condition for this entire project is an empty queue.** At the 85% straight-through target, Preeti will open this screen and find nothing to do most mornings. An empty page with a grey "No items" is the wrong answer to the best possible outcome.
 
-The empty state shows: a confirmation that the queue is genuinely clear, the count of documents that went straight through today, today's straight-through percentage, and the time of the most recent processed document. It is a small status board. It tells Priya the system is working rather than merely that the list is short — which matters, because "queue is empty" and "ingestion has stopped" look identical otherwise.
+The empty state shows: a confirmation that the queue is genuinely clear, the count of documents that went straight through today, today's straight-through percentage, and the time of the most recent processed document. It is a small status board. It tells Preeti the system is working rather than merely that the list is short — which matters, because "queue is empty" and "ingestion has stopped" look identical otherwise.
 
 ## 5. Visual language
 
@@ -170,7 +170,7 @@ Northwind's design system, extended with four tokens this screen needs and it do
 
 | Role | Family | Size | Weight | Notes |
 |---|---|---|---|---|
-| Field values, quantities, confidences, hashes | `JetBrains Mono`, fallback `ui-monospace` | 14px | 500 | **Monospace, tabular figures.** Digits must align vertically down a column. Priya compares numbers by eye against the PDF and proportional digits break that. |
+| Field values, quantities, confidences, hashes | `JetBrains Mono`, fallback `ui-monospace` | 14px | 500 | **Monospace, tabular figures.** Digits must align vertically down a column. Preeti compares numbers by eye against the PDF and proportional digits break that. |
 | Field names | `Inter` | 13px | 600 | |
 | Body, reasons | `Inter` | 14px | 400 | Line height 1.5 |
 | Labels, metadata | `Inter` | 12px | 500 | Letter-spacing 0.02em |
@@ -194,7 +194,7 @@ No text below 12px anywhere. No fully-justified text. Minimum tap/click target 3
 
 ## 6. Keyboard-first
 
-Priya works the spreadsheet without touching the mouse. This screen must be at least as fast, or she will be slower after we ship, and she will be right to say so.
+Preeti works the spreadsheet without touching the mouse. This screen must be at least as fast, or she will be slower after we ship, and she will be right to say so.
 
 | Key | Context | Action |
 |---|---|---|
@@ -233,7 +233,7 @@ Target: **WCAG 2.2 Level AA**, verified by axe on every route in CI plus one man
 
 | Not building | Why |
 |---|---|
-| Mobile / tablet layout | Priya works at a desk with two monitors and the PDF open. That's a nice-to-have. |
+| Mobile / tablet layout | Preeti works at a desk with two monitors and the PDF open. That's a nice-to-have. |
 | Bulk release | Releasing documents without looking at them defeats the control. Deliberate, permanent. |
 | In-app search across the queue | She works it in order. Filters cover the real need. |
 | Annotation or comments on a document | Belongs to the recs workflow, not to ingestion. |
@@ -245,15 +245,15 @@ Target: **WCAG 2.2 Level AA**, verified by axe on every route in CI plus one man
 
 | Version | Date | Change | By |
 |---|---|---|---|
-| 1.0 | 2026-06-19 | Initial | Ji-woo, Amara |
-| 1.1 | 2026-07-07 | §3.3 gained the explicit "always a whole-number percentage" rule after [NWD-139](bug-NWD-139.md) — the badge rendered `0.8234567`. The brief already implied it; it did not say it, and an implication is not a specification. | Ji-woo |
+| 1.0 | 2026-06-19 | Initial | Dzmitry, Preetinka |
+| 1.1 | 2026-07-07 | §3.3 gained the explicit "always a whole-number percentage" rule after [NWD-139](bug-NWD-139.md) — the badge rendered `0.8234567`. The brief already implied it; it did not say it, and an implication is not a specification. | Dzmitry |
 
 ---
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/ui-brief-exception-queue.md`**
 >
-> Produced by: Frontend Engineer (Ji-woo Park) with Product Owner (Amara Osei) using P14 — UI/UX Design Brief
-> Approved by: Amara Osei (PO) 2026-06-19 · Priya Raman (Northwind operations, the actual user) 2026-06-22
+> Produced by: Frontend Engineer (Dzmitry ) with Product Owner (Preetinka Sharma) using P14 — UI/UX Design Brief
+> Approved by: Preetinka Sharma (PO) 2026-06-19 · Preeti Singh (Northwind operations, the actual user) 2026-06-22
 >
 > Anyone consuming this file can rely on finding:
 > - The named user, her current working day with real numbers, and the design target derived from them
@@ -271,4 +271,4 @@ Target: **WCAG 2.2 Level AA**, verified by axe on every route in CI plus one man
 > **If any guarantee above is missing, this artifact is not done.**
 > Do not build on it — send it back.
 >
-> Changing this file: Ji-woo Park and Amara Osei jointly. A change to §3.3 or §4 requires re-checking `spec-confidence-gate.md` §5 — the screen renders that shape and the two drift silently. A change to §7 requires a fresh axe run and a screen-reader pass.
+> Changing this file: Dzmitry  and Preetinka Sharma jointly. A change to §3.3 or §4 requires re-checking `spec-confidence-gate.md` §5 — the screen renders that shape and the two drift silently. A change to §7 requires a fresh axe run and a screen-reader pass.

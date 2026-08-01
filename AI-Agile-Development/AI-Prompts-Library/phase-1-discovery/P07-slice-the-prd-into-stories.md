@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | **Phase** | 1 — Discovery |
-| **Who runs it** | Product Owner (Amara Osei) |
+| **Who runs it** | Product Owner (Preetinka Sharma) |
 | **When** | Sprint 1, day three, the afternoon the client signs off the PRD |
 | **Takes in** | `Case-Study/Python-ETL/artifacts/prd-counterparty-ingestion.md` (from [P06](P06-write-a-full-prd.md)), `Case-Study/Python-ETL/artifacts/CLAUDE.md` |
 | **Produces** | `Case-Study/Python-ETL/artifacts/stories/NWD-101.md` … `NWD-108.md` — one file per story |
@@ -18,13 +18,13 @@
 
 ## 1. The scene
 
-The client came back on Wednesday. Nine of Amara's eleven open questions got answers, one got "ask Compliance, they'll be slow," and one — Q2, the partial-ingestion question — got a five-minute answer that ran twice as long as it needed to because the Head of Operations wanted to tell the OCR-pilot story again.
+The client came back on Wednesday. Nine of Preetinka's eleven open questions got answers, one got "ask Compliance, they'll be slow," and one — Q2, the partial-ingestion question — got a five-minute answer that ran twice as long as it needed to because the Head of Operations wanted to tell the OCR-pilot story again.
 
-The answer was unambiguous. If a statement's rows cannot all be extracted with confidence, hold the entire document. All of it. They would rather Priya Raman opened forty documents a day than have one silently half-loaded statement produce a break that looks real.
+The answer was unambiguous. If a statement's rows cannot all be extracted with confidence, hold the entire document. All of it. They would rather Preeti Singh opened forty documents a day than have one silently half-loaded statement produce a break that looks real.
 
-Amara now has an agreed PRD with eight capabilities. What she does not have is anything anyone can build. **CAP-04 — "report its own certainty and withhold when uncertain" — is a sentence, not a unit of work.** It could be three days or three weeks, it touches four parts of the system, and if she put it in front of Tomas Vargas on Monday he would build something, but nobody could say when it was finished.
+Preetinka now has an agreed PRD with eight capabilities. What she does not have is anything anyone can build. **CAP-04 — "report its own certainty and withhold when uncertain" — is a sentence, not a unit of work.** It could be three days or three weeks, it touches four parts of the system, and if she put it in front of Ravi Mullick on Monday he would build something, but nobody could say when it was finished.
 
-Farhan needs the work broken into pieces before he can sequence anything. Ananya needs pieces before she can write tests. Rahul needs pieces before he can decide what order to build them in. And Amara needs pieces because she is the one who will be asked, in three weeks, whether the thing that got demoed is actually done.
+Atul needs the work broken into pieces before he can sequence anything. Pankaj needs pieces before she can write tests. Gautam needs pieces before he can decide what order to build them in. And Preetinka needs pieces because she is the one who will be asked, in three weeks, whether the thing that got demoed is actually done.
 
 Breaking a PRD into pieces sounds like formatting. It is not. **Where you put the cuts determines whether you find out in week two that the design is wrong, or in week nine.** Cut it one way and every piece is demoable and you learn constantly. Cut it the other way and nothing works until everything works, and you learn nothing until the end.
 
@@ -54,9 +54,9 @@ A story is not a task. "Add a column to the staging table" is a task. It has no 
 
 ### Why you cannot just build the PRD
 
-You could hand Tomas the whole PRD on Monday and ask for it by Christmas. Some teams genuinely work like this. Three things go wrong, reliably.
+You could hand Ravi the whole PRD on Monday and ask for it by Christmas. Some teams genuinely work like this. Three things go wrong, reliably.
 
-**You find out too late.** With one big lump of work, the first honest signal about whether the design works arrives at the end. On this project, the design question that mattered most was whether document-level withholding produced a tolerable number of exceptions or buried Priya in work. That is a question you can answer in week two with a crude version, or in week nine with a finished one. Week two is a design conversation. Week nine is a rewrite.
+**You find out too late.** With one big lump of work, the first honest signal about whether the design works arrives at the end. On this project, the design question that mattered most was whether document-level withholding produced a tolerable number of exceptions or buried Preeti in work. That is a question you can answer in week two with a crude version, or in week nine with a finished one. Week two is a design conversation. Week nine is a rewrite.
 
 **You cannot tell progress from motion.** "The extraction is 70% done" means nothing. "Documents from Broker Alpha now land in the raw zone and can be listed by date" is either true or false, and anyone can check it. And you cannot change your mind cheaply — half-built systems are hard to redirect, while eight finished small things are easy to reorder.
 
@@ -89,7 +89,7 @@ Story 3: Every extracted value is checked against a confidence threshold, and
          if any value fails, the whole document is held back with the reason
 ```
 
-Every one of those touches storage, processing and persistence. Every one of them can be demonstrated to Priya. Every one of them can be tested end to end. And each one answers a real question while it is still cheap to act on the answer.
+Every one of those touches storage, processing and persistence. Every one of them can be demonstrated to Preeti. Every one of them can be tested end to end. And each one answers a real question while it is still cheap to act on the answer.
 
 A picture, because this one is worth a picture:
 
@@ -140,11 +140,11 @@ There is one honest complication. Some genuinely necessary work is horizontal an
 
 **V — Valuable.** Somebody outside the delivery team is better off when this is done. Name them. If the only beneficiary is the team, it is a task, and it belongs inside a story rather than beside one. This is the letter that kills "build the database schema" as a story.
 
-**E — Estimable.** The team can look at it and form a view on its size. Not an accurate view — that is not what estimation is for, as [P09](P09-estimate-and-rank-the-backlog.md) explains at length. Just a view. If the honest answer is "no idea, depends entirely on how the extraction service behaves," the story is not estimable, and the fix is usually a **spike**: a small, time-boxed piece of investigation whose output is knowledge rather than working software. "Spend one day finding out whether the extraction service returns per-field confidence for line items inside tables" is a legitimate spike and it is exactly what Sofia ran before NWD-103 was estimable.
+**E — Estimable.** The team can look at it and form a view on its size. Not an accurate view — that is not what estimation is for, as [P09](P09-estimate-and-rank-the-backlog.md) explains at length. Just a view. If the honest answer is "no idea, depends entirely on how the extraction service behaves," the story is not estimable, and the fix is usually a **spike**: a small, time-boxed piece of investigation whose output is knowledge rather than working software. "Spend one day finding out whether the extraction service returns per-field confidence for line items inside tables" is a legitimate spike and it is exactly what Hem ran before NWD-103 was estimable.
 
 **S — Small.** It fits comfortably in one sprint, with room to spare. A story that fills the whole sprint is a story that fails the sprint, because the first surprise eats the buffer.
 
-**T — Testable.** Somebody who did not build it can decide whether it is done. This is Ananya's letter and she enforces it hard. "Improve extraction quality" is not testable. "A statement with any field below its confidence threshold is held back and appears in the exception queue with the failing field named" is.
+**T — Testable.** Somebody who did not build it can decide whether it is done. This is Pankaj's letter and she enforces it hard. "Improve extraction quality" is not testable. "A statement with any field below its confidence threshold is held back and appears in the exception queue with the failing field named" is.
 
 A story failing one letter is usually fixable in a minute. A story failing three needs re-slicing.
 
@@ -156,7 +156,7 @@ A story failing one letter is usually fixable in a minute. A story failing three
 
 **Every story must name its beneficiary, and the beneficiary cannot be the team.** This one line eliminates most of the bad output. "As a developer, I want a configuration loader" fails it immediately.
 
-**Every story must trace to a CAP number.** This gives you two-way traceability. Every story exists for a reason you can point at, and every capability the client agreed to is covered by at least one story. When Farhan proposes cutting a story in Sprint 2, Amara can say exactly which capability goes with it.
+**Every story must trace to a CAP number.** This gives you two-way traceability. Every story exists for a reason you can point at, and every capability the client agreed to is covered by at least one story. When Atul proposes cutting a story in Sprint 2, Preetinka can say exactly which capability goes with it.
 
 **The coverage table is mandatory.** The model must output a table mapping CAP-01 through CAP-08 to the stories that deliver them, and must explicitly flag any capability with no story. Uncovered capabilities are how projects quietly drop scope.
 
@@ -172,7 +172,7 @@ It is pattern-matching your capabilities against the enormous number of backlogs
 
 So the constraints in §3 are not politeness. They are the entire mechanism. Every hard rule is pushing back against a strong prior. **You are not asking the model to slice; you are asking it not to slice the way it wants to.**
 
-The judgement it genuinely cannot make is where the *interesting* seams are. It will produce a defensible eight-story split. Whether NWD-103 should be one story or two — gate the fields, then hold the document — is a call about what you want to learn first, and that depends on which risk keeps you awake. That is Amara's call, and §8.1 is how she makes it.
+The judgement it genuinely cannot make is where the *interesting* seams are. It will produce a defensible eight-story split. Whether NWD-103 should be one story or two — gate the fields, then hold the document — is a call about what you want to learn first, and that depends on which risk keeps you awake. That is Preetinka's call, and §8.1 is how she makes it.
 
 ### The one thing to remember
 
@@ -279,13 +279,13 @@ coverage table, INVEST check and dependency diagram to [STORY FOLDER]/README.md.
 | `[PREFIX]` | The project's story ID prefix. Whatever your tracker uses. | `NWD` | Get this wrong and every branch name, commit message and test file references an ID that does not exist in the tracker. Annoying to fix later, free to fix now. |
 | `[STORY FOLDER]` | Where the story files go. One file per story. | `Case-Study/Python-ETL/artifacts/stories` | If you let them all land in one file, [P08](P08-write-acceptance-criteria.md) has nothing to attach criteria to, and story-level history in git becomes unreadable. |
 
-**On the numbering.** The prompt does not specify a starting number. Amara started at 101 by hand, because starting stories at 001 and bugs at 001 in the same tracker is a mistake you make once. Northwind's bugs start at 138.
+**On the numbering.** The prompt does not specify a starting number. Preetinka started at 101 by hand, because starting stories at 001 and bugs at 001 in the same tracker is a mistake you make once. Northwind's bugs start at 138.
 
 ---
 
 ## 5. The filled-in example
 
-Amara ran this on Wednesday afternoon, ten minutes after the client call ended, with the PRD updated to include the answer to Q2.
+Preetinka ran this on Wednesday afternoon, ten minutes after the client call ended, with the PRD updated to include the answer to Q2.
 
 ```text
 You are helping a **Product Owner** cut an agreed Product Requirements Document into user
@@ -477,7 +477,7 @@ work that was automated stays automated
 **Depends on:**
 - NWD-102 — needs classification failures to have something to show.
 - NWD-103 — needs confidence failures, which are the bulk of the queue.
-**Demo:** Show Priya the queue with six held documents. Open one. Show the failing field
+**Demo:** Show Preeti the queue with six held documents. Open one. Show the failing field
 highlighted, its score shown as a percentage, and the source PDF page beside it. Correct
 the value, release it, and show it appear in staging within seconds. Show the queue count
 drop to five.
@@ -485,7 +485,7 @@ drop to five.
 - Bulk release of multiple documents. Open question Q6 in the PRD; not answered yet.
 - Editing a value that passed the gate. Only failing fields are editable.
 - Any reporting or analytics over the queue.
-**Notes:** The beneficiary here is Priya specifically and the demo should be run with her
+**Notes:** The beneficiary here is Preeti specifically and the demo should be run with her
 in the room, not for her. PRD goal G3 depends on this screen being fast to use — if
 clearing an exception takes ten minutes, the 85% straight-through target is irrelevant
 because the other 15% eats the day.
@@ -585,9 +585,9 @@ decide whether they are scope, later scope, or non-goals.
 
 **Look at NWD-101's Notes.** It says the story carries the shared storage client and the content-based duplicate check. That is the anti-horizontal-slicing rule working. The alternative — an NWD-100 called "build the storage layer" — would have been a story with no user, no demo, and no way to know it was finished.
 
-**Now the part that is commonly wrong.** Look at the dependency diagram. NWD-104 (translate) sits between NWD-102 and NWD-103, which means translation must be built before the confidence gate. That is one defensible reading, and it is not the one the team took. Building NWD-103 first against English documents only, and inserting translation afterwards, was faster and lower-risk. The model's dependency ordering is a *plausible* build sequence, not the right one — the right one depends on risk, on who is available, and on what you want to learn first. That is [P09](P09-estimate-and-rank-the-backlog.md)'s job and Rahul's, and you should expect to override this diagram.
+**Now the part that is commonly wrong.** Look at the dependency diagram. NWD-104 (translate) sits between NWD-102 and NWD-103, which means translation must be built before the confidence gate. That is one defensible reading, and it is not the one the team took. Building NWD-103 first against English documents only, and inserting translation afterwards, was faster and lower-risk. The model's dependency ordering is a *plausible* build sequence, not the right one — the right one depends on risk, on who is available, and on what you want to learn first. That is [P09](P09-estimate-and-rank-the-backlog.md)'s job and Gautam's, and you should expect to override this diagram.
 
-The related trap: the model ordered NWD-105 (redact PII) after NWD-103. That looks fine until you read PRD constraint C3, which says PII must not be persisted. NWD-103 persists to staging. So either redaction moves earlier or NWD-103's staging write is not really persistence. Amara caught this. The model did not, because it was ordering by data flow rather than by constraint. **Constraints do not respect the data flow diagram, and this is exactly the kind of thing to check by hand.**
+The related trap: the model ordered NWD-105 (redact PII) after NWD-103. That looks fine until you read PRD constraint C3, which says PII must not be persisted. NWD-103 persists to staging. So either redaction moves earlier or NWD-103's staging write is not really persistence. Preetinka caught this. The model did not, because it was ordering by data flow rather than by constraint. **Constraints do not respect the data flow diagram, and this is exactly the kind of thing to check by hand.**
 
 ---
 
@@ -595,11 +595,11 @@ The related trap: the model ordered NWD-105 (redact PII) after NWD-103. That loo
 
 ### What "done" means here
 
-The stories are done when **Ananya can pick any one of them, read it, and start writing acceptance criteria without asking Amara a question first.**
+The stories are done when **Pankaj can pick any one of them, read it, and start writing acceptance criteria without asking Preetinka a question first.**
 
 That is a real test and you can run it. Hand her NWD-106. If her first response is "what does 'canonical schema' mean here," the story is not done. If it is a list of edge cases she wants to cover, it is.
 
-The second test, less formal: read each Demo line out loud and imagine Priya Raman in the room. If you would be embarrassed to demo it because there is nothing to look at, that story is horizontal and needs re-slicing.
+The second test, less formal: read each Demo line out loud and imagine Preeti Singh in the room. If you would be embarrassed to demo it because there is nothing to look at, that story is horizontal and needs re-slicing.
 
 ### The checklist
 
@@ -619,7 +619,7 @@ Every time you ask a model to split stories further, it will. It is always possi
 
 There is a floor. A story that takes two people two days is at the floor. Below that you are tracking tasks in a story tracker and paying the overhead of both.
 
-The other reason to stop: **the remaining ambiguity in these stories is not the model's to resolve.** Whether NWD-103 splits, whether CAP-08 gets its own story, whether translation comes before or after the gate — those are Amara's calls, informed by what she knows about the client and what Rahul knows about the team. Prompting harder will get you more options, not a decision.
+The other reason to stop: **the remaining ambiguity in these stories is not the model's to resolve.** Whether NWD-103 splits, whether CAP-08 gets its own story, whether translation comes before or after the gate — those are Preetinka's calls, informed by what she knows about the client and what Gautam knows about the team. Prompting harder will get you more options, not a decision.
 
 ### The signal that you are NOT done
 
@@ -732,7 +732,7 @@ Be willing to tell me I am wrong. Merging stories that should stay separate is a
 splitting ones that should not.
 ```
 
-What changes: you get a decision with reasoning instead of a merge. The last paragraph matters — models are agreeable, and a model that merges whenever asked is not checking anything. On the Northwind run Amara asked this about NWD-106 and NWD-107 and got told no, correctly, because transform-to-canonical-schema ships value on its own even if nothing loads to the warehouse yet.
+What changes: you get a decision with reasoning instead of a merge. The last paragraph matters — models are agreeable, and a model that merges whenever asked is not checking anything. On the Northwind run Preetinka asked this about NWD-106 and NWD-107 and got told no, correctly, because transform-to-canonical-schema ships value on its own even if nothing loads to the warehouse yet.
 
 ### 8.4 "Something from the PRD has gone missing"
 
@@ -764,7 +764,7 @@ What changes: you get a two-way trace plus a constraint check. The constraint ha
 
 ### 8.5 "The dependency chain means nothing can start"
 
-Use this when the mermaid diagram is one long line, or when Farhan says he cannot parallelise anything.
+Use this when the mermaid diagram is one long line, or when Atul says he cannot parallelise anything.
 
 ```text
 The dependency graph you produced is almost entirely sequential, which means only one
@@ -787,7 +787,7 @@ twice — once writing them, once removing them. Tell me which two or three woul
 most parallelism, and what it would cost to be wrong about them.
 ```
 
-What changes: a sequential chain usually turns out to be two or three hard edges and a lot of soft ones. On the Northwind run, breaking one soft edge — building NWD-108's screen against fixture data rather than waiting for NWD-103 — let Ji-woo start in week one instead of week three. That single decision is why the exception queue was ready for Ananya to test at all.
+What changes: a sequential chain usually turns out to be two or three hard edges and a lot of soft ones. On the Northwind run, breaking one soft edge — building NWD-108's screen against fixture data rather than waiting for NWD-103 — let Dzmitry start in week one instead of week three. That single decision is why the exception queue was ready for Pankaj to test at all.
 
 ### The loop, drawn
 
@@ -817,11 +817,11 @@ Notice that 8.3 is not in the loop. Merging is a judgement you make once, when s
 
 ### You slice by who will build it
 
-This one is seductive because it looks like sensible planning. Tomas does backend, Ji-woo does frontend, so there is a backend story and a frontend story. Two people, two stories, no conflicts.
+This one is seductive because it looks like sensible planning. Ravi does backend, Dzmitry does frontend, so there is a backend story and a frontend story. Two people, two stories, no conflicts.
 
 What you have actually done is slice horizontally with extra steps. The backend story delivers nothing anyone can see. The frontend story has nothing real to show. Both finish, neither works, and the integration is a third piece of work nobody estimated.
 
-The fix is uncomfortable and correct: a story that needs both people is one story that two people work on together. NWD-108 is Ji-woo's story, but the exception reason format that NWD-103 writes and NWD-108 renders is one decision made once, by both of them, inside one of the stories. Which one is a coin flip. Splitting it across both is the mistake.
+The fix is uncomfortable and correct: a story that needs both people is one story that two people work on together. NWD-108 is Dzmitry's story, but the exception reason format that NWD-103 writes and NWD-108 renders is one decision made once, by both of them, inside one of the stories. Which one is a coin flip. Splitting it across both is the mistake.
 
 ### The stories are perfect and nobody can build them
 
@@ -829,7 +829,7 @@ You can write stories so pure — so free of implementation, so focused on outco
 
 This happens when you over-apply Negotiable. Negotiable means the story does not dictate the solution. It does not mean the story withholds what you already know. If the PRD says thresholds vary by field type, the story should say so. If a constraint governs the story, name the constraint.
 
-The fix: the Notes field exists for this. Everything you know that would help and is not a requirement goes in Notes. NWD-103's Notes carry both the C5 document-scoping rule and the C1 threshold-varies-by-type rule, and Tomas reads both before he writes a line.
+The fix: the Notes field exists for this. Everything you know that would help and is not a requirement goes in Notes. NWD-103's Notes carry both the C5 document-scoping rule and the C1 threshold-varies-by-type rule, and Ravi reads both before he writes a line.
 
 ### The coverage table lies by omission
 
@@ -837,11 +837,11 @@ The model produces a coverage table where every capability has a story listed ag
 
 This is the most dangerous failure in this prompt because it produces confidence. Everyone reads the table, sees full coverage, and stops looking.
 
-The fix: run §8.4 and read the "partial" rows properly. On the Northwind run the model got this one right and flagged CAP-08 as uncovered. That was luck as much as prompting. Amara now checks the coverage table by hand against the PRD, capability by capability, and it takes eleven minutes.
+The fix: run §8.4 and read the "partial" rows properly. On the Northwind run the model got this one right and flagged CAP-08 as uncovered. That was luck as much as prompting. Preetinka now checks the coverage table by hand against the PRD, capability by capability, and it takes eleven minutes.
 
 ### You slice a PRD that is not agreed yet
 
-Amara sliced the draft PRD on Tuesday, before the client call. It seemed efficient. Then Q2 came back with the all-or-nothing answer and NWD-103 changed from a field-level gate to a document-level gate, which changed NWD-108's whole shape, which changed the dependency graph. Nothing catastrophic happened because it was one day; if it had been a week, with estimates already against the stories, unwinding it would have cost more than the slicing did.
+Preetinka sliced the draft PRD on Tuesday, before the client call. It seemed efficient. Then Q2 came back with the all-or-nothing answer and NWD-103 changed from a field-level gate to a document-level gate, which changed NWD-108's whole shape, which changed the dependency graph. Nothing catastrophic happened because it was one day; if it had been a week, with estimates already against the stories, unwinding it would have cost more than the slicing did.
 
 The fix: the stop gate does not check for "agreed" because a document cannot tell you whether a human nodded at it. You have to. Do not run this prompt until the PRD's open-questions list has owners' answers written into it.
 
@@ -855,13 +855,13 @@ The fix: the stop gate does not check for "agreed" because a document cannot tel
 
 ## 10. The handoff
 
-The eight story files go to Amara and Ananya together, and they run [P08](P08-write-acceptance-criteria.md) side by side. That pairing is deliberate and it is the subject of most of P08's second section — criteria written by a Product Owner alone describe what should happen, and criteria written with QA in the room describe what happens when it does not.
+The eight story files go to Preetinka and Pankaj together, and they run [P08](P08-write-acceptance-criteria.md) side by side. That pairing is deliberate and it is the subject of most of P08's second section — criteria written by a Product Owner alone describe what should happen, and criteria written with QA in the room describe what happens when it does not.
 
-They start with NWD-103, because NWD-103 is where the project's central claim lives and because it is the story most likely to be wrong. What P08 is guaranteed to find in each story file: a named beneficiary, an outcome stated without a mechanism, a Demo line, an explicit out-of-scope list, and the CAP numbers it traces back to. The out-of-scope list is the one Ananya reads first — it tells her which failure paths belong to this story and which belong to a different one, which is the difference between thorough testing and scope creep with a test plan attached.
+They start with NWD-103, because NWD-103 is where the project's central claim lives and because it is the story most likely to be wrong. What P08 is guaranteed to find in each story file: a named beneficiary, an outcome stated without a mechanism, a Demo line, an explicit out-of-scope list, and the CAP numbers it traces back to. The out-of-scope list is the one Pankaj reads first — it tells her which failure paths belong to this story and which belong to a different one, which is the difference between thorough testing and scope creep with a test plan attached.
 
-Farhan takes the dependency diagram and the story list into [P09](P09-estimate-and-rank-the-backlog.md) with Rahul. He does not take the INVEST check, and this turns out to be a small mistake — the two stories flagged as weak on Estimable are exactly the two that cause him trouble in Sprint 2, and the flag was sitting there in the README all along.
+Atul takes the dependency diagram and the story list into [P09](P09-estimate-and-rank-the-backlog.md) with Gautam. He does not take the INVEST check, and this turns out to be a small mistake — the two stories flagged as weak on Estimable are exactly the two that cause him trouble in Sprint 2, and the flag was sitting there in the README all along.
 
-Sofia reads the whole backlog once, quickly, looking for the stories where her recurring question has an interesting answer. She finds three. NWD-103's "what does this look like when it's wrong" is the one that turns into ADR 0001.
+Hem reads the whole backlog once, quickly, looking for the stories where her recurring question has an interesting answer. She finds three. NWD-103's "what does this look like when it's wrong" is the one that turns into ADR 0001.
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/stories/NWD-nnn.md`**
 >
@@ -883,15 +883,15 @@ Sofia reads the whole backlog once, quickly, looking for the stories where her r
 
 ## 11. In the case study
 
-This runs on the Wednesday afternoon of Sprint 1, in [`02-sprint-1-discovery.md`](../../Case-Study/Python-ETL/02-sprint-1-discovery.md). Amara had the eight stories by half past three and spent until six on two arguments, one with herself and one with Rahul.
+This runs on the Wednesday afternoon of Sprint 1, in [`02-sprint-1-discovery.md`](../../Case-Study/Python-ETL/02-sprint-1-discovery.md). Preetinka had the eight stories by half past three and spent until six on two arguments, one with herself and one with Gautam.
 
-The argument with herself was NWD-103. The model flagged it as failing Small and offered a split: check the fields, then reject the document. The split was clean and it would have got a working confidence check into the sprint a week earlier. Amara said no, and her reasoning is worth repeating, because it is the kind of judgement the model correctly declined to make.
+The argument with herself was NWD-103. The model flagged it as failing Small and offered a split: check the fields, then reject the document. The split was clean and it would have got a working confidence check into the sprint a week earlier. Preetinka said no, and her reasoning is worth repeating, because it is the kind of judgement the model correctly declined to make.
 
 If you ship part (a) alone, you have a field-scoped gate. Field-scoped gates are what the PRD's constraint C5 exists to forbid, and constraint C5 exists because the client told the OCR-pilot story twice. **A half-finished story that behaves like the thing you promised not to build is more dangerous than an unfinished one**, because somebody will demo it, and somebody will like it. She kept NWD-103 whole and it took eleven days.
 
-The argument with Rahul was CAP-08 — the uncovered capability. Rahul's position was that adding a counterparty without a release is a property of the design, and Sofia would honour it in the architecture, so a story was bureaucracy. Amara's position was that untested properties are not properties. They compromised: no new story, but NWD-102's acceptance criteria would include onboarding a ninth counterparty by configuration only. That criterion is in [`acceptance-criteria-NWD-103.md`](../../Case-Study/Python-ETL/artifacts/acceptance-criteria-NWD-103.md)'s sibling file, it passed, and in Sprint 4 Northwind added a counterparty in forty minutes without a deployment. Rahul was right about the design and Amara was right that nobody would have known.
+The argument with Gautam was CAP-08 — the uncovered capability. Gautam's position was that adding a counterparty without a release is a property of the design, and Hem would honour it in the architecture, so a story was bureaucracy. Preetinka's position was that untested properties are not properties. They compromised: no new story, but NWD-102's acceptance criteria would include onboarding a ninth counterparty by configuration only. That criterion is in [`acceptance-criteria-NWD-103.md`](../../Case-Study/Python-ETL/artifacts/acceptance-criteria-NWD-103.md)'s sibling file, it passed, and in Sprint 4 Northwind added a counterparty in forty minutes without a deployment. Gautam was right about the design and Preetinka was right that nobody would have known.
 
-The thing that went wrong is quieter. The dependency diagram put NWD-105 (redact PII) after NWD-103, and NWD-103 writes to staging. PRD constraint C3 says PII must not be persisted. Nobody caught it in the story review. It was caught eight days later by Sofia, writing the technical spec, asking her usual question. The fix was cheap because nothing had been built yet. It would not have been cheap in Sprint 3, and it is the reason §8.4's constraint check exists as a separate instruction rather than a line in the coverage table.
+The thing that went wrong is quieter. The dependency diagram put NWD-105 (redact PII) after NWD-103, and NWD-103 writes to staging. PRD constraint C3 says PII must not be persisted. Nobody caught it in the story review. It was caught eight days later by Hem, writing the technical spec, asking her usual question. The fix was cheap because nothing had been built yet. It would not have been cheap in Sprint 3, and it is the reason §8.4's constraint check exists as a separate instruction rather than a line in the coverage table.
 
 The stories are at [`artifacts/stories/`](../../Case-Study/Python-ETL/artifacts/stories/).
 

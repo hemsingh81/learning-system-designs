@@ -2,13 +2,13 @@
 
 | | |
 |---|---|
-| **Produced by** | Rahul Nair, Team Lead |
+| **Produced by** | Gautam , Team Lead |
 | **Using** | [P23 — Review Someone Else's Code](../../../AI-Prompts-Library/phase-5-verify/P23-review-someone-elses-code.md) |
 | **Date** | 2026-06-22 |
 | **Status** | Changes requested → all findings answered 2026-07-24 → **Approved and merged 2026-07-24** |
 | **Version** | 1.0 |
 | **Story** | [NWD-103](stories/NWD-103.md) |
-| **Author of the code** | Tomas Vargas |
+| **Author of the code** | Ravi Mullick |
 | **Branch / PR** | `feature/NWD-103-confidence-gate` · PR #47 · head `4a1c9e2` |
 | **Reviewed against** | [`spec-confidence-gate.md`](spec-confidence-gate.md) v1.1, [`acceptance-criteria-NWD-103.md`](acceptance-criteria-NWD-103.md) v1.1, [`definition-of-done.md`](definition-of-done.md) v1.0 |
 
@@ -45,13 +45,13 @@ Diff size 312 added, 4 removed, across 5 files. I read all of it. Section 5 reco
 
 A field whose confidence is **exactly** the threshold takes the fall-through and is recorded as `below_threshold`. It is not below the threshold. It is on it.
 
-[Spec §4.2](spec-confidence-gate.md#42-per-field-evaluation) is explicit and I think it is explicit because Sofia expected this to be got wrong:
+[Spec §4.2](spec-confidence-gate.md#42-per-field-evaluation) is explicit and I think it is explicit because Hem expected this to be got wrong:
 
 > Confidence exactly equal to the threshold **passes**. The comparison is `confidence < threshold`, not `<=`.
 
 So `>` here should be `>=` — or, better, invert it and write the failure condition the way the spec writes it, `if f.confidence < threshold:`, which removes the reader's need to do the negation in their head at all.
 
-**Why this matters more than an off-by-one usually does.** Document Intelligence returns confidences quantised to three decimal places and the values cluster on round numbers. A `date` field reporting exactly `0.850` is not a rare event — it is roughly 1 in 90 date fields on our labelled set. Under [ADR-0003](adr/0003-one-failing-field-rejects-the-document.md) one failing field rejects the whole document, so each of those sends an entire statement to Priya's queue for a field that the spec says was fine. That is straight-through rate lost, and it is lost in the direction that looks like the system being careful, which is the direction nobody investigates.
+**Why this matters more than an off-by-one usually does.** Document Intelligence returns confidences quantised to three decimal places and the values cluster on round numbers. A `date` field reporting exactly `0.850` is not a rare event — it is roughly 1 in 90 date fields on our labelled set. Under [ADR-0003](adr/0003-one-failing-field-rejects-the-document.md) one failing field rejects the whole document, so each of those sends an entire statement to Preeti's queue for a field that the spec says was fine. That is straight-through rate lost, and it is lost in the direction that looks like the system being careful, which is the direction nobody investigates.
 
 **Why the tests did not catch it.** `tests/test_confidence.py::test_below_threshold_fails` uses `0.71` against `0.90`. `test_above_threshold_passes` uses `0.94`. Neither goes anywhere near the boundary. [DoD §2.2](definition-of-done.md#2-tests) asks for exactly at, one step below, one step above — the boundary test is missing, not just failing.
 
@@ -81,7 +81,7 @@ Take it or leave it. It does not block.
 
 ### F3 — `core/confidence.py:72–102` — the six-key failure record is written out three times · **preference**
 
-The three failure branches each build the same dict literal with the same six keys, differing only in `value`, `confidence` and `why`. A fourth `why` value is coming when the completeness work lands, and the shape is also the exception queue's JSON contract and Ji-woo's input contract — three copies of a contract is three places to forget to update.
+The three failure branches each build the same dict literal with the same six keys, differing only in `value`, `confidence` and `why`. A fourth `why` value is coming when the completeness work lands, and the shape is also the exception queue's JSON contract and Dzmitry's input contract — three copies of a contract is three places to forget to update.
 
 ```python
 def _failure(f, *, row, threshold, why, value=..., confidence=...) -> dict:
@@ -108,7 +108,7 @@ A function that returns either a failure dictionary or `None` is a function whos
 
 Not an instruction. I want to know the reasoning, because there may be one I am not seeing.
 
-**Tomas's answer, 2026-06-22:**
+**Ravi's answer, 2026-06-22:**
 
 > It is deliberate and it is for the call site. `evaluate()` walks header fields and line-item fields with a walrus in a comprehension:
 >
@@ -131,7 +131,7 @@ That is a good reason and I would not have reconstructed it from the code.
     """
 ```
 
-Worth being explicit about what happened here, because it is the most common thing a review gets wrong in both directions. I did not know why the code was shaped that way. The two available bad moves were to say nothing and stay confused, or to write "change this to return a result object" and have Tomas either comply with a worse design or spend a day arguing. Asking cost one line and bought a comment that stops the next reader — including the next model reading this file as context — asking the same thing.
+Worth being explicit about what happened here, because it is the most common thing a review gets wrong in both directions. I did not know why the code was shaped that way. The two available bad moves were to say nothing and stay confused, or to write "change this to return a result object" and have Ravi either comply with a worse design or spend a day arguing. Asking cost one line and bought a comment that stops the next reader — including the next model reading this file as context — asking the same thing.
 
 A review finding that resolves to a comment is a successful finding.
 
@@ -155,7 +155,7 @@ Recorded so nobody re-reviews it.
 
 ## 5. Not verified by this review
 
-- End-to-end behaviour against a real document. That is Ananya's, [P22](../../../AI-Prompts-Library/phase-5-verify/P22-e2e-test-the-application.md).
+- End-to-end behaviour against a real document. That is Pankaj's, [P22](../../../AI-Prompts-Library/phase-5-verify/P22-e2e-test-the-application.md).
 - Exception-row writing. Different file, plan step 8, not in this diff.
 - Whether the spec is *right*. I reviewed the code against the spec. Both being wrong together is a failure mode this review cannot detect, and two days later it turned out to be the failure mode we had — see [NWD-142](bug-NWD-142.md) and [`retrospective-sprint-3.md`](retrospective-sprint-3.md).
 
@@ -168,14 +168,14 @@ Recorded so nobody re-reviews it.
 | F3 — extract a `_failure` helper | preference | Declined, deliberately: the literals keep the failure shape diffable against spec §5 by eye. Recorded in the PR thread so it is a decision and not an oversight. |
 | Q1 — why return `None` | question | Resolved with a docstring comment. No code change. |
 
-Merged `4a1c9e2..b7d3f10`, 2026-07-24. Tomas's responses were written with [P28 — Respond to Code Review Feedback](../../../AI-Prompts-Library/phase-6-rework/P28-respond-to-code-review-feedback.md); this file is the worked example that prompt reads from.
+Merged `4a1c9e2..b7d3f10`, 2026-07-24. Ravi's responses were written with [P28 — Respond to Code Review Feedback](../../../AI-Prompts-Library/phase-6-rework/P28-respond-to-code-review-feedback.md); this file is the worked example that prompt reads from.
 
 ---
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/code-review-NWD-103.md`**
 >
-> Produced by: Team Lead (Rahul Nair) using P23 — Review Someone Else's Code
-> Reviewed code by: Tomas Vargas · PR #47 · merged 2026-07-24
+> Produced by: Team Lead (Gautam ) using P23 — Review Someone Else's Code
+> Reviewed code by: Ravi Mullick · PR #47 · merged 2026-07-24
 >
 > Anyone consuming this file can rely on finding:
 > - Every finding carrying a `file:line` reference, a severity, and the reasoning for the severity
@@ -191,4 +191,4 @@ Merged `4a1c9e2..b7d3f10`, 2026-07-24. Tomas's responses were written with [P28 
 >
 > **If any guarantee above is missing, this review is not ready to act on.** Send it back.
 >
-> Changing this file: Rahul Nair, until Outcome is filled in; then it is closed. Findings are never deleted after the fact — a declined preference is part of the record.
+> Changing this file: Gautam , until Outcome is filled in; then it is closed. Findings are never deleted after the fact — a declined preference is part of the record.

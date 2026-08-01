@@ -10,8 +10,8 @@ failure can happen between the two.
 
 **Rejections are data, not exceptions.** Anything the confidence gate or the
 rules engine refused is written to ``etl.extraction_exception`` with the reason
-and the structured violations attached. That table is Ji-woo's exception queue
-screen, and it is where Priya spends her morning — so the row has to carry
+and the structured violations attached. That table is Dzmitry's exception queue
+screen, and it is where Preeti spends her morning — so the row has to carry
 enough to fix the document without opening the PDF blind.
 """
 
@@ -165,7 +165,7 @@ def write_exception(
     """Queue a document for analyst review with the reason it was refused.
 
     ``failures_json`` carries the structured violations — field, row, observed,
-    expected. The UI renders those directly, which is what lets Priya correct a
+    expected. The UI renders those directly, which is what lets Preeti correct a
     document in one pass instead of guessing which of forty numbers was wrong.
     """
     conn.execute(

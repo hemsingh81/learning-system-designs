@@ -101,13 +101,13 @@ The Northwind project across five sprints.
 | Chapter | Sprint | What happens |
 |---|---|---|
 | [00 — The brief](Case-Study/Python-ETL/00-the-brief.md) | — | The problem, the domain vocabulary, and why this isn't an AI project |
-| [01 — Foundations](Case-Study/Python-ETL/01-sprint-0-foundations.md) | 0 | Rahul spends a sprint shipping nothing, and is right to |
-| [02 — Discovery](Case-Study/Python-ETL/02-sprint-1-discovery.md) | 1 | Amara's PRD, and the question that creates the exception queue |
-| [03 — Design](Case-Study/Python-ETL/03-sprint-1-design.md) | 1 | Sofia rejects the LLM, writes three ADRs, and picks a fight about ADR-0003 |
-| [04 — Planning](Case-Study/Python-ETL/04-sprint-2-planning.md) | 2 | Farhan finds the dependency three weeks early |
-| [05 — Build: backend](Case-Study/Python-ETL/05-sprint-2-build-backend.md) | 2 | Tomas builds in three days what was estimated at two weeks |
-| [06 — Build: frontend](Case-Study/Python-ETL/06-sprint-2-build-frontend.md) | 2 | Ji-woo builds for Priya's morning, not for the component library |
-| [07 — Verify](Case-Study/Python-ETL/07-sprint-3-verify.md) | 3 | Ananya counts fourteen positions on a PDF and finds nine rows in Snowflake |
+| [01 — Foundations](Case-Study/Python-ETL/01-sprint-0-foundations.md) | 0 | Gautam spends a sprint shipping nothing, and is right to |
+| [02 — Discovery](Case-Study/Python-ETL/02-sprint-1-discovery.md) | 1 | Preetinka's PRD, and the question that creates the exception queue |
+| [03 — Design](Case-Study/Python-ETL/03-sprint-1-design.md) | 1 | Hem rejects the LLM, writes three ADRs, and picks a fight about ADR-0003 |
+| [04 — Planning](Case-Study/Python-ETL/04-sprint-2-planning.md) | 2 | Atul finds the dependency three weeks early |
+| [05 — Build: backend](Case-Study/Python-ETL/05-sprint-2-build-backend.md) | 2 | Ravi builds in three days what was estimated at two weeks |
+| [06 — Build: frontend](Case-Study/Python-ETL/06-sprint-2-build-frontend.md) | 2 | Dzmitry builds for Preeti's morning, not for the component library |
+| [07 — Verify](Case-Study/Python-ETL/07-sprint-3-verify.md) | 3 | Pankaj counts fourteen positions on a PDF and finds nine rows in Snowflake |
 | [08 — Rework](Case-Study/Python-ETL/08-sprint-3-rework.md) | 3 | **The heart of the book.** NWD-142, end to end |
 | [09 — Release](Case-Study/Python-ETL/09-sprint-4-release.md) | 4 | Parallel run, and the argument about whether to skip it |
 | [10 — Retrospective](Case-Study/Python-ETL/10-retrospective.md) | 4 | The honest version of what went wrong |

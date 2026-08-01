@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | **Phase** | 1 — Discovery |
-| **Who runs it** | Project Manager + Team Lead, together (Farhan Qureshi and Rahul Nair) |
+| **Who runs it** | Project Manager + Team Lead, together (Atuland Gautam ) |
 | **When** | Sprint 1, Friday morning, the last thing before design work starts |
 | **Takes in** | `Case-Study/Python-ETL/artifacts/stories/` (all eight, from [P07](P07-slice-the-prd-into-stories.md)), `Case-Study/Python-ETL/artifacts/acceptance-criteria-NWD-103.md` (from [P08](P08-write-acceptance-criteria.md)), `Case-Study/Python-ETL/artifacts/prd-counterparty-ingestion.md` |
 | **Produces** | `Case-Study/Python-ETL/artifacts/backlog-ranked.md` |
@@ -18,19 +18,19 @@
 
 ## 1. The scene
 
-Friday, 9am. Farhan Qureshi has a client status call at four and he needs something to say about dates.
+Friday, 9am. Atulhas a client status call at four and he needs something to say about dates.
 
-He has eight stories with acceptance criteria on the important ones. What he does not have is any sense of size. NWD-103 has nineteen acceptance criteria and NWD-101 has six, which suggests NWD-103 is bigger, but nineteen criteria could mean a hard problem or a thorough QA engineer and Farhan cannot tell which from here.
+He has eight stories with acceptance criteria on the important ones. What he does not have is any sense of size. NWD-103 has nineteen acceptance criteria and NWD-101 has six, which suggests NWD-103 is bigger, but nineteen criteria could mean a hard problem or a thorough QA engineer and Atul cannot tell which from here.
 
-Rahul Nair has a different problem and he does not know it yet.
+Gautam  has a different problem and he does not know it yet.
 
-Rahul's view is that this project is mostly boilerplate. Read a file, call a service, apply a rule, write a row. He built the review skill in Sprint 0 and watched it collapse three days of work into an afternoon. His honest expectation, walking into the room, is that AI tooling makes all eight stories roughly half what they would have been two years ago.
+Gautam's view is that this project is mostly boilerplate. Read a file, call a service, apply a rule, write a row. He built the review skill in Sprint 0 and watched it collapse three days of work into an afternoon. His honest expectation, walking into the room, is that AI tooling makes all eight stories roughly half what they would have been two years ago.
 
 **He is right about five of them and wrong about three, and the three he is wrong about are the three that matter.**
 
-Farhan's instinct is to ask for hours. He has asked for hours on every project he has run and it has never worked, and he does it anyway because the client asks for dates and hours look like dates. Rahul talks him out of it, badly, in a conversation that takes twenty minutes and ends with Farhan saying "fine, but I still have a call at four."
+Atul's instinct is to ask for hours. He has asked for hours on every project he has run and it has never worked, and he does it anyway because the client asks for dates and hours look like dates. Gautam talks him out of it, badly, in a conversation that takes twenty minutes and ends with Atul saying "fine, but I still have a call at four."
 
-This prompt is what they ran next. It produced a number Farhan could work with, and one specific piece of advice that he ignored, and the story of what that cost is §11.
+This prompt is what they ran next. It produced a number Atul could work with, and one specific piece of advice that he ignored, and the story of what that cost is §11.
 
 ---
 
@@ -54,7 +54,7 @@ One more term you will hear constantly. **Velocity** is how many points of work 
 
 ### Why hours are a trap
 
-Farhan wanted hours. Everyone wants hours. Here is why they do not work, stated as plainly as it can be.
+Atul wanted hours. Everyone wants hours. Here is why they do not work, stated as plainly as it can be.
 
 **You are bad at estimating hours and no amount of experience fixes it.** Not you specifically. Everyone. Ask ten engineers how long a task takes and you get a range spanning a factor of four, and the true answer often sits outside all ten. This is one of the most reliably reproduced findings in software engineering and it has not moved in forty years.
 
@@ -62,9 +62,9 @@ Farhan wanted hours. Everyone wants hours. Here is why they do not work, stated 
 
 So the trick is: stop asking for absolute size, ask for relative size.
 
-**An hour estimate is a promise. A comparison is an opinion.** The moment Rahul says "eighteen hours," Farhan writes it down, adds it up, and tells Northwind a date. When the eighteen becomes thirty — not because Rahul was careless, but because the extraction service turned out not to return per-field confidence on nested tables — the conversation is about Rahul's estimate rather than about the discovery. Everybody defends and nobody learns.
+**An hour estimate is a promise. A comparison is an opinion.** The moment Gautam says "eighteen hours," Atul writes it down, adds it up, and tells Northwind a date. When the eighteen becomes thirty — not because Gautam was careless, but because the extraction service turned out not to return per-field confidence on nested tables — the conversation is about Gautam's estimate rather than about the discovery. Everybody defends and nobody learns.
 
-**Hours hide who is doing it.** Three days for Tomas is a week and a half for someone who has not seen the codebase. So which is it? The story does not change size depending on who picks it up, but the hours do, so you cannot estimate until you have assigned, and you cannot sensibly assign until you have estimated.
+**Hours hide who is doing it.** Three days for Ravi is a week and a half for someone who has not seen the codebase. So which is it? The story does not change size depending on who picks it up, but the hours do, so you cannot estimate until you have assigned, and you cannot sensibly assign until you have estimated.
 
 **Hours make you estimate the wrong thing.** Asked for hours, people estimate typing time. The typing is never the problem. The problem is the two days spent finding out that the service behaves differently on scanned documents than on digital ones.
 
@@ -72,7 +72,7 @@ So the trick is: stop asking for absolute size, ask for relative size.
 
 A **story point** is a unit of relative size. It has no fixed meaning in hours and it is not supposed to.
 
-You pick one story everybody understands and call it your reference. Rahul used NWD-101 — land PDFs in the raw zone — and called it 3. Everything else is then sized against it. Twice as much work as NWD-101? That is 5 or 8. Half? That is 1 or 2.
+You pick one story everybody understands and call it your reference. Gautam used NWD-101 — land PDFs in the raw zone — and called it 3. Everything else is then sized against it. Twice as much work as NWD-101? That is 5 or 8. Half? That is 1 or 2.
 
 The scale is usually a rough Fibonacci sequence: **1, 2, 3, 5, 8, 13, 21**. The gaps widen deliberately, because precision at the big end is fake. You can genuinely tell a 2 from a 3. You cannot tell a 13 from a 14, and a scale that lets you write 14 invites an argument that produces nothing.
 
@@ -88,7 +88,7 @@ The tell is a sentence like "that can't be a 5, it's only two days' work." Point
 
 ### Ranking: value against effort
 
-Sizing tells you how big. It does not tell you what to do first. That is ranking, and it is a different question with a different owner — Amara owns business value, Rahul owns technical sequence, Farhan owns risk.
+Sizing tells you how big. It does not tell you what to do first. That is ranking, and it is a different question with a different owner — Preetinka owns business value, Gautam owns technical sequence, Atul owns risk.
 
 The simple version: score each story on value and on effort, and do the high-value, low-effort ones first. It fits on a napkin and it is right most of the time.
 
@@ -109,7 +109,7 @@ In English, and every term defined:
 
 Divide the top by the bottom, sort descending, and you get an order that favours small things with big payoffs and pushes big things with vague benefits down.
 
-**Do not treat the number as an answer.** WSJF is an argument-structuring device. Its value is that when two people disagree about order, you can find out which of the four scores they actually disagree about, instead of trading opinions about the whole story. Farhan and Rahul disagreed about NWD-105 and it turned out they agreed on business value and size and disagreed entirely about time criticality, because Farhan knew Compliance had a review date and Rahul did not.
+**Do not treat the number as an answer.** WSJF is an argument-structuring device. Its value is that when two people disagree about order, you can find out which of the four scores they actually disagree about, instead of trading opinions about the whole story. Atul and Gautam disagreed about NWD-105 and it turned out they agreed on business value and size and disagreed entirely about time criticality, because Atul knew Compliance had a review date and Gautam did not.
 
 If WSJF feels like overhead for eight stories, it probably is. Use value-versus-effort, put the results in four quadrants, and move on. The prompt supports both.
 
@@ -119,14 +119,14 @@ Here is the thing this file exists to say.
 
 **AI tooling changes the estimate for some story shapes and does not change it at all for others, and if you apply a flat discount you will be wrong in a specific and painful direction.**
 
-Rahul's instinct — everything is roughly half — is understandable. He watched a code review that used to take three days finish in an afternoon. That was real. The mistake is generalising it.
+Gautam's instinct — everything is roughly half — is understandable. He watched a code review that used to take three days finish in an afternoon. That was real. The mistake is generalising it.
 
 Where AI collapses the estimate:
 
 - **Boilerplate with a known shape.** A repository class, a data transfer object, a client wrapper with retry, a set of CRUD endpoints. The model has seen ten thousand of these. NWD-107 — load positions to staging and the warehouse idempotently — is almost entirely this.
 - **Translating between formats.** Extracted fields into a canonical schema. NWD-106. The rules are stated, the work is mechanical, the model is fast and accurate.
 - **Test scaffolding from written criteria.** Give it AC-01 through AC-19 and you get a test file structure in minutes. Not the tricky assertions. The structure.
-- **Framework-shaped UI.** A table, a filter, a detail panel. Ji-woo's NWD-108 has a lot of this.
+- **Framework-shaped UI.** A table, a filter, a detail panel. Dzmitry's NWD-108 has a lot of this.
 
 Where AI changes almost nothing:
 
@@ -146,7 +146,7 @@ The pattern underneath:
 | Getting humans to agree | No | NWD-105 |
 | Reviewing something subtle and expensive | No, and it may get worse | NWD-103 |
 
-That last row deserves its bold, because it is counterintuitive. **When code is produced faster, there is more of it to review, and review is the part that did not speed up.** A team that halves its build time and keeps its review time has not halved its cycle time; it has moved the bottleneck and made it more painful. Rahul knew this in principle and did not price it in on Friday.
+That last row deserves its bold, because it is counterintuitive. **When code is produced faster, there is more of it to review, and review is the part that did not speed up.** A team that halves its build time and keeps its review time has not halved its cycle time; it has moved the bottleneck and made it more painful. Gautam knew this in principle and did not price it in on Friday.
 
 So the prompt asks the model to classify each story by where its difficulty lives, and to state an **AI leverage factor** — high, medium or none — with a reason. That factor is not applied automatically to the estimate. It is a note the humans argue about, because the model's own view of how much it helps is exactly the view you should trust least.
 
@@ -158,13 +158,13 @@ So the prompt asks the model to classify each story by where its difficulty live
 
 **It gives a range and a confidence, not a point.** A story estimated "5, could be 8, low confidence because nobody has tested how the service handles scanned tables" is far more useful than "5." The reason for low confidence is the most actionable thing in the output — it is a list of spikes.
 
-**It bans converting points to days.** Stated as a hard rule because the model will helpfully offer it, and once a day-figure is on the page it is what Farhan writes down.
+**It bans converting points to days.** Stated as a hard rule because the model will helpfully offer it, and once a day-figure is on the page it is what Atul writes down.
 
-**It separates sizing from ranking into two passes.** Done together, the model sizes to justify the ranking. Farhan tried it in one pass and got the four stories it ranked highest all coming back as 3s.
+**It separates sizing from ranking into two passes.** Done together, the model sizes to justify the ranking. Atul tried it in one pass and got the four stories it ranked highest all coming back as 3s.
 
 **It demands the AI-leverage classification with a reason per story.** And it demands the reason name where the difficulty lives, not just assert a factor.
 
-**It requires an explicit "what would make this estimate wrong" per story.** This is the risk register, generated for free, and Farhan cares about it more than the numbers.
+**It requires an explicit "what would make this estimate wrong" per story.** This is the risk register, generated for free, and Atul cares about it more than the numbers.
 
 ### What the AI is actually doing
 
@@ -172,7 +172,7 @@ Two different jobs with two different reliability levels, and you should treat t
 
 Sizing: it is comparing your stories against an enormous number of similar-shaped pieces of work and against each other. It is genuinely decent at relative ordering — which stories are bigger than which — and unreliable at absolute magnitude, which is fine, because relative ordering is what points are.
 
-Ranking: it is applying a formula to numbers it made up. The formula is arithmetic and correct. The inputs — business value, time criticality — are guesses about a business it does not work for. **Take the model's sizes as a first draft and the model's value scores as a provocation.** Amara's business-value numbers replace the model's every time.
+Ranking: it is applying a formula to numbers it made up. The formula is arithmetic and correct. The inputs — business value, time criticality — are guesses about a business it does not work for. **Take the model's sizes as a first draft and the model's value scores as a provocation.** Preetinka's business-value numbers replace the model's every time.
 
 The thing to watch: the model has an interest in the answer. Ask a coding assistant how much faster it makes coding and you will get an optimistic number. Asking it to state *why* difficulty exists rather than *how much* it helps produces something more honest, which is why the prompt is worded that way.
 
@@ -304,13 +304,13 @@ cannot tell you.
 | `[RANKING METHOD]` | `WSJF` or `simple value-versus-effort`. | `WSJF` | WSJF on five stories is ceremony. Value-versus-effort on forty stories does not discriminate enough. Eight is the crossover; either works. |
 | `[OUTPUT PATH]` | Where the ranked backlog goes. | `Case-Study/Python-ETL/artifacts/backlog-ranked.md` | An estimate that lives only in a chat window is an estimate nobody can challenge in three weeks when it turns out to be wrong. |
 
-**On the reference story.** Rahul picked NWD-101 because it is the story with least mystery in it. The temptation is to anchor on the interesting story. Do not — the reference has to be a story where nobody argues, and NWD-103 is a story where everybody argues.
+**On the reference story.** Gautam picked NWD-101 because it is the story with least mystery in it. The temptation is to anchor on the interesting story. Do not — the reference has to be a story where nobody argues, and NWD-103 is a story where everybody argues.
 
 ---
 
 ## 5. The filled-in example
 
-Friday 9:20. Farhan driving, Rahul beside him, Tomas and Ji-woo on a call, Ananya in the room for the last half hour.
+Friday 9:20. Atul driving, Gautam beside him, Ravi and Dzmitry on a call, Pankaj in the room for the last half hour.
 
 ```text
 You are helping a **Project Manager and a Team Lead** size and rank a backlog. The team
@@ -426,7 +426,7 @@ Abridged — four of the eight story blocks in full, then the summary, the spike
 # Ranked Backlog — Counterparty Document Ingestion
 
 **Reference:** NWD-101 = 3 points
-**Sized by:** Farhan Qureshi (PM) and Rahul Nair (Team Lead), Sprint 1 day 5
+**Sized by:** Atul(PM) and Gautam  (Team Lead), Sprint 1 day 5
 
 ---
 
@@ -597,7 +597,7 @@ derived from this total.**
 
 ### How to read this
 
-**Look at NWD-103's AI-leverage entry and NWD-106's, side by side.** Both stories involve writing Python that moves data around. One gets NONE and one gets HIGH, and the reasons are about where the difficulty lives rather than how much code there is. That contrast is the entire point of this prompt and it is the thing Rahul walked into the room not believing.
+**Look at NWD-103's AI-leverage entry and NWD-106's, side by side.** Both stories involve writing Python that moves data around. One gets NONE and one gets HIGH, and the reasons are about where the difficulty lives rather than how much code there is. That contrast is the entire point of this prompt and it is the thing Gautam walked into the room not believing.
 
 **Look at the 13 on NWD-103, and the recommendation attached to it.** The recommendation is not "plan for 13 points." It is "spike it, because 13 means you do not understand it." A team that puts a LOW-confidence 13 into a sprint is committing to a number nobody believes.
 
@@ -605,9 +605,9 @@ derived from this total.**
 
 **Look at risk 5.** Review capacity. It is not attached to any story, it does not appear in the 53 points, and it is the risk that actually bit. It appeared in the output because the prompt explicitly asks the model to consider that faster code production increases review load. Without that instruction it would not be there.
 
-**Now the part that is commonly wrong.** The value scores in the WSJF table were produced by the model, and they are the weakest numbers in the document. It scored NWD-105 — redact PII — at 4 for business value, because no user asks for redaction and models score value by user desire. Amara's number was 9, because an unredacted analytical store is not a feature nobody wants, it is a regulatory incident.
+**Now the part that is commonly wrong.** The value scores in the WSJF table were produced by the model, and they are the weakest numbers in the document. It scored NWD-105 — redact PII — at 4 for business value, because no user asks for redaction and models score value by user desire. Preetinka's number was 9, because an unredacted analytical store is not a feature nobody wants, it is a regulatory incident.
 
-**Take the model's sizes as a draft and its business-value scores as a provocation.** Sizes are relative comparisons between things the model can see. Value is a claim about a business it does not work for. Farhan replaced all eight value scores with Amara's within the hour, and the ranking changed in two places.
+**Take the model's sizes as a draft and its business-value scores as a provocation.** Sizes are relative comparisons between things the model can see. Value is a claim about a business it does not work for. Atul replaced all eight value scores with Preetinka's within the hour, and the ranking changed in two places.
 
 ---
 
@@ -615,9 +615,9 @@ derived from this total.**
 
 ### What "done" means here
 
-The backlog is ranked when **Farhan can say, on the client call, what the team is doing first and why, and can answer "what happens if that takes twice as long" without opening another document.**
+The backlog is ranked when **Atul can say, on the client call, what the team is doing first and why, and can answer "what happens if that takes twice as long" without opening another document.**
 
-That is the real test and it is Farhan's own question, the one he asks about everything. If the answer to "what if NWD-103 doubles" is a shrug, the estimate has no range and no risk attached, and it is a number rather than an estimate.
+That is the real test and it is Atul's own question, the one he asks about everything. If the answer to "what if NWD-103 doubles" is a shrug, the estimate has no range and no risk attached, and it is a number rather than an estimate.
 
 The second test: every LOW-confidence story has a spike against it with a time-box. LOW confidence with no spike means you have written down that you do not know something and then done nothing about it.
 
@@ -754,7 +754,7 @@ significantly more code, name that as a capacity risk with a specific person's n
 against it.
 ```
 
-What changes: the leverage column stops being uniform and starts being useful. The final question is the one Rahul did not ask on Friday, and §11 is what it cost.
+What changes: the leverage column stops being uniform and starts being useful. The final question is the one Gautam did not ask on Friday, and §11 is what it cost.
 
 ### 8.4 "The ranking says build the scary one last"
 
@@ -848,7 +848,7 @@ flowchart TD
 
 ### The flat AI discount
 
-Rahul's mistake, and it is the one worth the most words.
+Gautam's mistake, and it is the one worth the most words.
 
 The reasoning is sound as far as it goes. AI assistance measurably speeds up code production. The team is using it. Therefore stories are smaller than they used to be. Apply a factor, move on.
 
@@ -858,7 +858,7 @@ The fix is the classification in pass 1. Not "how much AI leverage" but "where d
 
 ### Points become days become dates
 
-It starts helpfully. The team does 20 points in a two-week sprint, so a point is half a day, so 53 points is 26 days, so six weeks. Farhan says six weeks on a call and now six weeks exists.
+It starts helpfully. The team does 20 points in a two-week sprint, so a point is half a day, so 53 points is 26 days, so six weeks. Atul says six weeks on a call and now six weeks exists.
 
 Two problems. The first is that the conversion is only valid over many stories and long periods — an individual 5 might be two days or six. The second is worse: once a date exists, the estimates stop being estimates. Nobody revises a 5 upward when revising it moves a date somebody committed to, so the numbers stop tracking reality and the whole apparatus becomes theatre.
 
@@ -876,15 +876,15 @@ The fix is sequencing, which is why P08 comes before P09 in this library, and it
 
 ### Averaging away the disagreement
 
-The team estimates NWD-102. Tomas says 3. Ananya says 13. Somebody says "let us call it 8" and the meeting moves on.
+The team estimates NWD-102. Ravi says 3. Pankaj says 13. Somebody says "let us call it 8" and the meeting moves on.
 
-Eight is almost certainly the wrong number and, more importantly, the wrong number is not the loss. **The loss is that Ananya knew something.** She had seen a classifier fail on scanned documents before and she was pricing that in. That information was available, for free, in the room, and averaging discarded it.
+Eight is almost certainly the wrong number and, more importantly, the wrong number is not the loss. **The loss is that Pankaj knew something.** She had seen a classifier fail on scanned documents before and she was pricing that in. That information was available, for free, in the room, and averaging discarded it.
 
 The fix: when estimates differ by more than one step on the scale, the outliers explain before anyone re-votes. Not "why did you say 13" as a challenge — "what do you know that the rest of us do not."
 
 ### This prompt is the wrong tool entirely
 
-**For a team with real velocity and a settled backlog.** After three sprints Farhan has measured numbers and the estimating conversation takes ten minutes with no prompt at all. This prompt is for the cold start, when there is no history to reason from.
+**For a team with real velocity and a settled backlog.** After three sprints Atul has measured numbers and the estimating conversation takes ten minutes with no prompt at all. This prompt is for the cold start, when there is no history to reason from.
 
 **For a single urgent piece of work.** Bug NWD-141 — the 429 from the extraction service killing the run at month-end — does not need estimating. It needs fixing. Running a WSJF analysis on a one-item backlog is a way of avoiding starting.
 
@@ -894,15 +894,15 @@ The fix: when estimates differ by more than one step on the scale, the outliers 
 
 ## 10. The handoff
 
-The ranked backlog goes to Sofia, who starts design work in [P10 — Ultra Plan Mode](../phase-2-design/P10-ultra-plan-mode.md). She reads it differently from everyone else: she goes straight to the spike list and the risk list, and largely ignores the points.
+The ranked backlog goes to Hem, who starts design work in [P10 — Ultra Plan Mode](../phase-2-design/P10-ultra-plan-mode.md). She reads it differently from everyone else: she goes straight to the spike list and the risk list, and largely ignores the points.
 
-That is correct. **The spike list is a design agenda.** S1 asks whether the extraction service returns confidence for fields inside tables — that is not a project-management question, it is the question that determines whether the confidence gate can exist in the shape everyone has assumed. Sofia's job in the design phase is to answer it before anyone builds against the assumption, and the fact that it is written down with a time-box against it is why it gets answered in week two instead of discovered in week nine.
+That is correct. **The spike list is a design agenda.** S1 asks whether the extraction service returns confidence for fields inside tables — that is not a project-management question, it is the question that determines whether the confidence gate can exist in the shape everyone has assumed. Hem's job in the design phase is to answer it before anyone builds against the assumption, and the fact that it is written down with a time-box against it is why it gets answered in week two instead of discovered in week nine.
 
 Risk 1 becomes the central question of ADR 0001 ([P12](../phase-2-design/P12-record-an-architecture-decision.md)). Risk 3, the canonical schema not being settled, is why the data contract ([P13](../phase-2-design/P13-design-the-data-contract.md)) is written before NWD-106 starts rather than alongside it.
 
-Farhan keeps the points, the ranking and the risk list, and takes them into [P16](../phase-3-planning/P16-sprint-plan-and-assignment.md) when Sprint 2 planning comes around. He does not take a date to the four o'clock call. What he takes is: here is the order, here is what we are finding out first, and here is the one thing that could change the shape of the project. That is a better status update than a date and it is a harder one to give.
+Atul keeps the points, the ranking and the risk list, and takes them into [P16](../phase-3-planning/P16-sprint-plan-and-assignment.md) when Sprint 2 planning comes around. He does not take a date to the four o'clock call. What he takes is: here is the order, here is what we are finding out first, and here is the one thing that could change the shape of the project. That is a better status update than a date and it is a harder one to give.
 
-Rahul takes the AI-leverage column into [P15](../phase-3-planning/P15-implementation-plan.md), where it decides which stories get a detailed implementation plan and which get a paragraph. The HIGH-leverage stories need less plan; the NONE ones need more, and more review.
+Gautam takes the AI-leverage column into [P15](../phase-3-planning/P15-implementation-plan.md), where it decides which stories get a detailed implementation plan and which get a paragraph. The HIGH-leverage stories need less plan; the NONE ones need more, and more review.
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/backlog-ranked.md`**
 >
@@ -923,25 +923,25 @@ Rahul takes the AI-leverage column into [P15](../phase-3-planning/P15-implementa
 
 ## 11. In the case study
 
-This runs on the Friday of Sprint 1, in [`02-sprint-1-discovery.md`](../../Case-Study/Python-ETL/02-sprint-1-discovery.md), and it is the session where Rahul is wrong in public.
+This runs on the Friday of Sprint 1, in [`02-sprint-1-discovery.md`](../../Case-Study/Python-ETL/02-sprint-1-discovery.md), and it is the session where Gautam is wrong in public.
 
 He opened by saying the backlog was smaller than it looked, and he had reasons. The Sprint 0 review skill was real. He had watched three days become an afternoon. His working assumption was a broad discount, and he was ready to argue for it.
 
 The output argued back. NWD-107 came in at 5 with HIGH leverage, NWD-106 at 3 with HIGH leverage — both of those confirmed his instinct, and both landed roughly as estimated. Then NWD-103 came in at 13 with an AI-leverage line reading NONE, and a paragraph explaining that deciding what confidence threshold is safe for a monetary field is a question about what a wrong number costs Northwind, and there is no answer to that in any documentation anywhere.
 
-Rahul pushed back once. The gate is a comparison against a table of thresholds, he said. That is fifty lines of code. The response was the 15/85 split: yes, fifty lines, and that is fifteen percent of the story. The other eighty-five is choosing the numbers, finding out whether the service gives you a score in every position you need one, and reviewing the result carefully enough to be sure the gate rejects at document scope rather than field scope.
+Gautam pushed back once. The gate is a comparison against a table of thresholds, he said. That is fifty lines of code. The response was the 15/85 split: yes, fifty lines, and that is fifteen percent of the story. The other eighty-five is choosing the numbers, finding out whether the service gives you a score in every position you need one, and reviewing the result carefully enough to be sure the gate rejects at document scope rather than field scope.
 
 NWD-103 took eleven days. The estimate was right.
 
-**And then there is risk 5, which Farhan ignored.**
+**And then there is risk 5, which Atul ignored.**
 
 Risk 5 was not attached to any story. It said: four of eight stories have HIGH AI leverage on code production, that code still needs reviewing at the same rate as always, by the same people, and if build time halves and review time does not, review becomes the constraint from Sprint 2 onward.
 
-Farhan read it, agreed with it, and did nothing, because it was not a story, it had no points, and he had a call at four. It is the kind of risk that has no owner by construction — it belongs to the process rather than to any item on the board.
+Atul read it, agreed with it, and did nothing, because it was not a story, it had no points, and he had a call at four. It is the kind of risk that has no owner by construction — it belongs to the process rather than to any item on the board.
 
-In Sprint 2, Tomas shipped NWD-106 and NWD-107 in four days between them. Both were fine. Both sat waiting for review for three days, because Rahul was the only person who could review the confidence gate work and the confidence gate work was where his attention had to be. The board showed two stories done and two stories in review, and the velocity number for Sprint 2 came out lower than it should have been for reasons that had nothing to do with how fast anyone wrote code.
+In Sprint 2, Ravi shipped NWD-106 and NWD-107 in four days between them. Both were fine. Both sat waiting for review for three days, because Gautam was the only person who could review the confidence gate work and the confidence gate work was where his attention had to be. The board showed two stories done and two stories in review, and the velocity number for Sprint 2 came out lower than it should have been for reasons that had nothing to do with how fast anyone wrote code.
 
-Farhan raised it in the Sprint 2 retrospective ([P35](../phase-8-improve/P35-run-the-retrospective.md)) and the team added a second reviewer. **The lesson he took, and repeats: when a tool makes one part of the work faster, the next part becomes the constraint, and the estimate for the next part did not change.** It was in the output on the Friday of Sprint 1, sorted fifth, with nobody's name against it.
+Atul raised it in the Sprint 2 retrospective ([P35](../phase-8-improve/P35-run-the-retrospective.md)) and the team added a second reviewer. **The lesson he took, and repeats: when a tool makes one part of the work faster, the next part becomes the constraint, and the estimate for the next part did not change.** It was in the output on the Friday of Sprint 1, sorted fifth, with nobody's name against it.
 
 The ranked backlog is at [`artifacts/backlog-ranked.md`](../../Case-Study/Python-ETL/artifacts/backlog-ranked.md). Spike S1 ran in Sprint 1's design half; its answer — yes, per-field confidence is available inside tables — is what let NWD-103 proceed as designed. Nobody thought to ask whether the *rows* of a table were all there. That question, and its consequences, are [P08 §11](P08-write-acceptance-criteria.md#11-in-the-case-study) and the whole of the rework chapter.
 

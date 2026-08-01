@@ -44,7 +44,7 @@ re-review → done
 
 Seventeen steps. Four of them are "build" or "test." **Thirteen are rework.**
 
-That ratio is not a sign of a bad team. Tomas is a good engineer, Sofia writes careful specs, and Ananya is excellent. That ratio is just what building software looks like when you're honest about it — and the fact that twelve of those thirteen steps have no prompt anywhere is the gap this phase fills.
+That ratio is not a sign of a bad team. Ravi is a good engineer, Hem writes careful specs, and Pankaj is excellent. That ratio is just what building software looks like when you're honest about it — and the fact that twelve of those thirteen steps have no prompt anywhere is the gap this phase fills.
 
 ---
 
@@ -183,7 +183,7 @@ An AI asked to fix a described bug will fix **the bug it inferred from your desc
 
 A failing test is proof you found the real thing. When it goes green, that's proof you fixed the real thing. Without it you have two guesses stacked on each other.
 
-For NWD-142 the failing test is a two-page fixture PDF with fourteen positions, asserting fourteen rows out. It fails with nine. Now everyone — you, the AI, Ananya, the reviewer — is looking at the same object.
+For NWD-142 the failing test is a two-page fixture PDF with fourteen positions, asserting fourteen rows out. It fails with nine. Now everyone — you, the AI, Pankaj, the reviewer — is looking at the same object.
 
 ### Name the boundary
 
@@ -231,11 +231,11 @@ Northwind's Sprint 3, honestly accounted for:
 | **Rework** | **6 days** |
 | Release prep | 1 day |
 
-Six days of rework against four days of build. Farhan's estimate had one day for "bug fixing."
+Six days of rework against four days of build. Atul's estimate had one day for "bug fixing."
 
 The point isn't that the estimate was bad. It's that **rework was never a named activity**, so it had no prompts, no artifacts, and no place in the plan. It happened in the gaps, invisibly, and the sprint was late for reasons nobody could point at.
 
-Naming it is most of the fix. After Sprint 3, Farhan's estimates carried an explicit rework line, and the [retro](../Case-Study/Python-ETL/10-retrospective.md) is where that changed.
+Naming it is most of the fix. After Sprint 3, Atul's estimates carried an explicit rework line, and the [retro](../Case-Study/Python-ETL/10-retrospective.md) is where that changed.
 
 ---
 
@@ -243,7 +243,7 @@ Naming it is most of the fix. After Sprint 3, Farhan's estimates carried an expl
 
 **If you have a bug right now:** [P27](phase-6-rework/P27-fix-from-a-qa-bug-report.md) if nothing threw, [P26](phase-6-rework/P26-debug-an-error-fast.md) if something did.
 
-**If you want to watch it happen:** [Sprint 3 — Rework](../Case-Study/Python-ETL/08-sprint-3-rework.md) follows NWD-142 from Ananya counting positions on a PDF through to the merged fix, the spec change, and the two other places the same assumption was hiding.
+**If you want to watch it happen:** [Sprint 3 — Rework](../Case-Study/Python-ETL/08-sprint-3-rework.md) follows NWD-142 from Pankaj counting positions on a PDF through to the merged fix, the spec change, and the two other places the same assumption was hiding.
 
 **If you're setting up a team:** read [the handoff contract](02-the-handoff-contract.md) first. Most rework isn't caused by bad code — it's caused by a gap in a handoff three steps earlier, and Phase 6 is where you pay for it.
 

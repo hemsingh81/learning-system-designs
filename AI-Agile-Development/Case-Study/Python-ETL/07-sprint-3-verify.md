@@ -1,18 +1,18 @@
-# Sprint 3 — Ananya Finds Out What Is Actually True
+# Sprint 3 — Pankaj Finds Out What Is Actually True
 
 ← [Previous](06-sprint-2-build-frontend.md) · [Case study index](README.md) · Next: [Sprint 3 — Rework](08-sprint-3-rework.md)
 
-> **One line:** the whole suite is green, every check passes, and Ananya opens a real statement and counts the positions on it by hand.
+> **One line:** the whole suite is green, every check passes, and Pankaj opens a real statement and counts the positions on it by hand.
 
 ---
 
-## 1. Monday, 20 July — what Ananya is actually accountable for
+## 1. Monday, 20 July — what Pankaj is actually accountable for
 
-Sprint 3 opens with everything built. Tomas closed NWD-101 through NWD-107 last sprint. Ji-woo closed NWD-108 on Friday. There are one hundred and ninety-four tests in `doc_ingestion/tests/` and they are all green. The pipeline has been running against real Broker Alpha statements in the dev environment for eleven days.
+Sprint 3 opens with everything built. Ravi closed NWD-101 through NWD-107 last sprint. Dzmitry closed NWD-108 on Friday. There are one hundred and ninety-four tests in `doc_ingestion/tests/` and they are all green. The pipeline has been running against real Broker Alpha statements in the dev environment for eleven days.
 
-Farhan opens standup by asking how long verification will take. Ananya says a week. Farhan writes down two weeks, because he has met her before.
+Atul opens standup by asking how long verification will take. Pankaj says a week. Atul writes down two weeks, because he has met her before.
 
-Here is the framing Ananya uses, and it is the reason her chapter exists:
+Here is the framing Pankaj uses, and it is the reason her chapter exists:
 
 **A test suite tells you the code does what its author thought it should. It cannot tell you whether what the author thought was right.** Those are different questions, and only the second one matters to Northwind.
 
@@ -21,7 +21,7 @@ She has three prompts for the week:
 | Prompt | What it is for | Runs |
 |---|---|---|
 | [P22 — E2E test the application](../../AI-Prompts-Library/phase-5-verify/P22-e2e-test-the-application.md) | Does the whole thing work end to end, as a system, not as parts | Mon–Thu |
-| [P24 — Find security gaps](../../AI-Prompts-Library/phase-5-verify/P24-find-security-gaps.md) | What can go wrong that is not a bug | Fri, with Sofia |
+| [P24 — Find security gaps](../../AI-Prompts-Library/phase-5-verify/P24-find-security-gaps.md) | What can go wrong that is not a bug | Fri, with Hem |
 | [P25 — Data quality validation](../../AI-Prompts-Library/phase-5-verify/P25-data-quality-validation.md) | Is the data in the warehouse actually correct | Mon–Wed the following week |
 
 The order is not arbitrary. E2E first, because if the pipe is broken nothing else is worth measuring. Security next, because a finding there can change the design and you want that news early. Data quality last, because it is the only one that requires the system to have been running long enough to have produced something to check.
@@ -32,20 +32,20 @@ The order is not arbitrary. E2E first, because if the pipe is broken nothing els
 
 Most of what you read about E2E testing assumes a browser. Open a page, click a thing, assert a thing appeared.
 
-Ananya's system has a browser in it — Ji-woo's exception queue — but that is not where the work is. Here is what "end to end" means for the Northwind pipeline, stage by stage:
+Pankaj's system has a browser in it — Dzmitry's exception queue — but that is not where the work is. Here is what "end to end" means for the Northwind pipeline, stage by stage:
 
 ```mermaid
 flowchart LR
-    F["Fixture PDF<br/>on Ananya's laptop"] --> B["Azure Blob<br/>raw/broker_alpha/..."]
+    F["Fixture PDF<br/>on Pankaj's laptop"] --> B["Azure Blob<br/>raw/broker_alpha/..."]
     B --> Q["Queue message<br/>(automatic)"]
     Q --> W["Function worker<br/>classify · extract · rules"]
     W --> S["Azure SQL<br/>silver"]
     W --> X["Azure SQL<br/>exception queue"]
     S --> G["Snowflake<br/>gold"]
-    X --> U["Ji-woo's screen"]
+    X --> U["Dzmitry's screen"]
 ```
 
-**A single test spans six services, two clouds, and an event that fires on its own schedule.** Ananya's test does not call a function. It puts a file somewhere and waits for a row to appear somewhere else.
+**A single test spans six services, two clouds, and an event that fires on its own schedule.** Pankaj's test does not call a function. It puts a file somewhere and waits for a row to appear somewhere else.
 
 Everything hard about this kind of testing is in that last sentence, and it is worth being explicit about the four specific problems, because they are the same four in every event-driven system you will ever test.
 
@@ -63,7 +63,7 @@ Point four is the one that matters most and it comes back on Wednesday.
 
 ## 3. Running P22
 
-Here is Ananya's filled-in [P22](../../AI-Prompts-Library/phase-5-verify/P22-e2e-test-the-application.md), trimmed to the parts that carry weight.
+Here is Pankaj's filled-in [P22](../../AI-Prompts-Library/phase-5-verify/P22-e2e-test-the-application.md), trimmed to the parts that carry weight.
 
 ```text
 You are a senior Python test engineer writing end-to-end tests for the Northwind
@@ -134,7 +134,7 @@ The idempotency answer came back before any code, which is what the prompt asked
 >
 > Recommending (b). It changes exactly the thing idempotency keys on and nothing else.
 
-Ananya takes (b). The one-liner that makes it work:
+Pankaj takes (b). The one-liner that makes it work:
 
 ```python
 def unique_bytes(pdf_path: Path) -> bytes:
@@ -194,7 +194,7 @@ def wait_for(
 
 Note that `time.sleep` does appear — inside the poll loop, which is fine, because the loop has a deadline and an assertion. The banned thing was sleeping *as a way of synchronising*. Those look similar and are not.
 
-The `diagnostic` callback is the part Ananya added herself after the first failing run sent her to the Azure portal for twenty minutes. It is the single highest-value addition to the whole harness.
+The `diagnostic` callback is the part Pankaj added herself after the first failing run sent her to the Azure portal for twenty minutes. It is the single highest-value addition to the whole harness.
 
 ### The happy path test
 
@@ -251,9 +251,9 @@ The last assertion is the one people forget. **Asserting the good thing happened
 
 Three defects over Tuesday, Wednesday and Thursday. All three are ordinary, all three are real, and none of them is the one this book is about.
 
-**NWD-140 — a resent statement under a new filename creates a duplicate row.** The resend test failed on the first run. The document-level ledger dedupes on content hash correctly, but `sinks/blob_sink.py` was building the bronze path from the *filename*, so the same content resent as `BA_POS_20260722_RESEND.pdf` wrote a second bronze object and a second silver row keyed on a different hash-derived path. Two lines. Tomas fixed it Wednesday morning. Notably, option (c) from the idempotency discussion — deleting the ledger row before each test — would have hidden this completely.
+**NWD-140 — a resent statement under a new filename creates a duplicate row.** The resend test failed on the first run. The document-level ledger dedupes on content hash correctly, but `sinks/blob_sink.py` was building the bronze path from the *filename*, so the same content resent as `BA_POS_20260722_RESEND.pdf` wrote a second bronze object and a second silver row keyed on a different hash-derived path. Two lines. Ravi fixed it Wednesday morning. Notably, option (c) from the idempotency discussion — deleting the ledger row before each test — would have hidden this completely.
 
-**NWD-141 — a 429 from Document Intelligence at month-end kills the run.** Ananya ran forty documents through in ninety seconds to simulate a month-end spike. Azure returned `429 Too Many Requests` on document twenty-nine — the standard "you are going too fast" response — and the Function raised, the queue message went to the poison queue, and the document was never processed. There is retry logic in `core/clients.py`, but the retry predicate did not include 429. Half a day.
+**NWD-141 — a 429 from Document Intelligence at month-end kills the run.** Pankaj ran forty documents through in ninety seconds to simulate a month-end spike. Azure returned `429 Too Many Requests` on document twenty-nine — the standard "you are going too fast" response — and the Function raised, the queue message went to the poison queue, and the document was never processed. There is retry logic in `core/clients.py`, but the retry predicate did not include 429. Half a day.
 
 **NWD-138 — the Spanish path breaks the security match.** This one is more interesting. A `broker_beta_em` trade confirmation arrives in Spanish and is normalised to English by Azure AI Translator before extraction. The E2E assertion `security_id unchanged by translation` failed: `security_id` came out as `US0378331005` on one document and, on another, the *security name* had been translated so aggressively that a name-based fallback match in reconciliation stopped matching. The rule that emerged is one line in `config/sources.yaml`:
 
@@ -272,15 +272,15 @@ Three defects over Tuesday, Wednesday and Thursday. All three are ordinary, all 
 
 **Translate what a human reads. Never translate what a machine joins on.** That sentence goes in the spec, and it is a good example of a rule nobody would have written in advance and everybody agrees with instantly once seen.
 
-By Thursday evening all three are fixed and re-tested. Farhan's burn-down looks healthy. This is the point in a project where everybody starts to relax.
+By Thursday evening all three are fixed and re-tested. Atul's burn-down looks healthy. This is the point in a project where everybody starts to relax.
 
 ---
 
 ## 5. Friday — P24, the security pass
 
-Ananya and Sofia run [P24](../../AI-Prompts-Library/phase-5-verify/P24-find-security-gaps.md) together, which is unusual — most prompts have one owner — and the pairing is deliberate. Ananya knows what the system does. Sofia knows which of those things is expensive to have been wrong about.
+Pankaj and Hem run [P24](../../AI-Prompts-Library/phase-5-verify/P24-find-security-gaps.md) together, which is unusual — most prompts have one owner — and the pairing is deliberate. Pankaj knows what the system does. Hem knows which of those things is expensive to have been wrong about.
 
-Sofia's opening question, the one she asks about everything:
+Hem's opening question, the one she asks about everything:
 
 > "What does this look like when it's wrong?"
 
@@ -322,9 +322,9 @@ Two findings survive triage. Both are the kind you only get by asking the right 
 
 SEC-02 is the more instructive one. **The redaction control was genuinely correct on the path it was designed for, and the exception path was built later, by someone reading a different document.** Nobody was careless. The control had a boundary and the boundary was not written down.
 
-Sofia writes it down, as a two-paragraph amendment to [ADR-0002](artifacts/adr/), and this is the first of two spec-level changes Sprint 3 produces. The second one is bigger.
+Hem writes it down, as a two-paragraph amendment to [ADR-0002](artifacts/adr/), and this is the first of two spec-level changes Sprint 3 produces. The second one is bigger.
 
-Both fixes land Monday. Ananya re-tests. Green.
+Both fixes land Monday. Pankaj re-tests. Green.
 
 ---
 
@@ -332,7 +332,7 @@ Both fixes land Monday. Ananya re-tests. Green.
 
 Now the last of the three, [P25](../../AI-Prompts-Library/phase-5-verify/P25-data-quality-validation.md). This is the one that asks a different question from all the others: *not "does the code work" but "is the data right".*
 
-Ananya and Tomas write it together. The checks are good checks. Here is the set, in the SQL they actually run against silver:
+Pankaj and Ravi write it together. The checks are good checks. Here is the set, in the SQL they actually run against silver:
 
 ```sql
 -- 01: no orphan rows — every silver row traces to a bronze payload
@@ -369,7 +369,7 @@ WHERE  statement_date > DATEADD(day, 1, GETUTCDATE());
 
 Every one returns zero.
 
-Ananya runs them against eleven days of dev data — around two thousand two hundred rows across a hundred and forty documents. Zero. Zero. Zero. Zero. Zero. Zero.
+Pankaj runs them against eleven days of dev data — around two thousand two hundred rows across a hundred and forty documents. Zero. Zero. Zero. Zero. Zero. Zero.
 
 She also pulls the operational numbers:
 
@@ -382,7 +382,7 @@ She also pulls the operational numbers:
 | Average `min_confidence` on accepted documents | 0.94 |
 | Reconciliation breaks, most recent run | 31 |
 
-Sixty-one percent straight-through against a target of eighty-five. That is a starting point, not a problem — it improves as the models get more labelled documents. Farhan reports it to the client on Friday and nobody is unhappy.
+Sixty-one percent straight-through against a target of eighty-five. That is a starting point, not a problem — it improves as the models get more labelled documents. Atul reports it to the client on Friday and nobody is unhappy.
 
 **Everything passes. Every test, every check, every metric. There is no failing thing anywhere in this system on the morning of Wednesday 29 July.**
 
@@ -390,7 +390,7 @@ Sixty-one percent straight-through against a target of eighty-five. That is a st
 
 ## 7. Wednesday, 29 July, 09:40
 
-Ananya is not satisfied, and she cannot say why.
+Pankaj is not satisfied, and she cannot say why.
 
 This is worth sitting with, because it is the least teachable and most important part of the job. Nothing is wrong. The suite is green. The data quality checks are green. She has been doing this for eleven years and something about the shape of the numbers is bothering her.
 
@@ -406,7 +406,7 @@ Not a fixture. Not a generated document. The actual Broker Alpha daily position 
 
 Two pages. The positions table starts about a third of the way down page 1, under the account header. It runs to the bottom of the page. It continues at the top of page 2 without repeating the header row — the columns are just there, and the rows keep going — and finishes about halfway down, followed by a totals line and a disclaimer.
 
-She counts the positions with the cursor, line by line, the way Priya does.
+She counts the positions with the cursor, line by line, the way Preeti does.
 
 Page 1: nine.
 
@@ -455,11 +455,11 @@ Take a moment before the story moves on, because everything that follows depends
 
 **There is no failing test.** All one hundred and ninety-four unit tests pass. All five E2E scenarios pass. All six data quality checks pass, on this exact document, right now.
 
-**There is no exception-queue row.** Priya was never shown this document, because the system had no reason to show it to her. It looked perfect.
+**There is no exception-queue row.** Preeti was never shown this document, because the system had no reason to show it to her. It looked perfect.
 
 **The confidence gate reported everything fine, and it was telling the truth.** This is the part that takes a minute to accept. `min_confidence` on those nine rows is 0.93 at worst, well above the 0.90 threshold for a number and the 0.92 override Broker Alpha carries because their scan quality is poor. Every field the gate examined was genuinely, verifiably high confidence. The gate did not fail. The gate did not malfunction. **The gate was never shown the five missing rows, so it had nothing to be uncertain about.**
 
-**The straight-through rate counted this as a win.** The metric on Farhan's Friday slide — 61% of documents needing zero human touch — includes this document in the numerator. A document that lost a third of its content is being reported to the client as a clean success.
+**The straight-through rate counted this as a win.** The metric on Atul's Friday slide — 61% of documents needing zero human touch — includes this document in the numerator. A document that lost a third of its content is being reported to the client as a clean success.
 
 **And reconciliation is doing its job perfectly, which makes it worse.** The next day's break report compares Aladdin's fourteen positions for that account against the warehouse's nine and correctly reports five discrepancies. It labels them `MISSING_EXTERNAL` — Northwind holds the position, the counterparty statement does not mention it. On a break report, `MISSING_EXTERNAL` means one thing to an operations analyst: **the counterparty may have failed to settle.** That is a phone call to Broker Alpha's operations desk. That is potentially a real amount of money.
 
@@ -473,7 +473,7 @@ Every single component in this system behaved correctly. The system was wrong.
 
 ## 9. Wednesday, 10:20 — confirming it is not a fluke
 
-Ananya does not file yet. One document proves one document.
+Pankaj does not file yet. One document proves one document.
 
 She pulls every Broker Alpha statement in the raw zone from the last two weeks and counts them by hand. It takes her the rest of the morning and it is the least glamorous work in this entire book.
 
@@ -494,7 +494,7 @@ Six single-page statements, all perfect. Two multi-page statements, both short. 
 
 Then she checks the bronze layer, which is the single most useful thing she does all week.
 
-Bronze is where the full raw JSON response from Azure AI Document Intelligence is written, byte for byte, before any of Tomas's code parses it. Sofia insisted on it in Sprint 1 for a cost reason — a parsing bug found next month should be reprocessable for free rather than costing thirty dollars per thousand pages again.
+Bronze is where the full raw JSON response from Azure AI Document Intelligence is written, byte for byte, before any of Ravi's code parses it. Hem insisted on it in Sprint 1 for a cost reason — a parsing bug found next month should be reprocessable for free rather than costing thirty dollars per thousand pages again.
 
 ```bash
 $ az storage blob download \
@@ -526,13 +526,13 @@ The rows are lost after that. In Kestrel's own code, somewhere between the JSON 
 
 That single check eliminates half the system before anyone has looked at a line of Python. **A QA engineer who checks the raw payload before filing is worth two engineers who do not.**
 
-At 11:50 Priya messages the shared channel. Three words:
+At 11:50 Preeti messages the shared channel. Three words:
 
 > "The recon's wrong."
 
 Attached is a screenshot of that morning's break report against the 29 July statement. Sixteen positions on the Broker Alpha book, all flagged `MISSING_EXTERNAL`.
 
-Ananya counts that statement too. Three pages. Forty-seven positions — thirty-one on page 1, sixteen on page 2, disclaimer on page 3. Thirty-one rows in silver.
+Pankaj counts that statement too. Three pages. Forty-seven positions — thirty-one on page 1, sixteen on page 2, disclaimer on page 3. Thirty-one rows in silver.
 
 Same bug. Bigger document. And this one has already produced an escalation that would, if nobody had been counting, have ended with somebody at Northwind ringing a broker to ask why sixteen positions had failed to settle.
 
@@ -540,7 +540,7 @@ Same bug. Bigger document. And this one has already produced an escalation that 
 
 ## 10. The bug report
 
-Ananya spends the afternoon on it and files this at 18:14.
+Pankaj spends the afternoon on it and files this at 18:14.
 
 Read it properly. Not as a plot point — as a document. The next chapter is built on the fact that this text can be pasted into a prompt without a single edit, and that is not an accident of her writing style. It is a set of choices you can copy.
 
@@ -548,7 +548,7 @@ Read it properly. Not as a plot point — as a document. The next chapter is bui
 ID: NWD-142
 Title: Positions on page 2 of a Broker Alpha statement are silently dropped
 Severity: Critical — corrupts the warehouse and produces false reconciliation breaks
-Found by: Ananya Iyer
+Found by: Pankaj 
 Found in: Sprint 3 acceptance testing, build 1.0.0-rc3
 Environment: dev, run 2026-07-29T18:14 IST
 
@@ -571,7 +571,7 @@ OBSERVED SIDE EFFECTS
 - MIN_CONFIDENCE on the gold row recorded as 0.94.
 - Straight-through rate counted this document as a clean pass.
 - recon/reconcile.py subsequently reported 16 MISSING_EXTERNAL breaks against the
-  Aladdin feed, which is what Priya escalated.
+  Aladdin feed, which is what Preeti escalated.
 
 NOTES
 - Reproduced 3/3 times.
@@ -603,7 +603,7 @@ Five choices in it, each of which you can make tomorrow.
 
 **The guess is labelled as a guess.** The last line is a hypothesis, and she has written `GUESS, not verified` in front of it in capitals.
 
-That last one is the discipline that matters most and it is the least natural. Ananya has a theory. It is a reasonable theory. She has been doing this long enough to know that if she states it as a finding, the engineer who picks this up — and any AI that engineer pastes it into — will treat it as the brief and start there. Her theory happens to be wrong, as you will see, and labelling it is what stops it costing Tomas a morning.
+That last one is the discipline that matters most and it is the least natural. Pankaj has a theory. It is a reasonable theory. She has been doing this long enough to know that if she states it as a finding, the engineer who picks this up — and any AI that engineer pastes it into — will treat it as the brief and start there. Her theory happens to be wrong, as you will see, and labelling it is what stops it costing Ravi a morning.
 
 **Give the observation, not the explanation. If you already knew the explanation, you would not need to file the bug.**
 
@@ -611,7 +611,7 @@ That last one is the discipline that matters most and it is the least natural. A
 
 ## 11. Handing over
 
-Ananya assigns NWD-142 to Tomas at 18:20 and adds one comment:
+Pankaj assigns NWD-142 to Ravi at 18:20 and adds one comment:
 
 > "Bronze payload is intact and has page 2's rows. Whatever this is, it's ours, and it's after the Azure call. You don't need credentials or a PDF to reproduce it — copy the JSON into tests/fixtures/ and you've got it offline."
 
@@ -621,7 +621,7 @@ Then she does one more thing, which is the difference between a good bug report 
 
 That line becomes the headline item in the [retrospective](10-retrospective.md), and the check itself becomes the first thing added to P25's standard set.
 
-Tomas picks it up at 08:15 on Thursday morning. What he does in the first twenty minutes is a mistake, and it is the single most instructive twenty minutes in this book.
+Ravi picks it up at 08:15 on Thursday morning. What he does in the first twenty minutes is a mistake, and it is the single most instructive twenty minutes in this book.
 
 ---
 

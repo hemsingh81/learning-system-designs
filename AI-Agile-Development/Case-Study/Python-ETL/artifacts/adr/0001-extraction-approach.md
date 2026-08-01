@@ -2,12 +2,12 @@
 
 | | |
 |---|---|
-| **Produced by** | Sofia Marchetti, Architect |
+| **Produced by** | Hem Singh, Architect |
 | **Using** | [P12 — Record an Architecture Decision](../../../../AI-Prompts-Library/phase-2-design/P12-record-an-architecture-decision.md) |
 | **Date** | 2026-06-15 |
 | **Status** | Accepted |
 | **Version** | 1.0 |
-| **In the room** | Sofia Marchetti (Architect), Rahul Nair (Team Lead), Tomas Vargas (Backend), Amara Osei (PO), Farhan Qureshi (PM) |
+| **In the room** | Hem Singh (Architect), Gautam  (Team Lead), Ravi Mullick (Backend), Preetinka Sharma (PO), Atul(PM) |
 
 ---
 
@@ -73,7 +73,7 @@ There is a second constraint that shapes everything: this is a **financial contr
 
 **For.** Works today. No build. Handles any layout.
 
-**Against.** Does not achieve T+1 — a keying vendor's SLA is overnight at best. Does not remove the analyst review step, it relocates it. Introduces a third party into a flow carrying account-level position data. Costs more than $420 a month by two orders of magnitude. Recorded because Farhan asked and it deserved a real answer, not because it was close.
+**Against.** Does not achieve T+1 — a keying vendor's SLA is overnight at best. Does not remove the analyst review step, it relocates it. Introduces a third party into a flow carrying account-level position data. Costs more than $420 a month by two orders of magnitude. Recorded because Atul asked and it deserved a real answer, not because it was close.
 
 ## Decision
 
@@ -112,12 +112,12 @@ Cost was not a deciding reason and should not be recorded as one. At our volume 
 ### What we have accepted that we do not like
 
 - **A counterparty who changes their layout breaks us quietly.** Confidence scores fall across the board, the straight-through rate drops, and the exception queue fills. Nothing errors. We have made that detectable — it is the runbook's first diagnostic and the reason M2 is monitored daily — but we have not made it impossible.
-- **We are slower to onboard than Option B would have been.** A fortnight per counterparty rather than an afternoon. Farhan flagged this against the roadmap and it stands as a known cost.
+- **We are slower to onboard than Option B would have been.** A fortnight per counterparty rather than an afternoon. Atul flagged this against the roadmap and it stands as a known cost.
 - **We may be wrong in eighteen months.** Calibrated per-field confidence from language models is an active area, and if it arrives, reason 1 disappears. Reasons 2 and 3 do not, but they are more arguable.
 
 ### Objections on the record
 
-- **Tomas Vargas, 2026-06-15:** argued that a hybrid was worth prototyping — Document Intelligence for the two known layouts, an LLM as a fallback for unrecognised documents, with the LLM's output routed straight to the exception queue rather than to the warehouse. **Not accepted for v1**, on the grounds that a second extraction path doubles the surface a reviewer has to check and the exception queue already handles unknown layouts adequately. Recorded as a genuine option for v2 and logged in the tech debt register. Sofia's note: this is the strongest argument against the decision and it was not a bad idea.
+- **Ravi Mullick, 2026-06-15:** argued that a hybrid was worth prototyping — Document Intelligence for the two known layouts, an LLM as a fallback for unrecognised documents, with the LLM's output routed straight to the exception queue rather than to the warehouse. **Not accepted for v1**, on the grounds that a second extraction path doubles the surface a reviewer has to check and the exception queue already handles unknown layouts adequately. Recorded as a genuine option for v2 and logged in the tech debt register. Hem's note: this is the strongest argument against the decision and it was not a bad idea.
 
 ## Revisit when
 
@@ -136,15 +136,15 @@ Cost was not a deciding reason and should not be recorded as one. At our volume 
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/adr/0001-extraction-approach.md`**
 >
-> Produced by: Architect (Sofia Marchetti) using P12 — Record an Architecture Decision
-> Approved by: Rahul Nair (Team Lead) 2026-06-15 · Farhan Qureshi (PM) 2026-06-16
+> Produced by: Architect (Hem Singh) using P12 — Record an Architecture Decision
+> Approved by: Gautam  (Team Lead) 2026-06-15 · Atul(PM) 2026-06-16
 >
 > Anyone consuming this file can rely on finding:
 > - The context and the two constraints that made this a decision rather than a default, with volumes and costs stated
 > - Four options with honest arguments for and against, including the one nobody was going to pick
 > - The decision with three numbered reasons for rejecting LLM-based extraction
 > - Consequences in three parts, including what we accepted and dislike
-> - Tomas Vargas's objection, attributed and dated, with the reason it was not accepted
+> - Ravi Mullick's objection, attributed and dated, with the reason it was not accepted
 > - A revisit trigger, not a revisit date
 >
 > This file does **not** contain: the threshold values, the extraction implementation, model training procedure, or the schema.

@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Produced by** | Sofia Marchetti (Architect) with Tomas Vargas (Backend Engineer) |
+| **Produced by** | Hem Singh (Architect) with Ravi Mullick (Backend Engineer) |
 | **Using** | [P13 — Design the Data Contract](../../../AI-Prompts-Library/phase-2-design/P13-design-the-data-contract.md) |
 | **Date** | 2026-06-19 |
 | **Status** | Approved · in force from v1.0 |
@@ -131,14 +131,14 @@ Money is four places rather than two because that is what the statements state, 
 
 | Change | Class | Approval needed |
 |---|---|---|
-| Add a nullable column | **Compatible** | Sofia Marchetti (Architect). Notify downstream consumers. |
-| Widen a `VARCHAR` | **Compatible** | Sofia Marchetti. |
-| Increase decimal scale without losing places | **Compatible** | Sofia Marchetti + Tomas Vargas, with a data check that no existing value loses precision. |
-| Add a non-null column with a default | **Compatible with care** | Sofia Marchetti + backfill plan for existing rows. |
-| Rename a column | **Breaking** | Sofia Marchetti **and** Amara Osei **and** Northwind's data owner. |
+| Add a nullable column | **Compatible** | Hem Singh (Architect). Notify downstream consumers. |
+| Widen a `VARCHAR` | **Compatible** | Hem Singh. |
+| Increase decimal scale without losing places | **Compatible** | Hem Singh + Ravi Mullick, with a data check that no existing value loses precision. |
+| Add a non-null column with a default | **Compatible with care** | Hem Singh + backfill plan for existing rows. |
+| Rename a column | **Breaking** | Hem Singh **and** Preetinka Sharma **and** Northwind's data owner. |
 | Change a type or reduce precision | **Breaking** | As above, plus a migration plan and a dated cutover. |
 | Make a nullable column non-null | **Breaking** | As above. |
-| Change the natural key | **Breaking, highest severity** | As above, plus Farhan Qureshi, because it is a release-level event. |
+| Change the natural key | **Breaking, highest severity** | As above, plus Atul, because it is a release-level event. |
 | Remove any audit column | **Not permitted** | Requires superseding [ADR-0002](adr/0002-persist-bronze-before-parsing.md) and a written statement from Northwind's audit function. |
 
 ### 7.2 The rules
@@ -154,15 +154,15 @@ Money is four places rather than two because that is what the statements state, 
 
 | Version | Date | Change | Class | Approved by |
 |---|---|---|---|---|
-| 1.0 | 2026-06-19 | Initial | — | Sofia, Amara, Northwind data owner |
-| 1.1 | 2026-07-09 | `model_id` widened `VARCHAR(32)` → `VARCHAR(64)`. Model names with a counterparty prefix and a version suffix were within two characters of the limit. | Compatible | Sofia |
+| 1.0 | 2026-06-19 | Initial | — | Hem, Preetinka, Northwind data owner |
+| 1.1 | 2026-07-09 | `model_id` widened `VARCHAR(32)` → `VARCHAR(64)`. Model names with a counterparty prefix and a version suffix were within two characters of the limit. | Compatible | Hem |
 
 ---
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/data-contract-counterparty-position.md`**
 >
-> Produced by: Architect (Sofia Marchetti) with Backend Engineer (Tomas Vargas) using P13 — Design the Data Contract
-> Approved by: Amara Osei (PO) 2026-06-19 · Northwind data owner 2026-06-22
+> Produced by: Architect (Hem Singh) with Backend Engineer (Ravi Mullick) using P13 — Design the Data Contract
+> Approved by: Preetinka Sharma (PO) 2026-06-19 · Northwind data owner 2026-06-22
 >
 > Anyone consuming this file can rely on finding:
 > - Every column with its type in both stores, nullability, units, meaning, and the upstream field it comes from
@@ -179,4 +179,4 @@ Money is four places rather than two because that is what the statements state, 
 > **If any guarantee above is missing, this artifact is not done.**
 > Do not build on it — send it back.
 >
-> Changing this file: per §7.1 — compatible changes need Sofia Marchetti; breaking changes need Sofia Marchetti, Amara Osei, and Northwind's data owner, with Farhan Qureshi added for a natural-key change. Any change requires re-checking the six artefacts listed in §7.2 rule 3.
+> Changing this file: per §7.1 — compatible changes need Hem Singh; breaking changes need Hem Singh, Preetinka Sharma, and Northwind's data owner, with Atuladded for a natural-key change. Any change requires re-checking the six artefacts listed in §7.2 rule 3.

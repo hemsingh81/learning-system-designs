@@ -19,7 +19,7 @@ Thirty-six prompts covering the full agile lifecycle, mapped to seven roles, wit
 
 ## Phase 0 — Foundation
 
-**Sprint 0. Nothing ships. You make the environment safe to work in.** Led by the Team Lead (Rahul).
+**Sprint 0. Nothing ships. You make the environment safe to work in.** Led by the Team Lead (Gautam).
 
 | | Prompt | Role | Produces |
 |---|---|---|---|
@@ -35,7 +35,7 @@ Thirty-six prompts covering the full agile lifecycle, mapped to seven roles, wit
 
 ## Phase 1 — Discovery
 
-**What are we building, and why.** Led by the Product Owner (Amara).
+**What are we building, and why.** Led by the Product Owner (Preetinka).
 
 | | Prompt | Role | Produces |
 |---|---|---|---|
@@ -48,7 +48,7 @@ Thirty-six prompts covering the full agile lifecycle, mapped to seven roles, wit
 
 ## Phase 2 — Design
 
-**The shape of the system, and the decisions that are expensive to reverse.** Led by the Architect (Sofia).
+**The shape of the system, and the decisions that are expensive to reverse.** Led by the Architect (Hem).
 
 | | Prompt | Role | Produces |
 |---|---|---|---|
@@ -87,7 +87,7 @@ Thirty-six prompts covering the full agile lifecycle, mapped to seven roles, wit
 
 ## Phase 5 — Verify
 
-**Finding out what's actually true rather than what you hoped.** Led by QA (Ananya).
+**Finding out what's actually true rather than what you hoped.** Led by QA (Pankaj).
 
 | | Prompt | Role | Produces |
 |---|---|---|---|

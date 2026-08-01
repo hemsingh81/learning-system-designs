@@ -7,28 +7,28 @@
 | | |
 |---|---|
 | **Phase** | 3 — Planning |
-| **Who runs it** | Team Lead (Rahul Nair) |
+| **Who runs it** | Team Lead (Gautam ) |
 | **When** | The day after the spec, ADR and data contract are signed off; before anyone opens an editor |
 | **Takes in** | `artifacts/spec-confidence-gate.md`, `artifacts/acceptance-criteria-NWD-103.md`, `artifacts/data-contract-counterparty-position.md`, `artifacts/adr/0002-*.md`, `artifacts/stories/NWD-103.md`, `artifacts/CLAUDE.md` |
 | **Produces** | `artifacts/implementation-plan-NWD-103.md` |
-| **Hands off to** | Project Manager (Farhan Qureshi), who runs [P16](P16-sprint-plan-and-assignment.md) |
-| **Time to run** | 20 minutes to generate, 45 minutes of Rahul actually reading it |
+| **Hands off to** | Project Manager (Atul), who runs [P16](P16-sprint-plan-and-assignment.md) |
+| **Time to run** | 20 minutes to generate, 45 minutes of Gautam actually reading it |
 
 ---
 
 ## 1. The scene
 
-Sprint 1 finished on a Thursday. By Friday morning Rahul Nair has four documents open on one screen and an empty editor on the other.
+Sprint 1 finished on a Thursday. By Friday morning Gautam  has four documents open on one screen and an empty editor on the other.
 
-The documents are good. Sofia Marchetti's technical spec for the confidence gate says exactly what the gate must do. Amara Osei's acceptance criteria for NWD-103 say exactly when it counts as finished. The data contract from P13 says exactly what shape a position row has when it reaches Azure SQL. Ji-woo Park has her UI brief from [P14](../phase-2-design/P14-ui-ux-design-brief.md) and knows what the exception queue screen looks like.
+The documents are good. Hem Singh's technical spec for the confidence gate says exactly what the gate must do. Preetinka Sharma's acceptance criteria for NWD-103 say exactly when it counts as finished. The data contract from P13 says exactly what shape a position row has when it reaches Azure SQL. Dzmitry  has her UI brief from [P14](../phase-2-design/P14-ui-ux-design-brief.md) and knows what the exception queue screen looks like.
 
 What none of those documents say is **what to build first**.
 
-Rahul has seen what happens when you skip this step, and he's seen it get worse since the team started building with AI. In the previous project someone pasted the spec into Claude and typed "implement this." Ninety seconds later there were nine new files, six hundred lines, three imports that didn't resolve, and a test suite that couldn't even collect because one module referenced a config key nobody had added yet. It took him two hours to find out that the actual logic was fine and the problem was a typo in a YAML path. Two hours, because there was no point in the whole thing where the code had ever run.
+Gautam has seen what happens when you skip this step, and he's seen it get worse since the team started building with AI. In the previous project someone pasted the spec into Claude and typed "implement this." Ninety seconds later there were nine new files, six hundred lines, three imports that didn't resolve, and a test suite that couldn't even collect because one module referenced a config key nobody had added yet. It took him two hours to find out that the actual logic was fine and the problem was a typo in a YAML path. Two hours, because there was no point in the whole thing where the code had ever run.
 
 That is the failure this prompt exists to prevent. **The plan's job is not to describe the finished system — the spec already does that. The plan's job is to describe a path to the finished system where you can stop at any point and the thing still runs.**
 
-So Rahul writes the sequence before anyone writes the code. And because the sequence itself is a piece of thinking that an AI is quite good at — dependency ordering, "what does this import need to exist first" — he uses a prompt for it, and then he reads every line of what comes back, because the sequence is the part he is personally accountable for.
+So Gautam writes the sequence before anyone writes the code. And because the sequence itself is a piece of thinking that an AI is quite good at — dependency ordering, "what does this import need to exist first" — he uses a prompt for it, and then he reads every line of what comes back, because the sequence is the part he is personally accountable for.
 
 ---
 
@@ -69,13 +69,13 @@ If you're building something else, the equivalents are obvious enough: `tsc --no
 
 ### Why this matters more when an AI is writing the code
 
-Here is the part Rahul actually cares about, and the reason this prompt sits where it does in the book.
+Here is the part Gautam actually cares about, and the reason this prompt sits where it does in the book.
 
 When a human writes code, they build up understanding as they type. They know why line 40 exists, because they wrote line 39 wondering what to do about it. By the time the file is finished, the author has read every line at least three times just in the process of producing it.
 
 When an AI writes code, **none of that happens**. Four hundred lines appear, all at once, all plausible-looking, and your understanding of them starts at zero. The code and the comprehension are no longer produced together. That gap has a name worth using: **comprehension debt** — code that exists in your repository that nobody on your team can currently explain.
 
-Comprehension debt is not hypothetical. It's the reason Tomas gets stuck in Sprint 3 and it's the reason [P21](../phase-4-build/P21-daily-standup-summary.md) treats "I don't understand what the AI gave me" as a legitimate standup blocker rather than an admission of weakness.
+Comprehension debt is not hypothetical. It's the reason Ravi gets stuck in Sprint 3 and it's the reason [P21](../phase-4-build/P21-daily-standup-summary.md) treats "I don't understand what the AI gave me" as a legitimate standup blocker rather than an admission of weakness.
 
 Sequencing the work into always-shippable steps is the cheapest available defence against it, for one reason:
 
@@ -85,7 +85,7 @@ Think about the honest version of what happens. If Claude hands you 40 lines and
 
 So the rule is not really "the app must always run." The rule is: **create frequent points where a human can still tell whether this is going right.** The always-runs constraint is just the mechanical trick that forces those points to exist.
 
-There's a second, quieter benefit. When something goes wrong at step 5 and the app worked at step 4, the bug is in step 5. That's not deduction, it's arithmetic. Without the checkpoints you get the two-hour hunt Rahul had last project, where the failure could have been anywhere in six hundred lines.
+There's a second, quieter benefit. When something goes wrong at step 5 and the app worked at step 4, the bug is in step 5. That's not deduction, it's arithmetic. Without the checkpoints you get the two-hour hunt Gautam had last project, where the failure could have been anywhere in six hundred lines.
 
 ### Riskiest first — and what "risk" means here
 
@@ -99,7 +99,7 @@ For NWD-103 the risky unknown is embarrassingly specific:
 
 Azure AI Document Intelligence, for anyone meeting it for the first time, is a service you send a PDF to and get structured fields back — "this is the account number, this is the quantity" — instead of a wall of text. Every field it returns comes with a confidence score between 0 and 1, and that score is the entire reason this design works.
 
-But a Broker Alpha position statement isn't one set of fields. It's a header (statement date, account) plus a **table** of positions — twenty, forty, sometimes ninety rows, each with a security name, a quantity and a market value. The whole story assumes each of those cells carries its own confidence. If it turns out only the header fields do, then the gate cannot be per-field at the line-item level, the spec is wrong, the acceptance criteria are wrong, and Tomas has been building the wrong shape for three days.
+But a Broker Alpha position statement isn't one set of fields. It's a header (statement date, account) plus a **table** of positions — twenty, forty, sometimes ninety rows, each with a security name, a quantity and a market value. The whole story assumes each of those cells carries its own confidence. If it turns out only the header fields do, then the gate cannot be per-field at the line-item level, the spec is wrong, the acceptance criteria are wrong, and Ravi has been building the wrong shape for three days.
 
 That question takes about forty minutes to answer with one real PDF and a throwaway script. So it goes first — before the dataclasses, before the thresholds, before anything that would need rewriting.
 
@@ -142,7 +142,7 @@ That is genuinely a thing language models are good at. It's close to topological
 What it is **not** good at, and what you must supply:
 
 - **Knowing what already exists in your repo.** It will happily plan to create `core/clients.py` when you wrote it in Sprint 0. Tell it what's there.
-- **Knowing which unknown is actually risky.** Risk is a judgement about your project, your client and your team. Rahul knows the line-item confidence question is the scary one because he's seen the raw API response. Claude doesn't.
+- **Knowing which unknown is actually risky.** Risk is a judgement about your project, your client and your team. Gautam knows the line-item confidence question is the scary one because he's seen the raw API response. Claude doesn't.
 - **Knowing your team's real velocity.** It has no idea whether a step is an hour or a day. Don't ask it to estimate; ask [P16](P16-sprint-plan-and-assignment.md) to do that with a human in the room.
 
 ### The one idea to keep
@@ -253,9 +253,9 @@ mid-way through.
 | Placeholder | What to put in it | Northwind example | What happens if you get it wrong |
 |---|---|---|---|
 | `[STORY FILE PATH]` | The one story you are planning. One story, never a whole epic. | `artifacts/stories/NWD-103.md` | Give it three stories and you get a plan with forty steps and no risk ordering, because the risks of different stories don't sort against each other |
-| `[SPEC PATH]` | The technical spec produced by [P11](../phase-2-design/P11-write-the-technical-spec.md) | `artifacts/spec-confidence-gate.md` | Without it the model invents the design. It will look confident and it will be its design, not Sofia's |
+| `[SPEC PATH]` | The technical spec produced by [P11](../phase-2-design/P11-write-the-technical-spec.md) | `artifacts/spec-confidence-gate.md` | Without it the model invents the design. It will look confident and it will be its design, not Hem's |
 | `[ACCEPTANCE CRITERIA PATH]` | The AC from [P08](../phase-1-discovery/P08-write-acceptance-criteria.md) | `artifacts/acceptance-criteria-NWD-103.md` | The "every AC maps to a step" check in the done condition becomes unverifiable, so steps quietly miss requirements |
-| `[DATA CONTRACT PATH]` | The agreed row shape from [P13](../phase-2-design/P13-design-the-data-contract.md) | `artifacts/data-contract-counterparty-position.md` | Steps invent field names. Tomas builds `confidence_score`, Ji-woo's UI expects `min_confidence`, and you find out in Sprint 3 |
+| `[DATA CONTRACT PATH]` | The agreed row shape from [P13](../phase-2-design/P13-design-the-data-contract.md) | `artifacts/data-contract-counterparty-position.md` | Steps invent field names. Ravi builds `confidence_score`, Dzmitry's UI expects `min_confidence`, and you find out in Sprint 3 |
 | `[PROJECT CONTEXT FILE PATH]` | Your repo's standing instructions from [P01](../phase-0-foundation/P01-generate-the-project-context-file.md) | `artifacts/CLAUDE.md` | The plan ignores your conventions — wrong test framework, wrong folder layout, wrong logging approach |
 | `[DEFINITION OF DONE PATH]` | The team-wide DoD from [P17](P17-definition-of-done.md) | `artifacts/definition-of-done.md` | Steps stop at "code written" and the plan silently omits tests, telemetry and the human-read requirement |
 | `[LANGUAGE AND RUNTIME]` | Language, version, and what hosts it | `Python 3.11 on Azure Functions v4 (Python worker), pytest for tests` | The plan proposes a project layout that your runtime rejects — Azure Functions is fussy about where `function_app.py` lives |
@@ -264,13 +264,13 @@ mid-way through.
 | `[RISKIEST UNKNOWN]` | The thing that would force a redesign if the answer surprises you | "Whether Document Intelligence returns a confidence per cell inside a table, or only on top-level fields" | The plan comes out neatly bottom-up and you discover the design problem on day four instead of day one |
 | `[MAX STEP SIZE]` | An upper bound in lines of code or files | `120 lines and 3 files` | Without a bound the model produces four steps of 400 lines each, which is a big-bang plan wearing a numbered list as a disguise |
 | `[MAX STEPS]` | An upper bound on step count, which doubles as a story-size check | `10` | No bound means no signal that the story is too big. A story that needs 25 steps is two stories |
-| `[OUTPUT PATH]` | Where the plan lives, in the repo, reviewable | `artifacts/implementation-plan-NWD-103.md` | The plan lives in a chat window, Farhan can't read it for [P16](P16-sprint-plan-and-assignment.md), and it's gone by Tuesday |
+| `[OUTPUT PATH]` | Where the plan lives, in the repo, reviewable | `artifacts/implementation-plan-NWD-103.md` | The plan lives in a chat window, Atul can't read it for [P16](P16-sprint-plan-and-assignment.md), and it's gone by Tuesday |
 
 ---
 
 ## 5. The filled-in example
 
-Rahul runs this on Friday morning, in a session opened at the repository root, with the Sprint 1 artifacts already committed.
+Gautam runs this on Friday morning, in a session opened at the repository root, with the Sprint 1 artifacts already committed.
 
 ```text
 You are the technical lead planning the build sequence for one user story.
@@ -379,7 +379,7 @@ Abridged — the real file has nine steps and a longer risk register. This is en
 ```markdown
 # Implementation Plan — NWD-103: Gate every extracted field on its confidence score
 
-Owner: Tomas Vargas · Lead: Rahul Nair
+Owner: Ravi Mullick · Lead: Gautam 
 Spec: artifacts/spec-confidence-gate.md · AC: artifacts/acceptance-criteria-NWD-103.md
 Runtime: Python 3.11, Azure Functions v4 (Python worker)
 
@@ -397,7 +397,7 @@ Runtime: Python 3.11, Azure Functions v4 (Python worker)
 - A missing value is a failure even when confidence is high, and a null
   confidence never auto-accepts. (AC-4, AC-5)
 - The gate must produce a machine-readable reason per failure, because the
-  exception queue UI renders it to Priya. (data contract §4)
+  exception queue UI renders it to Preeti. (data contract §4)
 - The row that reaches Snowflake carries MIN_CONFIDENCE. The gate is the only
   place that value is computed. (data contract §3)
 - Adding a counterparty must remain a YAML change. No code change. (ADR-0002)
@@ -410,10 +410,10 @@ Runtime: Python 3.11, Azure Functions v4 (Python worker)
 |---|---|---|---|
 | R1 | Does Document Intelligence return a confidence per cell for line items inside a table, or only for top-level fields? | If line-item cells have no confidence, the gate cannot be per-field below the header and the spec's §3 is wrong. Everything downstream changes. | ~40 min with one real broker_alpha PDF from bronze/ |
 | R2 | Do all broker_alpha statements use the same field names across model versions v2 and v3? | If not, the field_map needs versioning and config/sources.yaml grows a dimension. | ~20 min, compare two bronze responses |
-| R3 | Is there an existing exceptions table anywhere, or does this story create it? | sql/schema.sql has only positions_staging. If NWD-108 assumes a table shape, we must agree it before Step 7. | Ask Ji-woo — 5 min |
+| R3 | Is there an existing exceptions table anywhere, or does this story create it? | sql/schema.sql has only positions_staging. If NWD-108 assumes a table shape, we must agree it before Step 7. | Ask Dzmitry — 5 min |
 
 I agree R1 is the riskiest. R3 is not technically risky but it is a
-cross-person dependency and it blocks Ji-woo, so it is answered before Step 7.
+cross-person dependency and it blocks Dzmitry, so it is answered before Step 7.
 
 ## Steps
 
@@ -467,7 +467,7 @@ cross-person dependency and it blocks Ji-woo, so it is answered before Step 7.
 - **Files:** `core/confidence.py` — edited · `tests/test_confidence.py` — edited
 - **Change:** Accept an ordered sequence of line items alongside the header
   fields. Evaluate every cell of every row. Record the row index on each failure
-  so the exception queue can point Priya at row 34 rather than "somewhere in the
+  so the exception queue can point Preeti at row 34 rather than "somewhere in the
   table". Any single failure sets `passed = False` for the whole document.
 - **Verify:** `pytest -q tests/test_confidence.py` → 11 passed, including one
   with 40 good rows and 1 bad row asserting the document fails
@@ -486,13 +486,13 @@ cross-person dependency and it blocks Ji-woo, so it is answered before Step 7.
 - **Verify:** `pytest -q && python -c "import doc_ingestion.function_app"` →
   all pass, import clean
 - **Not working yet:** A rejected document stops silently. Nothing is written to
-  the exception queue, and Priya cannot see it.
+  the exception queue, and Preeti cannot see it.
 - **Undo:** Revert the gate call; rules.py returns to pass-through.
 - **Size:** ~50 lines plus ~35 lines of tests
 
 ### Step 5 — Exceptions table
-- **Why now:** R3 is answered (agreed shape with Ji-woo). The table must exist
-  before anything writes to it, and Ji-woo is blocked on the column names.
+- **Why now:** R3 is answered (agreed shape with Dzmitry). The table must exist
+  before anything writes to it, and Dzmitry is blocked on the column names.
 - **Files:** `sql/schema.sql` — edited
 - **Change:** Add `ingestion_exceptions` with the columns agreed in the data
   contract §4: document hash, counterparty, bronze path, failure reason code,
@@ -538,14 +538,14 @@ cross-person dependency and it blocks Ji-woo, so it is answered before Step 7.
   and the metric. Getting the field names wrong here is cheap now and expensive
   in two weeks. Read this one properly.
 - **Step 3** — the line-item loop is where an off-by-one on the row index will
-  send Priya to the wrong row, and she will not be able to tell that it is wrong.
+  send Preeti to the wrong row, and she will not be able to tell that it is wrong.
 - **Step 4** — the only step that changes behaviour of the running pipeline.
   Everything before it is additive.
 
 ## Open questions
 
 - The spec does not say what happens to a document that fails the gate twice
-  after an analyst correction. Assumed: it re-enters the queue. Confirm with Amara.
+  after an analyst correction. Assumed: it re-enters the queue. Confirm with Preetinka.
 ```
 
 ### How to read this
@@ -556,7 +556,7 @@ Three parts carry the weight.
 
 **The risk register, and specifically Step 0.** Notice that Step 0 produces nothing shippable and gets deleted. That's the point. It costs forty minutes and it de-risks the other eight steps. Notice too that it uses a PDF response **already in bronze** rather than making a fresh Azure call — that's the immutable-bronze invariant paying rent on day one.
 
-**The "Not working yet" lines.** Read them in order and they tell a story: nothing works, nothing works, nothing works, the pipeline gates but silently, rejections are stored, the metric exists. Anyone can see at a glance how far through the story they are, which is exactly what Farhan needs on day six of the sprint.
+**The "Not working yet" lines.** Read them in order and they tell a story: nothing works, nothing works, nothing works, the pipeline gates but silently, rejections are stored, the metric exists. Anyone can see at a glance how far through the story they are, which is exactly what Atul needs on day six of the sprint.
 
 **The part that is commonly wrong:** the size estimates. Claude routinely says "~40 lines" for something that lands at 130. Treat them as ordering hints, not budgets. If a step comes in at three times its estimate, that's a signal the step should have been two steps — and it's worth saying so at standup rather than quietly absorbing it.
 
@@ -566,7 +566,7 @@ Three parts carry the weight.
 
 **What "done" means here.** The plan is done when a competent engineer who was not in the design discussions could execute it without asking you a question — and when you personally believe that stopping after any step would leave the repository in a state you'd be willing to commit.
 
-That second half is the real test, and it's a test only a human can run. Read the plan and ask, at each step boundary: *if Tomas got flu right here, what state is the repo in?* If the answer is ever "half a module that doesn't import", the plan isn't done.
+That second half is the real test, and it's a test only a human can run. Read the plan and ask, at each step boundary: *if Ravi got flu right here, what state is the repo in?* If the answer is ever "half a module that doesn't import", the plan isn't done.
 
 **The checklist:**
 
@@ -578,7 +578,7 @@ That second half is the real test, and it's a test only a human can run. Read th
 - [ ] No step exceeds the size bound you set
 - [ ] The "Where a human must look" section names steps you agree with
 
-**Why you should stop rather than keep prompting.** The failure mode for this artifact is **plan inflation**. Ask for one more pass and the model will add sub-steps, a testing strategy section, a rollout section, and a table of dependencies that duplicates the step order. None of it makes the build safer, and every extra page makes it less likely Tomas reads the whole thing.
+**Why you should stop rather than keep prompting.** The failure mode for this artifact is **plan inflation**. Ask for one more pass and the model will add sub-steps, a testing strategy section, a rollout section, and a table of dependencies that duplicates the step order. None of it makes the build safer, and every extra page makes it less likely Ravi reads the whole thing.
 
 A plan people read is better than a plan that's complete. Nine steps on two pages beats twenty-two steps on seven.
 
@@ -730,11 +730,11 @@ flowchart TD
 
 ### The plan becomes a cage
 
-Three days into the build, Tomas discovers that resolving thresholds from YAML is genuinely nicer done inside `config/settings.py` than passed in by the caller. The plan says otherwise. He follows the plan, because the plan is the plan, and the code is slightly worse for it.
+Three days into the build, Ravi discovers that resolving thresholds from YAML is genuinely nicer done inside `config/settings.py` than passed in by the caller. The plan says otherwise. He follows the plan, because the plan is the plan, and the code is slightly worse for it.
 
 This is a real cost and it's worth naming out loud. **A plan is a hypothesis about the order of work, not a contract about the design.** When the code teaches you something the plan didn't know, the plan is what changes.
 
-The fix is a rule Rahul states at sprint planning: *if you deviate from the plan, edit the plan in the same commit.* One line in the step saying what actually happened. It takes twenty seconds and it means the plan is still true at the end of the sprint, which matters because [P32](../phase-7-release/P32-release-readiness-check.md) reads it.
+The fix is a rule Gautam states at sprint planning: *if you deviate from the plan, edit the plan in the same commit.* One line in the step saying what actually happened. It takes twenty seconds and it means the plan is still true at the end of the sprint, which matters because [P32](../phase-7-release/P32-release-readiness-check.md) reads it.
 
 ### Planning something that doesn't need a plan
 
@@ -742,7 +742,7 @@ NWD-139 — the confidence rendering as `0.8234567` instead of `82%` — is a on
 
 The rough boundary: **if the work is under a day and touches fewer than three files, skip this prompt.** Go straight to [P18](../phase-4-build/P18-implement-a-story.md) with the story and the acceptance criteria. The plan earns its keep when the work is multi-day, crosses layers, or has an unknown in it.
 
-Sofia's version of this test is sharper: "Would two competent people build this in a different order? If no, don't plan it."
+Hem's version of this test is sharper: "Would two competent people build this in a different order? If no, don't plan it."
 
 ### "Always shippable" taken so literally you get nineteen steps
 
@@ -754,9 +754,9 @@ A useful calibration: a step should be something you could reasonably describe a
 
 ### The plan silently assumes an interface that doesn't exist
 
-This one bit Kestrel on the previous project and nearly bit them here. The plan's Step 6 wrote exception rows in a shape Ji-woo's UI didn't expect, because the plan invented the column names rather than reading them off the data contract. Nobody noticed until integration, because both sides had tests and both sides passed.
+This one bit Kestrel on the previous project and nearly bit them here. The plan's Step 6 wrote exception rows in a shape Dzmitry's UI didn't expect, because the plan invented the column names rather than reading them off the data contract. Nobody noticed until integration, because both sides had tests and both sides passed.
 
-The `[DATA CONTRACT PATH]` placeholder and the "do not invent files, config keys, tables or services" line in the Do-not list exist entirely because of that. If the thing you need isn't in the contract, it goes under **Open questions** and a human answers it. In the sample output above, R3 — "is there an exceptions table?" — is exactly this, caught early and routed to Ji-woo as a five-minute conversation rather than a two-week misunderstanding.
+The `[DATA CONTRACT PATH]` placeholder and the "do not invent files, config keys, tables or services" line in the Do-not list exist entirely because of that. If the thing you need isn't in the contract, it goes under **Open questions** and a human answers it. In the sample output above, R3 — "is there an exceptions table?" — is exactly this, caught early and routed to Dzmitry as a five-minute conversation rather than a two-week misunderstanding.
 
 ### The prompt runs and then implements everything
 
@@ -776,13 +776,13 @@ The tell is the "What I took from the inputs" section coming back thin or generi
 
 ## 10. The handoff
 
-Farhan Qureshi picks this up on Friday afternoon, and he reads it for exactly one thing: **shape and dependency.** He is not technical enough to judge whether Step 3's line-item loop is correct, and he doesn't try. What he can see is that there are eight steps, that Step 5 creates a database table Ji-woo needs, and that the story is not finished until Step 7.
+Atulpicks this up on Friday afternoon, and he reads it for exactly one thing: **shape and dependency.** He is not technical enough to judge whether Step 3's line-item loop is correct, and he doesn't try. What he can see is that there are eight steps, that Step 5 creates a database table Dzmitry needs, and that the story is not finished until Step 7.
 
-That single observation — Step 5 unblocks Ji-woo — is what makes [P16](P16-sprint-plan-and-assignment.md) work. Farhan now knows that NWD-108, the exception queue screen, has nothing to display until part of NWD-103 lands, and he can plan around it instead of discovering it on day seven when Ji-woo goes quiet.
+That single observation — Step 5 unblocks Dzmitry — is what makes [P16](P16-sprint-plan-and-assignment.md) work. Atul now knows that NWD-108, the exception queue screen, has nothing to display until part of NWD-103 lands, and he can plan around it instead of discovering it on day seven when Dzmitry goes quiet.
 
-Tomas picks it up on Monday morning and reads it differently: as a to-do list with verification commands attached. He works through it with [P18](../phase-4-build/P18-implement-a-story.md), one step at a time, and the plan's "Not working yet" lines are what stop him from thinking he's broken something when the feature is half-built.
+Ravi picks it up on Monday morning and reads it differently: as a to-do list with verification commands attached. He works through it with [P18](../phase-4-build/P18-implement-a-story.md), one step at a time, and the plan's "Not working yet" lines are what stop him from thinking he's broken something when the feature is half-built.
 
-Ananya Iyer reads it too, before she writes a single test, because "Where a human must look" tells her where the risk is concentrated. Step 3 — the line-item loop — is on that list. In the story that follows she does test it, thoroughly, and still misses NWD-142, for reasons [P20](../phase-4-build/P20-write-tests-alongside-the-code.md) takes apart in detail.
+Pankaj  reads it too, before she writes a single test, because "Where a human must look" tells her where the risk is concentrated. Step 3 — the line-item loop — is on that list. In the story that follows she does test it, thoroughly, and still misses NWD-142, for reasons [P20](../phase-4-build/P20-write-tests-alongside-the-code.md) takes apart in detail.
 
 > **Artifact contract — `artifacts/implementation-plan-NWD-103.md`**
 > Anyone reading this file can rely on finding:
@@ -802,11 +802,11 @@ Ananya Iyer reads it too, before she writes a single test, because "Where a huma
 
 This prompt runs in [Chapter 4 — Sprint 2 Planning](../../Case-Study/Python-ETL/04-sprint-2-planning.md), on the Friday between Sprint 1 and Sprint 2, and it produces [`implementation-plan-NWD-103.md`](../../Case-Study/Python-ETL/artifacts/implementation-plan-NWD-103.md).
 
-The interesting thing is what Rahul changed. The first version came back with the gate module reading `config/sources.yaml` directly — a perfectly reasonable design, and the one most engineers would write. Rahul rewrote Step 1 so that `core/confidence.py` takes thresholds as an argument and imports nothing but the standard library.
+The interesting thing is what Gautam changed. The first version came back with the gate module reading `config/sources.yaml` directly — a perfectly reasonable design, and the one most engineers would write. Gautam rewrote Step 1 so that `core/confidence.py` takes thresholds as an argument and imports nothing but the standard library.
 
-Sofia asked him why, since it made the call site in `rules.py` slightly uglier. His answer was that a module with no Azure client and no file access can be tested with four lines of setup instead of a mocking framework, and that a gate you can't easily test is a gate nobody will extend. That decision is why the tests in [P20](../phase-4-build/P20-write-tests-alongside-the-code.md) are as short as they are, and it's why the NWD-142 fix in [Chapter 8](../../Case-Study/Python-ETL/08-sprint-3-rework.md) lands in a couple of hours rather than a couple of days.
+Hem asked him why, since it made the call site in `rules.py` slightly uglier. His answer was that a module with no Azure client and no file access can be tested with four lines of setup instead of a mocking framework, and that a gate you can't easily test is a gate nobody will extend. That decision is why the tests in [P20](../phase-4-build/P20-write-tests-alongside-the-code.md) are as short as they are, and it's why the NWD-142 fix in [Chapter 8](../../Case-Study/Python-ETL/08-sprint-3-rework.md) lands in a couple of hours rather than a couple of days.
 
-The other thing worth noticing: Step 0, the spike, came back **negative-ish**. Line items did carry per-cell confidence — but only for the fields the custom model had been explicitly labelled on, and one of Broker Alpha's columns hadn't been. That surfaced on the Monday morning, cost half a day of relabelling, and would have surfaced on Thursday afternoon if the spike hadn't been step zero. Farhan's note in the sprint log is one line: *"Spike paid for itself before lunch."*
+The other thing worth noticing: Step 0, the spike, came back **negative-ish**. Line items did carry per-cell confidence — but only for the fields the custom model had been explicitly labelled on, and one of Broker Alpha's columns hadn't been. That surfaced on the Monday morning, cost half a day of relabelling, and would have surfaced on Thursday afternoon if the spike hadn't been step zero. Atul's note in the sprint log is one line: *"Spike paid for itself before lunch."*
 
 ---
 

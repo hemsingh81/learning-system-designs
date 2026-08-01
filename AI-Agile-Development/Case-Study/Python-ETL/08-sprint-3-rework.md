@@ -2,7 +2,7 @@
 
 ← [Previous](07-sprint-3-verify.md) · [Case study index](README.md) · Next: [Sprint 4 — Release](09-sprint-4-release.md)
 
-> **One line:** NWD-142 from bug report to merged fix, including the twenty minutes Tomas wasted at the start and the design decision that made the headline metric go down.
+> **One line:** NWD-142 from bug report to merged fix, including the twenty minutes Ravi wasted at the start and the design decision that made the headline metric go down.
 
 This is the longest chapter in the book and it covers thirty-one hours of one engineer's work. That ratio is the point. [Building](05-sprint-2-build-backend.md) NWD-101 through NWD-107 took four days. Fixing one defect found in them took a day and a half, and it changed a specification, three files and a metric.
 
@@ -10,7 +10,7 @@ This is the longest chapter in the book and it covers thirty-one hours of one en
 
 ## 1. Thursday, 30 July, 08:15 — the wrong prompt
 
-Tomas reads Ananya's report twice, opens the repo, and reaches for [P26 — Debug an Error Fast](../../AI-Prompts-Library/phase-6-rework/P26-debug-an-error-fast.md).
+Ravi reads Pankaj's report twice, opens the repo, and reaches for [P26 — Debug an Error Fast](../../AI-Prompts-Library/phase-6-rework/P26-debug-an-error-fast.md).
 
 This is not laziness. P26 is the prompt he has run more than any other. It is fast, it is reliable, and it has resolved dozens of defects for him over two sprints. It is genuinely the right tool for most of what lands on him.
 
@@ -33,7 +33,7 @@ Quote the line the trace names and the ten lines around it.
 
 Look at what that prompt is built on. Every step after the first one is downstream of a location the machine handed you. The trace names a file and a line. The AI opens that file. It reads that line. **The anchor is free.**
 
-Tomas has no trace. Nothing threw. So he does what everyone does with a placeholder they cannot fill: he writes prose into it.
+Ravi has no trace. Nothing threw. So he does what everyone does with a placeholder they cannot fill: he writes prose into it.
 
 ```text
 ## The failure
@@ -47,7 +47,7 @@ same table. 47 positions on the statement, 31 rows in the database.
 
 Read that paragraph as an AI would. There is exactly one causal statement in it — *"the page 2 table has no header row so we may not be recognising it as a continuation"* — and it arrives with no hedging, from the person who wrote the code, in the slot reserved for hard evidence.
 
-Ananya wrote `GUESS, not verified` in capital letters in front of that sentence. Tomas summarised her report to fit the prompt, and the summary is where the label came off.
+Pankaj wrote `GUESS, not verified` in capital letters in front of that sentence. Ravi summarised her report to fit the prompt, and the summary is where the label came off.
 
 ### What comes back
 
@@ -97,23 +97,23 @@ Sit with that for a second, because it is very good work and it is completely wr
 
 It is internally coherent. It uses real Document Intelligence concepts — `result.tables` is a genuine part of the response and column counts are a genuine way to compare tables. It reads like something a competent engineer would write. It is about eighty lines of new code when you include the three helpers it references, all of which it is happy to write for you.
 
-And here is the part that would have cost Tomas a week: **on the 29 July statement, it would probably have worked.** Not reliably, not for the right reason, but it would have produced something close to forty-seven rows, and the symptom would have gone away.
+And here is the part that would have cost Ravi a week: **on the 29 July statement, it would probably have worked.** Not reliably, not for the right reason, but it would have produced something close to forty-seven rows, and the symptom would have gone away.
 
 You would then have shipped eighty lines of heuristic table-matching code, into a financial pipeline, to solve a bug you never actually located, and it would sit there being subtly wrong on the fourth Broker Alpha layout variant nobody has seen yet.
 
-### The tell, and Rahul
+### The tell, and Gautam
 
-Tomas is about ten minutes into reading the proposed helpers when Rahul stops behind his desk.
+Ravi is about ten minutes into reading the proposed helpers when Gautam stops behind his desk.
 
-> **Rahul:** "What's the trace?"
+> **Gautam:** "What's the trace?"
 >
-> **Tomas:** "There isn't one. Nothing threw."
+> **Ravi:** "There isn't one. Nothing threw."
 >
-> **Rahul:** "Then what are you debugging?"
+> **Gautam:** "Then what are you debugging?"
 >
-> **Tomas:** "...the extraction."
+> **Ravi:** "...the extraction."
 >
-> **Rahul:** "You're debugging Ananya's guess. She even wrote *guess* on it."
+> **Gautam:** "You're debugging Pankaj's guess. She even wrote *guess* on it."
 
 That is the whole intervention and it takes about fifteen seconds.
 
@@ -131,7 +131,7 @@ Here is why the distinction is not pedantic:
 
 An AI with no anchor will always produce an anchor. That is not a flaw; it is what generating text means. It picks the most plausible file, forms the most plausible theory, and writes the most plausible fix, and every one of those steps is confident because confidence is not correlated with correctness in a language model. **The output looks identical whether it had evidence or not, which is precisely why you have to know which one you gave it.**
 
-Tomas closes the session. He does not try to salvage it, which is the right call and is the same instinct that [P30](../../AI-Prompts-Library/phase-6-rework/P30-when-the-ai-is-stuck.md) formalises: a context full of a wrong theory keeps producing that theory.
+Ravi closes the session. He does not try to salvage it, which is the right call and is the same instinct that [P30](../../AI-Prompts-Library/phase-6-rework/P30-when-the-ai-is-stuck.md) formalises: a context full of a wrong theory keeps producing that theory.
 
 Elapsed: twenty-five minutes. Cost: nothing, because he caught it. That is the good outcome.
 
@@ -147,7 +147,7 @@ test that reproduces the reported behaviour and shown me its failure output.
 Wait for me to reply "reproduced".
 ```
 
-Before running it, Tomas does the thirty seconds of setup that makes the whole day work. He copies two files out of the bronze layer into the test fixtures directory:
+Before running it, Ravi does the thirty seconds of setup that makes the whole day work. He copies two files out of the bronze layer into the test fixtures directory:
 
 ```bash
 $ az storage blob download --account-name nwdingestdev --container-name bronze \
@@ -161,15 +161,15 @@ $ az storage blob download --account-name nwdingestdev --container-name bronze \
 
 **This is an architecture decision from Sprint 1 paying for itself in a way nobody predicted.**
 
-Bronze is the layer where the full raw response from Azure AI Document Intelligence is written to blob storage, byte for byte, before any of Kestrel's code touches it. Sofia argued for it in [ADR-0001](artifacts/adr/) on cost grounds: a parsing bug found next month should be reprocessable for free rather than re-paying thirty dollars per thousand pages.
+Bronze is the layer where the full raw response from Azure AI Document Intelligence is written to blob storage, byte for byte, before any of Kestrel's code touches it. Hem argued for it in [ADR-0001](artifacts/adr/) on cost grounds: a parsing bug found next month should be reprocessable for free rather than re-paying thirty dollars per thousand pages.
 
-That argument was about money. The payoff is debugging. The exact API response that produced the wrong answer is a file on disk. Tomas does not need Azure credentials, the network, the PDF, eight seconds of analysis time, or anyone's permission. He needs `json.load`.
+That argument was about money. The payoff is debugging. The exact API response that produced the wrong answer is a file on disk. Ravi does not need Azure credentials, the network, the PDF, eight seconds of analysis time, or anyone's permission. He needs `json.load`.
 
 **If your system stores the raw response before parsing it, every production bug in your parsing layer arrives with its own reproduction attached.** That is worth more than most testing tooling you could buy.
 
 He picks the 24 July document as the primary fixture — two pages, fourteen positions — rather than the 29 July one, for the reason the prompt asks for: *the smallest test that reproduces the reported behaviour*. Fourteen and nine are numbers you can hold in your head. Forty-seven and thirty-one are numbers you have to trust.
 
-Then he runs P27, with Ananya's report pasted in whole and unedited, `GUESS` label and all.
+Then he runs P27, with Pankaj's report pasted in whole and unedited, `GUESS` label and all.
 
 ### What comes back, up to the first gate
 
@@ -290,11 +290,11 @@ required to write a test at all. Flagging it rather than burying it.
 
 Two things to notice, and they are both the prompt doing its job rather than the model being clever.
 
-**The bash one-liner before the test is the highest-value thirty seconds of the entire day.** It converts a story ("something drops page 2") into arithmetic ("nine plus five is fourteen, we return nine"). It also kills Ananya's guess dead, in public, in three lines of output, before anybody has spent an hour on it. **When a reproduction is available, look at it before you reason about it.**
+**The bash one-liner before the test is the highest-value thirty seconds of the entire day.** It converts a story ("something drops page 2") into arithmetic ("nine plus five is fourteen, we return nine"). It also kills Pankaj's guess dead, in public, in three lines of output, before anybody has spent an hour on it. **When a reproduction is available, look at it before you reason about it.**
 
-**The refactor is declared, not smuggled.** `analyze()` mixed fetching with mapping, so there was nothing to test without a network call. Splitting it is genuinely necessary and it is genuinely a change nobody asked for. The prompt's `Do not` list forbids unrequested changes, so the model flagged it instead of hiding it in the diff. Tomas approves it explicitly. That is the whole mechanism working — **the thing you want is not an AI that never exceeds scope, it is one that tells you when it has to.**
+**The refactor is declared, not smuggled.** `analyze()` mixed fetching with mapping, so there was nothing to test without a network call. Splitting it is genuinely necessary and it is genuinely a change nobody asked for. The prompt's `Do not` list forbids unrequested changes, so the model flagged it instead of hiding it in the diff. Ravi approves it explicitly. That is the whole mechanism working — **the thing you want is not an AI that never exceeds scope, it is one that tells you when it has to.**
 
-Tomas replies `reproduced`.
+Ravi replies `reproduced`.
 
 ---
 
@@ -376,13 +376,13 @@ and never the *quantity*.
 **STOPPING HERE.** Waiting for "confirmed".
 ````
 
-Ananya, reading over Tomas's shoulder, says the sentence that ends up in the retrospective:
+Pankaj, reading over Ravi's shoulder, says the sentence that ends up in the retrospective:
 
 > "So the gate isn't broken. The gate answers a question we never should have thought was the only question."
 
-That step-5 enumeration is the part most engineers skip, and it is what turns a bug fix into a lesson. Listing six controls and saying, one by one, why each behaved correctly and still let this through, is what justifies the specification change that follows. **Without it you would be arguing for a spec change on a hunch, and Sofia does not approve spec changes on hunches.**
+That step-5 enumeration is the part most engineers skip, and it is what turns a bug fix into a lesson. Listing six controls and saying, one by one, why each behaved correctly and still let this through, is what justifies the specification change that follows. **Without it you would be arguing for a spec change on a hunch, and Hem does not approve spec changes on hunches.**
 
-Tomas replies `confirmed`.
+Ravi replies `confirmed`.
 
 ---
 
@@ -425,7 +425,7 @@ Step 6 comes back with the change any competent engineer would write. Merge the 
 +                header[target_name] = _to_extracted(target_name, f)
 ```
 
-Tomas runs the test.
+Ravi runs the test.
 
 ```text
 $ pytest tests/test_extract.py -q
@@ -496,7 +496,7 @@ consistent with the invariant that adding a counterparty is a YAML change.
 That is an architecture conversation, not a code change.
 ````
 
-Tomas messages Sofia at 11:04. She comes over at 11:15.
+Ravi messages Hem at 11:04. She comes over at 11:15.
 
 ---
 
@@ -504,41 +504,41 @@ Tomas messages Sofia at 11:04. She comes over at 11:15.
 
 This is the turn of the chapter and it is worth reading slowly.
 
-Tomas shows Sofia the merge diff and the passing test. Sofia reads the diff, reads the spec quote, and asks the question she asks about everything:
+Ravi shows Hem the merge diff and the passing test. Hem reads the diff, reads the spec quote, and asks the question she asks about everything:
 
-> **Sofia:** "What does this look like when it's wrong?"
+> **Hem:** "What does this look like when it's wrong?"
 >
-> **Tomas:** "It's not wrong, it's green."
+> **Ravi:** "It's not wrong, it's green."
 >
-> **Sofia:** "That's not what I asked. Your code now merges every region in the response into one document. What is a region?"
+> **Hem:** "That's not what I asked. Your code now merges every region in the response into one document. What is a region?"
 >
-> **Tomas:** "A chunk of the file the model thinks is a document."
+> **Ravi:** "A chunk of the file the model thinks is a document."
 >
-> **Sofia:** "So what happens when a counterparty sends a PDF with two accounts in it? Or a statement with a trade confirmation stapled on the back? You'll merge them and produce one document with two accounts' positions in it under one account number, and nothing will throw, and the confidence will be 0.94."
+> **Hem:** "So what happens when a counterparty sends a PDF with two accounts in it? Or a statement with a trade confirmation stapled on the back? You'll merge them and produce one document with two accounts' positions in it under one account number, and nothing will throw, and the confidence will be 0.94."
 >
 > *(pause)*
 >
-> **Tomas:** "...that's the same bug."
+> **Ravi:** "...that's the same bug."
 >
-> **Sofia:** "That's the same bug pointing the other way. You'd be inventing data instead of losing it. And you'd be inferring, from bounding polygons, that region two is a continuation rather than a separate document — which is a guess your code has no way to check."
+> **Hem:** "That's the same bug pointing the other way. You'd be inventing data instead of losing it. And you'd be inferring, from bounding polygons, that region two is a continuation rather than a separate document — which is a guess your code has no way to check."
 
 That is the moment the fix stops being a diff.
 
 **The code did exactly what the spec said. The spec is about confidence. This is about completeness. Nobody on the team had the concept.**
 
-Not Tomas, who implemented it. Not Sofia, who wrote it. Not Amara, who accepted it. Not Ananya, who tested it, and not the acceptance criteria for NWD-103, which are four bullet points about thresholds. The word does not appear in any artifact the project has produced.
+Not Ravi, who implemented it. Not Hem, who wrote it. Not Preetinka, who accepted it. Not Pankaj, who tested it, and not the acceptance criteria for NWD-103, which are four bullet points about thresholds. The word does not appear in any artifact the project has produced.
 
 You cannot implement a concept nobody has. You cannot test for one either. And an AI, handed a spec that is silent on something, will not tell you the spec is silent — it will produce confident, complete-looking work inside the boundary the document draws, which is the whole reason this book keeps insisting on written artifacts rather than remembered conversations.
 
-**This is the fork that [P29](../../AI-Prompts-Library/phase-6-rework/P29-the-spec-was-wrong.md) exists for, and it is the one people skip.** The temptation right now is enormous: the merge works, the test is green, and Tomas could ship it in ten minutes and put "fixed page boundary bug" in the commit message. The spec would then say one thing and the system would do another, and the next engineer — or the next AI session grounded in that document — would build on a description that is no longer true.
+**This is the fork that [P29](../../AI-Prompts-Library/phase-6-rework/P29-the-spec-was-wrong.md) exists for, and it is the one people skip.** The temptation right now is enormous: the merge works, the test is green, and Ravi could ship it in ten minutes and put "fixed page boundary bug" in the commit message. The spec would then say one thing and the system would do another, and the next engineer — or the next AI session grounded in that document — would build on a description that is no longer true.
 
 > **If you fix a specification problem in code and do not update the specification, the specification becomes a lie.** Everything grounded in it afterwards inherits the lie, confidently.
 
 ---
 
-## 6. 11:40 — P29, and what Sofia and Amara actually decide
+## 6. 11:40 — P29, and what Hem and Preetinka actually decide
 
-Sofia runs [P29](../../AI-Prompts-Library/phase-6-rework/P29-the-spec-was-wrong.md). The prompt's shape is deliberately awkward — write down the divergence, get it approved, *then* touch code — because the awkwardness is what stops people doing it silently.
+Hem runs [P29](../../AI-Prompts-Library/phase-6-rework/P29-the-spec-was-wrong.md). The prompt's shape is deliberately awkward — write down the divergence, get it approved, *then* touch code — because the awkwardness is what stops people doing it silently.
 
 ```text
 You are an architect updating a specification that a defect has proved
@@ -572,7 +572,7 @@ Write the new section as it would appear in the document. It must be:
   ANALYST sees and does.
 
 ## Step 4 — State the cost
-What does this rule do to the straight-through rate, and to Priya's workload?
+What does this rule do to the straight-through rate, and to Preeti's workload?
 Give a number using the counts in the bug report.
 
 ## Do not
@@ -589,7 +589,7 @@ Step 2 is the part that justifies the whole awkward process. Four stories were b
 
 ### The amendment
 
-Sofia edits `spec-confidence-gate.md` herself. The AI drafted it; she rewrote about half. Here is the diff that goes to Amara for approval:
+Hem edits `spec-confidence-gate.md` herself. The AI drafted it; she rewrote about half. Here is the diff that goes to Preetinka for approval:
 
 ```diff
 --- a/artifacts/spec-confidence-gate.md
@@ -669,21 +669,21 @@ Sofia edits `spec-confidence-gate.md` herself. The AI drafted it; she rewrote ab
 +concern and is tracked separately as NWD-145.
 ```
 
-### Amara's question, which changes the answer
+### Preetinka's question, which changes the answer
 
-Amara reads it and asks the only question that matters to her, which is the same question she asked in Sprint 1 that produced the exception queue in the first place:
+Preetinka reads it and asks the only question that matters to her, which is the same question she asked in Sprint 1 that produced the exception queue in the first place:
 
-> **Amara:** "So on a day when Broker Alpha sends a two-page statement, Priya gets a document in her queue with forty-seven positions on it and has to key all forty-seven by hand?"
+> **Preetinka:** "So on a day when Broker Alpha sends a two-page statement, Preeti gets a document in her queue with forty-seven positions on it and has to key all forty-seven by hand?"
 >
-> **Sofia:** "Yes."
+> **Hem:** "Yes."
 >
-> **Amara:** "That's worse than today. Today the machine at least gets the first thirty-one right."
+> **Preetinka:** "That's worse than today. Today the machine at least gets the first thirty-one right."
 >
-> **Sofia:** "Today the machine gets thirty-one right and sixteen wrong, and nobody knows which is which. Would you rather have a system that's honestly broken or dishonestly working?"
+> **Hem:** "Today the machine gets thirty-one right and sixteen wrong, and nobody knows which is which. Would you rather have a system that's honestly broken or dishonestly working?"
 >
-> **Amara:** *(after a moment)* "Honestly broken. But not for long. What's the actual fix?"
+> **Preetinka:** *(after a moment)* "Honestly broken. But not for long. What's the actual fix?"
 
-The actual fix is retraining `broker-alpha-position-v3` with labelled multi-page documents so the model returns one region. That costs nothing in money — Document Intelligence charges for analysis, not for training — and about a week of Priya's time labelling around fifty statements. It goes on the backlog as **NWD-145** with a date, and Amara will not approve §7.6 until it has one.
+The actual fix is retraining `broker-alpha-position-v3` with labelled multi-page documents so the model returns one region. That costs nothing in money — Document Intelligence charges for analysis, not for training — and about a week of Preeti's time labelling around fifty statements. It goes on the backlog as **NWD-145** with a date, and Preetinka will not approve §7.6 until it has one.
 
 **That exchange is the healthiest thing in this book.** The product owner refuses to accept a control that dumps work on a human without a plan to remove it. The architect refuses to accept a system that is wrong quietly. Neither of them wins; the ticket with the date is what closes the gap between them.
 
@@ -700,7 +700,7 @@ Step 4 of P29 forced a number, and here it is:
 
 **The headline metric goes down by three points, and every one of those three points was a lie.**
 
-Farhan has to tell the client that the number he reported last Friday was wrong and the new number is worse. He does it on the Monday call, in one sentence, without softening it: *"Sixty-one percent included four documents that loaded incomplete. The real number was fifty-eight and now the dashboard says fifty-eight."*
+Atul has to tell the client that the number he reported last Friday was wrong and the new number is worse. He does it on the Monday call, in one sentence, without softening it: *"Sixty-one percent included four documents that loaded incomplete. The real number was fifty-eight and now the dashboard says fifty-eight."*
 
 Nobody at Northwind objects. The head of operations says the only thing worth saying about it, which is: *"I'd rather have a number I can defend."*
 
@@ -708,11 +708,11 @@ Nobody at Northwind objects. The head of operations says the only thing worth sa
 
 ## 7. 14:00 — the fix that actually ships
 
-Sofia approves at 13:40. Amara approves at 13:55, with NWD-145 raised. Only now does Tomas touch the code again.
+Hem approves at 13:40. Preetinka approves at 13:55, with NWD-145 raised. Only now does Ravi touch the code again.
 
 And the first thing he does is **delete the merge**.
 
-That is worth stating plainly because it feels like waste. Three hours ago the merge made the test go green. It is now gone, because Sofia's counter-example — two accounts in one PDF, merged into one — is a data corruption bug and the code has no way to tell that case from a continuation. The merge traded a visible loss for an invisible invention, which is a bad trade in a system whose first invariant is *a wrong number is worse than no number*.
+That is worth stating plainly because it feels like waste. Three hours ago the merge made the test go green. It is now gone, because Hem's counter-example — two accounts in one PDF, merged into one — is a data corruption bug and the code has no way to tell that case from a continuation. The merge traded a visible loss for an invisible invention, which is a bad trade in a system whose first invariant is *a wrong number is worse than no number*.
 
 The merge lives on in NWD-145: once the model is retrained to return one region for a continued table, there is nothing to merge.
 
@@ -883,7 +883,7 @@ def page_continuation(
     ]
 ```
 
-The `message` strings are not decoration. They are what Priya reads in Ji-woo's exception queue at 8:40 in the morning. *"The positions table continues onto page(s) [2] but no line items were extracted from them"* tells her exactly where to look on a document she has never seen. `page_continuation: failed` would tell her nothing and cost her ten minutes per document, forty times a morning.
+The `message` strings are not decoration. They are what Preeti reads in Dzmitry's exception queue at 8:40 in the morning. *"The positions table continues onto page(s) [2] but no line items were extracted from them"* tells her exactly where to look on a document she has never seen. `page_continuation: failed` would tell her nothing and cost her ten minutes per document, forty times a morning.
 
 ### Part three — the YAML, because adding a control is configuration
 
@@ -942,7 +942,7 @@ The instruction is not "find similar code." It is: **this defect came from a mis
 
 The assumption is not `documents[0]`. That is the symptom. The assumption is: *the set of things we received is the set of things there were.*
 
-Tomas runs it:
+Ravi runs it:
 
 ```text
 This defect came from the assumption that the set of records we received is the
@@ -1059,7 +1059,7 @@ def fetch_positions_for_recon(conn, as_of: str, account_number: str | None = Non
 
 This one is subtle and it is the same assumption at the top of the pipeline instead of the bottom.
 
-Reconciliation reads whatever silver happens to contain for a date. It has no idea what silver *should* contain. If a Broker Alpha statement went to the exception queue that morning and Priya has not worked it yet, the external side is missing that entire account and reconciliation reports every position in it as `MISSING_EXTERNAL` — the exact false-break signature that started this whole chapter, produced by the fix rather than the bug.
+Reconciliation reads whatever silver happens to contain for a date. It has no idea what silver *should* contain. If a Broker Alpha statement went to the exception queue that morning and Preeti has not worked it yet, the external side is missing that entire account and reconciliation reports every position in it as `MISSING_EXTERNAL` — the exact false-break signature that started this whole chapter, produced by the fix rather than the bug.
 
 The fix is a manifest, not a query change:
 
@@ -1068,7 +1068,7 @@ The fix is a manifest, not a query change:
 +    """What arrived, what loaded, and what is still sitting in the queue.
 +
 +    Reconciliation must never run against a partial external side. A statement
-+    parked in the exception queue produces MISSING_EXTERNAL breaks that look
++    ed in the exception queue produces MISSING_EXTERNAL breaks that look
 +    exactly like a settlement failure — NWD-142's signature, arriving the other
 +    way round.
 +    """
@@ -1099,7 +1099,7 @@ doc_type = result.documents[0].doc_type
 
 Same pattern in the classifier — the step that decides which counterparty layout a PDF is. Multiple regions here means the file contains more than one *kind* of document, which is a different situation from a continuation. Taking the first is probably right and it is undocumented and untested.
 
-The AI flags it as needing a human decision rather than proposing a fix, which is the correct output. Sofia takes it, writes three lines into the spec saying multi-type documents are out of scope for v1.0 and are refused rather than guessed, and Tomas adds a test asserting exactly that.
+The AI flags it as needing a human decision rather than proposing a fix, which is the correct output. Hem takes it, writes three lines into the spec saying multi-type documents are out of scope for v1.0 and are refused rather than guessed, and Ravi adds a test asserting exactly that.
 
 **One bug report. Three fixes and a documented decision.** Two of those three were live in the dev environment and nobody had reported either of them, because nobody reports rows that were never there.
 
@@ -1107,13 +1107,13 @@ The AI flags it as needing a human decision rather than proposing a fix, which i
 
 ## 9. 15:30 — stuck, and the honest way out
 
-Regression tests, which is [P20](../../AI-Prompts-Library/phase-4-build/P20-write-tests-alongside-the-code.md)'s territory. Most of them are straightforward. One is not, and it costs Tomas forty minutes.
+Regression tests, which is [P20](../../AI-Prompts-Library/phase-4-build/P20-write-tests-alongside-the-code.md)'s territory. Most of them are straightforward. One is not, and it costs Ravi forty minutes.
 
 He needs a test for `page_continuation` firing: a document where the layout reports a table on page 2 but no line item came from page 2. The 24 July fixture has this shape, so it should be easy.
 
 **Attempt one.** The test passes when it should fail. The rule does not fire.
 
-He tells the AI. It concludes the abstention branch is wrong and proposes removing the `if not table_pages: return []` guard. Tomas can see that is wrong — removing it makes the rule fire on every layout whose model returns no table regions, which sends healthy documents to Priya.
+He tells the AI. It concludes the abstention branch is wrong and proposes removing the `if not table_pages: return []` guard. Ravi can see that is wrong — removing it makes the rule fire on every layout whose model returns no table regions, which sends healthy documents to Preeti.
 
 **Attempt two.** He says so. The AI proposes making the guard conditional on `page_count`. The test still passes. The rule still does not fire.
 
@@ -1123,7 +1123,7 @@ He is now about to type a third message. This is the moment [P30](../../AI-Promp
 
 That is counterintuitive because it is the opposite of how it works with a person. A colleague's third attempt genuinely benefits from the first two.
 
-Tomas runs P30's cheapest move first — **ask for assumptions, not action**:
+Ravi runs P30's cheapest move first — **ask for assumptions, not action**:
 
 ```text
 Stop. Do not propose any change.
@@ -1145,11 +1145,11 @@ The answer:
 
 Point three is the false belief, stated plainly, in fourteen seconds.
 
-Tomas opens his test. He is not building the document with `build_document` at all — he is constructing an `ExtractedDocument` by hand, the way `tests/test_confidence.py` does, because that is the pattern he had open in the other tab. A hand-built document has `table_pages=[]`, so the rule abstains, correctly, every time.
+Ravi opens his test. He is not building the document with `build_document` at all — he is constructing an `ExtractedDocument` by hand, the way `tests/test_confidence.py` does, because that is the pattern he had open in the other tab. A hand-built document has `table_pages=[]`, so the rule abstains, correctly, every time.
 
 **The rule was never broken. The test was.** And two rounds of "fix the rule" had been aimed at code that was already right — which is precisely the failure mode P26 nearly produced at 08:15 that morning, arriving from a different direction eight hours later.
 
-Tomas throws the session away and starts a fresh one, narrowly framed, with the real dataclass pasted in:
+Ravi throws the session away and starts a fresh one, narrowly framed, with the real dataclass pasted in:
 
 ```text
 One file: tests/test_rules.py. One function to test: page_continuation in
@@ -1236,7 +1236,7 @@ The three that pass on the unfixed code are the boundary tests, which is exactly
 
 ## 10. Friday 14:00 — the review
 
-Rahul reviews it with [P23](../../AI-Prompts-Library/phase-5-verify/P23-review-someone-elses-code.md). Three comments come back.
+Gautam reviews it with [P23](../../AI-Prompts-Library/phase-5-verify/P23-review-someone-elses-code.md). Three comments come back.
 
 Here they are as written:
 
@@ -1246,7 +1246,7 @@ Here they are as written:
 >
 > **3. `core/extract.py:151` — `_table_pages`.** This is layout-model logic sitting in the extraction module. Belongs in a `core/layout.py` alongside anything else that reads bounding regions.
 
-Tomas's first instinct is to do all three, because they are from his team lead and they are all reasonable-sounding. That instinct costs teams a great deal of time and produces diffs nobody can review.
+Ravi's first instinct is to do all three, because they are from his team lead and they are all reasonable-sounding. That instinct costs teams a great deal of time and produces diffs nobody can review.
 
 He runs [P28](../../AI-Prompts-Library/phase-6-rework/P28-respond-to-code-review-feedback.md) instead, whose first step is not "fix these" but **classify each comment before responding to any of them**:
 
@@ -1269,7 +1269,7 @@ not write any fix yet.
 
 ### Comment 1 — fixed, because it is real
 
-Rahul is right and it is the best comment on the review. The fix distinguishes "this layout declares no count" from "this layout declares a count we could not read":
+Gautam is right and it is the best comment on the review. The fix distinguishes "this layout declares no count" from "this layout declares a count we could not read":
 
 ```diff
 --- a/core/extract.py
@@ -1323,23 +1323,23 @@ Plus the test, which is now in the suite above as `test_declared_count_unparseab
 
 ### Comment 2 — pushed back on, with a reason
 
-Tomas replies rather than refactoring:
+Ravi replies rather than refactoring:
 
 > Going to leave these as two rules, and here's the reasoning — happy to be overruled.
 >
-> The two `rule_id`s are what Priya sees in the exception queue and what she filters on. `declared_line_item_count` and `page_continuation` are different problems with different fixes: the first means a number disagrees, the second means a page contributed nothing. She acts on them differently.
+> The two `rule_id`s are what Preeti sees in the exception queue and what she filters on. `declared_line_item_count` and `page_continuation` are different problems with different fixes: the first means a number disagrees, the second means a page contributed nothing. She acts on them differently.
 >
 > They also abstain for different reasons, and the abstention logic is the subtle part of both. Folding them into one function with a `mode` parameter means one function with two abstention paths and a branch at the top, which is harder to read than two functions, not easier.
 >
 > They're structurally similar because every validator in this engine is structurally similar. That's the registry pattern working, not duplication.
 
-Rahul's reply is two words: `Fair. Keeping.`
+Gautam's reply is two words: `Fair. Keeping.`
 
-**The pushback took four minutes and it is the reason the rule messages in production are specific.** If Tomas had merged them to avoid an awkward conversation, Priya's queue would say `completeness: failed` on both, and she would have to open the document to find out which.
+**The pushback took four minutes and it is the reason the rule messages in production are specific.** If Ravi had merged them to avoid an awkward conversation, Preeti's queue would say `completeness: failed` on both, and she would have to open the document to find out which.
 
 ### Comment 3 — answered with a comment, not a move
 
-`_table_pages` is one function with one caller. Moving it creates `core/layout.py` containing one function, and a new import, and a new place for the next person to look. Tomas adds a docstring line instead:
+`_table_pages` is one function with one caller. Moving it creates `core/layout.py` containing one function, and a new import, and a new place for the next person to look. Ravi adds a docstring line instead:
 
 ```diff
  def _table_pages(result: "AnalyzeResult") -> list[int]:
@@ -1357,9 +1357,9 @@ Rahul's reply is two words: `Fair. Keeping.`
 
 **A comment recording why the code is not organised the way a reviewer expected is worth more than the reorganisation.** It answers the question permanently instead of once.
 
-Rahul approves at 15:40. Ananya re-tests against both fixtures and against the live 30 July statement, which is two pages and correctly lands in the exception queue with the message *"the positions table continues onto page(s) [2] but no line items were extracted from them."*
+Gautam approves at 15:40. Pankaj re-tests against both fixtures and against the live 30 July statement, which is two pages and correctly lands in the exception queue with the message *"the positions table continues onto page(s) [2] but no line items were extracted from them."*
 
-Priya opens it, keys the eight missing positions, and resolves it in about six minutes.
+Preeti opens it, keys the eight missing positions, and resolves it in about six minutes.
 
 Merged 16:20, Friday 31 July.
 
@@ -1371,7 +1371,7 @@ Here is the route through the [rework loop](../../AI-Prompts-Library/03-the-rewo
 
 ```mermaid
 flowchart TD
-    BUG["Ananya files NWD-142<br/>Wed 18:14"]
+    BUG["Pankaj files NWD-142<br/>Wed 18:14"]
     P26["P26 — Debug<br/>Thu 08:15"]
     MISFIRE{"Is there a<br/>stack trace?"}
     P27A["P27 — Reproduce<br/>Thu 09:00"]
@@ -1411,18 +1411,18 @@ The accounting, honestly:
 | Reproducing with a failing test | 1h 15m |
 | Root cause and trace | 45 min |
 | Writing the fix that was later deleted | 40 min |
-| The specification conversation (Sofia, Amara, P29) | 2h 20m |
+| The specification conversation (Hem, Preetinka, P29) | 2h 20m |
 | The fix that shipped | 3h |
 | Sweeping for the pattern elsewhere, and two more fixes | 2h 30m |
 | Regression tests, including 40 min stuck | 2h 10m |
 | Review and response | 1h 20m |
 | **Total** | **~14 hours over two days** |
 
-Farhan's Sprint 3 estimate had one day for "bug fixing", for all defects, for the whole team. NWD-142 alone was a day and three quarters of one engineer's time, plus the architect, plus the product owner, plus QA re-testing.
+Atul's Sprint 3 estimate had one day for "bug fixing", for all defects, for the whole team. NWD-142 alone was a day and three quarters of one engineer's time, plus the architect, plus the product owner, plus QA re-testing.
 
-**The estimate was not wrong because Farhan is bad at estimating. It was wrong because rework was never a named activity.** It had no prompts, no artifacts and no line in the plan, so it happened in the gaps and the sprint was late for reasons nobody could point at.
+**The estimate was not wrong because Atul is bad at estimating. It was wrong because rework was never a named activity.** It had no prompts, no artifacts and no line in the plan, so it happened in the gaps and the sprint was late for reasons nobody could point at.
 
-That is what the [retrospective](10-retrospective.md) is about, and Farhan's estimates carry an explicit rework line afterwards.
+That is what the [retrospective](10-retrospective.md) is about, and Atul's estimates carry an explicit rework line afterwards.
 
 ---
 
@@ -1440,7 +1440,7 @@ Five things, from one bug report:
 
 Only the first two were the reported bug. Numbers three and four were live in the dev environment, undetected and unreported, and would have reached production.
 
-And one thing that was deliberately *not* fixed: the extraction still cannot read a continued table. That is NWD-145 — retrain the model with labelled multi-page statements — and it has a date, an owner and Amara's signature on it. Until then, those documents go to Priya, and the straight-through rate says fifty-eight percent, and fifty-eight percent is true.
+And one thing that was deliberately *not* fixed: the extraction still cannot read a continued table. That is NWD-145 — retrain the model with labelled multi-page statements — and it has a date, an owner and Preetinka's signature on it. Until then, those documents go to Preeti, and the straight-through rate says fifty-eight percent, and fifty-eight percent is true.
 
 **The system got worse at its headline metric and better at telling the truth. If you only take one thing from this chapter, take that trade.**
 

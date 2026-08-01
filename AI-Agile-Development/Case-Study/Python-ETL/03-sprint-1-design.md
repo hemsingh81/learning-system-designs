@@ -2,13 +2,13 @@
 
 ← [02 — Sprint 1: Discovery](02-sprint-1-discovery.md) · [Case study index](README.md) · Next: [04 — Sprint 2: Planning](04-sprint-2-planning.md)
 
-> **One line:** Sofia makes three decisions that are expensive to reverse, has a real argument about one of them, and loses a requirement for six days by describing a document instead of pasting it.
+> **One line:** Hem makes three decisions that are expensive to reverse, has a real argument about one of them, and loses a requirement for six days by describing a document instead of pasting it.
 
 ---
 
 ## 1. Thursday evening, week one
 
-Sofia Marchetti reads the PRD at about six on the Thursday, at home, on a tablet, which is a detail that matters later.
+Hem Singh reads the PRD at about six on the Thursday, at home, on a tablet, which is a detail that matters later.
 
 It's a good PRD. Eight capabilities, four goals with baselines, five constraints stated as absolutes, and a section on assumptions that is longer than she expected and more honest than most. She reads it once, closes it, and opens an AI session because she wants to see the shape of the thing before Tuesday.
 
@@ -30,15 +30,15 @@ We'll come back to that in §7. First, Tuesday.
 
 ## 2. Tuesday morning: the branch
 
-Sofia opens Slack at 08:50 and finds a branch notification. Tomas has pushed `spike/extract-poc`.
+Hem opens Slack at 08:50 and finds a branch notification. Ravi has pushed `spike/extract-poc`.
 
 It is forty lines of Python. It sends a page of a Broker Alpha statement to a large language model with the prompt *"extract the positions as JSON."* It works. On the one PDF he tried, it works beautifully — clean JSON, sensible field names, correct numbers.
 
 **This is the exact moment the project can go wrong quietly for six weeks.**
 
-Tomas's forty lines are not wrong. They are *plausible*. If you squint at the output you'd sign it off. What the output does not contain is any way of knowing which of those numbers the model was sure about and which it guessed, and Northwind's entire reason for buying this system is that a wrong number is worse than no number.
+Ravi's forty lines are not wrong. They are *plausible*. If you squint at the output you'd sign it off. What the output does not contain is any way of knowing which of those numbers the model was sure about and which it guessed, and Northwind's entire reason for buying this system is that a wrong number is worse than no number.
 
-Sofia does not tell Tomas he's wrong, because she does not yet know that he is. What she knows is that a decision which touches the rules engine, the exception queue, the audit trail and the monthly bill is currently being made by whoever pushed a branch first.
+Hem does not tell Ravi he's wrong, because she does not yet know that he is. What she knows is that a decision which touches the rules engine, the exception queue, the audit trail and the monthly bill is currently being made by whoever pushed a branch first.
 
 So she opens a fresh session and runs [P10 — Ultra Plan Mode](../../AI-Prompts-Library/phase-2-design/P10-ultra-plan-mode.md). Not to get an answer. To get **three answers, honestly compared, and then a hard stop before anybody writes code.**
 
@@ -64,7 +64,7 @@ When an **AI** takes a wrong design and starts building, it produces four files,
 
 That asymmetry is the whole justification for the stop gate. You are deliberately reinserting the friction the AI removed.
 
-There's a second reason for the structure of this prompt, which is that **if you name a technology in your question, you get that technology in the answer.** Ask "how should we use an LLM to extract these fields" and you will never hear about Document Intelligence. So Sofia's decision statement names nothing:
+There's a second reason for the structure of this prompt, which is that **if you name a technology in your question, you get that technology in the answer.** Ask "how should we use an LLM to extract these fields" and you will never hear about Document Intelligence. So Hem's decision statement names nothing:
 
 ```text
 **The decision I need made:**
@@ -105,7 +105,7 @@ Custom classifier  ≈ $3  per 1,000 pages → 12.6 × $3  =  $38/month
 
 Labelling effort: about 50 documents per layout for production, four hours for a first pass. **Fifteen documents is enough to prove the approach** before committing to fifty, which is the sort of distinction a good plan surfaces and a bad one glosses over.
 
-**How it fails.** A counterparty changes their layout materially and the model's confidence drops across the affected fields. That is a **loud** failure: the documents go to the exception queue rather than loading wrong. You notice it as a spike in Priya's queue on the day it happens, not as a break report three weeks later.
+**How it fails.** A counterparty changes their layout materially and the model's confidence drops across the affected fields. That is a **loud** failure: the documents go to the exception queue rather than loading wrong. You notice it as a spike in Preeti's queue on the day it happens, not as a break report three weeks later.
 
 **What you give up.** Day-one support for a brand new counterparty. You cannot onboard a broker in an afternoon; you need documents to label first.
 
@@ -113,7 +113,7 @@ Labelling effort: about 50 documents per layout for production, four hours for a
 
 ### Option B — a large language model
 
-**What it is.** Send the page text or the page image to a general-purpose language model with an instruction describing the fields you want, and parse the JSON it writes back. Tomas's spike.
+**What it is.** Send the page text or the page image to a general-purpose language model with an instruction describing the fields you want, and parse the JSON it writes back. Ravi's spike.
 
 **Why it's tempting, genuinely.** Zero training data. No labelling. It handles a brand new broker layout on day one because it is reading the document the way a person would. It is the fastest path to a first result and it is not close.
 
@@ -131,7 +131,7 @@ Labelling effort: about 50 documents per layout for production, four hours for a
 
 ---
 
-## 5. Why Sofia rejects the LLM
+## 5. Why Hem rejects the LLM
 
 This is the argument the book turns on, so it gets its own section. There are three reasons and they are not equally weighted.
 
@@ -151,7 +151,7 @@ You can, of course, ask a language model how confident it is. It will tell you. 
 
 The consequence is not that the confidence gate would be weaker. It's that **NWD-103 as specified cannot be built on this approach.** There is no number to compare to a threshold. The story, the exception queue, the `MIN_CONFIDENCE` column carried into Snowflake, and G4 in the PRD all consume that number, and exactly one of the three options produces one.
 
-Sofia's line in the plan review, which Rahul writes down:
+Hem's line in the plan review, which Gautam writes down:
 
 > "We are not choosing an extraction technology. We are choosing whether the invariant is enforceable or aspirational."
 
@@ -174,11 +174,11 @@ With Document Intelligence, the answer is: here is the exact JSON the service re
 
 With a language model, the honest answer is: here is what it said at the time. Run it again and you may get something slightly different, and that is a property of the tool rather than a fault.
 
-Sofia's recurring question — **"what does this look like when it's wrong?"** — has a concrete answer here, and it isn't about the model at all. It's about the conversation eighteen months later when somebody from compliance asks why a position was booked at a value nobody can reproduce.
+Hem's recurring question — **"what does this look like when it's wrong?"** — has a concrete answer here, and it isn't about the model at all. It's about the conversation eighteen months later when somebody from compliance asks why a position was booked at a value nobody can reproduce.
 
 ### Reason three — token pricing is harder to forecast than per-page pricing
 
-The weakest of the three, and Sofia says so, and it still matters because of constraint C5.
+The weakest of the three, and Hem says so, and it still matters because of constraint C5.
 
 C5 is not "cost must be low." It is **"cost must be predictable."**
 
@@ -187,7 +187,7 @@ C5 is not "cost must be low." It is **"cost must be predictable."**
 
 The absolute figures are probably comparable. That was never the point. **The point is which one you can put in a budget for a year, and the answer is the one whose driver is a number the business already tracks.**
 
-Farhan's contribution to this part of the argument is one sentence and it settles it: *"I can defend a number that goes up when volume goes up. I cannot defend a number that goes up and nobody can tell me why."*
+Atul's contribution to this part of the argument is one sentence and it settles it: *"I can defend a number that goes up when volume goes up. I cannot defend a number that goes up and nobody can tell me why."*
 
 ### Why the answer turns out to be A
 
@@ -213,14 +213,14 @@ The section people skip is **Consequences**, and it's the section that makes the
 Three documents, three questions, and it's worth having the distinction:
 
 ```text
-PRD   → why does the business want this?      (Amara, living)
-ADR   → why did we choose this over that?     (Sofia, frozen)
-Spec  → what exactly does the system do?      (Sofia, living)
+PRD   → why does the business want this?      (Preetinka, living)
+ADR   → why did we choose this over that?     (Hem, frozen)
+Spec  → what exactly does the system do?      (Hem, living)
 ```
 
-Sofia writes all three ADRs with [P12](../../AI-Prompts-Library/phase-2-design/P12-record-an-architecture-decision.md), on the days the decisions were made, which is the rule that matters most and the one most often broken.
+Hem writes all three ADRs with [P12](../../AI-Prompts-Library/phase-2-design/P12-record-an-architecture-decision.md), on the days the decisions were made, which is the rule that matters most and the one most often broken.
 
-> **If you cannot write the ADR in twenty minutes, you have not actually made the decision yet.** Sofia uses this deliberately: when a decision feels agreed but the ADR won't come out, she goes back to the room.
+> **If you cannot write the ADR in twenty minutes, you have not actually made the decision yet.** Hem uses this deliberately: when a decision feels agreed but the ADR won't come out, she goes back to the room.
 
 ### ADR-0001 — Use Document Intelligence custom models, not an LLM
 
@@ -260,7 +260,7 @@ config/sources.yaml per month.
 
 ### ADR-0002 — Persist the full API response to bronze before parsing
 
-Written Wednesday, two days after the decision, and the ADR says so at the top — *"written 2 April from Tuesday's notes; the option list may be incomplete."* That line costs nothing and preserves trust, and Sofia writes it every time she's late.
+Written Wednesday, two days after the decision, and the ADR says so at the top — *"written 2 April from Tuesday's notes; the option list may be incomplete."* That line costs nothing and preserves trust, and Hem writes it every time she's late.
 
 > **Bronze, silver, gold** is a naming convention for three stages data passes through. **Bronze** is exactly what arrived, untouched. **Silver** is cleaned and typed but still per-source. **Gold** is modelled and joined for consumption.
 
@@ -305,19 +305,19 @@ Thursday morning, in the spec review, and this one causes a real argument.
 
 Rule R3 in the draft spec says: the document decision is ACCEPT only when every field passes. One failure sends the whole document to review, with no rows written.
 
-**Tomas objects**, and his objection is completely reasonable:
+**Ravi objects**, and his objection is completely reasonable:
 
-> "A Broker Alpha statement has fourteen positions. If one settlement date scores 0.83, we're throwing away thirteen perfectly good rows and giving Priya a whole document to re-key. That's going to tank the straight-through rate and she's going to hate us."
+> "A Broker Alpha statement has fourteen positions. If one settlement date scores 0.83, we're throwing away thirteen perfectly good rows and giving Preeti a whole document to re-key. That's going to tank the straight-through rate and she's going to hate us."
 
-Rahul thinks partial ingestion sounds sensible too. Amara is not sure.
+Gautam thinks partial ingestion sounds sensible too. Preetinka is not sure.
 
-Sofia's answer is her recurring question, pointed at Tomas's proposal rather than at her own:
+Hem's answer is her recurring question, pointed at Ravi's proposal rather than at her own:
 
 > **"What does this look like when it's wrong?"**
 
 And then she walks it through. Thirteen rows load. The statement *looks* complete. The missing fourteenth position appears in the reconciliation report as `MISSING_EXTERNAL`, which is exactly the signal a genuine failed settlement produces. An operations analyst cannot tell the two apart from the report, so they investigate — email the broker, check the custodian — for a position that was simply never loaded.
 
-Amara, who came off an operations floor and has personally chased that ghost, agrees immediately. Her framing, which goes into the ADR's notes verbatim because Sofia wrote it down in the room:
+Preetinka, who came off an operations floor and has personally chased that ghost, agrees immediately. Her framing, which goes into the ADR's notes verbatim because Hem wrote it down in the room:
 
 > **"A break I have to chase and then find out was never real costs me more than a document I have to key."**
 
@@ -325,12 +325,12 @@ Decision made. Meeting moves on. Everyone satisfied.
 
 **Why this needs the strongest ADR of the three** is that the reasoning is *non-local*. The cost of partial ingestion does not appear in the ingestion code at all. It appears two systems away, in the reconciliation report. You cannot see it from `core/rules.py`, which means anybody reading that file in isolation will correctly conclude the rule is wasteful and try to improve it.
 
-Sofia predicts this, in writing, in the Notes section:
+Hem predicts this, in writing, in the Notes section:
 
 ```markdown
 ## Notes
 
-Tomas raised the obvious objection at the time — thirteen good rows should not be
+Ravi raised the obvious objection at the time — thirteen good rows should not be
 thrown away — and it is the right instinct. The counter is that the cost of the
 fourteenth row is not paid in the ingestion pipeline; it is paid two systems
 downstream, by a different team, in a form that looks like a real problem. Expect
@@ -339,7 +339,7 @@ isolation, because from inside that file the choice looks purely wasteful. That
 is the nature of a decision whose justification lives elsewhere.
 ```
 
-She is right within nine weeks. In [Chapter 7](07-sprint-3-verify.md) a code reviewer reads `core/rules.py` and writes almost exactly Tomas's sentence. Rahul replies with a single line — the path to ADR-0003 — and the thread closes in one exchange.
+She is right within nine weeks. In [Chapter 7](07-sprint-3-verify.md) a code reviewer reads `core/rules.py` and writes almost exactly Ravi's sentence. Gautam replies with a single line — the path to ADR-0003 — and the thread closes in one exchange.
 
 And the consequences section contains the number that hurts:
 
@@ -349,12 +349,12 @@ And the consequences section contains the number that hurts:
   twenty-position statement costs a whole document. At launch this will read
   materially below the 85% target and the number will understate actual
   extraction quality. **Accepted knowingly.**
-- Priya re-checks fields that were fine, because the queue presents the whole
+- Preeti re-checks fields that were fine, because the queue presents the whole
   document. The UI must make the failing field obvious and everything else fast
   to skim, or this becomes forty minutes of wasted attention a morning.
 ```
 
-**That second bullet is a design requirement for a screen that has not been briefed yet**, and Ji-woo picks it up directly. She never attended the spec review. She read one ADR.
+**That second bullet is a design requirement for a screen that has not been briefed yet**, and Dzmitry picks it up directly. She never attended the spec review. She read one ADR.
 
 ---
 
@@ -364,27 +364,27 @@ Now back to Thursday evening of week one, and the forty minutes of excellent des
 
 ### What happened
 
-Sofia's mental model of this system was set on that Thursday evening, and in that model, **documents below threshold are rejected and logged.**
+Hem's mental model of this system was set on that Thursday evening, and in that model, **documents below threshold are rejected and logged.**
 
 Everything after it was built on top of that model, correctly and competently:
 
 - **Tuesday**, P10 runs properly. It reads the PRD, the story and the acceptance criteria, and its read log is accurate. But P10's scope is the *extraction approach* — options A, B and C — and it never touches routing. The plan does not re-surface the exception queue because the plan was never asked about it.
-- **Wednesday**, Sofia drafts the spec with [P11](../../AI-Prompts-Library/phase-2-design/P11-write-the-technical-spec.md). Section 4, rule R3, says the document is rejected. Section 7 lists the reason codes. And the failure output shape says the gate returns a `GateResult` with a decision and a list of failures, which the rules engine **logs**.
+- **Wednesday**, Hem drafts the spec with [P11](../../AI-Prompts-Library/phase-2-design/P11-write-the-technical-spec.md). Section 4, rule R3, says the document is rejected. Section 7 lists the reason codes. And the failure output shape says the gate returns a `GateResult` with a decision and a list of failures, which the rules engine **logs**.
 - **Thursday**, the spec review happens. Four people read R3 carefully enough to have a twenty-minute argument about it. Nobody notices that the destination is a log file, because the argument was about *whether* to reject, not about *where the rejection goes*.
 
 ### The catch
 
-**Friday morning, day 10.** Amara reads the draft spec, because Sofia sent it round on Thursday night and Amara reads things.
+**Friday morning, day 10.** Preetinka reads the draft spec, because Hem sent it round on Thursday night and Preetinka reads things.
 
 She gets to section 7, the error-cases table, and asks the question for the second time in eight days:
 
 > "Rejected to where?"
 
-There is a pause on the call that Farhan describes afterwards as the longest four seconds of Sprint 1.
+There is a pause on the call that Atul describes afterwards as the longest four seconds of Sprint 1.
 
-Then Sofia goes and looks, and finds that the spec she wrote has no exception record in it. Not a weak one. **None.** The word "queue" appears twice, both times in the out-of-scope list, pointing at NWD-108 as somebody else's problem.
+Then Hem goes and looks, and finds that the spec she wrote has no exception record in it. Not a weak one. **None.** The word "queue" appears twice, both times in the out-of-scope list, pointing at NWD-108 as somebody else's problem.
 
-NWD-108 existed the whole time. It was in the backlog, with acceptance criteria, owned by Ji-woo. What did not exist was anything on the backend that would ever produce a row for it to display.
+NWD-108 existed the whole time. It was in the backlog, with acceptance criteria, owned by Dzmitry. What did not exist was anything on the backend that would ever produce a row for it to display.
 
 ### Why it happened, precisely
 
@@ -392,11 +392,11 @@ Not because anybody was careless. Three specific things, and they're the three w
 
 | How | What it looked like here |
 |---|---|
-| **Summarising from memory** | Sofia typed a paragraph instead of pasting six pages. It was faster, and the summary felt complete because *she* remembered the rest. |
+| **Summarising from memory** | Hem typed a paragraph instead of pasting six pages. It was faster, and the summary felt complete because *she* remembered the rest. |
 | **Paraphrasing into your own frame** | *"It can't put bad data in the warehouse"* instead of *"must reach a human, in a form they can act on, the same day."* An architect re-frames a problem in architecture vocabulary, and the re-framing drops what doesn't fit the frame. |
 | **Assuming the artifact says something it doesn't** | Everybody in the spec review assumed the routing was covered somewhere, because NWD-108 existed and had a name. |
 
-The second row is the one worth sitting with. Sofia's paraphrase is not a bad summary. It is an *architect's* summary — it keeps the properties of the system and drops the properties of the working day. "Can't put bad data in the warehouse" is a statement about the warehouse. "Must reach a human in a form they can act on" is a statement about Priya, and Priya is not an architectural concern, which is exactly why an architect's paraphrase loses her.
+The second row is the one worth sitting with. Hem's paraphrase is not a bad summary. It is an *architect's* summary — it keeps the properties of the system and drops the properties of the working day. "Can't put bad data in the warehouse" is a statement about the warehouse. "Must reach a human in a form they can act on" is a statement about Preeti, and Preeti is not an architectural concern, which is exactly why an architect's paraphrase loses her.
 
 ### Why an AI makes this worse rather than better
 
@@ -416,8 +416,8 @@ Six working days between the paraphrase and the catch, and the cost lands entire
 |---|---|
 | Spec sections 5, 6 and 7 — the `GateResult` shape, four new scenarios, the exception record columns | 3 hours |
 | The data contract, which had been drafted with no exception record at all | Rewritten Friday afternoon, finished Monday morning of Sprint 2 |
-| Ji-woo's UI brief, which had been scoped as a "rejections log viewer" | Rewritten Friday evening, with Ji-woo staying late |
-| Rahul's implementation plan for NWD-103, which he had scheduled for Friday morning | Written Friday at 16:30, against a spec that had been finished ninety minutes earlier |
+| Dzmitry's UI brief, which had been scoped as a "rejections log viewer" | Rewritten Friday evening, with Dzmitry staying late |
+| Gautam's implementation plan for NWD-103, which he had scheduled for Friday morning | Written Friday at 16:30, against a spec that had been finished ninety minutes earlier |
 
 That last row is the one that matters, because an implementation plan written ninety minutes after the spec it depends on is a plan written by somebody who has not slept on it. It is fine. It is also the reason the Sprint 2 planning session on Monday has a dependency in it that nobody has thought through, which is the subject of the next chapter.
 
@@ -425,19 +425,19 @@ That last row is the one that matters, because an implementation plan written ni
 
 It's worth being honest about how this story is told elsewhere in the book.
 
-[The handoff contract](../../AI-Prompts-Library/02-the-handoff-contract.md) tells this as the version where nobody catches it — where the design ships without an exception queue, Tomas builds it, and Amara discovers it at a demo in week six. That version has the gap costing a new screen, a new table, a new API surface and a conversation about the date.
+[The handoff contract](../../AI-Prompts-Library/02-the-handoff-contract.md) tells this as the version where nobody catches it — where the design ships without an exception queue, Ravi builds it, and Preetinka discovers it at a demo in week six. That version has the gap costing a new screen, a new table, a new API surface and a conversation about the date.
 
-**That is not a hypothetical.** It is the shape of the failure, told as the retro told it, compressed. In the retro Farhan says there was never a story for the exception queue, and that is how it *felt* from where he was sitting, and it is not literally true — NWD-108 sat in the backlog the whole time with nothing on the backend to feed it. The distinction matters a great deal when you are working out what to fix, and it matters not at all when you are the person discovering it.
+**That is not a hypothetical.** It is the shape of the failure, told as the retro told it, compressed. In the retro Atul says there was never a story for the exception queue, and that is how it *felt* from where he was sitting, and it is not literally true — NWD-108 sat in the backlog the whole time with nothing on the backend to feed it. The distinction matters a great deal when you are working out what to fix, and it matters not at all when you are the person discovering it.
 
 The honest summary: it was caught on the last day of the sprint, by the same person who caught it the first time, asking the same four words, and every day between Thursday and Friday was a day the team was designing the wrong system confidently.
 
 ### The habit that comes out of it
 
-Rahul institutes one rule on the Monday and it takes ninety seconds per artifact.
+Gautam institutes one rule on the Monday and it takes ninety seconds per artifact.
 
 **Before you build on somebody else's artifact, check it against its own contract.**
 
-The PRD has a contract block, added by Amara at the end of [Chapter 2](02-sprint-1-discovery.md). So the first move in any session that consumes it is:
+The PRD has a contract block, added by Preetinka at the end of [Chapter 2](02-sprint-1-discovery.md). So the first move in any session that consumes it is:
 
 ```text
 Here is the approved PRD. Read it completely before responding.
@@ -456,7 +456,7 @@ invent.
 Then stop. Do not design anything yet.
 ```
 
-Rahul runs it retrospectively on every artifact produced so far, on the Monday of Sprint 2. It takes twenty minutes and it finds one more instance: the draft data contract had no exception record either, for the same reason, from the same source.
+Gautam runs it retrospectively on every artifact produced so far, on the Monday of Sprint 2. It takes twenty minutes and it finds one more instance: the draft data contract had no exception record either, for the same reason, from the same source.
 
 **The rule, in one line:** *paste the artifact, do not describe it.* It costs one extra paste and about ninety seconds of reading. It would have caught this on the Thursday evening.
 
@@ -500,7 +500,7 @@ document remains unprocessed in the raw zone. It does **not** land in the
 exception queue, because the exception queue is for documents an analyst can fix
 and this is not one.
 
-**R9** — All failing fields are reported, not just the first. Priya needs to see
+**R9** — All failing fields are reported, not just the first. Preeti needs to see
 every problem in one pass; returning only the first means a document bounces
 through review repeatedly.
 
@@ -510,9 +510,9 @@ result. Persisting the decision is the rules engine's job.
 
 **R2 is the load-bearing rule in the whole document.** Threshold resolution order is exactly the kind of thing that gets decided by accident in code — whichever `if` happens to be checked first — and then differs between the gate, the exception queue and the report, and nobody notices for a quarter. Four numbered lines, first match wins, done.
 
-**R8 is the one that took the longest to write** and it is the direct product of Sofia's question. An unknown counterparty is not something Priya can fix. Putting it in her queue would be putting an engineer's problem in an analyst's inbox, which is the exact inverse of the mistake this chapter is about.
+**R8 is the one that took the longest to write** and it is the direct product of Hem's question. An unknown counterparty is not something Preeti can fix. Putting it in her queue would be putting an engineer's problem in an analyst's inbox, which is the exact inverse of the mistake this chapter is about.
 
-**R10 exists because of testability.** A function that takes data and returns data can be tested without Azure, without a database, and without a network. Every scenario in section 6 is a unit test that runs in milliseconds, and that is why Tomas has 22 of them by the end of the next chapter.
+**R10 exists because of testability.** A function that takes data and returns data can be tested without Azure, without a database, and without a network. Every scenario in section 6 is a unit test that runs in milliseconds, and that is why Ravi has 22 of them by the end of the next chapter.
 
 ### The interface
 
@@ -560,29 +560,29 @@ Then decision is ACCEPT
 Five of them, and one is a time bomb.
 
 ```markdown
-- **Amara** — when Priya corrects a field in the exception queue, is the corrected
+- **Preetinka** — when Preeti corrects a field in the exception queue, is the corrected
   value re-gated, or is a human edit trusted by definition?
-- **Amara** — does a document rejected purely on CLASSIFIER_BELOW_THRESHOLD go to
-  the same queue as a field failure? Priya's action is different — she is picking
+- **Preetinka** — does a document rejected purely on CLASSIFIER_BELOW_THRESHOLD go to
+  the same queue as a field failure? Preeti's action is different — she is picking
   a counterparty, not fixing a number.
-- **Tomas** — does the Document Intelligence response ever return a confidence of
+- **Ravi** — does the Document Intelligence response ever return a confidence of
   exactly 0.0, or is absence the only signal?
-- **Sofia** — line items are a repeating structure with per-item confidence. This
+- **Hem** — line items are a repeating structure with per-item confidence. This
   spec treats fields as flat. Does a low-confidence line item reject the document
   under the same rule? ASSUMED: yes, same rule. **This needs its own spec section
   before NWD-106.**
-- **Ananya** — do we need a scenario for a document whose table spans a page
+- **Pankaj** — do we need a scenario for a document whose table spans a page
   boundary? The extraction response shape for that case is not documented
   anywhere I can find.
 ```
 
 Read the last two again.
 
-The fourth is Sofia noting that the spec treats fields as flat when real responses have a repeating table structure, writing `ASSUMED: yes, same rule`, and moving on.
+The fourth is Hem noting that the spec treats fields as flat when real responses have a repeating table structure, writing `ASSUMED: yes, same rule`, and moving on.
 
-The fifth is Ananya asking, on the Friday of Sprint 1, whether anybody knows what happens when a table crosses a page.
+The fifth is Pankaj asking, on the Friday of Sprint 1, whether anybody knows what happens when a table crosses a page.
 
-Nobody answers either of them. The Friday is the Friday described in §7, everything is compressed, and open questions that nobody owns on the last day of a sprint do not get chased. Sofia marks both as carried to Sprint 2 and they are not looked at again.
+Nobody answers either of them. The Friday is the Friday described in §7, everything is compressed, and open questions that nobody owns on the last day of a sprint do not get chased. Hem marks both as carried to Sprint 2 and they are not looked at again.
 
 **Five open questions on a first draft is healthy. Two carried into a build sprint unanswered is not, and the team knows it, and does it anyway.**
 
@@ -590,7 +590,7 @@ Nobody answers either of them. The Friday is the Friday described in §7, everyt
 
 ## 9. P13 — the data contract
 
-Friday afternoon, rewritten from a version that had no exception record in it. Sofia and Tomas together, running [P13](../../AI-Prompts-Library/phase-2-design/P13-design-the-data-contract.md).
+Friday afternoon, rewritten from a version that had no exception record in it. Hem and Ravi together, running [P13](../../AI-Prompts-Library/phase-2-design/P13-design-the-data-contract.md).
 
 > **A data contract** is the agreed shape of data crossing a boundary between two things that are built separately. Column names, types, nullability, units, and what happens when a value is missing. It exists because the two sides will be built by different people at different times, and "we'll sort it out at integration" means sorting it out on day eight of a ten-day sprint.
 
@@ -629,15 +629,15 @@ Two things in there are worth naming.
 
 **`INSTRUMENT_ID` carries the note "never translated" and `INSTRUMENT_NAME` does not.** That distinction is written down on the Friday of Sprint 1 and it is violated in Sprint 2 anyway, which becomes bug NWD-138.
 
-**`THRESHOLD_APPLIED` is there because of Priya.** It would be entirely possible to store the confidence and not the threshold — the threshold is in config, after all. Storing it means the screen can show her `0.91 against a bar of 0.92` instead of `0.91`, which is the difference between "this number is bad" and "this number is nearly fine and here's why we stopped." Sofia's argument for the column takes about ninety seconds and it is the single most user-facing decision an architect makes on this project.
+**`THRESHOLD_APPLIED` is there because of Preeti.** It would be entirely possible to store the confidence and not the threshold — the threshold is in config, after all. Storing it means the screen can show her `0.91 against a bar of 0.92` instead of `0.91`, which is the difference between "this number is bad" and "this number is nearly fine and here's why we stopped." Hem's argument for the column takes about ninety seconds and it is the single most user-facing decision an architect makes on this project.
 
 ---
 
 ## 10. P14 — the UI brief
 
-Friday evening. Ji-woo has spent a day at Northwind watching Priya work, and comes back with three observations that shape the whole screen:
+Friday evening. Dzmitry has spent a day at Northwind watching Preeti work, and comes back with three observations that shape the whole screen:
 
-1. **Priya does not use a mouse for anything she does forty times.** She uses it for the PDF and nothing else.
+1. **Preeti does not use a mouse for anything she does forty times.** She uses it for the PDF and nothing else.
 2. **She reads the PDF first and the extracted values second**, every time, without exception. Not the other way round. Any layout that puts the form on the left and the document on the right is fighting her.
 3. **She keeps a paper notebook** of counterparty quirks. Broker Alpha's dates are DD/MM. One custodian puts the currency in the header rather than per row. That notebook is the thing the system should eventually replace and definitely should not contradict.
 
@@ -646,7 +646,7 @@ The brief they write with [P14](../../AI-Prompts-Library/phase-2-design/P14-ui-u
 ```markdown
 ## The constraint this screen exists under
 
-From ADR-0003: "Priya re-checks fields that were fine, because the queue presents
+From ADR-0003: "Preeti re-checks fields that were fine, because the queue presents
 the whole document. The UI must make the failing field obvious and everything
 else fast to skim, or this becomes forty minutes of wasted attention a morning."
 
@@ -662,7 +662,7 @@ in under four keystrokes from the point of arriving on the document.
 Everything else in this brief is negotiable. These two are not.
 ```
 
-**Ji-woo's framing, which she says at least twice a sprint:** *Priya clears around forty exceptions in a morning, so every extra click is not one click, it is forty. Every time the PDF viewer loses its scroll position, that's forty times she has to find her place again.*
+**Dzmitry's framing, which she says at least twice a sprint:** *Preeti clears around forty exceptions in a morning, so every extra click is not one click, it is forty. Every time the PDF viewer loses its scroll position, that's forty times she has to find her place again.*
 
 The brief also carries the sentence that becomes the smallest bug in this book:
 
@@ -682,15 +682,15 @@ It ships as `0.8234567` anyway. That's [NWD-139](artifacts/), it's one line, and
 
 The design goes to two people.
 
-**Rahul** takes the spec and the data contract into [P15 — Implementation Plan](../../AI-Prompts-Library/phase-3-planning/P15-implementation-plan.md) at 16:30 on the Friday. What he is guaranteed to find: ten numbered rules, twelve scenarios covering every rule, a fixed set of reason codes, and an interface with types on both sides. What he is *not* guaranteed to find — and this is the part that matters in [Chapter 8](08-sprint-3-rework.md) — is anything about completeness. The spec's contract guarantees the thresholds, the per-field rules, the failure output shape and the exception routing. It guarantees nothing about whether all the data that should have been extracted actually was.
+**Gautam** takes the spec and the data contract into [P15 — Implementation Plan](../../AI-Prompts-Library/phase-3-planning/P15-implementation-plan.md) at 16:30 on the Friday. What he is guaranteed to find: ten numbered rules, twelve scenarios covering every rule, a fixed set of reason codes, and an interface with types on both sides. What he is *not* guaranteed to find — and this is the part that matters in [Chapter 8](08-sprint-3-rework.md) — is anything about completeness. The spec's contract guarantees the thresholds, the per-field rules, the failure output shape and the exception routing. It guarantees nothing about whether all the data that should have been extracted actually was.
 
 Nobody thought to ask, because the whole mental model was *"is this number trustworthy"* rather than *"is this number here."*
 
-**Ji-woo** takes the UI brief and the exception record shape into Sprint 2 with nothing on the backend to call, which is the dependency Farhan is about to find on Monday.
+**Dzmitry** takes the UI brief and the exception record shape into Sprint 2 with nothing on the backend to call, which is the dependency Atul is about to find on Monday.
 
-**Tomas** gets the steps table from the plan and a closed branch. `spike/extract-poc` is deleted rather than merged, and Sofia makes a point of saying in standup that the spike did its job, because a spike that gets deleted after informing a decision is a success and it should not feel like one being thrown away.
+**Ravi** gets the steps table from the plan and a closed branch. `spike/extract-poc` is deleted rather than merged, and Hem makes a point of saying in standup that the spike did its job, because a spike that gets deleted after informing a decision is a success and it should not feel like one being thrown away.
 
-Tomas asks why it's being deleted when it worked. Sofia's answer:
+Ravi asks why it's being deleted when it worked. Hem's answer:
 
 > "It worked at the only thing we asked it to do, which was tell us what we lose."
 
@@ -700,27 +700,27 @@ Tomas asks why it's being deleted when it worked. Sofia's answer:
 
 Two things, and the smaller one first.
 
-**Sofia's first run of P10 did not have the `Do not invent numbers` instruction in it.** The plan came back with an LLM cost of "approximately $95/month" against Document Intelligence's $378. No arithmetic. On those figures, the recommendation should have been the language model, and the plan said so.
+**Hem's first run of P10 did not have the `Do not invent numbers` instruction in it.** The plan came back with an LLM cost of "approximately $95/month" against Document Intelligence's $378. No arithmetic. On those figures, the recommendation should have been the language model, and the plan said so.
 
-Sofia caught it because $95 for 39 million tokens felt low, and checking took four minutes.
+Hem caught it because $95 for 39 million tokens felt low, and checking took four minutes.
 
 The interesting part is that the corrected plan reached the *same conclusion the first one had been about to reject* — Document Intelligence — but for an entirely different reason. Cost was never the deciding factor. The confidence score was. The first plan had buried that under a cost comparison that turned out to be fictional, **which is a very good illustration of the fact that a plan can be wrong in its reasoning and right in its conclusion, and that those are not the same thing.**
 
 **The larger cost is §7, and the honest accounting of it is this.**
 
-The exception queue was lost for six working days by an architect who had read the document, agreed with it, and cared about it more than anybody except Amara. It was not lost through carelessness or through disagreement. It was lost because describing a document to an AI feels exactly like briefing a colleague, and briefing a colleague works, because the colleague asks questions.
+The exception queue was lost for six working days by an architect who had read the document, agreed with it, and cared about it more than anybody except Preetinka. It was not lost through carelessness or through disagreement. It was lost because describing a document to an AI feels exactly like briefing a colleague, and briefing a colleague works, because the colleague asks questions.
 
 The fix costs one extra paste.
 
 What it actually cost was one compressed Friday, a data contract finished on a Monday morning it should have been finished on the Friday, a UI brief written by two tired people at seven in the evening, and an implementation plan written ninety minutes after the spec it depends on.
 
-And one more thing, which nobody counted at the time. In the compression of that Friday, two open questions on the spec went unowned: the one about line items inside tables, and Ananya's one about a table that spans a page boundary.
+And one more thing, which nobody counted at the time. In the compression of that Friday, two open questions on the spec went unowned: the one about line items inside tables, and Pankaj's one about a table that spans a page boundary.
 
 Both of them are the same bug.
 
 ---
 
-**Next:** [Chapter 4 — Sprint 2: Planning](04-sprint-2-planning.md). Rahul turns the spec into a build sequence, Farhan finds a dependency three weeks before it becomes a problem, and the Definition of Done grows three clauses that only exist because an AI writes the code.
+**Next:** [Chapter 4 — Sprint 2: Planning](04-sprint-2-planning.md). Gautam turns the spec into a build sequence, Atul finds a dependency three weeks before it becomes a problem, and the Definition of Done grows three clauses that only exist because an AI writes the code.
 
 ---
 

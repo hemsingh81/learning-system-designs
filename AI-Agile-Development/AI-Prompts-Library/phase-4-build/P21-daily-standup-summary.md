@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | **Phase** | 4 — Build |
-| **Who runs it** | Everyone, individually, before standup. The Project Manager (Farhan Qureshi) runs the consolidation |
+| **Who runs it** | Everyone, individually, before standup. The Project Manager (Atul) runs the consolidation |
 | **When** | Every working morning, ten minutes before the meeting |
 | **Takes in** | Yesterday's git log, ticket movements, CI results, and your own session history |
 | **Produces** | Three lines per person — done / doing / blocked — grounded in evidence, not memory |
@@ -20,19 +20,19 @@
 
 Day nine of Sprint 2. Standup at 9:30.
 
-Tomas goes first, and what he says is: *"Yesterday I worked on the confidence gate. Today I'll carry on with the confidence gate. No blockers."*
+Ravi goes first, and what he says is: *"Yesterday I worked on the confidence gate. Today I'll carry on with the confidence gate. No blockers."*
 
-Farhan writes it down. It is the fourth morning in a row Tomas has said a version of that sentence, and it contains no information whatsoever. Farhan cannot tell from it whether the gate is nearly finished or has not started.
+Atul writes it down. It is the fourth morning in a row Ravi has said a version of that sentence, and it contains no information whatsoever. Atul cannot tell from it whether the gate is nearly finished or has not started.
 
-Meanwhile the actual truth of Tomas's Tuesday, had anyone asked, was this: he built the whole per-field threshold evaluation in about ninety minutes, it works, and then he spent five hours on something else entirely — his AI produced a `_deep_merge` helper for the config defaults that is elegant, recursive, and which he does not fully understand. He has read it four times. He is fairly sure it is correct. He is not sure enough to merge it into the thing that decides whether a wrong number reaches the warehouse.
+Meanwhile the actual truth of Ravi's Tuesday, had anyone asked, was this: he built the whole per-field threshold evaluation in about ninety minutes, it works, and then he spent five hours on something else entirely — his AI produced a `_deep_merge` helper for the config defaults that is elegant, recursive, and which he does not fully understand. He has read it four times. He is fairly sure it is correct. He is not sure enough to merge it into the thing that decides whether a wrong number reaches the warehouse.
 
 That is the single most useful fact in the room, and the standup format he was using had no slot for it.
 
-Ananya, two people later, says her version of the same nothing: *"Writing tests. No blockers."* What she actually needs is a fixture PDF with a table that spans two pages, and she has been waiting three days for someone to say who can produce one.
+Pankaj, two people later, says her version of the same nothing: *"Writing tests. No blockers."* What she actually needs is a fixture PDF with a table that spans two pages, and she has been waiting three days for someone to say who can produce one.
 
 Standup takes six minutes. Everyone is efficient and nobody learns anything.
 
-Farhan changes the format that afternoon, and the change is small: **stop asking people what they did, and start asking the evidence.**
+Atul changes the format that afternoon, and the change is small: **stop asking people what they did, and start asking the evidence.**
 
 ---
 
@@ -101,7 +101,7 @@ So this prompt names it explicitly as a category. That is most of the work — o
 | **Comprehension** | "The AI wrote it, it works, I don't understand it yet" | A pairing session, or [P30](../phase-6-rework/P30-when-the-ai-is-stuck.md) |
 | **Environment** | "I've been waiting three days for a two-page fixture PDF" | Anyone. These are usually trivial and invisible |
 
-Ananya's fixture is the fourth kind, and it is the one that hurts most in practice — because it is small, so nobody escalates it, so it sits there for three days costing more than any of the interesting problems.
+Pankaj's fixture is the fourth kind, and it is the one that hurts most in practice — because it is small, so nobody escalates it, so it sits there for three days costing more than any of the interesting problems.
 
 ### The one idea to keep
 
@@ -163,7 +163,7 @@ specific person or decision, or honestly says "nothing".
 
 | Placeholder | What to put in it | Northwind example | What happens if you get it wrong |
 |---|---|---|---|
-| `[MY GIT NAME]` | Your git author name or email, exactly as it appears in commits | `Tomas Vargas` | Returns an empty log and the AI cheerfully reports you did nothing |
+| `[MY GIT NAME]` | Your git author name or email, exactly as it appears in commits | `Ravi Mullick` | Returns an empty log and the AI cheerfully reports you did nothing |
 | `[LAST STANDUP TIME]` | When the last standup was, as a git-parseable date | `"yesterday 09:30"` | Too wide and you re-report work you already reported; too narrow and you miss the evening's commits |
 | `[CI COMMAND OR PATH]` | How to see build status — a CLI command, a log path, or a URL you can fetch | `gh run list --limit 5` | The long-running red test stays invisible, which is exactly the failure this prompt exists to catch |
 | `[TICKET SOURCE]` | Where tickets live and how to read them — a CLI, an MCP server, or a file | the Jira MCP server configured in [P03](../phase-0-foundation/P03-wire-up-an-mcp-server.md) | The AI works from commits alone and misses that a ticket has been "In Progress" untouched for four days |
@@ -175,7 +175,7 @@ specific person or decision, or honestly says "nothing".
 
 ## 5. The filled-in example
 
-Tomas, day nine of Sprint 2, at 9:20am.
+Ravi, day nine of Sprint 2, at 9:20am.
 
 ```text
 You are helping me prepare my daily standup update. Be brief and factual.
@@ -184,7 +184,7 @@ You are helping me prepare my daily standup update. Be brief and factual.
 
 Gather the evidence first — do not ask me what I did:
 
-1. **Run** `git log --author="Tomas Vargas" --since="yesterday 09:30" --oneline --stat`
+1. **Run** `git log --author="Ravi Mullick" --since="yesterday 09:30" --oneline --stat`
 2. **Run** `git status` and `git diff --stat` to see what is still uncommitted
 3. **Read** the CI results at `gh run list --limit 5 --branch feat/NWD-103-confidence-gate`
 4. **List** the tickets currently assigned to me from the Jira MCP server, with their column
@@ -228,7 +228,7 @@ specific person or decision, or honestly says "nothing".
 ```text
 Evidence gathered
 ─────────────────
-git log (Tomas Vargas, since yesterday 09:30):
+git log (Ravi Mullick, since yesterday 09:30):
   8f3a1c2  feat(confidence): per-field-type threshold evaluation      core/confidence.py  +94 -0
   2b7e419  test(confidence): money gated harder than descriptive text tests/test_confidence.py +38 -0
   c14d803  wip(config): recursive default merge for source overrides  config/settings.py  +47 -3
@@ -275,23 +275,23 @@ Things the evidence shows that you did not mention
    reworked — that pattern usually means the approach is not settling.
 ```
 
-Tomas answers the question honestly. The final update reads:
+Ravi answers the question honestly. The final update reads:
 
 ```text
 Done      Confidence gate evaluates per-field-type thresholds; first two tests green.
 Today     Finish the config default merge so broker_alpha's 0.92 override applies.
 Blocked   The recursive _deep_merge my AI wrote works but I can't fully explain it,
-          and it decides which threshold applies. Want 20 minutes with Rahul before I merge.
+          and it decides which threshold applies. Want 20 minutes with Gautam before I merge.
           Also test_extract has been red since yesterday morning.
 ```
 
 ### How to read this
 
-**The evidence block is the point.** It took thirty seconds to produce and it contains two facts Tomas did not have in his head: that a test has been red for over a day, and that this is his *third* commit to the same merge logic.
+**The evidence block is the point.** It took thirty seconds to produce and it contains two facts Ravi did not have in his head: that a test has been red for over a day, and that this is his *third* commit to the same merge logic.
 
 **The two-day-red test is the classic catch.** Nobody is hiding it. It has simply stopped being visible — it went red on a Tuesday morning, everyone was busy, and by Thursday it is part of the furniture. Evidence-based standups find these every time.
 
-**The third-attempt pattern is the subtle one.** The AI is not saying the code is wrong. It is saying *this is the third go at the same twenty lines*, which is the signal from [the rework loop](../03-the-rework-loop.md) that the session is circling. That is a [P30](../phase-6-rework/P30-when-the-ai-is-stuck.md) situation and Tomas had not recognised it as one.
+**The third-attempt pattern is the subtle one.** The AI is not saying the code is wrong. It is saying *this is the third go at the same twenty lines*, which is the signal from [the rework loop](../03-the-rework-loop.md) that the session is circling. That is a [P30](../phase-6-rework/P30-when-the-ai-is-stuck.md) situation and Ravi had not recognised it as one.
 
 **Commonly wrong:** the Today line. The output above says *"finish the config default merge so broker_alpha's 0.92 override applies"* — tomorrow you can say yes or no to that. The version people write by hand is *"continue with NWD-103,"* which is unfalsifiable and can be said again on Friday.
 
@@ -451,7 +451,7 @@ The most common decay. People start addressing their three lines to the PM, and 
 
 **Why it happens:** the PM is usually the one running the meeting, so they become the audience by default.
 
-**The fix:** have people address the team, not Farhan. Rotate who facilitates. And the PM should have a blocker sometimes, out loud — nothing normalises admitting a problem faster than the person you are worried about impressing admitting one first.
+**The fix:** have people address the team, not Atul. Rotate who facilitates. And the PM should have a blocker sometimes, out loud — nothing normalises admitting a problem faster than the person you are worried about impressing admitting one first.
 
 ### The AI writes a nicer update than the truth
 
@@ -467,7 +467,7 @@ By week three, "is there code you can't explain?" gets a reflexive no.
 
 **Why it happens:** it is a yes/no question and no is easier.
 
-**The fix:** make it concrete. Ask instead: *"pick the most complex function in your branch. Could you explain it, line by line, to Rahul, right now, with no preparation?"* Naming a specific function and a specific person changes the answer noticeably more often than you would expect.
+**The fix:** make it concrete. Ask instead: *"pick the most complex function in your branch. Could you explain it, line by line, to Gautam, right now, with no preparation?"* Naming a specific function and a specific person changes the answer noticeably more often than you would expect.
 
 ### Standup replaces the actual conversation
 
@@ -475,7 +475,7 @@ The opposite failure: a blocker gets raised, everyone nods, and nothing happens 
 
 **Why it happens:** raising it feels like progress. It isn't.
 
-**The fix:** every blocker leaves standup with a name and a time attached, not just an acknowledgement. Ananya's fixture PDF sat for three days after being mentioned twice. It was fixed in forty minutes on the day somebody said "Tomas, you, after this."
+**The fix:** every blocker leaves standup with a name and a time attached, not just an acknowledgement. Pankaj's fixture PDF sat for three days after being mentioned twice. It was fixed in forty minutes on the day somebody said "Ravi, you, after this."
 
 ### It is the wrong tool entirely
 
@@ -489,11 +489,11 @@ If the team is two people sitting together, you do not need this. You do not rea
 
 Standup produces the smallest artifact in the book and the widest one — three lines per person, and its output goes to whoever the blocker belongs to.
 
-**A comprehension blocker** goes to a pairing session, usually with Rahul, and it is worth protecting. It is the [Definition of Done](../phase-3-planning/P17-definition-of-done.md) clause *"a human has read every line the AI wrote"* being enforced by the person it applies to, before review rather than during it. Catching it here costs twenty minutes. Catching it in review costs a round trip. Not catching it at all costs whoever changes that code in eight months.
+**A comprehension blocker** goes to a pairing session, usually with Gautam, and it is worth protecting. It is the [Definition of Done](../phase-3-planning/P17-definition-of-done.md) clause *"a human has read every line the AI wrote"* being enforced by the person it applies to, before review rather than during it. Catching it here costs twenty minutes. Catching it in review costs a round trip. Not catching it at all costs whoever changes that code in eight months.
 
 **A spec-gap blocker** goes to [P29](../phase-6-rework/P29-the-spec-was-wrong.md), and quickly, because a gap one person has hit is a gap several stories are quietly built on.
 
-**A dependency blocker** goes back to the PM for re-sequencing. Farhan spotted NWD-108's dependency on NWD-103 during [sprint planning](../phase-3-planning/P16-sprint-plan-and-assignment.md), three weeks before it bit — but most dependencies are not visible that early, and standup is where the rest of them surface.
+**A dependency blocker** goes back to the PM for re-sequencing. Atul spotted NWD-108's dependency on NWD-103 during [sprint planning](../phase-3-planning/P16-sprint-plan-and-assignment.md), three weeks before it bit — but most dependencies are not visible that early, and standup is where the rest of them surface.
 
 **An environment blocker** goes to anyone with a spare hour. These are the ones to watch: individually trivial, therefore never escalated, therefore the longest-lived items on any team.
 
@@ -518,17 +518,17 @@ Standup produces the smallest artifact in the book and the widest one — three 
 
 Day nine of Sprint 2, in [chapter 05](../../Case-Study/Python-ETL/05-sprint-2-build-backend.md).
 
-Tomas gives his fourth identical update. Farhan writes it down without comment, and after standup asks a different question — not *what did you do*, but *show me yesterday's commits*. Three commits, one prefixed `wip`, all three touching the same twenty lines of config merging.
+Ravi gives his fourth identical update. Atul writes it down without comment, and after standup asks a different question — not *what did you do*, but *show me yesterday's commits*. Three commits, one prefixed `wip`, all three touching the same twenty lines of config merging.
 
-Tomas explains: the gate itself took ninety minutes. The rest of the day went on a recursive helper his AI produced for merging per-broker config overrides onto the defaults. It works. Every test passes. He has read it four times and he could not confidently explain what it does when a nested key exists on one side and not the other — which is precisely the case that decides whether Broker Alpha's 0.92 currency threshold overrides the 0.90 default.
+Ravi explains: the gate itself took ninety minutes. The rest of the day went on a recursive helper his AI produced for merging per-broker config overrides onto the defaults. It works. Every test passes. He has read it four times and he could not confidently explain what it does when a nested key exists on one side and not the other — which is precisely the case that decides whether Broker Alpha's 0.92 currency threshold overrides the 0.90 default.
 
 That code decides which threshold applies. Which decides what reaches the warehouse.
 
-Rahul spends twenty minutes with him after standup. The helper turns out to be correct. Tomas can now explain it, and the review is a formality rather than an argument.
+Gautam spends twenty minutes with him after standup. The helper turns out to be correct. Ravi can now explain it, and the review is a formality rather than an argument.
 
-The genuinely useful part, though, is what Farhan changes that afternoon: he adds the comprehension question to the team's standup format, permanently. Two days later Ji-woo uses it to flag a `useMemo` dependency array in the exception queue that they had not reasoned through — a much smaller thing, caught much earlier, precisely because the format now had a slot for it.
+The genuinely useful part, though, is what Atul changes that afternoon: he adds the comprehension question to the team's standup format, permanently. Two days later Dzmitry uses it to flag a `useMemo` dependency array in the exception queue that they had not reasoned through — a much smaller thing, caught much earlier, precisely because the format now had a slot for it.
 
-And in the same standup, three days late, Ananya finally says out loud that she has been waiting for a two-page fixture PDF. It takes forty minutes to produce. It is the fixture she uses, two weeks later, to find [NWD-142](../../Case-Study/Python-ETL/artifacts/bug-NWD-142.md).
+And in the same standup, three days late, Pankaj finally says out loud that she has been waiting for a two-page fixture PDF. It takes forty minutes to produce. It is the fixture she uses, two weeks later, to find [NWD-142](../../Case-Study/Python-ETL/artifacts/bug-NWD-142.md).
 
 ---
 

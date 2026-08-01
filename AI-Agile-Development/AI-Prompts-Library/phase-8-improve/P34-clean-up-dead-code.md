@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | **Phase** | 8 — Improve |
-| **Who runs it** | Team Lead (Rahul Nair) |
+| **Who runs it** | Team Lead (Gautam ) |
 | **When** | Sprint 4, after the runbook is written and before the parallel run starts |
 | **Takes in** | The codebase at `Case-Study/Python-ETL/code/doc_ingestion/`, plus `artifacts/adr/` to know which approaches were rejected |
 | **Produces** | A dead code inventory with evidence, then a sequence of small deletion commits |
@@ -18,17 +18,17 @@
 
 ## 1. The scene
 
-Rahul is reading the runbook Tomas finished yesterday, and something is bothering him.
+Gautam is reading the runbook Ravi finished yesterday, and something is bothering him.
 
-It is a good runbook. Five failure modes, all traced to real defects. Four common operations. Every command verified. But he has read it twice now and there are parts of the codebase that appear in none of it — not in a failure mode, not in an operation, not in an alert. That is odd. Writing an operational document forces you to walk every path that can go wrong, and if a module never shows up in that walk, one of two things is true. Either Tomas missed it, or nothing ever reaches it.
+It is a good runbook. Five failure modes, all traced to real defects. Four common operations. Every command verified. But he has read it twice now and there are parts of the codebase that appear in none of it — not in a failure mode, not in an operation, not in an alert. That is odd. Writing an operational document forces you to walk every path that can go wrong, and if a module never shows up in that walk, one of two things is true. Either Ravi missed it, or nothing ever reaches it.
 
 He opens `code/doc_ingestion/core/extract.py` and finds two functions near the bottom: `_ocr_text_blocks()` and `_regex_field_scan()`. Both about forty lines. Both carefully written. Neither is called from anywhere in the file.
 
-Then he remembers where they came from. Back in Sprint 1, before Sofia wrote [ADR 0001](../phase-2-design/P12-record-an-architecture-decision.md), the team spent two days on a cheaper approach: run open-source OCR over the PDF to get raw text, then pull fields out with regular expressions. It failed for a completely predictable reason — no confidence scores. Without a per-field confidence you cannot build a confidence gate, and without a confidence gate the entire "a wrong number is worse than no number" design collapses. Azure AI Document Intelligence won on exactly that point.
+Then he remembers where they came from. Back in Sprint 1, before Hem wrote [ADR 0001](../phase-2-design/P12-record-an-architecture-decision.md), the team spent two days on a cheaper approach: run open-source OCR over the PDF to get raw text, then pull fields out with regular expressions. It failed for a completely predictable reason — no confidence scores. Without a per-field confidence you cannot build a confidence gate, and without a confidence gate the entire "a wrong number is worse than no number" design collapses. Azure AI Document Intelligence won on exactly that point.
 
 The approach was rejected. The helpers stayed. Nobody deleted them because nobody remembered they were speculative, and by Sprint 2 they just looked like part of the file.
 
-**Dead code is not harmless clutter — it is a lie about what the system does, and everyone who reads the file afterwards believes it.** Rahul opens a session and starts an inventory.
+**Dead code is not harmless clutter — it is a lie about what the system does, and everyone who reads the file afterwards believes it.** Gautam opens a session and starts an inventory.
 
 ---
 
@@ -87,7 +87,7 @@ Three consequences worth naming:
 
 **Plausibility.** AI-generated dead code is well-formed. It has type hints, a docstring, sensible names, and consistent style. Hand-written abandoned code usually looks abandoned — half-finished, a stray `TODO`, inconsistent naming. AI-generated abandoned code looks finished, which removes the visual cue that would have prompted someone to ask about it.
 
-**Attribution loss.** `git blame` tells you which commit added it and which human authored that commit. It does not tell you that the human never really read it. So the social signal that normally protects code — "Tomas wrote this deliberately, better ask him" — is misleading. Tomas may have no idea it exists.
+**Attribution loss.** `git blame` tells you which commit added it and which human authored that commit. It does not tell you that the human never really read it. So the social signal that normally protects code — "Ravi wrote this deliberately, better ask him" — is misleading. Ravi may have no idea it exists.
 
 **So dead code cleanup has moved from a nice-to-have tidy-up to a routine part of the loop, and it needs to run more often than it used to.** Once a sprint, not once a year.
 
@@ -278,7 +278,7 @@ Output the inventory and plan as markdown to the chat.
 
 ## 5. The filled-in example
 
-Rahul runs this on the Thursday of Sprint 4, after reading the runbook.
+Gautam runs this on the Thursday of Sprint 4, after reading the runbook.
 
 ```text
 You are a senior engineer removing dead code. **Find code in
@@ -859,7 +859,7 @@ The one that actually breaks production, and the one this whole prompt is shaped
 
 `map_beta_isin()` in `core/transform.py` has zero code references. Every static analyser, every IDE, every linter will tell you it is unused. It is called on every single `broker_beta_em` confirmation, resolved by name at runtime from `config/sources.yaml`.
 
-Delete it and nothing fails at deploy time. The Function starts fine. Tests pass, because the tests exercise the mappers directly. The failure arrives the next time a Spanish confirmation comes through: the ISIN mapping raises an `AttributeError`, the document goes to the exception queue, and the first person to notice is Priya wondering why `broker_beta_em` volume tripled.
+Delete it and nothing fails at deploy time. The Function starts fine. Tests pass, because the tests exercise the mappers directly. The failure arrives the next time a Spanish confirmation comes through: the ISIN mapping raises an `AttributeError`, the document goes to the exception queue, and the first person to notice is Preeti wondering why `broker_beta_em` volume tripled.
 
 **The fix:** Step 0. Find the dynamic dispatch sites before you trust any static conclusion. If `getattr` appears anywhere near a config read, every candidate needs the config search, without exception.
 
@@ -903,15 +903,15 @@ The distinction matters because the two jobs have completely different risk prof
 
 ## 10. The handoff
 
-Farhan picks this up, and it lands in the retrospective.
+Atul picks this up, and it lands in the retrospective.
 
 The immediate output — four commits, a smaller `requirements.txt`, a `core/extract.py` that no longer advertises a text fallback — is worth having and is not the interesting part. The interesting part is what the exercise revealed about how the team works.
 
 Two extraction helpers survived from Sprint 1 to Sprint 4, through code review, through three sprints of people opening that file. A feature flag added as a kill switch became permanent without anyone deciding it should. A dependency line survived an SDK migration. None of those is a mistake anyone made. Each is a small gap in a process, and process gaps are exactly what [P35](P35-run-the-retrospective.md) exists to surface.
 
-The pointed question Rahul takes into the retro is: **why did nothing catch this for three sprints?** The honest answer is that nothing was looking. Code review looks at the diff, and dead code is defined by its absence from diffs. The definition of done in [P17](../phase-3-planning/P17-definition-of-done.md) does not mention it. That is a process finding, not a personal one, and it turns into an action item.
+The pointed question Gautam takes into the retro is: **why did nothing catch this for three sprints?** The honest answer is that nothing was looking. Code review looks at the diff, and dead code is defined by its absence from diffs. The definition of done in [P17](../phase-3-planning/P17-definition-of-done.md) does not mention it. That is a process finding, not a personal one, and it turns into an action item.
 
-Sofia gets something narrower and sharper. The dead code inventory is a list of decisions the codebase made and did not record. The OCR helpers were a decision that lived in ADR 0001 but not in the code. The stuck flag was a decision nobody realised they had made. That maps directly onto the debt inventory in [P36](P36-tech-debt-triage.md), where the recurring pattern is the same: a shortcut taken deliberately, and then forgotten about.
+Hem gets something narrower and sharper. The dead code inventory is a list of decisions the codebase made and did not record. The OCR helpers were a decision that lived in ADR 0001 but not in the code. The stuck flag was a decision nobody realised they had made. That maps directly onto the debt inventory in [P36](P36-tech-debt-triage.md), where the recurring pattern is the same: a shortcut taken deliberately, and then forgotten about.
 
 > **Artifact contract — the dead code inventory and its commits**
 > Anyone reading this work can rely on finding:
@@ -930,13 +930,13 @@ Sofia gets something narrower and sharper. The dead code inventory is a list of 
 
 This appears in [09-sprint-4-release.md](../../Case-Study/Python-ETL/09-sprint-4-release.md), on the Thursday, and it starts because of the runbook rather than because anyone planned it.
 
-Rahul noticed the gap while reading [P33](../phase-7-release/P33-write-the-runbook.md)'s output. Writing an operational document forces you to walk every path that can fail, and the modules that never appear in that walk are worth a second look. That is a genuinely useful habit and it is not obvious in advance — the runbook is an operability artefact, and its side effect is a map of what the system actually does versus what the codebase claims it does.
+Gautam noticed the gap while reading [P33](../phase-7-release/P33-write-the-runbook.md)'s output. Writing an operational document forces you to walk every path that can fail, and the modules that never appear in that walk are worth a second look. That is a genuinely useful habit and it is not obvious in advance — the runbook is an operability artefact, and its side effect is a map of what the system actually does versus what the codebase claims it does.
 
-The find that surprised the team was not the OCR helpers. Everyone half-remembered those. It was `map_beta_isin()`, which the first pass of the inventory classified DEAD with high confidence, and which is called on every Spanish confirmation `broker_beta_em` sends. Rahul caught it because he read the evidence column, saw that the config search had not been run, and asked for it. Had he skimmed — and the row looked exactly like the four rows above it — the deletion would have shipped, and the failure would have surfaced days later as a cluster of exception queue rows that looked like a translation problem.
+The find that surprised the team was not the OCR helpers. Everyone half-remembered those. It was `map_beta_isin()`, which the first pass of the inventory classified DEAD with high confidence, and which is called on every Spanish confirmation `broker_beta_em` sends. Gautam caught it because he read the evidence column, saw that the config search had not been run, and asked for it. Had he skimmed — and the row looked exactly like the four rows above it — the deletion would have shipped, and the failure would have surfaced days later as a cluster of exception queue rows that looked like a translation problem.
 
-Sofia's reaction to that near miss is the sentence the team kept. Her recurring question is "what does this look like when it's wrong?", and applied to dead code removal the answer is uncomfortable: it looks like nothing at all, for as long as it takes for the right document to arrive. There is no deploy-time error, no failing test, no alert. That is why the evidence rule is not bureaucracy.
+Hem's reaction to that near miss is the sentence the team kept. Her recurring question is "what does this look like when it's wrong?", and applied to dead code removal the answer is uncomfortable: it looks like nothing at all, for as long as it takes for the right document to arrive. There is no deploy-time error, no failing test, no alert. That is why the evidence rule is not bureaucracy.
 
-The stuck flag became a small argument. Tomas wanted to keep `ENABLE_ROW_COUNT_CHECK` on the grounds that a kill switch on a new check is prudent. Sofia's counter is in the commit message above and it won: a documented switch for disabling the only defence against silently-missing data is a switch someone will eventually flip at 3am to clear a backlog, and NWD-142 is the proof of what silently-missing data costs. The flag went, and `artifacts/spec-confidence-gate.md` was updated in the same commit so the spec and the code agreed for once.
+The stuck flag became a small argument. Ravi wanted to keep `ENABLE_ROW_COUNT_CHECK` on the grounds that a kill switch on a new check is prudent. Hem's counter is in the commit message above and it won: a documented switch for disabling the only defence against silently-missing data is a switch someone will eventually flip at 3am to clear a backlog, and NWD-142 is the proof of what silently-missing data costs. The flag went, and `artifacts/spec-confidence-gate.md` was updated in the same commit so the spec and the code agreed for once.
 
 ---
 

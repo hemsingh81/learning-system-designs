@@ -7,30 +7,30 @@
 | | |
 |---|---|
 | **Phase** | 2 — Design |
-| **Who runs it** | Frontend Engineer (Ji-woo Park), with the Product Owner (Amara Osei) |
+| **Who runs it** | Frontend Engineer (Dzmitry ), with the Product Owner (Preetinka Sharma) |
 | **When** | Sprint 1, day 5. The confidence gate spec and the data contract are done. NWD-108 is queued for Sprint 2. |
-| **Takes in** | `artifacts/stories/NWD-108-exception-queue.md`, `artifacts/spec-confidence-gate.md` (the exception record shape), `artifacts/data-contract-counterparty-position.md`, `artifacts/adr/0003-one-failing-field-rejects-the-document.md`, and forty-five minutes of watching Priya work |
+| **Takes in** | `artifacts/stories/NWD-108-exception-queue.md`, `artifacts/spec-confidence-gate.md` (the exception record shape), `artifacts/data-contract-counterparty-position.md`, `artifacts/adr/0003-one-failing-field-rejects-the-document.md`, and forty-five minutes of watching Preeti work |
 | **Produces** | `Case-Study/Python-ETL/artifacts/ui-brief-exception-queue.md` |
-| **Hands off to** | Rahul running [P15 — Implementation Plan](../phase-3-planning/P15-implementation-plan.md), then Ji-woo building it in [P19](../phase-4-build/P19-build-the-ui-from-the-brief.md) |
-| **Time to run** | A day. Forty-five minutes with Priya, forty minutes generating, the rest reviewing with Amara. |
+| **Hands off to** | Gautam running [P15 — Implementation Plan](../phase-3-planning/P15-implementation-plan.md), then Dzmitry building it in [P19](../phase-4-build/P19-build-the-ui-from-the-brief.md) |
+| **Time to run** | A day. Forty-five minutes with Preeti, forty minutes generating, the rest reviewing with Preetinka. |
 
 ---
 
 ## 1. The scene
 
-Friday afternoon of Sprint 1. Ji-woo has the story — NWD-108, "Exception queue screen for analyst review" — and about four lines of detail. She has the exception record shape from the confidence gate spec. She has the data contract from this morning. She has, in other words, everything except any idea what the screen is for.
+Friday afternoon of Sprint 1. Dzmitry has the story — NWD-108, "Exception queue screen for analyst review" — and about four lines of detail. She has the exception record shape from the confidence gate spec. She has the data contract from this morning. She has, in other words, everything except any idea what the screen is for.
 
 She could start building. React, a table, a detail panel, a form. Two days and it would demo fine.
 
-Instead she asks Amara for twenty minutes with Priya Raman, the operations analyst at Northwind who is currently doing this job by hand, and gets forty-five. What she watches is not what she expected.
+Instead she asks Preetinka for twenty minutes with Preeti Singh, the operations analyst at Northwind who is currently doing this job by hand, and gets forty-five. What she watches is not what she expected.
 
-Priya starts at 07:30 because the reconciliation run kicks off at 10:00 and everything has to be in before then. She works from a spreadsheet, a folder of PDFs, and a second monitor. She does about forty documents in that window. Not carefully, one at a time, savouring each — she goes fast, because forty documents in two and a half hours is under four minutes each including the ones that need a phone call.
+Preeti starts at 07:30 because the reconciliation run kicks off at 10:00 and everything has to be in before then. She works from a spreadsheet, a folder of PDFs, and a second monitor. She does about forty documents in that window. Not carefully, one at a time, savouring each — she goes fast, because forty documents in two and a half hours is under four minutes each including the ones that need a phone call.
 
-Two things stand out and neither would have occurred to Ji-woo at a desk.
+Two things stand out and neither would have occurred to Dzmitry at a desk.
 
-Priya almost never uses her mouse. She has the spreadsheet's keyboard shortcuts in her fingers and when she has to reach for the mouse she visibly slows down. And when she opens a PDF, the first thing she does is scroll to find the page with the table on it, every single time, because the viewer opens at page one and the positions are usually on page two or three.
+Preeti almost never uses her mouse. She has the spreadsheet's keyboard shortcuts in her fingers and when she has to reach for the mouse she visibly slows down. And when she opens a PDF, the first thing she does is scroll to find the page with the table on it, every single time, because the viewer opens at page one and the positions are usually on page two or three.
 
-Ji-woo does the arithmetic on the way back. One scroll per document, forty documents, five seconds each: three and a half minutes a morning, spent scrolling. **Every extra click costs Priya forty clicks, and a design brief that does not know that will produce a screen that demos beautifully and is hated by 08:15.**
+Dzmitry does the arithmetic on the way back. One scroll per document, forty documents, five seconds each: three and a half minutes a morning, spent scrolling. **Every extra click costs Preeti forty clicks, and a design brief that does not know that will produce a screen that demos beautifully and is hated by 08:15.**
 
 She opens a session and runs this prompt.
 
@@ -60,8 +60,8 @@ This library now has three design artifacts that people confuse, so here they ar
 
 | | Answers | Written by | Contains |
 |---|---|---|---|
-| **Spec** ([P11](P11-write-the-technical-spec.md)) | What does the system do? | Sofia | Rules, interfaces, given/when/then, error codes |
-| **Brief** (this file) | What must the user be able to do, and under what conditions? | Ji-woo + Amara | The user's day, the job, the states, the constraints, the success measure |
+| **Spec** ([P11](P11-write-the-technical-spec.md)) | What does the system do? | Hem | Rules, interfaces, given/when/then, error codes |
+| **Brief** (this file) | What must the user be able to do, and under what conditions? | Dzmitry + Preetinka | The user's day, the job, the states, the constraints, the success measure |
 | **Wireframe / mockup** | What does it look like? | Whoever designs it | Layout, hierarchy, actual pixels |
 
 The order matters and it is frequently reversed. A wireframe drawn before a brief is a guess about the user's day that everyone then treats as a requirement, because a picture is very persuasive and very hard to argue with. Once there is a screenshot in the ticket, the conversation is about button placement rather than about whether the workflow fits the morning.
@@ -89,7 +89,7 @@ This is the teaching point of the file, so it gets its own treatment.
 
 Most UI briefs describe a screen in isolation: here is the list, here is the detail view, here are the fields. That description is not wrong. It is just missing the multiplier.
 
-Priya does forty of these in a morning. So:
+Preeti does forty of these in a morning. So:
 
 | Design choice | Cost per document | Cost per morning |
 |---|---|---|
@@ -116,13 +116,13 @@ A screen is not one screen. It is a set of states, and the ones that get skipped
 | **Stale** | Someone else already handled this item | Only happens with two users |
 | **Submit failure** | Their edits are in the form and the save failed | The most damaging one, and the least designed |
 
-The last one deserves the emphasis. Priya types a corrected quantity, presses submit, the network drops. If the screen clears the form, she has lost work and she will not trust the screen again. That behaviour is a design decision and it will be made by whoever writes the submit handler unless the brief makes it.
+The last one deserves the emphasis. Preeti types a corrected quantity, presses submit, the network drops. If the screen clears the form, she has lost work and she will not trust the screen again. That behaviour is a design decision and it will be made by whoever writes the submit handler unless the brief makes it.
 
 Empty is worth a word too, because at Northwind it is *good news*. An empty exception queue means every document went straight through. The screen should say so, plainly, rather than showing a sad grey box that reads like something is broken.
 
 ### Keyboard-first is a requirement, not a nicety
 
-Ji-woo watched Priya avoid the mouse. That observation converts directly into a requirement, and it is worth understanding why it is more than a preference.
+Dzmitry watched Preeti avoid the mouse. That observation converts directly into a requirement, and it is worth understanding why it is more than a preference.
 
 A mouse action requires the user to *look*, locate a target, move, and click. A keyboard action requires none of that once it is in muscle memory. For a task done forty times a morning, every day, muscle memory is the dominant factor — the difference between a fast worker and a slow one is almost entirely how much of the task has stopped requiring attention.
 
@@ -159,11 +159,11 @@ Five deliberate ordering choices in §3.
 2. **Volume and the interaction budget are their own required section.** Without a number, "efficient" is an adjective.
 3. **States are a required table with a minimum count.** Otherwise you get the happy path and a loading spinner.
 4. **A required "what this must not do" section.** Screens grow. Naming the non-goals on day one is the only thing that reliably stops it.
-5. **Success stated as a measurable number.** "Priya can clear a document in under 45 seconds median" is checkable in [P22](../phase-5-verify/P22-e2e-test-the-application.md). "Intuitive" is not checkable by anyone, ever.
+5. **Success stated as a measurable number.** "Preeti can clear a document in under 45 seconds median" is checkable in [P22](../phase-5-verify/P22-e2e-test-the-application.md). "Intuitive" is not checkable by anyone, ever.
 
 ### The one thing to remember
 
-**Design the morning, not the screen.** The screen is what falls out of understanding the morning. Ji-woo's brief works because forty-five minutes of watching produced two facts — Priya avoids the mouse, and the positions are never on page one — and both facts turn into requirements that would never have surfaced from the story.
+**Design the morning, not the screen.** The screen is what falls out of understanding the morning. Dzmitry's brief works because forty-five minutes of watching produced two facts — Preeti avoids the mouse, and the positions are never on page one — and both facts turn into requirements that would never have surfaced from the story.
 
 ---
 
@@ -279,7 +279,7 @@ Save to [OUTPUT PATH].
 |---|---|---|---|
 | `[ARTIFACTS TO READ]` | The story, the spec section defining the data this screen shows, the data contract, and any ADR that shapes the workflow | `artifacts/stories/NWD-108-exception-queue.md`, `artifacts/spec-confidence-gate.md` §5, `artifacts/data-contract-counterparty-position.md`, `artifacts/adr/0003-one-failing-field-rejects-the-document.md` | Without ADR-0003 the brief designs a per-row correction screen, which contradicts the architecture. Whole-document review is not a UI choice. |
 | `[SCREEN NAME AND ONE-LINE PURPOSE]` | The name and what one use of it accomplishes | "Exception queue — where an analyst reviews a document the rules engine rejected, corrects the failing fields, and releases it" | Vague purpose produces a dashboard. Dashboards are what you get when nobody said what the screen is for. |
-| `[THE USER AND THEIR DAY]` | Everything you observed, including things that seem irrelevant. The small observations are the valuable ones | Priya, ops analyst, London. Starts 07:30, recon at 10:00, ~40 documents. Avoids the mouse. Scrolls every PDF to find the table. Two monitors. Phones the broker maybe twice a morning | This is the whole prompt. Give it a persona card and you get a persona-card brief. Give it "she scrolls every PDF" and you get a requirement worth three minutes a day. |
+| `[THE USER AND THEIR DAY]` | Everything you observed, including things that seem irrelevant. The small observations are the valuable ones | Preeti, ops analyst, London. Starts 07:30, recon at 10:00, ~40 documents. Avoids the mouse. Scrolls every PDF to find the table. Two monitors. Phones the broker maybe twice a morning | This is the whole prompt. Give it a persona card and you get a persona-card brief. Give it "she scrolls every PDF" and you get a requirement worth three minutes a day. |
 | `[VOLUME AND TIMING]` | How many, in what window, and the worst case | ~40 a morning in a 2.5-hour window; month-end spikes past 100; must be clear before the 10:00 reconciliation run | Without volume, section 3 is empty and the brief loses its main argument. |
 | `[AVAILABLE DATA]` | The actual fields the screen can show, from the spec and contract | `FAILING_FIELD`, `FIELD_CONFIDENCE`, `THRESHOLD_APPLIED`, `REASON_CODE`, `SOURCE_PAGE`, `BRONZE_PATH`, `CONTENT_HASH`, `COUNTERPARTY_ID`, `MIN_CONFIDENCE`, plus all extracted field values | Omit it and the brief will ask for a field that does not exist, which becomes a backend story nobody planned. |
 | `[CONSTRAINTS]` | Non-negotiables from architecture and environment | Whole-document accept or reject (ADR-0003) · corrections are audited and attributed · the PDF is in blob storage and must open at `SOURCE_PAGE` · desktop only, dual monitor, Chrome · English UI even for Spanish documents | Unstated constraints get discovered in build. "Corrections must be attributed" changes the submit flow, and finding that out in Sprint 2 costs a day. |
@@ -289,7 +289,7 @@ Save to [OUTPUT PATH].
 
 ## 5. The filled-in example
 
-Ji-woo runs this on Friday at 16:10, straight after getting back from Northwind, with her notes still open.
+Dzmitry runs this on Friday at 16:10, straight after getting back from Northwind, with her notes still open.
 
 ```text
 You are a **product designer** writing a UI/UX design brief. A brief describes what a user must be
@@ -308,7 +308,7 @@ engine rejected, sees which field failed and why, corrects it against the source
 the document for loading.
 
 **The user — everything I observed, including the small things:**
-Priya Raman, operations analyst at Northwind, London office. I watched her for 45 minutes on
+Preeti Singh, operations analyst at Northwind, London office. I watched her for 45 minutes on
 Thursday morning.
 - She starts at 07:30. The reconciliation run is at 10:00 and everything must be in before it.
 - She works through about 40 documents in that window. Some take 20 seconds, a few need a phone call
@@ -368,12 +368,12 @@ Sections 1–7 and 9–11 in full; section 8 lightly trimmed.
 ```markdown
 # UI Brief — Exception Queue (NWD-108)
 
-**Author:** Ji-woo Park · **Reviewed by:** Amara Osei · **Date:** 2024-03-13
+**Author:** Dzmitry  · **Reviewed by:** Preetinka Sharma · **Date:** 2024-03-13
 **Related:** NWD-108 · ADR-0003 · `spec-confidence-gate.md` §5 · `data-contract-counterparty-position.md`
 
 ## 1. The user and their day
 
-Priya Raman is an operations analyst at Northwind, London office. She is at her desk at 07:30 because
+Preeti Singh is an operations analyst at Northwind, London office. She is at her desk at 07:30 because
 the reconciliation run starts at 10:00 and anything not cleared by then shows up as a break, and a
 break is a phone call from the front office.
 
@@ -407,7 +407,7 @@ whether it is a scan problem I can fix or a real discrepancy I need to call the 
 **Secondary**
 - **When** I have fixed the field, **I want to** release the whole document and land on the next one
   without touching the mouse, **so I can** hold a rhythm.
-- **When** I cannot resolve something now, **I want to** park it with a note and come back,
+- **When** I cannot resolve something now, **I want to**  it with a note and come back,
   **so I can** stop keeping a paper list.
 - **When** I finish, **I want to** know the queue is genuinely empty rather than still loading,
   **so I can** stop worrying about the 10:00 run.
@@ -452,7 +452,7 @@ exception: **under 45 seconds**, measured from the item appearing to the next it
 |---|---|
 | All other extracted fields with their values and confidences | One key. She sometimes wants to sanity-check a field that passed |
 | Other pages of the PDF | Page keys. Some documents need cross-page checking |
-| Park with a note | One key. Replaces the paper notepad |
+|  with a note | One key. Replaces the paper notepad |
 | The document's history — who touched it before, and when | One key. Only matters when a second analyst is covering |
 
 **Available but not surfaced**
@@ -476,7 +476,7 @@ What must be true, spatially:
 |                           +---------------------------------+
 |                           |  other fields (collapsed)       |
 |                           +---------------------------------+
-|                           |  submit · park · skip           |
+|                           |  submit ·  · skip           |
 +---------------------------+---------------------------------+
 ```
 
@@ -503,7 +503,7 @@ No component names, no sizes, no colours — those are the wireframe's job.
 | `Tab` | Move to the next failing field (not every field — only the ones that failed) |
 | type | Edit the value; the field is focused on open, so she can type immediately |
 | `Ctrl+Enter` | Submit and advance to the next item |
-| `p` | Park with a note; a note field takes focus, `Ctrl+Enter` saves and advances |
+| `p` |  with a note; a note field takes focus, `Ctrl+Enter` saves and advances |
 | `s` | Skip without changes and advance |
 | `e` | Expand or collapse the passing fields |
 | `[` / `]` | Previous / next PDF page |
@@ -520,8 +520,8 @@ is written with the user, the old value, the new value and a UTC timestamp. The 
 automatically** to the next item. There is **no confirmation dialog** — `Ctrl+Z` before submit and a
 five-second undo after it cover the mistake case at a fraction of the cost.
 
-**On park:** the item leaves the active queue with a note and a "waiting" marker, and appears in a
-separate parked list. It does not count against the 10:00 deadline.
+**On :** the item leaves the active queue with a note and a "waiting" marker, and appears in a
+separate ed list. It does not count against the 10:00 deadline.
 
 **On skip:** no changes are written; the item stays in the queue.
 
@@ -532,10 +532,10 @@ separate parked list. It does not count against the 10:00 deadline.
 | **Loading queue** | Count and skeleton rows; the keyboard shortcuts are already live | Nothing yet | Resolves in under 1s or shows progress |
 | **Empty queue** | "Nothing to review — every document today went straight through," with today's count. This is **good news** and must read as good news | Nothing needed | Refresh, or leave |
 | **Error on load** | What failed, in plain English, plus a retry. The last known queue count if we have it | Retry; contact support with the trace id shown | Retry succeeds, or she calls |
-| **Partial data — PDF will not render** | The fields and the correction form still work; the PDF pane shows the failure and a direct download link | She can still correct **if** she is confident; the form warns that she cannot verify against the source | Download the PDF, or park |
+| **Partial data — PDF will not render** | The fields and the correction form still work; the PDF pane shows the failure and a direct download link | She can still correct **if** she is confident; the form warns that she cannot verify against the source | Download the PDF, or  |
 | **Item already handled** | "Handled by [name] at [time]" and it is removed from the queue | Move to the next item; view what was changed | Automatic advance |
 | **Submit in flight** | The action row shows in-progress; the form is **not** cleared and remains readable | Wait; nothing is lost if she navigates away | Resolves to success or failure |
-| **Submit failed** | The error, and **her edits are still in the form, unchanged**. Retry is one key | Retry, or copy the value out, or park | Retry succeeds; nothing is ever silently discarded |
+| **Submit failed** | The error, and **her edits are still in the form, unchanged**. Retry is one key | Retry, or copy the value out, or  | Retry succeeds; nothing is ever silently discarded |
 | **Success** | Brief confirmation; auto-advance to the next item; a 5-second undo is available | Continue, or undo | Automatic |
 
 **Submit-failure is the state that decides whether she trusts this screen.** Losing typed input once
@@ -563,7 +563,7 @@ removed one.
 | Median time to clear a single-field exception | **under 45 seconds** | Timestamp from item opened to next item opened |
 | Mouse actions on the primary path | **zero** | Observed session, one week after launch |
 | Corrections later found to be wrong | **under 1%** of corrections | Downstream break analysis, monthly |
-| Documents parked because the screen could not show what she needed | **under 5%** | Park reason codes |
+| Documents ed because the screen could not show what she needed | **under 5%** |  reason codes |
 | Queue cleared before 10:00 | **every business day** in the first month | Timestamp of the last cleared item |
 
 ## 10. Out of scope
@@ -579,17 +579,17 @@ removed one.
 
 ## 11. Open questions
 
-- **Amara** — at month-end, volume roughly doubles and a second analyst covers. Do two people work
+- **Preetinka** — at month-end, volume roughly doubles and a second analyst covers. Do two people work
   the same queue simultaneously? If so, item locking becomes a v1 requirement, not a v2 one, and the
   "already handled" state gets much more common.
-- **Amara / Priya** — is the parked list Priya's alone, or shared? Her paper notepad is private today
+- **Preetinka / Preeti** — is the ed list Preeti's alone, or shared? Her paper notepad is private today
   and making it visible changes the social dynamic of chasing a broker.
-- **Sofia** — a document rejected on `CLASSIFIER_BELOW_THRESHOLD` has no extracted fields at all. Her
+- **Hem** — a document rejected on `CLASSIFIER_BELOW_THRESHOLD` has no extracted fields at all. Her
   action is picking a counterparty, not fixing a number. That is a genuinely different screen.
   ASSUMED: out of scope for v1, those go to a separate holding list. Confirm.
-- **Tomas** — can the PDF be rendered directly from blob storage with the user's identity, or does it
+- **Ravi** — can the PDF be rendered directly from blob storage with the user's identity, or does it
   need a signed URL through the API? Changes the load path and possibly the perceived speed.
-- **Ji-woo** — NOT OBSERVED: the month-end workflow. I should watch one before we build the parked
+- **Dzmitry** — NOT OBSERVED: the month-end workflow. I should watch one before we build the ed
   list, because that is when it matters most and I am currently designing it from a description.
 ```
 
@@ -603,7 +603,7 @@ removed one.
 
 **Section 8 quietly kills a bug before it is written.** "Confidence is rendered as a percentage, not a raw decimal." That is bug **NWD-139** — the exception queue showing `0.8234567` — specified out of existence in Sprint 1. It still happens, because the brief said it and the implementation missed it, which is its own lesson: a brief prevents nothing on its own, it just makes the bug a one-line fix with an obvious right answer instead of a design discussion.
 
-**And the part that is commonly wrong:** the `NOT OBSERVED` marker on the month-end workflow, and the open question that follows it. That is honest and it is also a gap. Ji-woo is designing the parked list — a feature that matters most under exactly the conditions she has not watched — from a sentence Priya said in passing. She flagged it. Whether anyone acts on it before Sprint 2 is the difference between a good brief and a good outcome.
+**And the part that is commonly wrong:** the `NOT OBSERVED` marker on the month-end workflow, and the open question that follows it. That is honest and it is also a gap. Dzmitry is designing the ed list — a feature that matters most under exactly the conditions she has not watched — from a sentence Preeti said in passing. She flagged it. Whether anyone acts on it before Sprint 2 is the difference between a good brief and a good outcome.
 
 ---
 
@@ -611,7 +611,7 @@ removed one.
 
 **What "done" means here.** Someone could draw three genuinely different wireframes from this brief and you could tell which of them are wrong, without discussing taste. That is the test. A brief that permits any layout is too vague; a brief that permits only one is a mockup in prose.
 
-The practical version: hand it to Rahul for [P15](../phase-3-planning/P15-implementation-plan.md) and see whether he can size the work. If he cannot, something in sections 4, 6 or 7 is missing.
+The practical version: hand it to Gautam for [P15](../phase-3-planning/P15-implementation-plan.md) and see whether he can size the work. If he cannot, something in sections 4, 6 or 7 is missing.
 
 ### The checklist
 
@@ -630,9 +630,9 @@ Two failure modes, both of which feel like diligence.
 
 **The brief drifts into design.** One more pass and you get a suggested layout, then component recommendations, then a colour treatment for the confidence indicator. Every addition narrows what the wireframe stage can explore, and the wireframe stage is where the good ideas come from. A brief that has already decided is not a brief.
 
-**The brief grows features.** Priya mentioned a paper notepad, so add a notes feature. She works across counterparties, so add a filter. She has a deadline, so add a countdown. Each is plausible. Together they turn a screen with one job into a workspace, and the interaction budget in section 3 quietly becomes unachievable.
+**The brief grows features.** Preeti mentioned a paper notepad, so add a notes feature. She works across counterparties, so add a filter. She has a deadline, so add a countdown. Each is plausible. Together they turn a screen with one job into a workspace, and the interaction budget in section 3 quietly becomes unachievable.
 
-Once the checklist passes, the remaining uncertainty is not in the writing. It is in the open questions, and those are answered by talking to Amara and by watching one month-end — not by another generation.
+Once the checklist passes, the remaining uncertainty is not in the writing. It is in the open questions, and those are answered by talking to Preetinka and by watching one month-end — not by another generation.
 
 ### The signal that you are NOT done
 
@@ -771,7 +771,7 @@ For each measure, add: how it is collected, who collects it, and when it is firs
 launch. A measure nobody collects is decoration.
 ```
 
-What changes: section 9 becomes something Ananya can verify in [P22](../phase-5-verify/P22-e2e-test-the-application.md) and Farhan can report in [P32](../phase-7-release/P32-release-readiness-check.md). "Median under 45 seconds" is a test. "Intuitive" is a conversation.
+What changes: section 9 becomes something Pankaj can verify in [P22](../phase-5-verify/P22-e2e-test-the-application.md) and Atul can report in [P32](../phase-7-release/P32-release-readiness-check.md). "Median under 45 seconds" is a test. "Intuitive" is a conversation.
 
 ### The loop
 
@@ -790,7 +790,7 @@ flowchart TD
     G -- yes --> I{Every field real?}
     I -- no --> J[8.4 audit the data]
     J --> I
-    I -- yes --> K[Review with Amara → P15 → P19]
+    I -- yes --> K[Review with Preetinka → P15 → P19]
 ```
 
 ---
@@ -801,7 +801,7 @@ flowchart TD
 
 The most common failure and the most expensive, because everything downstream inherits it.
 
-Without observation you get a persona: "Priya is an operations analyst who values accuracy and efficiency." That sentence is true of every analyst who has ever lived and it generates no requirements. What generates requirements is "she scrolls every PDF to find the table" and "she reads the number back once before moving on."
+Without observation you get a persona: "Preeti is an operations analyst who values accuracy and efficiency." That sentence is true of every analyst who has ever lived and it generates no requirements. What generates requirements is "she scrolls every PDF to find the table" and "she reads the number back once before moving on."
 
 Neither of those is something anyone would say if you asked them to describe their job. You get them by sitting behind someone for forty-five minutes and noticing.
 
@@ -825,7 +825,7 @@ Tuesday has forty documents, three of which have no extracted fields at all beca
 
 ### The brief is written and then nobody reads it during the build
 
-The brief says confidence is displayed as a percentage. The implementation renders `0.8234567`. Ananya files NWD-139 in Sprint 3, it is fixed in one line, everyone moves on.
+The brief says confidence is displayed as a percentage. The implementation renders `0.8234567`. Pankaj files NWD-139 in Sprint 3, it is fixed in one line, everyone moves on.
 
 That is not a disaster and it is worth being honest about: a brief does not prevent the bug. What it does is make the bug boring. There is no discussion about what the right behaviour is, no design meeting, no opinion. The brief said percentage, the code said decimal, the code was wrong, one line.
 
@@ -843,13 +843,13 @@ The test: **does anyone disagree about what good looks like?** If the answer is 
 
 ## 10. The handoff
 
-Rahul picks this up first, not Ji-woo. He runs [P15 — Implementation Plan](../phase-3-planning/P15-implementation-plan.md) across the whole of Sprint 2 and this brief is one of his inputs, because it changes the sequence: the exception queue depends on the exception records existing, which depends on the confidence gate (NWD-103) being built and writing rows. Section 4's field list is also a dependency check — every field Ji-woo needs must exist in the API before the screen can be built, and section 11's question about signed URLs for the PDF is a backend task nobody had written down.
+Gautam picks this up first, not Dzmitry. He runs [P15 — Implementation Plan](../phase-3-planning/P15-implementation-plan.md) across the whole of Sprint 2 and this brief is one of his inputs, because it changes the sequence: the exception queue depends on the exception records existing, which depends on the confidence gate (NWD-103) being built and writing rows. Section 4's field list is also a dependency check — every field Dzmitry needs must exist in the API before the screen can be built, and section 11's question about signed URLs for the PDF is a backend task nobody had written down.
 
-Then Ji-woo builds it in [P19](../phase-4-build/P19-build-the-ui-from-the-brief.md), where the brief becomes the source of truth in exactly the way the spec is for Tomas. When she hits a decision the brief did not make — and she will — the discipline is the same one from [P11](P11-write-the-technical-spec.md): stop, get a line added, continue.
+Then Dzmitry builds it in [P19](../phase-4-build/P19-build-the-ui-from-the-brief.md), where the brief becomes the source of truth in exactly the way the spec is for Ravi. When she hits a decision the brief did not make — and she will — the discipline is the same one from [P11](P11-write-the-technical-spec.md): stop, get a line added, continue.
 
-Ananya reads sections 7 and 9 and builds the E2E tests in [P22](../phase-5-verify/P22-e2e-test-the-application.md) from them. The states table is a test plan with the tests not yet written: eight states, eight scenarios, and the submit-failure one is the one she will run twice. Section 9's "median under 45 seconds" becomes a real measurement rather than an aspiration.
+Pankaj reads sections 7 and 9 and builds the E2E tests in [P22](../phase-5-verify/P22-e2e-test-the-application.md) from them. The states table is a test plan with the tests not yet written: eight states, eight scenarios, and the submit-failure one is the one she will run twice. Section 9's "median under 45 seconds" becomes a real measurement rather than an aspiration.
 
-And Amara owns the out-of-scope list. Its purpose is to be quoted back — when somebody in Sprint 3 asks for bulk editing, the answer is a link and a sentence, not a discussion.
+And Preetinka owns the out-of-scope list. Its purpose is to be quoted back — when somebody in Sprint 3 asks for bulk editing, the answer is a link and a sentence, not a discussion.
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/ui-brief-exception-queue.md`**
 > Anyone reading this file can rely on finding:
@@ -872,15 +872,15 @@ And Amara owns the out-of-scope list. Its purpose is to be quoted back — when 
 
 ## 11. In the case study
 
-This closes [Chapter 3 — Sprint 1: Design](../../Case-Study/Python-ETL/03-sprint-1-design.md) and produces [`artifacts/ui-brief-exception-queue.md`](../../Case-Study/Python-ETL/artifacts/ui-brief-exception-queue.md). Ji-woo builds against it in [Chapter 6](../../Case-Study/Python-ETL/06-sprint-2-build-frontend.md).
+This closes [Chapter 3 — Sprint 1: Design](../../Case-Study/Python-ETL/03-sprint-1-design.md) and produces [`artifacts/ui-brief-exception-queue.md`](../../Case-Study/Python-ETL/artifacts/ui-brief-exception-queue.md). Dzmitry builds against it in [Chapter 6](../../Case-Study/Python-ETL/06-sprint-2-build-frontend.md).
 
-The moment worth reading is Amara's review on the Monday. She reads section 3, gets to the row saying a confirmation dialog costs one minute twenty a morning, and pushes back — she wants a confirmation, because a wrong correction flows into the warehouse and the whole project exists to stop wrong numbers reaching the warehouse. It is a genuinely good objection and it is the same instinct that produced ADR-0003.
+The moment worth reading is Preetinka's review on the Monday. She reads section 3, gets to the row saying a confirmation dialog costs one minute twenty a morning, and pushes back — she wants a confirmation, because a wrong correction flows into the warehouse and the whole project exists to stop wrong numbers reaching the warehouse. It is a genuinely good objection and it is the same instinct that produced ADR-0003.
 
-What resolves it is not the arithmetic. It is Priya's own sentence from section 1: she reads every number back against the PDF before moving on, every time, unprompted. She has already built her own verification step and it is better than a dialog, because it happens while she is looking at the source rather than after she has stopped. The design that wins is the five-second undo after submit — no interruption, full recovery — and it wins because the brief had recorded a small behaviour that nobody thought was important at the time.
+What resolves it is not the arithmetic. It is Preeti's own sentence from section 1: she reads every number back against the PDF before moving on, every time, unprompted. She has already built her own verification step and it is better than a dialog, because it happens while she is looking at the source rather than after she has stopped. The design that wins is the five-second undo after submit — no interruption, full recovery — and it wins because the brief had recorded a small behaviour that nobody thought was important at the time.
 
-The less flattering part of the chapter comes later. Section 8 of the brief says confidence renders as a percentage. Ji-woo builds it in Sprint 2 and it renders as `0.8234567`, because the value comes straight from the API and the formatter was never added. Ananya files **NWD-139** in Sprint 3. It is one line. Nobody argues about what the correct behaviour is, because it is written down — and that, rather than prevention, turns out to be what the brief actually bought.
+The less flattering part of the chapter comes later. Section 8 of the brief says confidence renders as a percentage. Dzmitry builds it in Sprint 2 and it renders as `0.8234567`, because the value comes straight from the API and the formatter was never added. Pankaj files **NWD-139** in Sprint 3. It is one line. Nobody argues about what the correct behaviour is, because it is written down — and that, rather than prevention, turns out to be what the brief actually bought.
 
-Rahul's note in the retrospective: **a design artifact does not stop the bug, it stops the meeting about the bug.** On a five-defect sprint, that is most of the value.
+Gautam's note in the retrospective: **a design artifact does not stop the bug, it stops the meeting about the bug.** On a five-defect sprint, that is most of the value.
 
 ---
 

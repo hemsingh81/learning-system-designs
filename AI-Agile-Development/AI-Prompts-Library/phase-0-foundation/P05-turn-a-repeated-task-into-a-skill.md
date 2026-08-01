@@ -7,11 +7,11 @@
 | | |
 |---|---|
 | **Phase** | 0 — Foundation (Sprint 0) |
-| **Who runs it** | Team Lead (Rahul Nair) |
+| **Who runs it** | Team Lead (Gautam ) |
 | **When** | Day four or five of Sprint 0, the last thing before Sprint 1 planning |
 | **Takes in** | `CLAUDE.md`, `config/sources.yaml`, the hooks from [P04](P04-hooks-as-guardrails.md), and the onboarding steps as somebody actually does them |
 | **Produces** | `.claude/skills/onboard-counterparty/SKILL.md` plus its bundled templates and checklist |
-| **Hands off to** | Product Owner (Amara Osei), who opens Sprint 1 with [P06 — Write a Full PRD](../phase-1-discovery/P06-write-a-full-prd.md) |
+| **Hands off to** | Product Owner (Preetinka Sharma), who opens Sprint 1 with [P06 — Write a Full PRD](../phase-1-discovery/P06-write-a-full-prd.md) |
 | **Time to run** | Half a day, most of it spent watching somebody do the task and writing down what they actually did |
 
 ---
@@ -20,15 +20,15 @@
 
 Thursday afternoon of Sprint 0. The last real piece of setup.
 
-Rahul has a list on the whiteboard, left over from the Monday kick-off. Northwind has twelve counterparties. Two of them — `broker_alpha` and `broker_beta_em` — are the ones the team is building against. The other ten arrive over the following six months, one or two at a time, and each one has to be onboarded into the pipeline.
+Gautam has a list on the whiteboard, left over from the Monday kick-off. Northwind has twelve counterparties. Two of them — `broker_alpha` and `broker_beta_em` — are the ones the team is building against. The other ten arrive over the following six months, one or two at a time, and each one has to be onboarded into the pipeline.
 
-He has watched Tomas do this once, for the test case he set up on Wednesday. It took most of a day, and it is nine steps, and they are not in one place. Two of them are in a YAML file. One of them is in a different Azure service with its own web interface. One is a test. One is a documentation entry that Tomas did not do, and which Rahul only noticed because he went looking.
+He has watched Ravi do this once, for the test case he set up on Wednesday. It took most of a day, and it is nine steps, and they are not in one place. Two of them are in a YAML file. One of them is in a different Azure service with its own web interface. One is a test. One is a documentation entry that Ravi did not do, and which Gautam only noticed because he went looking.
 
-The step Tomas actually got wrong was worse than the one he skipped. He forgot to register the classifier label — step five, the one that lives in the Document Intelligence portal rather than in the repository. Everything downstream of it looked fine. The extraction model existed. The YAML block was correct. The test passed, because the test named the counterparty explicitly and never went through classification at all.
+The step Ravi actually got wrong was worse than the one he skipped. He forgot to register the classifier label — step five, the one that lives in the Document Intelligence portal rather than in the repository. Everything downstream of it looked fine. The extraction model existed. The YAML block was correct. The test passed, because the test named the counterparty explicitly and never went through classification at all.
 
 It would have failed exactly once, in production, on the first real document, with an error saying the classifier returned a confidence of 0.31 and the document was routed to review. And it would have been routed to review for every single document from that counterparty, forever, which is precisely the outcome this entire project exists to eliminate.
 
-Rahul has been here before. In the first engagement with this team — the one written up as `AI-Skills` — he had the same problem with code review: a repeatable, multi-step thing that everyone did slightly differently and that got worse under time pressure. The answer then was a skill, and it worked well enough that the team still uses it. This is the same shape.
+Gautam has been here before. In the first engagement with this team — the one written up as `AI-Skills` — he had the same problem with code review: a repeatable, multi-step thing that everyone did slightly differently and that got worse under time pressure. The answer then was a skill, and it worked well enough that the team still uses it. This is the same shape.
 
 **Nothing shipped this week, which was the plan. What shipped instead is that the next ten counterparties cost an afternoon each instead of a day each.**
 
@@ -99,19 +99,19 @@ Two consequences follow, and the second one is the thing people get wrong.
 
 The first is that you can have a lot of skills without paying for them. Twenty skills is four hundred tokens of standing cost.
 
-The second is that **the description line is the single most important line in the file**, because it is the only part the assistant sees when deciding. A perfect set of instructions with a vague description never fires. A description saying "helps with counterparties" will not trigger when Tomas says "we need to add Broker Gamma to the pipeline."
+The second is that **the description line is the single most important line in the file**, because it is the only part the assistant sees when deciding. A perfect set of instructions with a vague description never fires. A description saying "helps with counterparties" will not trigger when Ravi says "we need to add Broker Gamma to the pipeline."
 
 Write descriptions with the words a person would actually use. Include the synonyms. "Use when onboarding, adding, or configuring a new counterparty, broker, custodian or fund administrator in the ingestion pipeline" is a good description because it covers the four words people actually say and the three verbs they actually use.
 
 ### The rule of three
 
-Not everything repeated deserves a skill. The threshold Rahul uses, carried over from the earlier engagements:
+Not everything repeated deserves a skill. The threshold Gautam uses, carried over from the earlier engagements:
 
 > **Write a skill when you have done the task three times, or when you have watched two different people do it differently.**
 
 Before three, you do not yet know which parts are essential and which were accidents of the first attempt. You will write down the wrong thing with great confidence. After three, the shape is clear.
 
-The counterparty onboarding gets an exemption from this rule, and it is worth being explicit about why: there are ten more coming, the cost of getting it wrong is a production failure that is invisible until it happens, and Rahul has watched one person do it once and get it wrong. The rule of three is about not writing down noise. When the failure mode is already known and expensive, write it down at one.
+The counterparty onboarding gets an exemption from this rule, and it is worth being explicit about why: there are ten more coming, the cost of getting it wrong is a production failure that is invisible until it happens, and Gautam has watched one person do it once and get it wrong. The rule of three is about not writing down noise. When the failure mode is already known and expensive, write it down at one.
 
 ### The nine steps, and which one bites
 
@@ -163,7 +163,7 @@ Two of the nine steps are blocked outright by the hooks from [P04](P04-hooks-as-
 
 Two more steps happen outside the repository entirely, in the Document Intelligence portal, and the AI cannot do them at all. The skill's job there is not to pretend — it is to say exactly what the human must do, give them the values to paste, and then verify the result afterwards.
 
-**A skill that quietly does the parts it can and stays silent about the parts it cannot is worse than no skill**, because it produces the feeling of completion without the fact of it. Which is, precisely, what happened to Tomas on Wednesday.
+**A skill that quietly does the parts it can and stays silent about the parts it cannot is worse than no skill**, because it produces the feeling of completion without the fact of it. Which is, precisely, what happened to Ravi on Wednesday.
 
 ### The one idea to remember
 
@@ -253,7 +253,7 @@ Save to `[SKILL PATH]`.
 
 ## 5. The filled-in example
 
-Rahul ran this on Thursday afternoon, after sitting with Tomas for forty minutes and writing down what he had actually done on Wednesday.
+Gautam ran this on Thursday afternoon, after sitting with Ravi for forty minutes and writing down what he had actually done on Wednesday.
 
 ```text
 You are the **Team Lead** turning a repeated multi-step task into a reusable skill, so that
@@ -526,7 +526,7 @@ Two traps, and the first is the classic one.
 
 **The skill starts absorbing adjacent tasks.** "While we're here, it should also handle updating an existing counterparty's thresholds, and retiring a counterparty, and re-training a stale model." Those are three different tasks with three different triggers and three different risk profiles. Merging them produces a skill whose description matches everything and whose body is mostly irrelevant on any given trigger.
 
-Rahul's rule from `AI-Skills`, unchanged: **one skill, one trigger, one outcome.** If you need a second sentence starting with "and also," you need a second skill.
+Gautam's rule from `AI-Skills`, unchanged: **one skill, one trigger, one outcome.** If you need a second sentence starting with "and also," you need a second skill.
 
 ### The signal that you are NOT done
 
@@ -713,7 +713,7 @@ flowchart TD
 
 You open the wiki page, or you write the steps from memory sitting at your desk, and you produce a clean nine-step procedure that is subtly not what anyone does.
 
-The problem is that the steps people forget are, by definition, the steps missing from every written account of the procedure — including the one in your head. Tomas would not have listed step 5, because he did not do step 5.
+The problem is that the steps people forget are, by definition, the steps missing from every written account of the procedure — including the one in your head. Ravi would not have listed step 5, because he did not do step 5.
 
 The fix is unglamorous and there is no way around it: **sit next to somebody while they do the task, and write down what they actually do, including the bits they do wrong.** Forty minutes. It is the highest-value forty minutes in this entire prompt, and it is the part most likely to get skipped because it feels like it is not work.
 
@@ -755,11 +755,11 @@ Three cases, and the third is the one people resist.
 
 ## 10. The handoff
 
-The skill lands on Thursday evening, and Rahul tests it on Friday morning in the way §7 demands: he hands it to Ji-woo, who has not touched the pipeline, will not touch it for another two sprints, and has never onboarded anything. She gets through it, gets stuck twice, and both places she got stuck get fixed before lunch.
+The skill lands on Thursday evening, and Gautam tests it on Friday morning in the way §7 demands: he hands it to Dzmitry, who has not touched the pipeline, will not touch it for another two sprints, and has never onboarded anything. She gets through it, gets stuck twice, and both places she got stuck get fixed before lunch.
 
-That is the end of Sprint 0. Nothing shipped, which was the plan and which Farhan says out loud one final time at the Friday demo. What exists is a project context file that stops the AI guessing about conventions, a database layer whose audit story is true, an MCP setup that lets the assistant read real state, four hooks that enforce the rules nobody can be trusted to remember, and one skill that makes the next ten counterparties cheap.
+That is the end of Sprint 0. Nothing shipped, which was the plan and which Atul says out loud one final time at the Friday demo. What exists is a project context file that stops the AI guessing about conventions, a database layer whose audit story is true, an MCP setup that lets the assistant read real state, four hooks that enforce the rules nobody can be trusted to remember, and one skill that makes the next ten counterparties cheap.
 
-Sprint 1 opens on Monday with Amara and [P06 — Write a Full PRD](../phase-1-discovery/P06-write-a-full-prd.md). She is going to write down, properly, what the system must do and what "done" means for Northwind's business — and every prompt she runs from here on inherits the whole of Sprint 0 for free. She does not have to explain the confidence gate, or the invariants, or the folder structure, because `CLAUDE.md` already does. **That is the actual return on the week that shipped nothing: every prompt from here on is shorter, and the mistakes it can make are fewer.**
+Sprint 1 opens on Monday with Preetinka and [P06 — Write a Full PRD](../phase-1-discovery/P06-write-a-full-prd.md). She is going to write down, properly, what the system must do and what "done" means for Northwind's business — and every prompt she runs from here on inherits the whole of Sprint 0 for free. She does not have to explain the confidence gate, or the invariants, or the folder structure, because `CLAUDE.md` already does. **That is the actual return on the week that shipped nothing: every prompt from here on is shorter, and the mistakes it can make are fewer.**
 
 The skill itself does not get used in anger until Sprint 4, when Northwind's third counterparty comes online. That is a long gap, and it is exactly why the "somebody who has never done it" test on Friday morning mattered — by the time it is needed, nobody will remember writing it.
 
@@ -783,15 +783,15 @@ The skill itself does not get used in anger until Sprint 4, when Northwind's thi
 This closes
 [`Case-Study/Python-ETL/01-sprint-0-foundations.md`](../../Case-Study/Python-ETL/01-sprint-0-foundations.md).
 
-The thing worth telling is the Friday morning test, because it did not go the way Rahul expected. Ji-woo got stuck in two places and neither was one of the two he had worried about.
+The thing worth telling is the Friday morning test, because it did not go the way Gautam expected. Dzmitry got stuck in two places and neither was one of the two he had worried about.
 
 The first was step 2, the field map. The skill told her to read `field-map.reference.md` and write the mapping. What it did not say was where the counterparty's own field labels come from — she had a sample PDF and no idea whether "Nominal" was meant to be typed exactly as printed, including capitalisation, or normalised first. She guessed. She guessed wrong. The fix was one sentence.
 
-The second was step 8, the dry run, where she read the output, saw nothing obviously broken, and ticked it. Rahul asked what she had been looking for. She said she was not sure. The skill said "a human reads the output," which turns out to mean nothing to someone who does not already know what good output looks like. The fix was three bullet points describing what a correct dry run looks like — how many rows, what the confidence range should roughly be, and the one line that indicates the classifier routed correctly.
+The second was step 8, the dry run, where she read the output, saw nothing obviously broken, and ticked it. Gautam asked what she had been looking for. She said she was not sure. The skill said "a human reads the output," which turns out to mean nothing to someone who does not already know what good output looks like. The fix was three bullet points describing what a correct dry run looks like — how many rows, what the confidence range should roughly be, and the one line that indicates the classifier routed correctly.
 
 Both fixes are small. Neither would have been found by reviewing the skill, by testing it with someone experienced, or by any amount of further prompting. **A procedure written by someone who knows the system always has holes exactly where the author's knowledge is invisible to them**, and the only instrument that finds those holes is a person who does not have that knowledge, working alone, while you watch and say nothing.
 
-It is also worth recording that the HUMAN ONLY marker on step 5 worked. Ji-woo did not skip it, did not try to work around it, and ran the classification command. It returned `broker_gamma` at 0.91. Nobody had told her what a good number was, so she asked — which is exactly the right behaviour, and which is why the "what good looks like" fix from step 8 got applied to step 5 as well.
+It is also worth recording that the HUMAN ONLY marker on step 5 worked. Dzmitry did not skip it, did not try to work around it, and ran the classification command. It returned `broker_gamma` at 0.91. Nobody had told her what a good number was, so she asked — which is exactly the right behaviour, and which is why the "what good looks like" fix from step 8 got applied to step 5 as well.
 
 ---
 

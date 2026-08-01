@@ -7,11 +7,11 @@
 | | |
 |---|---|
 | **Phase** | 6 — Rework |
-| **Who runs it** | Backend or Frontend Engineer (Tomas Vargas; Ji-woo Park for UI errors) |
+| **Who runs it** | Backend or Frontend Engineer (Ravi Mullick; Dzmitry  for UI errors) |
 | **When** | The moment something throws — a failed Function invocation, a red test, a 500 in the browser console |
 | **Takes in** | The stack trace or error output, the failing command, and the repo (`Case-Study/Python-ETL/code/doc_ingestion/`) |
 | **Produces** | A root-cause statement, a minimal fix, a repo-wide sweep for the same pattern, and a regression test in `tests/` |
-| **Hands off to** | Yourself, then Rahul Nair at review time via [P28](P28-respond-to-code-review-feedback.md) |
+| **Hands off to** | Yourself, then Gautam  at review time via [P28](P28-respond-to-code-review-feedback.md) |
 | **Time to run** | 20 minutes for a shallow bug, 90 minutes for a real one |
 
 ---
@@ -20,7 +20,7 @@
 
 It is the last business day of the month. Northwind's counterparties all dump their statements at once, because everybody's month-end close lands on the same date. The normal 200 documents a day becomes something closer to 600 in four hours.
 
-Tomas is not watching. He is in a sprint planning session with Farhan. What he gets instead is an alert from Application Insights — that is Azure's telemetry service, the thing that collects logs, traces and exception records from a running app and lets you query them — saying that seventeen invocations of the ingestion Function failed in eleven minutes.
+Ravi is not watching. He is in a sprint planning session with Atul. What he gets instead is an alert from Application Insights — that is Azure's telemetry service, the thing that collects logs, traces and exception records from a running app and lets you query them — saying that seventeen invocations of the ingestion Function failed in eleven minutes.
 
 He opens the failure log and finds this:
 
@@ -38,9 +38,9 @@ Message: Requests to the Analyze Document Operation under Document Intelligence
 have exceeded call rate limit. Please retry after 4 seconds.
 ```
 
-Ananya files it as **NWD-141**, one line long: *"A 429 from Document Intelligence at month-end kills the run instead of backing off."* That is all the information anybody has.
+Pankaj files it as **NWD-141**, one line long: *"A 429 from Document Intelligence at month-end kills the run instead of backing off."* That is all the information anybody has.
 
-Here is what Tomas does *not* do, and what he would have done eighteen months ago. He does not paste the traceback into a chat window with the words "fix this". He knows what he gets back if he does — a `try/except` wrapped around line 61 with a `time.sleep(5)` inside it, delivered with total confidence, that makes the alert stop and leaves the actual problem in place. That is not a fix. That is a bandage over a warning light.
+Here is what Ravi does *not* do, and what he would have done eighteen months ago. He does not paste the traceback into a chat window with the words "fix this". He knows what he gets back if he does — a `try/except` wrapped around line 61 with a `time.sleep(5)` inside it, delivered with total confidence, that makes the alert stop and leaves the actual problem in place. That is not a fix. That is a bandage over a warning light.
 
 **A stack trace tells you where the program noticed the problem. It almost never tells you where the problem is.** The gap between those two places is the whole job, and P26 is the prompt that forces the AI to walk that gap instead of jumping it.
 
@@ -60,7 +60,7 @@ Those two need completely different attacks.
 
 For an **error**, you have a free gift: the machine has already narrowed the search space for you. It told you a file, a line, and an exception type. Your job is to work *outward* from that point until you find the decision that made the exception inevitable. That is P26 — this file.
 
-For a **wrong answer**, you have nothing. No line number, no exception type. You have a human — usually Ananya — saying "this output is not what it should be". Your job is to build a reproduction from scratch, prove the failure with a test that fails, and only then look for the cause. That is [P27](P27-fix-from-a-qa-bug-report.md), and it is a different discipline with different steps.
+For a **wrong answer**, you have nothing. No line number, no exception type. You have a human — usually Pankaj — saying "this output is not what it should be". Your job is to build a reproduction from scratch, prove the failure with a test that fails, and only then look for the cause. That is [P27](P27-fix-from-a-qa-bug-report.md), and it is a different discipline with different steps.
 
 Getting this fork wrong is expensive in one specific direction. If you run P26 on a wrong-answer bug, the AI has no stack trace to anchor on, so it invents one — it picks a plausible-looking line of code and reasons confidently from there. You end up with a fix to code that was never involved.
 
@@ -275,7 +275,7 @@ test in [TEST FILE PATH].
 
 ## 5. The filled-in example
 
-Tomas runs this at 14:40 on the last business day of July, twenty minutes after the alert, with the `doc_ingestion` repo open.
+Ravi runs this at 14:40 on the last business day of July, twenty minutes after the alert, with the `doc_ingestion` repo open.
 
 ```text
 You are a senior Python 3.11 / Azure Functions (v2 programming model) engineer
@@ -408,7 +408,7 @@ def get_document_client() -> DocumentIntelligenceClient:
     return DocumentIntelligenceClient(
         endpoint=settings.DOCINTEL_ENDPOINT,
         credential=DefaultAzureCredential(),
-        retry_total=0,          # TODO(tomas): fail fast while iterating locally
+        retry_total=0,          # TODO(Ravi): fail fast while iterating locally
         connection_timeout=30,
     )
 ```
@@ -441,7 +441,7 @@ will include it.
 **STOPPING HERE.** Waiting for "confirmed".
 ````
 
-Tomas replies: `confirmed — and yes, fix the dead-lettering too.` The AI continues.
+Ravi replies: `confirmed — and yes, fix the dead-lettering too.` The AI continues.
 
 ````markdown
 ## Step 5 — The fix
@@ -481,7 +481,7 @@ loop around line 61 would fix one call site and one status code.
      return DocumentIntelligenceClient(
          endpoint=settings.DOCINTEL_ENDPOINT,
          credential=DefaultAzureCredential(),
--        retry_total=0,          # TODO(tomas): fail fast while iterating locally
+-        retry_total=0,          # TODO(Ravi): fail fast while iterating locally
 +        retry_policy=_retry_policy(),
          connection_timeout=30,
      )
@@ -515,7 +515,7 @@ Search run: `rg "retry_total\s*=\s*0" --type py`
 | `core/translate.py` | 19 | Azure AI Translator |
 | `core/redact.py` | 24 | Azure AI Language (PII detection) |
 
-All three carry the same `TODO(tomas): fail fast while iterating locally` comment
+All three carry the same `TODO(Ravi): fail fast while iterating locally` comment
 and the same commit `a41c9e2`. Translation and redaction have the same month-end
 exposure. Recommend routing all three through `_retry_policy()` in `core/clients.py`
 so there is one place to change it.
@@ -562,11 +562,11 @@ With the fix in place: `1 passed`.
 
 Three parts matter more than the rest.
 
-**The evidence table is the product.** Not the diff. The table is what you would put in the ticket, what you would show Rahul in review, and what stops the next person re-running this investigation in September. Notice that every cell in the *Evidence gathered* column contains something concrete — a line number, a commit hash, a measured duration. Nothing says "typically" or "usually".
+**The evidence table is the product.** Not the diff. The table is what you would put in the ticket, what you would show Gautam in review, and what stops the next person re-running this investigation in September. Notice that every cell in the *Evidence gathered* column contains something concrete — a line number, a commit hash, a measured duration. Nothing says "typically" or "usually".
 
 **Step 6 found two more instances.** That is the step people delete from the prompt because it feels like scope creep, and it is the step that turns a one-ticket fix into a fixed system. Two more month-end outages did not happen because of eleven lines of `rg` output.
 
-**The AI volunteered a second defect and asked before acting on it.** The dead-lettering was in Tomas's *Known context* block, not in the trace. The AI noticed it did not fit, flagged it, and stopped. That behaviour is a direct product of the stop gate — an AI that has already started writing a fix does not pause to ask about scope.
+**The AI volunteered a second defect and asked before acting on it.** The dead-lettering was in Ravi's *Known context* block, not in the trace. The AI noticed it did not fit, flagged it, and stopped. That behaviour is a direct product of the stop gate — an AI that has already started writing a fix does not pause to ask about scope.
 
 **The part that is commonly wrong:** the regression test. Read it sceptically every time. This one asserts `len(calls) == 2`, which proves a retry happened. A weaker version would assert only `result.fields` is truthy, which passes for the wrong reason — it would pass if the fake transport returned 200 on the first call. **A regression test that does not assert the specific mechanism you fixed is not a regression test.** Ask yourself: what would break this test? If the answer is "almost anything", it is too broad. If the answer is "only the bug coming back", it is right.
 
@@ -596,7 +596,7 @@ The failure mode of over-prompting a debugging session is specific and predictab
 
 You ask "anything else?" and it finds the missing timeout on an unrelated HTTP call, the broad exception handler in the SQL sink, the log line that should be a warning. All true. All worth doing. None of them are NWD-141, and every one of them makes the diff harder to review and the revert harder to perform.
 
-The discipline is: **one bug, one diff, one ticket.** Everything else the AI noticed goes on a list. Tomas kept a running note called `found-while-debugging.md` and fed it into [P36 — Tech Debt Triage](../phase-8-improve/P36-tech-debt-triage.md) at the end of the sprint. Sofia read it. Two items became stories. The rest were correctly ignored.
+The discipline is: **one bug, one diff, one ticket.** Everything else the AI noticed goes on a list. Ravi kept a running note called `found-while-debugging.md` and fed it into [P36 — Tech Debt Triage](../phase-8-improve/P36-tech-debt-triage.md) at the end of the sprint. Hem read it. Two items became stories. The rest were correctly ignored.
 
 The second failure mode is subtler. If you keep pushing after the evidence table is complete, the AI will start generating *more* hypotheses, because you have implicitly told it three were not enough. Hypotheses four through nine are always worse than one through three, and evaluating them costs the same. Stop at the confirmed row.
 
@@ -661,7 +661,7 @@ trace. **Say so plainly** and I will raise a second ticket. Do not fix both in o
 change.
 ```
 
-What changes: you get a causal ordering instead of a list, and — the useful outcome — sometimes you learn you have two tickets, not one. Tomas hit this on NWD-141: throttling and dead-lettering were genuinely independent, and saying so out loud is what kept the diff reviewable.
+What changes: you get a causal ordering instead of a list, and — the useful outcome — sometimes you learn you have two tickets, not one. Ravi hit this on NWD-141: throttling and dead-lettering were genuinely independent, and saying so out loud is what kept the diff reviewable.
 
 ### 8.3 "The evidence is just reasoning"
 
@@ -797,9 +797,9 @@ The fix is mechanical: make the AI read the installed package. Not the docs, not
 
 ### You fix it, and then keep going
 
-The alert clears. The test passes. And you are still in the session, and the AI is still helpful, and it mentions that `core/redact.py` has a broad exception handler. Twenty minutes later the diff is nine files and Rahul rejects it at review because he cannot tell which change fixed the bug.
+The alert clears. The test passes. And you are still in the session, and the AI is still helpful, and it mentions that `core/redact.py` has a broad exception handler. Twenty minutes later the diff is nine files and Gautam rejects it at review because he cannot tell which change fixed the bug.
 
-This one hurt at Northwind. Tomas's first NWD-141 pull request touched `clients.py`, `translate.py`, `redact.py`, `function_app.py`, `logging_config.py` and two tests. Rahul's review comment was four words: *"Which line fixed it?"* The PR was split into three, and the split took longer than the original fix.
+This one hurt at Northwind. Ravi's first NWD-141 pull request touched `clients.py`, `translate.py`, `redact.py`, `function_app.py`, `logging_config.py` and two tests. Gautam's review comment was four words: *"Which line fixed it?"* The PR was split into three, and the split took longer than the original fix.
 
 The fix: decide the blast radius *before* you start, put it in `[MAX FILES]`, and treat exceeding it as a conversation rather than a decision the AI makes on your behalf. Everything else goes in a note for [P36](../phase-8-improve/P36-tech-debt-triage.md).
 
@@ -817,11 +817,11 @@ P26 assumes a stack trace. Three situations look like they need it and do not.
 
 ## 10. The handoff
 
-The immediate handoff is to yourself, ten minutes later, when you open the pull request. The evidence table becomes the PR description. That is not a nice-to-have — Rahul's review prompt in [P23](../phase-5-verify/P23-review-someone-elses-code.md) explicitly asks "what problem does this change solve and how do we know", and a PR that answers that question in a table gets reviewed in five minutes instead of thirty.
+The immediate handoff is to yourself, ten minutes later, when you open the pull request. The evidence table becomes the PR description. That is not a nice-to-have — Gautam's review prompt in [P23](../phase-5-verify/P23-review-someone-elses-code.md) explicitly asks "what problem does this change solve and how do we know", and a PR that answers that question in a table gets reviewed in five minutes instead of thirty.
 
-The second handoff is to Rahul, and it comes back to you as review comments. When it does, you run [P28 — Respond to Code Review Feedback](P28-respond-to-code-review-feedback.md), which is the prompt for sorting his comments into "real defect", "preference" and "this is unclear" before you touch anything.
+The second handoff is to Gautam, and it comes back to you as review comments. When it does, you run [P28 — Respond to Code Review Feedback](P28-respond-to-code-review-feedback.md), which is the prompt for sorting his comments into "real defect", "preference" and "this is unclear" before you touch anything.
 
-The third handoff is conditional and it is the one people miss. If step 5's root cause turned out to be *"the code does what the spec told it to do"* — then you are not holding a bug, you are holding a specification defect. Stop, and run [P29 — The Spec Was Wrong](P29-the-spec-was-wrong.md) with Sofia. NWD-141 did not go down this path; NWD-142 did, and that is why P29 exists.
+The third handoff is conditional and it is the one people miss. If step 5's root cause turned out to be *"the code does what the spec told it to do"* — then you are not holding a bug, you are holding a specification defect. Stop, and run [P29 — The Spec Was Wrong](P29-the-spec-was-wrong.md) with Hem. NWD-141 did not go down this path; NWD-142 did, and that is why P29 exists.
 
 > **Artifact contract — the NWD-141 write-up on the ticket**
 > Anyone reading this comment can rely on finding:
@@ -839,11 +839,11 @@ The third handoff is conditional and it is the one people miss. If step 5's root
 
 NWD-141 lands in [`07-sprint-3-verify.md`](../../Case-Study/Python-ETL/07-sprint-3-verify.md) as a footnote and gets fixed at the start of [`08-sprint-3-rework.md`](../../Case-Study/Python-ETL/08-sprint-3-rework.md). It is deliberately the *small* bug in that chapter — the warm-up before NWD-142, which is the one that eats the sprint.
 
-The thing that actually happened, and that readers remember: Tomas ran P26, got a clean evidence table, and then argued with it. He did not believe `retry_total=0` was in the repo, because he remembered writing it and he remembered taking it out. He had taken it out — on a branch that was never merged. The `git blame` line in the evidence table settled it in about four seconds. **The value of "quote the evidence with a file and a line" is not that the AI needs the discipline. It is that you need something to argue against that cannot argue back.**
+The thing that actually happened, and that readers remember: Ravi ran P26, got a clean evidence table, and then argued with it. He did not believe `retry_total=0` was in the repo, because he remembered writing it and he remembered taking it out. He had taken it out — on a branch that was never merged. The `git blame` line in the evidence table settled it in about four seconds. **The value of "quote the evidence with a file and a line" is not that the AI needs the discipline. It is that you need something to argue against that cannot argue back.**
 
-The second thing worth noting is the scope fight. Tomas's first PR touched seven files, Rahul asked "which line fixed it", and the PR was split. Farhan then pointed out at standup that the split cost more than the fix and asked whether the team should just set a file limit. That conversation is why `[MAX FILES]` is in the template, and it is why the team's [definition of done](../../Case-Study/Python-ETL/artifacts/definition-of-done.md) grew a line about single-purpose pull requests.
+The second thing worth noting is the scope fight. Ravi's first PR touched seven files, Gautam asked "which line fixed it", and the PR was split. Atul then pointed out at standup that the split cost more than the fix and asked whether the team should just set a file limit. That conversation is why `[MAX FILES]` is in the template, and it is why the team's [definition of done](../../Case-Study/Python-ETL/artifacts/definition-of-done.md) grew a line about single-purpose pull requests.
 
-The lasting artifact is smaller than either. `core/clients.py` gained one shared `_retry_policy()` function used by all three Azure AI clients, so the next time somebody needs to change retry behaviour there is exactly one place to change it. Sofia liked that enough to note it in the sprint 3 retrospective as the pattern to copy: **when the same mistake appears three times, the fix is not three fixes — it is one place where the decision now lives.**
+The lasting artifact is smaller than either. `core/clients.py` gained one shared `_retry_policy()` function used by all three Azure AI clients, so the next time somebody needs to change retry behaviour there is exactly one place to change it. Hem liked that enough to note it in the sprint 3 retrospective as the pattern to copy: **when the same mistake appears three times, the fix is not three fixes — it is one place where the decision now lives.**
 
 ---
 

@@ -52,7 +52,7 @@ GO
 
 -- -----------------------------------------------------------------------------
 -- The exception queue the analysts work from. This table IS the UI's backing
--- store — Ji-woo's screen renders `failures_json` directly, which is why the
+-- store — Dzmitry's screen renders `failures_json` directly, which is why the
 -- rules engine emits structured violations rather than a reason string alone.
 --
 -- `resolution` closes the loop: rows marked `model_error` are exactly the

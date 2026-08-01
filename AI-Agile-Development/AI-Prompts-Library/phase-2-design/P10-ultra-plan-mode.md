@@ -7,26 +7,26 @@
 | | |
 |---|---|
 | **Phase** | 2 — Design |
-| **Who runs it** | Architect (Sofia Marchetti) |
+| **Who runs it** | Architect (Hem Singh) |
 | **When** | Sprint 1, day 4. The backlog is estimated and ranked. Nobody has written a line of pipeline code yet. |
 | **Takes in** | `artifacts/prd-counterparty-ingestion.md`, `artifacts/stories/NWD-101…NWD-108`, `artifacts/acceptance-criteria-NWD-103.md`, the ranked backlog from [P09](../phase-1-discovery/P09-estimate-and-rank-the-backlog.md), and `artifacts/CLAUDE.md` |
 | **Produces** | A written plan in the session, whose decision section becomes `artifacts/adr/0001-extraction-approach.md` via [P12](P12-record-an-architecture-decision.md) |
-| **Hands off to** | Sofia again, running [P11 — Write the Technical Spec](P11-write-the-technical-spec.md) |
-| **Time to run** | Half a day. Twenty minutes of AI time, the rest is Sofia reading it properly and arguing with two of the tradeoffs. |
+| **Hands off to** | Hem again, running [P11 — Write the Technical Spec](P11-write-the-technical-spec.md) |
+| **Time to run** | Half a day. Twenty minutes of AI time, the rest is Hem reading it properly and arguing with two of the tradeoffs. |
 
 ---
 
 ## 1. The scene
 
-It is Tuesday of Sprint 1. Amara has the backlog ranked — eight stories, NWD-101 through NWD-108, with **NWD-103 "Gate every extracted field on its confidence score"** sitting at the top because everything downstream depends on it. Farhan has already asked his favourite question about it twice: "what happens if that takes twice as long."
+It is Tuesday of Sprint 1. Preetinka has the backlog ranked — eight stories, NWD-101 through NWD-108, with **NWD-103 "Gate every extracted field on its confidence score"** sitting at the top because everything downstream depends on it. Atul has already asked his favourite question about it twice: "what happens if that takes twice as long."
 
-Sofia opens Slack and finds a branch notification. Tomas has pushed `spike/extract-poc`. It is forty lines of Python that sends a page of a Broker Alpha statement to a large language model with the prompt "extract the positions as JSON." It works. On the one PDF he tried, it works beautifully.
+Hem opens Slack and finds a branch notification. Ravi has pushed `spike/extract-poc`. It is forty lines of Python that sends a page of a Broker Alpha statement to a large language model with the prompt "extract the positions as JSON." It works. On the one PDF he tried, it works beautifully.
 
 This is the exact moment the project can go wrong, quietly, for six weeks.
 
-Because Tomas's forty lines are not wrong. They are *plausible*. The JSON comes back clean, the field names look right, and if you squint at the output you would sign it off. What it does not come back with is any way of knowing which of those numbers the model was sure about and which it guessed. And Northwind's whole reason for buying this system is that **a wrong number is worse than no number** — a confidently-wrong quantity flows into the warehouse, hits reconciliation, and produces a break that looks exactly like a genuine settlement failure. Priya then spends a morning chasing a ghost.
+Because Ravi's forty lines are not wrong. They are *plausible*. The JSON comes back clean, the field names look right, and if you squint at the output you would sign it off. What it does not come back with is any way of knowing which of those numbers the model was sure about and which it guessed. And Northwind's whole reason for buying this system is that **a wrong number is worse than no number** — a confidently-wrong quantity flows into the warehouse, hits reconciliation, and produces a break that looks exactly like a genuine settlement failure. Preeti then spends a morning chasing a ghost.
 
-Sofia does not tell Tomas he is wrong. She does not know yet that he is. What she knows is that the team is about to make a decision that is expensive to reverse — the extraction approach touches the rules engine, the exception queue, the audit trail and the monthly bill — and it is currently being made by whoever pushed a branch first.
+Hem does not tell Ravi he is wrong. She does not know yet that he is. What she knows is that the team is about to make a decision that is expensive to reverse — the extraction approach touches the rules engine, the exception queue, the audit trail and the monthly bill — and it is currently being made by whoever pushed a branch first.
 
 So she opens a fresh AI session and runs the prompt in this file. Not to get an answer. To get **three answers, honestly compared, and then a hard stop before anybody writes code.**
 
@@ -72,7 +72,7 @@ There is a well-known effect here and it has nothing to do with AI specifically:
 
 Forcing two or three options does three useful things:
 
-1. It surfaces the option you had not thought of. Sofia genuinely had not costed OCR-plus-regex before this run.
+1. It surfaces the option you had not thought of. Hem genuinely had not costed OCR-plus-regex before this run.
 2. It makes the tradeoffs visible, because a tradeoff only exists relative to an alternative. "Document Intelligence is accurate" is not a tradeoff. "Document Intelligence costs $30 per thousand pages and needs fifty labelled documents per layout, where regex costs nothing and needs zero training but breaks the day a broker moves a column" is a tradeoff.
 3. It gives you something to write in the ADR later. An architecture decision record with no rejected options is not a decision record, it is an announcement. [P12](P12-record-an-architecture-decision.md) leans on this directly.
 
@@ -92,7 +92,7 @@ If a bullet in the output does not have all three, it is prose, not analysis. §
 
 ### The Northwind decision, explained from scratch
 
-The decision Sofia is running this prompt for is: **how do we turn a counterparty PDF into typed rows?** Three candidate approaches. Here is each, in ordinary words, because the rest of this book assumes you know them.
+The decision Hem is running this prompt for is: **how do we turn a counterparty PDF into typed rows?** Three candidate approaches. Here is each, in ordinary words, because the rest of this book assumes you know them.
 
 #### Option A — Azure AI Document Intelligence, custom models
 
@@ -108,7 +108,7 @@ The decision Sofia is running this prompt for is: **how do we turn a counterpart
 
 **What it is in one line.** A large language model (LLM) is a general text model you give an instruction and some content, and it writes an answer. You paste the page text, say "return the positions as JSON," and it does.
 
-**Why it's tempting.** Zero training data. No labelling. It handles a brand new broker layout on day one because it is reading the document the way a person would. Tomas's forty-line spike works because this genuinely is the fastest path to a first result.
+**Why it's tempting.** Zero training data. No labelling. It handles a brand new broker layout on day one because it is reading the document the way a person would. Ravi's forty-line spike works because this genuinely is the fastest path to a first result.
 
 **The catch.** It returns an answer, not a measurement. Ask it "how confident were you about the quantity on line 6" and you get a number it made up in the same breath as the quantity. That number is not calibrated against anything. It is a second opinion from the same source, which is not an opinion at all.
 
@@ -139,7 +139,7 @@ A step is verifiable when you can answer, in one sentence, "how would I know thi
 
 Fifteen, not fifty, is deliberate — fifty labelled documents is the production number, fifteen is the number that proves the approach. That distinction is exactly the kind of thing a good plan surfaces and a bad plan glosses over.
 
-The steps are also what Rahul turns into a build sequence in [P15](../phase-3-planning/P15-implementation-plan.md). If they are not verifiable here, they arrive at planning as mush.
+The steps are also what Gautam turns into a build sequence in [P15](../phase-3-planning/P15-implementation-plan.md). If they are not verifiable here, they arrive at planning as mush.
 
 ### What the AI is actually doing when this runs
 
@@ -153,7 +153,7 @@ That third constraint is the one that gets ignored most often, which is why §8.
 
 ### The one thing to remember
 
-**The plan is the cheap artifact and the code is the expensive one, so spend your arguing on the plan.** Half a day of Sofia disagreeing with a tradeoff table costs the project nothing. Half a sprint of Tomas building against an approach that cannot produce a confidence score costs the project a sprint.
+**The plan is the cheap artifact and the code is the expensive one, so spend your arguing on the plan.** Half a day of Hem disagreeing with a tradeoff table costs the project nothing. Half a sprint of Ravi building against an approach that cannot produce a confidence score costs the project a sprint.
 
 ---
 
@@ -246,7 +246,7 @@ section will be turned into an ADR at [OUTPUT PATH].
 | Placeholder | What to put in it | Northwind example | What happens if you get it wrong |
 |---|---|---|---|
 | `[ARTIFACTS TO READ]` | The exact file paths, in reading order. Put the business document first and the technical one second. | `artifacts/prd-counterparty-ingestion.md`, `artifacts/stories/NWD-103-confidence-gate.md`, `artifacts/acceptance-criteria-NWD-103.md`, `artifacts/CLAUDE.md` | Leave it out and the AI answers from the title of your question. You get a generic architecture essay that mentions "scalability" and never mentions Broker Alpha. |
-| `[PROJECT CONTEXT FILE]` | Path to the standing context file — stack, conventions, constraints. Built in [P01](../phase-0-foundation/P01-generate-the-project-context-file.md). | `artifacts/CLAUDE.md` | Without it you get recommendations in the wrong stack. Sofia's first run without it proposed a Databricks job, which Northwind does not own. |
+| `[PROJECT CONTEXT FILE]` | Path to the standing context file — stack, conventions, constraints. Built in [P01](../phase-0-foundation/P01-generate-the-project-context-file.md). | `artifacts/CLAUDE.md` | Without it you get recommendations in the wrong stack. Hem's first run without it proposed a Databricks job, which Northwind does not own. |
 | `[THE DECISION TO MAKE]` | One sentence, phrased as a question, naming no technology you have already decided on. | "How do we turn a counterparty PDF into typed rows, given that every field must carry a trustworthy confidence score?" | Name a technology here and you have made the decision. "How should we use GPT to extract fields" returns three flavours of GPT. |
 | `[STORY OR PROBLEM]` | The story ID and its one-line goal, so the plan stays scoped to something shippable. | NWD-103 — gate every extracted field on its confidence score, with per-type thresholds. | Omit it and you get an architecture for the whole platform instead of a decision for this sprint. |
 | `[CONSTRAINTS]` | The non-negotiables. Copy them from the PRD and the invariants list. Say "disqualifying" out loud. | Per-field confidence required · no API keys, managed identity only · adding a counterparty must be a YAML change, not a code change · full raw response persisted to bronze before parsing · budget under $600/month | The AI will happily recommend something excellent that you cannot ship. A constraint stated after the recommendation is a constraint that gets argued with. |
@@ -258,7 +258,7 @@ section will be turned into an ADR at [OUTPUT PATH].
 
 ## 5. The filled-in example
 
-Sofia runs this on the Tuesday of Sprint 1, at 09:40, before standup, in a session with read access to the Kestrel repo and nothing else.
+Hem runs this on the Tuesday of Sprint 1, at 09:40, before standup, in a session with read access to the Kestrel repo and nothing else.
 
 ```text
 You are a **software architect**. Your job in this session is to produce a design plan and then STOP.
@@ -395,7 +395,7 @@ prove the approach before committing to 50.
 
 **Failure mode.** A counterparty changes their layout materially — a new column, a merged header —
 and the trained model's confidence drops across the affected fields. This is a *loud* failure: the
-documents go to the exception queue rather than loading wrong. You notice it as a spike in Priya's
+documents go to the exception queue rather than loading wrong. You notice it as a spike in Preeti's
 queue on the day it happens, not as a break report three weeks later.
 
 **What you give up.** Day-one support for a brand new counterparty. You cannot onboard a broker in an
@@ -476,7 +476,7 @@ onboarding rate exceeds two new layouts per month for two consecutive months.
 | # | Goal | Done when | Touches | Depends on |
 |---|---|---|---|---|
 | 1 | Prove the approach on one layout | A custom extraction model trained on **15** labelled Broker Alpha statements returns `quantity` and `market_value` on 5 held-out statements, and the confidence figures are in a table in this session | (spike only, no repo change) | — |
-| 2 | Fix the confidence contract | A written table of per-type thresholds (currency 0.90, number 0.90, date 0.85, string 0.75) plus the broker_alpha currency override of 0.92, agreed by Amara | `artifacts/spec-confidence-gate.md` | 1 |
+| 2 | Fix the confidence contract | A written table of per-type thresholds (currency 0.90, number 0.90, date 0.85, string 0.75) plus the broker_alpha currency override of 0.92, agreed by Preetinka | `artifacts/spec-confidence-gate.md` | 1 |
 | 3 | Land the raw response first | An analyse response for one document is written to `bronze/{broker}/{yyyy-mm-dd}/{sha256}.json` before any parsing happens, verified by deleting the parser and re-running | `core/clients.py`, `sinks/blob_sink.py` | 1 |
 | 4 | Build the gate as pure functions | `core/confidence.py` exposes a function that takes fields + a threshold config and returns pass/fail plus the failing field list, with unit tests, no Azure calls in the tests | `core/confidence.py`, `tests/test_confidence.py` | 2 |
 | 5 | Make thresholds config, not code | `config/sources.yaml` carries per-counterparty thresholds; changing broker_alpha's currency threshold to 0.92 requires no Python edit | `config/sources.yaml` | 4 |
@@ -485,13 +485,13 @@ onboarding rate exceeds two new layouts per month for two consecutive months.
 
 ## 6. Open questions
 
-- **Amara** — the PRD targets 85% straight-through, but whole-document rejection will suppress that
+- **Preetinka** — the PRD targets 85% straight-through, but whole-document rejection will suppress that
   number early on. Is 85% a launch target or a quarter-three target?
-- **Amara** — does an analyst correction in the exception queue need to be re-gated, or is a human
+- **Preetinka** — does an analyst correction in the exception queue need to be re-gated, or is a human
   edit trusted by definition?
-- **Sofia** — the free tier (F0) analyses only the first two pages and caps files at 4 MB. Confirm we
+- **Hem** — the free tier (F0) analyses only the first two pages and caps files at 4 MB. Confirm we
   are on a paid tier before step 1, or step 1 will produce a misleading result on a 3-page statement.
-- **Tomas** — does the Broker Beta EM Spanish document need translating before extraction or after?
+- **Ravi** — does the Broker Beta EM Spanish document need translating before extraction or after?
   It changes step ordering. (Assumption used above: before, for descriptive fields only.)
 
 ## 7. What I did not consider
@@ -499,7 +499,7 @@ onboarding rate exceeds two new layouts per month for two consecutive months.
 - A human-in-the-loop-only path with no extraction at all. Rejected: it is the current state and the
   project exists to remove it.
 - Asking counterparties to send structured files instead of PDFs. Rejected as out of Kestrel's
-  control, though it is worth Amara raising it — three of eleven counterparties may already offer CSV.
+  control, though it is worth Preetinka raising it — three of eleven counterparties may already offer CSV.
 - Building our own layout model. Rejected on effort against a managed service at $416/month.
 
 AWAITING REVIEW — no files have been changed.
@@ -509,11 +509,11 @@ AWAITING REVIEW — no files have been changed.
 
 Three parts carry the weight.
 
-**The read log at the top.** It is four lines and it is the cheapest quality check in the whole prompt. If the AI summarises a document you know says something else, stop immediately — everything downstream is built on a misreading. Sofia's second run had a read log claiming the thresholds were global, not per-counterparty. That one line saved an hour.
+**The read log at the top.** It is four lines and it is the cheapest quality check in the whole prompt. If the AI summarises a document you know says something else, stop immediately — everything downstream is built on a misreading. Hem's second run had a read log claiming the thresholds were global, not per-counterparty. That one line saved an hour.
 
 **The "what would have to be true for this to be wrong" paragraph.** Most recommendations are unfalsifiable: they tell you what to do and give you no way to know later that it stopped being right. This paragraph converts the decision into something with a trigger. "Revisit if onboarding exceeds two new layouts a month for two consecutive months" is a monitorable condition, and it goes straight into the ADR's consequences section in [P12](P12-record-an-architecture-decision.md).
 
-**Step 1's "Done when."** Fifteen labelled documents, five held out, the numbers in a table. Someone who is not Sofia can check that. Compare it with what a weak run produces — "Done when the model is trained" — which is unverifiable because "trained" is not an observable state.
+**Step 1's "Done when."** Fifteen labelled documents, five held out, the numbers in a table. Someone who is not Hem can check that. Compare it with what a weak run produces — "Done when the model is trained" — which is unverifiable because "trained" is not an observable state.
 
 **And the part that is commonly wrong:** the cost line for option B. The output says "UNKNOWN — verify" and that is correct behaviour, but it is also the line most people skim past and quietly treat as "about the same." It is not about the same until someone checks. Note that the plan does not pretend — the `Do not invent numbers` instruction is doing real work there, and it is worth keeping even when it makes the output less tidy.
 
@@ -521,9 +521,9 @@ Three parts carry the weight.
 
 ## 7. Why this is the final prompt
 
-**What "done" means here.** You have three things: a comparison you would be willing to show Farhan, one recommendation with a named deciding factor, and a set of steps somebody other than you could pick up. And no files have changed.
+**What "done" means here.** You have three things: a comparison you would be willing to show Atul, one recommendation with a named deciding factor, and a set of steps somebody other than you could pick up. And no files have changed.
 
-Done is *not* "the AI produced a plan." Done is "Sofia has argued with at least one part of the plan and it survived, or it changed."
+Done is *not* "the AI produced a plan." Done is "Hem has argued with at least one part of the plan and it survived, or it changed."
 
 ### The checklist
 
@@ -539,7 +539,7 @@ Done is *not* "the AI produced a plan." Done is "Sofia has argued with at least 
 
 The failure mode here is *polish*. Ask for another pass and you will get a better-written plan: smoother prose, more sections, an extra approach, a risk register nobody asked for. None of that reduces risk. The risk lives in the two or three tradeoffs you have not yet verified against reality, and no amount of re-prompting verifies them — only checking the actual price page, or training an actual model on fifteen actual documents, does that.
 
-There is a second reason. A plan that keeps growing stops being read. Farhan will read two pages. Tomas will read the steps table and nothing else. A twelve-page plan is a plan that gets skimmed, and a skimmed plan is worse than a short one because everybody believes it was agreed.
+There is a second reason. A plan that keeps growing stops being read. Atul will read two pages. Ravi will read the steps table and nothing else. A twelve-page plan is a plan that gets skimmed, and a skimmed plan is worse than a short one because everybody believes it was agreed.
 
 ### The signal that you are NOT done
 
@@ -586,7 +586,7 @@ in the form "X happens, then Y lands in the warehouse, and we find out when Z."
 Do not touch any other section. Do not write any file.
 ```
 
-What changes: the table stops being decorative. In Sofia's run this is what turned "LLMs may hallucinate values" into "the model returns 14,500 with no signal that the cell was smudged, the row loads, and reconciliation reports MISSING_EXTERNAL two days later" — which is the sentence that actually decided the ADR.
+What changes: the table stops being decorative. In Hem's run this is what turned "LLMs may hallucinate values" into "the model returns 14,500 with no signal that the cell was smudged, the row loads, and reconciliation reports MISSING_EXTERNAL two days later" — which is the sentence that actually decided the ADR.
 
 ### 8.2 "It started writing code despite the stop gate"
 
@@ -617,7 +617,7 @@ Approaches [B] and [C] are straw men — they were written to be rejected.
 
 Rewrite section 2. For each of the three approaches, first write a paragraph headed
 **"The strongest case for this"** — argue for it as if you had chosen it and had to defend it to
-Farhan, who will ask what happens when it takes twice as long.
+Atul, who will ask what happens when it takes twice as long.
 
 Then, and only then, write the failure mode.
 
@@ -651,7 +651,7 @@ day. If splitting produces more than 9 steps, tell me which of them belong in a 
 than padding this one.
 ```
 
-What changes: usually the step count goes up by two and one step turns out to be a separate story, which is the useful part. In Sofia's run, "wire the gate into the pipeline" split into steps 6 and 7, and step 7 revealed that `MIN_CONFIDENCE` needed to exist in the Snowflake schema — which is what triggered [P13](P13-design-the-data-contract.md).
+What changes: usually the step count goes up by two and one step turns out to be a separate story, which is the useful part. In Hem's run, "wire the gate into the pipeline" split into steps 6 and 7, and step 7 revealed that `MIN_CONFIDENCE` needed to exist in the Snowflake schema — which is what triggered [P13](P13-design-the-data-contract.md).
 
 ### 8.5 "It recommended something I explicitly ruled out"
 
@@ -673,7 +673,7 @@ Do not argue for an exception and do not tell me the constraint is a tradeoff. I
 Do not write any file.
 ```
 
-What changes: point 4 is the valuable one. A plan that says "nothing satisfies all six of your constraints, and the cheapest one to relax is 'no code change per counterparty'" is a genuinely useful result, and it is a conversation with Amara rather than a technical problem.
+What changes: point 4 is the valuable one. A plan that says "nothing satisfies all six of your constraints, and the cheapest one to relax is 'no code change per counterparty'" is a genuinely useful result, and it is a conversation with Preetinka rather than a technical problem.
 
 ### The loop
 
@@ -699,7 +699,7 @@ flowchart TD
 
 ### You run plan mode on a decision that has already been made
 
-Sofia nearly did this. If Tomas's spike had been merged before Tuesday, the honest version of this prompt would have been "justify what we already built," and the AI would have obliged with a very convincing three-option comparison in which option A wins.
+Hem nearly did this. If Ravi's spike had been merged before Tuesday, the honest version of this prompt would have been "justify what we already built," and the AI would have obliged with a very convincing three-option comparison in which option A wins.
 
 The tell is in your own prompt: if `[THE DECISION TO MAKE]` names a technology, the decision is made. "How should we structure our Document Intelligence models" is not a decision, it is an implementation question — perfectly good, but it belongs in [P11](P11-write-the-technical-spec.md), not here.
 
@@ -715,19 +715,19 @@ Closely related and much sneakier. Constraints can smuggle answers. "Must produc
 
 This prompt is genuinely the wrong tool for reversible decisions, and running it anyway is a common way to feel productive while shipping nothing.
 
-The test is cost of reversal. Choosing the extraction service is expensive to reverse: it shapes the confidence gate, the exception queue, the bronze layer, and the audit story. Choosing whether `core/confidence.py` returns a tuple or a small dataclass is not — Tomas can change it in ten minutes and nobody outside the file notices.
+The test is cost of reversal. Choosing the extraction service is expensive to reverse: it shapes the confidence gate, the exception queue, the bronze layer, and the audit story. Choosing whether `core/confidence.py` returns a tuple or a small dataclass is not — Ravi can change it in ten minutes and nobody outside the file notices.
 
-Rahul's rule on the Northwind project, stated in Sprint 1 and repeated in Sprint 3: **if you can reverse it in under an hour without touching another component, do not plan it, just build it and see.**
+Gautam's rule on the Northwind project, stated in Sprint 1 and repeated in Sprint 3: **if you can reverse it in under an hour without touching another component, do not plan it, just build it and see.**
 
 **The fix:** before running this, say what it would cost to undo the decision in three months. Under a day? Skip to [P18](../phase-4-build/P18-implement-a-story.md) and build a spike.
 
 ### You trust a number the AI produced
 
-The output above contains `$378/month`, `$38/month`, `12,600 pages`. Those are correct because they come from the PRD and from published Azure pricing that Sofia checked. The output also contains `UNKNOWN — verify` for LLM token cost, which is correct behaviour.
+The output above contains `$378/month`, `$38/month`, `12,600 pages`. Those are correct because they come from the PRD and from published Azure pricing that Hem checked. The output also contains `UNKNOWN — verify` for LLM token cost, which is correct behaviour.
 
-What happens without the "do not invent numbers" instruction is that every one of those slots gets filled with a confident, wrong figure. Not wildly wrong — plausibly wrong, off by a factor of two, in the direction that supports the recommendation. Sofia's very first attempt at this prompt, before the `Do not` block existed, returned an LLM cost of "approximately $95/month" with no arithmetic. It was invented.
+What happens without the "do not invent numbers" instruction is that every one of those slots gets filled with a confident, wrong figure. Not wildly wrong — plausibly wrong, off by a factor of two, in the direction that supports the recommendation. Hem's very first attempt at this prompt, before the `Do not` block existed, returned an LLM cost of "approximately $95/month" with no arithmetic. It was invented.
 
-**The fix:** keep the instruction, and treat every number in the plan as unverified until you have personally opened the pricing page. Circle them in the document if that helps. Farhan does exactly this and it is not paranoia.
+**The fix:** keep the instruction, and treat every number in the plan as unverified until you have personally opened the pricing page. Circle them in the document if that helps. Atul does exactly this and it is not paranoia.
 
 ### The plan lives and dies in a chat window
 
@@ -739,13 +739,13 @@ The most common failure and the least dramatic. The plan is excellent, everyone 
 
 ## 10. The handoff
 
-Sofia is the next reader of her own output, which is unusual in this library and worth naming. She runs [P11 — Write the Technical Spec](P11-write-the-technical-spec.md) next, using section 5 of this plan as the scope boundary — the spec covers exactly steps 2, 4, 5 and 6, which are the confidence gate, and deliberately does not cover the bronze layer or the Snowflake load, which belong to other stories.
+Hem is the next reader of her own output, which is unusual in this library and worth naming. She runs [P11 — Write the Technical Spec](P11-write-the-technical-spec.md) next, using section 5 of this plan as the scope boundary — the spec covers exactly steps 2, 4, 5 and 6, which are the confidence gate, and deliberately does not cover the bronze layer or the Snowflake load, which belong to other stories.
 
 Before that, though, she runs [P12 — Record an Architecture Decision](P12-record-an-architecture-decision.md) on section 4. This ordering is not arbitrary. The decision is what constrains the spec; if the spec is written first it will quietly assume an extraction approach, and then the ADR becomes documentation of a fait accompli rather than a record of a choice.
 
-Tomas gets the steps table. He will read it as a task list and that is fine, because §8.4 made every step checkable. His branch `spike/extract-poc` gets closed, not merged — and Sofia makes a point of saying in standup that the spike did its job, because a spike that gets deleted after informing a decision is a success and it should not feel like one being thrown away.
+Ravi gets the steps table. He will read it as a task list and that is fine, because §8.4 made every step checkable. His branch `spike/extract-poc` gets closed, not merged — and Hem makes a point of saying in standup that the spike did its job, because a spike that gets deleted after informing a decision is a success and it should not feel like one being thrown away.
 
-Farhan gets the open questions. Two of the four have his name on them indirectly, since both are really "is 85% a launch number or a quarter-three number," which is a date question wearing a technical hat.
+Atul gets the open questions. Two of the four have his name on them indirectly, since both are really "is 85% a launch number or a quarter-three number," which is a date question wearing a technical hat.
 
 > **Artifact contract — the approved plan (session output, feeding `artifacts/adr/0001-*.md`)**
 > Anyone reading this plan can rely on finding:
@@ -764,13 +764,13 @@ Farhan gets the open questions. Two of the four have his name on them indirectly
 
 ## 11. In the case study
 
-This prompt is the opening scene of [Chapter 3 — Sprint 1: Design](../../Case-Study/Python-ETL/03-sprint-1-design.md). Sofia runs it on the Tuesday morning of Sprint 1 and the output is the direct parent of [`artifacts/adr/0001-extraction-approach.md`](../../Case-Study/Python-ETL/artifacts/adr/0001-extraction-approach.md).
+This prompt is the opening scene of [Chapter 3 — Sprint 1: Design](../../Case-Study/Python-ETL/03-sprint-1-design.md). Hem runs it on the Tuesday morning of Sprint 1 and the output is the direct parent of [`artifacts/adr/0001-extraction-approach.md`](../../Case-Study/Python-ETL/artifacts/adr/0001-extraction-approach.md).
 
-The thing worth reading the chapter for is what went wrong on the first attempt. Sofia's initial run did not have the `Do not invent numbers` line, and the plan came back with an LLM cost of about $95 a month against Document Intelligence's $378. On those figures the recommendation should have been the LLM, and the plan said so. Sofia only caught it because $95 for 39 million tokens felt low, and checking took four minutes.
+The thing worth reading the chapter for is what went wrong on the first attempt. Hem's initial run did not have the `Do not invent numbers` line, and the plan came back with an LLM cost of about $95 a month against Document Intelligence's $378. On those figures the recommendation should have been the LLM, and the plan said so. Hem only caught it because $95 for 39 million tokens felt low, and checking took four minutes.
 
 The interesting part is that the corrected plan reached the *same conclusion the original had been about to reject* — Document Intelligence — but for an entirely different reason. Cost was never the deciding factor. The confidence score was. The first plan had buried that under a cost comparison that turned out to be fictional, which is a very good illustration of why §8.1 exists: a plan can be wrong in its reasoning and right in its conclusion, and that is not the same as being right.
 
-There is also a small scene at the end of the chapter where Tomas asks why his spike is being deleted when it worked. Sofia's answer — "it worked at the only thing we asked it to do, which was tell us what we lose" — is the sentence Rahul quotes back at the retrospective in [Chapter 10](../../Case-Study/Python-ETL/10-retrospective.md).
+There is also a small scene at the end of the chapter where Ravi asks why his spike is being deleted when it worked. Hem's answer — "it worked at the only thing we asked it to do, which was tell us what we lose" — is the sentence Gautam quotes back at the retrospective in [Chapter 10](../../Case-Study/Python-ETL/10-retrospective.md).
 
 ---
 

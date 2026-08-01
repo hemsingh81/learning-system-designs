@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | **Phase** | 1 — Discovery |
-| **Who runs it** | Product Owner (Amara Osei) |
+| **Who runs it** | Product Owner (Preetinka Sharma) |
 | **When** | Day one of Sprint 1, the morning after Sprint 0's foundations land |
 | **Takes in** | `Case-Study/Python-ETL/00-the-brief.md` (the client's original ask, in their words), `Case-Study/Python-ETL/artifacts/CLAUDE.md` (the project context file from [P01](../phase-0-foundation/P01-generate-the-project-context-file.md)) |
 | **Produces** | `Case-Study/Python-ETL/artifacts/prd-counterparty-ingestion.md` |
@@ -18,15 +18,15 @@
 
 ## 1. The scene
 
-Sprint 0 is over. Rahul spent two weeks on plumbing: the repo, the project context file, the database connection, an MCP server so the team's AI tooling can see the schema, a set of hooks that stop anyone committing a secret, and one team skill that packages the code review the team runs a hundred times a year. Nothing shipped. Nothing was supposed to.
+Sprint 0 is over. Gautam spent two weeks on plumbing: the repo, the project context file, the database connection, an MCP server so the team's AI tooling can see the schema, a set of hooks that stop anyone committing a secret, and one team skill that packages the code review the team runs a hundred times a year. Nothing shipped. Nothing was supposed to.
 
-What Rahul does have is a working environment where an AI assistant knows the shape of the project without being told again every morning. That matters more in about ten minutes than it looks like it should.
+What Gautam does have is a working environment where an AI assistant knows the shape of the project without being told again every morning. That matters more in about ten minutes than it looks like it should.
 
-Amara Osei walks in with a two-page email. It is from Northwind Asset Management's head of operations, and it is the entire written brief for a project that Kestrel Software has already signed a contract for. The email says, in its most specific paragraph, *"we need to stop manually keying broker statements — it's killing our T+1 targets."*
+Preetinka Sharma walks in with a two-page email. It is from Northwind Asset Management's head of operations, and it is the entire written brief for a project that Kestrel Software has already signed a contract for. The email says, in its most specific paragraph, *"we need to stop manually keying broker statements — it's killing our T+1 targets."*
 
 That is the whole requirement. Everything else in the email is background, apologies for the delay in sending it, and a list of four people who should be on the distribution list.
 
-Amara has seen this before. She spent six years on the operations floor of a custodian bank before she moved into product, so she can read that sentence and translate it into about forty questions. What counts as a broker statement? All counterparties or the top ten? What happens when the PDF is unreadable? Who fixes it? Does "stop manually keying" mean zero human touch, or does it mean a human only touches the hard ones? Because those are completely different projects with completely different budgets.
+Preetinka has seen this before. She spent six years on the operations floor of a custodian bank before she moved into product, so she can read that sentence and translate it into about forty questions. What counts as a broker statement? All counterparties or the top ten? What happens when the PDF is unreadable? Who fixes it? Does "stop manually keying" mean zero human touch, or does it mean a human only touches the hard ones? Because those are completely different projects with completely different budgets.
 
 **She is not going to get those answers by asking the client forty questions in one email.** She is going to get them by writing down her best current understanding, in a form specific enough that the client can point at a sentence and say "no, that's wrong." That document is a PRD, and this prompt writes the first draft of it.
 
@@ -46,7 +46,7 @@ This book uses agile vocabulary constantly and most of it is jargon dressed up a
 
 **The backlog** is the ordered list of everything the team might build, most important first. Not a wish list — an ordered queue. Ordering it is the single highest-leverage thing a Product Owner does, and it is a full-time job.
 
-**A Product Owner** owns that ordering and owns the definition of "done" from the business side. Amara is the Product Owner. When somebody asks "should we build the CSV export or the Spanish translation first," she answers, and her answer is final. She is not the same as a project manager. Farhan is the project manager and he owns dates, risk and sequencing. Amara owns *what* and *why*; Farhan owns *when* and *what happens if it slips*.
+**A Product Owner** owns that ordering and owns the definition of "done" from the business side. Preetinka is the Product Owner. When somebody asks "should we build the CSV export or the Spanish translation first," she answers, and her answer is final. She is not the same as a project manager. Atul is the project manager and he owns dates, risk and sequencing. Preetinka owns *what* and *why*; Atul owns *when* and *what happens if it slips*.
 
 **A user story** is one small unit of work in the backlog, written from the point of view of somebody who wants an outcome. They are the subject of [P07](P07-slice-the-prd-into-stories.md).
 
@@ -54,7 +54,7 @@ This book uses agile vocabulary constantly and most of it is jargon dressed up a
 
 **Discovery** is the phase before you build anything, where you work out what the problem actually is. That is where you are now.
 
-None of those words appear in this prompt because you need to sound agile. They appear because when Farhan says "put that in the backlog" in Sprint 2, you need to already know what he means.
+None of those words appear in this prompt because you need to sound agile. They appear because when Atul says "put that in the backlog" in Sprint 2, you need to already know what he means.
 
 ### So what is a PRD?
 
@@ -73,13 +73,13 @@ The test of a good PRD is not "is it comprehensive." The test is: **can the clie
 
 This is where most people go wrong, and it is where AI assistants go wrong hardest and fastest.
 
-**A PRD is not a technical specification.** A spec says *how*. It names services, describes classes, defines schemas, specifies retry policy. That document exists in this project — it is [P11's](../phase-2-design/P11-write-the-technical-spec.md) output, `spec-confidence-gate.md`, and Sofia Marchetti writes it in Sprint 1's design half. It is a different document written by a different person for a different audience.
+**A PRD is not a technical specification.** A spec says *how*. It names services, describes classes, defines schemas, specifies retry policy. That document exists in this project — it is [P11's](../phase-2-design/P11-write-the-technical-spec.md) output, `spec-confidence-gate.md`, and Hem Singh writes it in Sprint 1's design half. It is a different document written by a different person for a different audience.
 
 **A PRD does not name technology.** The Northwind PRD does not say "use Azure AI Document Intelligence." It says "the system must extract structured fields from a PDF statement and report how confident it is in each one." That is a requirement. Which service satisfies it is an architecture decision, and architecture decisions get recorded in an ADR ([P12](../phase-2-design/P12-record-an-architecture-decision.md)) where they can be revisited. If you bake the vendor into the PRD, you have quietly removed the team's ability to change their mind without a change request.
 
 **A PRD does not contain a schema.** No column names, no table definitions, no JSON shapes. Those live in the data contract ([P13](../phase-2-design/P13-design-the-data-contract.md)).
 
-**A PRD does not contain estimates or dates.** Those come from [P09](P09-estimate-and-rank-the-backlog.md) and from Farhan. A PRD that contains a Gantt chart is a project plan wearing a PRD's coat.
+**A PRD does not contain estimates or dates.** Those come from [P09](P09-estimate-and-rank-the-backlog.md) and from Atul. A PRD that contains a Gantt chart is a project plan wearing a PRD's coat.
 
 **A PRD is not a user story list.** Stories are a slicing of the PRD, and slicing them well is hard enough to need its own prompt.
 
@@ -87,12 +87,12 @@ Here is the distinction that actually sticks:
 
 | Document | Answers | Owned by | Northwind file |
 |---|---|---|---|
-| PRD | What problem, for whom, measured how | Product Owner (Amara) | `prd-counterparty-ingestion.md` |
-| Stories | What increments deliver it | Product Owner (Amara) | `stories/NWD-101…108` |
-| Acceptance criteria | When is one increment done | PO + QA (Amara + Ananya) | `acceptance-criteria-NWD-103.md` |
-| Technical spec | How it is built | Architect (Sofia) | `spec-confidence-gate.md` |
-| ADR | Why this approach and not that one | Architect (Sofia) | `adr/0001…0003` |
-| Data contract | What the data looks like exactly | Architect + Backend (Sofia + Tomas) | `data-contract-counterparty-position.md` |
+| PRD | What problem, for whom, measured how | Product Owner (Preetinka) | `prd-counterparty-ingestion.md` |
+| Stories | What increments deliver it | Product Owner (Preetinka) | `stories/NWD-101…108` |
+| Acceptance criteria | When is one increment done | PO + QA (Preetinka + Pankaj) | `acceptance-criteria-NWD-103.md` |
+| Technical spec | How it is built | Architect (Hem) | `spec-confidence-gate.md` |
+| ADR | Why this approach and not that one | Architect (Hem) | `adr/0001…0003` |
+| Data contract | What the data looks like exactly | Architect + Backend (Hem + Ravi) | `data-contract-counterparty-position.md` |
 
 If a sentence you are writing belongs in a lower row, cut it out of the PRD and leave a note that it is somebody else's problem.
 
@@ -126,7 +126,7 @@ The operational version:
 
 > Break detection moves from T+2 to T+1. The straight-through rate — the percentage of counterparty documents that reach the warehouse with zero human touch — rises from a baseline of 61% to 85% within one quarter of go-live.
 
-Both are numbers. Only one of them means anything to Priya Raman, the operations analyst at Northwind who currently opens each PDF and types the numbers into a spreadsheet.
+Both are numbers. Only one of them means anything to Preeti Singh, the operations analyst at Northwind who currently opens each PDF and types the numbers into a spreadsheet.
 
 Some glossary, because this is exactly the kind of sentence the reader should not have to search for:
 
@@ -156,7 +156,7 @@ Read §3 alongside this. Each instruction is there for a reason.
 
 **The stop gate.** The prompt says: if fewer than three of the required sections can be filled from the source material, stop and ask questions instead of writing. This is deliberate. A PRD hallucinated from thin material is worse than no PRD, because it looks finished. **A document that looks finished stops people asking questions, and asking questions is the entire point of discovery.**
 
-**The open-questions section is mandatory and cannot be empty.** If the model produces a PRD with no open questions, it has invented answers. There are always open questions on day one. Amara's version had eleven.
+**The open-questions section is mandatory and cannot be empty.** If the model produces a PRD with no open questions, it has invented answers. There are always open questions on day one. Preetinka's version had eleven.
 
 **"You are done when" is stated explicitly.** This makes §7 of this file answerable, and it gives the model a completion condition rather than a length target. Models given a length target pad. Models given a completion condition stop.
 
@@ -267,13 +267,13 @@ CONVERSATIONS, CONSTRAINTS YOU WERE TOLD VERBALLY]
 | `[PASTE THE CLIENT BRIEF...]` | The actual source words. The email, the call transcript, the notes from the kickoff. Verbatim, including the rambling. | The two-page email from Northwind's head of operations, including the distribution list nobody needed | Summarise it first and you make the interpretation calls invisibly, which is exactly what the PRD is supposed to expose. Paste nothing and the model writes fiction. |
 | `[ANYTHING YOU KNOW THAT IS NOT IN THE SOURCE MATERIAL]` | Domain knowledge you have that the brief does not contain. Verbal constraints, things the client said on a call, numbers you know from experience. | "Northwind runs two books, EM and EQ. EM statements often arrive in Spanish or Portuguese. Break detection currently lands on T+2. Volume is roughly 200 documents a day, spiking at month-end." | Leave it blank and every one of those facts becomes an assumption in section 7 — which is not a disaster, but it wastes a review cycle confirming things you already knew. |
 
-**A note on that last row.** It is tempting to leave it empty and let the model ask. Do not. Amara filled it with six lines and it removed four items from the open-questions list, which meant the client meeting spent its time on the questions that actually needed a client.
+**A note on that last row.** It is tempting to leave it empty and let the model ask. Do not. Preetinka filled it with six lines and it removed four items from the open-questions list, which meant the client meeting spent its time on the questions that actually needed a client.
 
 ---
 
 ## 5. The filled-in example
 
-This is what Amara actually ran, at 9:40 on the Monday morning of Sprint 1, with the operations email open in a second window.
+This is what Preetinka actually ran, at 9:40 on the Monday morning of Sprint 1, with the operations email open in a second window.
 
 ```text
 You are helping a **Product Owner** write the first draft of a Product Requirements
@@ -375,7 +375,7 @@ ADDITIONAL CONTEXT I ALREADY KNOW:
 - Their internal position and trade records come out of BlackRock Aladdin over a REST API.
   That side is structured and reliable. The problem is entirely the counterparty side.
 - Volume is roughly 200 documents a day, 3 pages average, spiking hard at month-end.
-- The named analyst on the client side is Priya Raman. She is currently the person doing
+- The named analyst on the client side is Preeti Singh. She is currently the person doing
   the keying, and she will be the primary user of whatever we build.
 - Their current straight-through rate — documents needing zero human touch — is 61%,
   because 61% is the share that already arrives as machine-readable data feeds rather
@@ -393,7 +393,7 @@ Abridged. The real output ran to just under four pages. This is roughly two thir
 # PRD — Counterparty Document Ingestion
 
 **Status:** Draft 1 — not reviewed with client
-**Product Owner:** Amara Osei
+**Product Owner:** Preetinka Sharma
 **Date:** Sprint 1, Day 1
 
 ---
@@ -430,7 +430,7 @@ source material does not quantify it. Flagged as an open question.]
 
 **Operations analyst — daily user.** Currently opens each incoming PDF, locates the
 position or trade rows, types them into a spreadsheet, and hands the spreadsheet to the
-reconciliation process. Named contact: Priya Raman. Her working day is currently
+reconciliation process. Named contact: Preeti Singh. Her working day is currently
 front-loaded with data entry and back-loaded with chasing discrepancies, many of which
 turn out to be her own or the previous system's transcription errors.
 
@@ -585,8 +585,8 @@ Must be confirmed.]
 | Q5 | How many counterparties are in scope for phase one, and which? | Head of Operations | Effort, sequencing, and the shape of the backlog |
 | Q6 | What is the acceptable turnaround for a document routed to human review — minutes, hours, same day? | Operations | Whether the review screen needs to support bulk actions |
 | Q7 | Which languages beyond Spanish and Portuguese, if any? | Operations | Scope of CAP-06 |
-| Q8 | Is there a budget ceiling for per-document processing cost? | Head of Operations + Farhan | Approach selection |
-| Q9 | Who owns the review screen operationally — is it Priya's team or a separate exceptions team? | Head of Operations | User model for the review screen |
+| Q8 | Is there a budget ceiling for per-document processing cost? | Head of Operations + Atul | Approach selection |
+| Q9 | Who owns the review screen operationally — is it Preeti's team or a separate exceptions team? | Head of Operations | User model for the review screen |
 | Q10 | What does the reconciliation process expect as input today — a spreadsheet in a specific shape, or can it consume something else? | Reconciliation owner | Output contract |
 | Q11 | Does the previous OCR pilot still run for any counterparty, and does it need decommissioning? | Operations | Migration and cutover |
 ```
@@ -597,11 +597,11 @@ Three things in that output matter more than the rest.
 
 **Look at section 3, G4.** It is stated as an absolute — "zero incorrect values" — rather than a percentage. That is unusual for a goal and it is correct here. The model picked it up from one paragraph of the client's email about the failed OCR pilot. That single paragraph is doing more work in this PRD than the entire first page. **When a client tells you about a previous failure, that story is usually the real requirement.**
 
-**Look at Q2 in section 8.** "If a statement's rows cannot all be extracted with confidence, is withholding the entire document acceptable?" That question, and the assumption A6 behind it, became the design invariant the whole project rests on: one failing field sends the whole document to review. Amara did not know that on Monday morning. The prompt surfaced it as a question because it was forced to expose its assumptions rather than quietly encode them. If A6 had been buried inside CAP-04 as a stated fact, nobody would have asked the client, and the team would have built the wrong thing and found out in Sprint 3.
+**Look at Q2 in section 8.** "If a statement's rows cannot all be extracted with confidence, is withholding the entire document acceptable?" That question, and the assumption A6 behind it, became the design invariant the whole project rests on: one failing field sends the whole document to review. Preetinka did not know that on Monday morning. The prompt surfaced it as a question because it was forced to expose its assumptions rather than quietly encode them. If A6 had been buried inside CAP-04 as a stated fact, nobody would have asked the client, and the team would have built the wrong thing and found out in Sprint 3.
 
 **Now look at what is commonly wrong.** Section 5, CAP-04 says "the system must produce an indication of how certain it is." It does not say "confidence score." It does not say "0.90 for currency fields." Those numbers exist and they are in this book, but they belong in the technical spec, not here. If your PRD output contains a threshold table, the model has drifted into specification and you should cut it. The tell is any sentence containing a number that only an engineer could have chosen.
 
-One more, smaller: the model wrote "[ASSUMED: ...]" inline in the body *and* summarised the assumptions in section 7. That duplication is deliberate and worth keeping. The inline flags let a reviewer see the guess at the point it affects them; the table lets Amara walk the client through all eight in ten minutes.
+One more, smaller: the model wrote "[ASSUMED: ...]" inline in the body *and* summarised the assumptions in section 7. That duplication is deliberate and worth keeping. The inline flags let a reviewer see the guess at the point it affects them; the table lets Preetinka walk the client through all eight in ten minutes.
 
 ---
 
@@ -778,7 +778,7 @@ and what is still open.
 **Do not** treat silence as agreement. If they did not mention it, it is still open.
 ```
 
-What changes: the PRD goes from draft to agreed. Instruction 2 is the important one — when Northwind confirmed that yes, a document is all-or-nothing, that answer changed CAP-04, CAP-05, the shape of the review screen, and the entire non-goal about 100% automation. The model found three of those four. Amara found the fourth.
+What changes: the PRD goes from draft to agreed. Instruction 2 is the important one — when Northwind confirmed that yes, a document is all-or-nothing, that answer changed CAP-04, CAP-05, the shape of the review screen, and the entire non-goal about 100% automation. The model found three of those four. Preetinka found the fourth.
 
 ### The loop, drawn
 
@@ -826,7 +826,7 @@ The fix: cut capabilities into the open-questions list. "Should the system suppo
 
 ### The assumptions section is real but nobody acts on it
 
-Amara's first draft had eight assumptions, correctly flagged, correctly risk-rated. It also went into a folder and the review meeting spent forty minutes on the goals table.
+Preetinka's first draft had eight assumptions, correctly flagged, correctly risk-rated. It also went into a folder and the review meeting spent forty minutes on the goals table.
 
 An assumption you write down and do not test is worse than one you never noticed, because you now have a paper trail showing you knew. Section 7 is only useful if section 8 has the matching question with a named owner and section 8 drives the agenda of the review meeting.
 
@@ -846,19 +846,19 @@ Two cases.
 
 **The project is a change to something that already exists.** If Northwind had asked to add three new counterparties to a working system, a PRD would be theatre. What that needs is stories and acceptance criteria, straight to [P07](P07-slice-the-prd-into-stories.md) and [P08](P08-write-acceptance-criteria.md). PRDs are for when the problem is not yet agreed. If everyone already agrees on the problem, skip it.
 
-**The decision is technical, not product.** "Should we use one model per counterparty or one model with a layout hint?" is not a PRD question and no amount of PRD-writing will answer it. That is an ADR ([P12](../phase-2-design/P12-record-an-architecture-decision.md)) and it belongs to Sofia. If you find yourself writing a PRD to settle an argument between two engineers, you are using the wrong document.
+**The decision is technical, not product.** "Should we use one model per counterparty or one model with a layout hint?" is not a PRD question and no amount of PRD-writing will answer it. That is an ADR ([P12](../phase-2-design/P12-record-an-architecture-decision.md)) and it belongs to Hem. If you find yourself writing a PRD to settle an argument between two engineers, you are using the wrong document.
 
 ---
 
 ## 10. The handoff
 
-The PRD goes back to Amara, and Amara runs [P07](P07-slice-the-prd-into-stories.md) on it herself. That is unusual in this library — most artifacts change hands — and it is deliberate. Slicing a PRD into stories is an act of product judgement, not a translation exercise, and handing it to an engineer at this point produces stories sliced by technical layer, which is the failure [P07](P07-slice-the-prd-into-stories.md) spends most of its length preventing.
+The PRD goes back to Preetinka, and Preetinka runs [P07](P07-slice-the-prd-into-stories.md) on it herself. That is unusual in this library — most artifacts change hands — and it is deliberate. Slicing a PRD into stories is an act of product judgement, not a translation exercise, and handing it to an engineer at this point produces stories sliced by technical layer, which is the failure [P07](P07-slice-the-prd-into-stories.md) spends most of its length preventing.
 
-What P07 is guaranteed to find: eight capabilities with IDs, each described as an outcome rather than a mechanism, and a non-goals list that tells it what not to slice. The CAP IDs matter. Every story that comes out of P07 traces back to a CAP number, and every CAP number must be covered by at least one story. That traceability is how Amara answers Farhan when he asks, in Sprint 2, whether cutting NWD-104 breaks anything the client was promised.
+What P07 is guaranteed to find: eight capabilities with IDs, each described as an outcome rather than a mechanism, and a non-goals list that tells it what not to slice. The CAP IDs matter. Every story that comes out of P07 traces back to a CAP number, and every CAP number must be covered by at least one story. That traceability is how Preetinka answers Atul when he asks, in Sprint 2, whether cutting NWD-104 breaks anything the client was promised.
 
-Sofia also reads this document, but she does not act on it directly. She reads it for constraints — C1 through C5 — because those are the things her architecture has to survive. C1, "a wrong value is worse than a missing value," is the sentence that produces the confidence gate, and it is also the sentence she quotes in ADR 0001 when she rejects the simpler design. Her recurring question, "what does this look like when it's wrong," has an answer in this PRD, and that is unusual enough to be worth noticing.
+Hem also reads this document, but she does not act on it directly. She reads it for constraints — C1 through C5 — because those are the things her architecture has to survive. C1, "a wrong value is worse than a missing value," is the sentence that produces the confidence gate, and it is also the sentence she quotes in ADR 0001 when she rejects the simpler design. Her recurring question, "what does this look like when it's wrong," has an answer in this PRD, and that is unusual enough to be worth noticing.
 
-Farhan reads section 8 and nothing else, at first. Eleven open questions with named owners is his risk register for the week.
+Atul reads section 8 and nothing else, at first. Eleven open questions with named owners is his risk register for the week.
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/prd-counterparty-ingestion.md`**
 >
@@ -878,15 +878,15 @@ Farhan reads section 8 and nothing else, at first. Eleven open questions with na
 
 ## 11. In the case study
 
-This prompt runs on the first morning of Sprint 1, in [`02-sprint-1-discovery.md`](../../Case-Study/Python-ETL/02-sprint-1-discovery.md). Amara runs it at 9:40, has a draft by 9:55, and spends until lunchtime doing the part the prompt cannot do — walking through the eleven open questions and deciding which four are worth a client's time this week.
+This prompt runs on the first morning of Sprint 1, in [`02-sprint-1-discovery.md`](../../Case-Study/Python-ETL/02-sprint-1-discovery.md). Preetinka runs it at 9:40, has a draft by 9:55, and spends until lunchtime doing the part the prompt cannot do — walking through the eleven open questions and deciding which four are worth a client's time this week.
 
 The thing that went wrong is worth the space. The first run produced a PRD with a section 5 containing a capability the model called "CAP-09 — Provide a management dashboard showing ingestion volumes and error rates." Nobody at Northwind asked for a dashboard. It appeared because dashboards appear in documents shaped like this one.
 
-Amara nearly left it in. It seemed harmless and probably useful. She cut it, moved it to open question Q12 — "does operations want visibility into ingestion volumes, or is that already covered by existing monitoring?" — and forgot about it.
+Preetinka nearly left it in. It seemed harmless and probably useful. She cut it, moved it to open question Q12 — "does operations want visibility into ingestion volumes, or is that already covered by existing monitoring?" — and forgot about it.
 
-Six weeks later, in Sprint 3, the client asked for exactly that dashboard. Because it had been sitting in the open-questions list as a question rather than in the capabilities list as a commitment, it was a scope conversation with a price attached, not a defect. Farhan has referred to that moment more than once since. **The assumption you write down as a question is the one that does not cost you a sprint.**
+Six weeks later, in Sprint 3, the client asked for exactly that dashboard. Because it had been sitting in the open-questions list as a question rather than in the capabilities list as a commitment, it was a scope conversation with a price attached, not a defect. Atul has referred to that moment more than once since. **The assumption you write down as a question is the one that does not cost you a sprint.**
 
-The other thing to notice in that chapter: the client's answer to Q2 — the partial-ingestion question — was not what Amara expected. She had assumed operations would want as many rows as possible and would tolerate gaps. They wanted the opposite, emphatically, and gave her the two-week break-chasing story again to explain why. That answer becomes design invariant number two, it becomes the reason the confidence gate is document-scoped rather than field-scoped, and it is the exact rule that bug [NWD-142](../../Case-Study/Python-ETL/artifacts/bug-NWD-142.md) violates in Sprint 3 without anyone noticing until Ananya tests it.
+The other thing to notice in that chapter: the client's answer to Q2 — the partial-ingestion question — was not what Preetinka expected. She had assumed operations would want as many rows as possible and would tolerate gaps. They wanted the opposite, emphatically, and gave her the two-week break-chasing story again to explain why. That answer becomes design invariant number two, it becomes the reason the confidence gate is document-scoped rather than field-scoped, and it is the exact rule that bug [NWD-142](../../Case-Study/Python-ETL/artifacts/bug-NWD-142.md) violates in Sprint 3 without anyone noticing until Pankaj tests it.
 
 The PRD it produced is at [`artifacts/prd-counterparty-ingestion.md`](../../Case-Study/Python-ETL/artifacts/prd-counterparty-ingestion.md).
 

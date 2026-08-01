@@ -7,32 +7,32 @@
 | | |
 |---|---|
 | **Phase** | 6 — Rework |
-| **Who runs it** | Backend or Frontend Engineer (Tomas Vargas; Ji-woo Park for UI defects) |
+| **Who runs it** | Backend or Frontend Engineer (Ravi Mullick; Dzmitry  for UI defects) |
 | **When** | QA has tested a story you marked done and filed a defect against it |
 | **Takes in** | The bug report (`Case-Study/Python-ETL/artifacts/bug-NWD-142.md`), the story it belongs to, the spec that story was built from, and the repo |
 | **Produces** | A failing test that reproduces the defect, a root-cause statement, a fix, a regression test, and a verdict on whether the spec was wrong |
-| **Hands off to** | Ananya Iyer to re-test; Sofia Marchetti via [P29](P29-the-spec-was-wrong.md) if the spec is implicated; Rahul Nair at review via [P28](P28-respond-to-code-review-feedback.md) |
-| **Time to run** | Half a day for a real defect. NWD-142 took Tomas a day and a half. |
+| **Hands off to** | Pankaj  to re-test; Hem Singh via [P29](P29-the-spec-was-wrong.md) if the spec is implicated; Gautam  at review via [P28](P28-respond-to-code-review-feedback.md) |
+| **Time to run** | Half a day for a real defect. NWD-142 took Ravi a day and a half. |
 
 ---
 
 ## 1. The scene
 
-It is Wednesday of Sprint 3. The story is closed. The tests are green. Tomas moved `NWD-103 — Gate every extracted field on its confidence score` to Done eleven days ago, and the pipeline has been running against real Broker Alpha statements since.
+It is Wednesday of Sprint 3. The story is closed. The tests are green. Ravi moved `NWD-103 — Gate every extracted field on its confidence score` to Done eleven days ago, and the pipeline has been running against real Broker Alpha statements since.
 
-Then Priya Raman, the operations analyst at Northwind who used to type these PDFs into a spreadsheet by hand, sends a message that is three words long and ruins everybody's morning:
+Then Preeti Singh, the operations analyst at Northwind who used to type these PDFs into a spreadsheet by hand, sends a message that is three words long and ruins everybody's morning:
 
 > "The recon's wrong."
 
 She has attached a screenshot of the break report. Sixteen positions on the Broker Alpha book, all flagged `MISSING_EXTERNAL` — meaning Aladdin, Northwind's internal portfolio system, thinks Northwind holds them, and the counterparty statement apparently does not mention them at all. Sixteen missing positions on a single day is not a data quality wobble. That is the shape of a counterparty failing to settle. If it were real, someone would be on the phone to Broker Alpha's operations desk within the hour.
 
-It is not real. Ananya spends the afternoon on it and files **NWD-142**.
+It is not real. Pankaj spends the afternoon on it and files **NWD-142**.
 
 What she finds is this. The Broker Alpha daily position statement for 29 July was three pages. The positions table starts on page 1 and continues onto page 2 — the header row does not repeat, the table just keeps going. Forty-seven positions in total: thirty-one on page 1, sixteen on page 2. The pipeline extracted thirty-one.
 
-And here is the part that makes Tomas put his coffee down. **Nothing failed.** No exception. No 429. No log line above `INFO`. The confidence gate — the checkpoint that is supposed to be the whole safety mechanism of this system — looked at all thirty-one extracted positions, found every single field above threshold, and waved the document through. Because it was right. Every field it examined *was* high confidence. The gate was never shown the sixteen rows that were missing, so it had nothing to be uncertain about.
+And here is the part that makes Ravi put his coffee down. **Nothing failed.** No exception. No 429. No log line above `INFO`. The confidence gate — the checkpoint that is supposed to be the whole safety mechanism of this system — looked at all thirty-one extracted positions, found every single field above threshold, and waved the document through. Because it was right. Every field it examined *was* high confidence. The gate was never shown the sixteen rows that were missing, so it had nothing to be uncertain about.
 
-The document loaded to Snowflake cleanly. The straight-through rate metric — the percentage of documents needing zero human touch, the number Farhan reports to the client every Friday — counted it as a success. Reconciliation then did exactly what it was designed to do, compared Aladdin's forty-seven positions against the warehouse's thirty-one, and correctly reported sixteen breaks.
+The document loaded to Snowflake cleanly. The straight-through rate metric — the percentage of documents needing zero human touch, the number Atul reports to the client every Friday — counted it as a success. Reconciliation then did exactly what it was designed to do, compared Aladdin's forty-seven positions against the warehouse's thirty-one, and correctly reported sixteen breaks.
 
 Every component behaved correctly. The system was wrong.
 
@@ -49,7 +49,7 @@ flowchart LR
     B["Build<br/>P18-P21"] --> V["Verify<br/>P22-P25<br/>QA tests it"]
     V --> BR["Bug report<br/>filed"]
     BR --> P27["**P27**<br/>Fix from a<br/>bug report"]
-    P27 --> RT["Ananya<br/>re-tests"]
+    P27 --> RT["Pankaj<br/>re-tests"]
     RT -->|"Still broken"| P27
     RT -->|Fixed| P28["P28<br/>Review feedback"]
     P27 -.->|"Spec was<br/>wrong"| P29["P29<br/>Update the spec"]
@@ -81,7 +81,7 @@ Not one of those is a theory. They are all facts, and facts are what you want th
 
 > **The rule.** Give the AI the observation, not the explanation. If you already knew the explanation you would not need the prompt.
 
-This is why Ananya's bug reports became a plot point in the Northwind project. She writes them well enough to paste directly into a prompt with no editing, and that single habit is worth more to the team than any tool they installed. Her reports have a `Steps to reproduce` section that is literally executable, and an `Expected / Actual` pair that is literally assertable. Which brings us to the next idea.
+This is why Pankaj's bug reports became a plot point in the Northwind project. She writes them well enough to paste directly into a prompt with no editing, and that single habit is worth more to the team than any tool they installed. Her reports have a `Steps to reproduce` section that is literally executable, and an `Expected / Actual` pair that is literally assertable. Which brings us to the next idea.
 
 ### The second thing: reproduce before you fix, with a test, not with your eyes
 
@@ -95,7 +95,7 @@ The pushback is always the same: "I can see what's wrong, I can just fix it, wri
 
 **Second: without a failing test you cannot tell whether your fix worked.** You can tell whether the symptom went away, which is a different and much weaker statement. Symptoms go away for all sorts of reasons — a cache expired, the test data changed, you fixed a *different* bug that was masking this one. A red test turning green is unambiguous.
 
-**Third, and this is the one people underestimate: the act of writing the failing test forces you to pin down what "correct" means.** Ananya's report says the output should be forty-seven rows. Forty-seven rows *where*? In the parsed field object? In Azure SQL? In Snowflake? Each of those is a different test at a different layer, and they catch different bugs. Deciding which one you are writing forces you to decide where in the pipeline you believe the defect lives — and to say it out loud, where it can be challenged.
+**Third, and this is the one people underestimate: the act of writing the failing test forces you to pin down what "correct" means.** Pankaj's report says the output should be forty-seven rows. Forty-seven rows *where*? In the parsed field object? In Azure SQL? In Snowflake? Each of those is a different test at a different layer, and they catch different bugs. Deciding which one you are writing forces you to decide where in the pipeline you believe the defect lives — and to say it out loud, where it can be challenged.
 
 The name for this discipline, if you want the jargon: **red-green**. Write the test, watch it go red, write the fix, watch it go green. It comes from test-driven development, but you do not have to buy into TDD wholesale to use it for bug fixing. For bug fixing it is not a philosophy, it is just the only way to know.
 
@@ -105,7 +105,7 @@ There is a practical problem hiding here. To write a failing test you need the i
 
 Except it does not, and this is where an architecture decision from Sprint 1 pays for itself.
 
-One of the system's design invariants is that **bronze is immutable and comes before parsing**. *Bronze* is the layer where the full raw JSON response from the Document Intelligence API is written to blob storage, byte for byte, before any of our code tries to interpret it. Sofia insisted on it in [ADR 0001](../../Case-Study/Python-ETL/artifacts/adr/) with the argument that a parsing bug discovered next month should be reprocessable for free instead of re-paying thirty dollars per thousand pages.
+One of the system's design invariants is that **bronze is immutable and comes before parsing**. *Bronze* is the layer where the full raw JSON response from the Document Intelligence API is written to blob storage, byte for byte, before any of our code tries to interpret it. Hem insisted on it in [ADR 0001](../../Case-Study/Python-ETL/artifacts/adr/) with the argument that a parsing bug discovered next month should be reprocessable for free instead of re-paying thirty dollars per thousand pages.
 
 That argument was about cost. The payoff turned out to be debugging. The exact API response that produced the wrong answer is sitting in blob storage at `bronze/broker_alpha/2026-07-29/BA_POS_20260729.json`. You do not need the PDF, the credentials, the network, or eight seconds. You copy that JSON into `tests/fixtures/` and you have a perfect, deterministic, offline reproduction of a production defect.
 
@@ -127,7 +127,7 @@ NWD-142 is a specification defect, and it is a beautiful one.
 
 Read `spec-confidence-gate.md` carefully and you find it defines exactly one kind of doubt: **per-field confidence**. Every field carries a score from Document Intelligence, the score is compared to a threshold, and below threshold means human review. Currency fields at 0.90, quantities at 0.90, dates at 0.85, descriptive strings at 0.75.
 
-Every one of those rules is about a field that *exists*. There is not one sentence in the document about a field that is **absent**. There is nothing about whether the set of extracted rows is complete. The spec cannot express the concept, because when Sofia wrote it, nobody in the room had thought about a table that continues onto page two.
+Every one of those rules is about a field that *exists*. There is not one sentence in the document about a field that is **absent**. There is nothing about whether the set of extracted rows is complete. The spec cannot express the concept, because when Hem wrote it, nobody in the room had thought about a table that continues onto page two.
 
 So the code is not buggy against the spec. The code implements the spec faithfully. **The spec has a hole in it, and the hole is the difference between confidence and completeness.** Confidence asks "how sure am I about what I found". Completeness asks "did I find everything". They are different questions and this system only ever asked one of them.
 
@@ -152,7 +152,7 @@ The prompt and the example use these. None of them are optional knowledge.
 | **`MISSING_EXTERNAL`** | A break type: our internal records have a position, the counterparty statement does not. Genuinely it means a settlement failure. Falsely it means our extraction dropped a row. Those look identical on the report, which is the whole problem. |
 | **Confidence score** | A number from 0 to 1 that Azure AI Document Intelligence returns alongside every field it extracts, saying how sure the model is. |
 | **Confidence gate** | Our own checkpoint in `core/rules.py`. It compares each field's score to a threshold. Below threshold, the whole document goes to the exception queue instead of the warehouse. |
-| **Exception queue** | The place documents go when the gate rejects them. A human — Priya — opens Ji-woo's React screen and fixes the extraction by hand. |
+| **Exception queue** | The place documents go when the gate rejects them. A human — Preeti — opens Dzmitry's React screen and fixes the extraction by hand. |
 | **Straight-through rate** | The headline metric: percentage of documents needing zero human touch. Started at 61%, target 85%. NWD-142 was inflating it, because a silently truncated document counted as a clean pass. |
 | **Silver / gold** | Warehouse layers. Silver is typed staging in Azure SQL. Gold is Snowflake, what the business queries. |
 | **Line item** | One row of the positions table — one security, its quantity, its market value. |
@@ -165,7 +165,7 @@ The order of the steps is not arbitrary. Each one exists to block a specific way
 
 **Restate the bug in your own words, first.** This costs thirty seconds and catches misreadings before they compound. If the AI's restatement says "the parser crashes on multi-page documents", you have learned immediately that it did not read the report, and you have learned it cheaply.
 
-**Separate observations from theories in the report itself.** Even good bug reports contain a stray hypothesis. Ananya's NWD-142 has one — she wrote "possibly the page-2 table has no header row so it isn't recognised". She is a good QA engineer and she flagged it as a guess. The prompt makes the AI quarantine that guess and treat it as one candidate among several, not as the brief.
+**Separate observations from theories in the report itself.** Even good bug reports contain a stray hypothesis. Pankaj's NWD-142 has one — she wrote "possibly the page-2 table has no header row so it isn't recognised". She is a good QA engineer and she flagged it as a guess. The prompt makes the AI quarantine that guess and treat it as one candidate among several, not as the brief.
 
 **Write the failing test before diagnosing.** Note the order — before diagnosing, not after. This feels wrong and it is deliberate. The test asserts the *observed* behaviour from the report, which requires no theory at all. You can write `assert len(rows) == 47` without knowing anything about why it is 31.
 
@@ -366,7 +366,7 @@ Save your write-up as a comment on [TICKET ID]. Put tests in [TEST FILE PATH].
 |---|---|---|---|
 | `[LANGUAGE]` | Language, runtime, framework version | `Python 3.11 on Azure Functions (v2 programming model)` | The AI writes tests in a framework you do not use — `unittest` classes into a `pytest` suite, or `async def` tests with no async runner configured |
 | `[PROJECT NAME]` | The system, in enough words to orient | `the Northwind counterparty document ingestion pipeline` | It will not know that rejected documents have a defined destination, and may propose "skip the bad rows" — which is exactly the behaviour that caused this bug |
-| `[PASTE THE FULL BUG REPORT, UNEDITED]` | The **whole** report. Do not summarise it. Do not remove QA's guesses | The full text of `artifacts/bug-NWD-142.md` including Ananya's "possibly the page-2 table has no header row" note | Summarising is where your theory gets injected. You will cut the detail that turns out to matter — for NWD-142 that was the sentence "MIN_CONFIDENCE recorded as 0.94" |
+| `[PASTE THE FULL BUG REPORT, UNEDITED]` | The **whole** report. Do not summarise it. Do not remove QA's guesses | The full text of `artifacts/bug-NWD-142.md` including Pankaj's "possibly the page-2 table has no header row" note | Summarising is where your theory gets injected. You will cut the detail that turns out to matter — for NWD-142 that was the sentence "MIN_CONFIDENCE recorded as 0.94" |
 | `[STORY ID AND TITLE]` | The story this was built under | `NWD-103 — Gate every extracted field on its confidence score` | The AI cannot judge whether the code met its acceptance criteria, so step 9 becomes guesswork |
 | `[PATH TO ACCEPTANCE CRITERIA FILE]` | The criteria the story was accepted against | `artifacts/acceptance-criteria-NWD-103.md` | You lose the ability to say "this passed acceptance and was still wrong", which is the most valuable output of a bug like this |
 | `[PATH TO SPEC FILE]` | The specification the code implements | `artifacts/spec-confidence-gate.md` | Step 9 is unanswerable. You will fix the code, the spec stays wrong, and the next story inherits the error |
@@ -382,7 +382,7 @@ Save your write-up as a comment on [TICKET ID]. Put tests in [TEST FILE PATH].
 
 ## 5. The filled-in example
 
-Tomas runs this on Thursday morning, having spent Wednesday evening copying the bronze payload into `tests/fixtures/`. Ananya is sitting next to him, which turns out to matter.
+Ravi runs this on Thursday morning, having spent Wednesday evening copying the bronze payload into `tests/fixtures/`. Pankaj is sitting next to him, which turns out to matter.
 
 ```text
 You are a senior Python 3.11 / Azure Functions (v2 programming model) engineer fixing
@@ -406,7 +406,7 @@ you need. Do not proceed on a guess.
 ID: NWD-142
 Title: Positions on page 2 of a Broker Alpha statement are silently dropped
 Severity: Critical — corrupts the warehouse and produces false reconciliation breaks
-Found by: Ananya Iyer
+Found by: Pankaj 
 Found in: Sprint 3 acceptance testing, build 1.0.0-rc3
 Environment: dev, run 2026-07-29T18:14 IST
 
@@ -429,7 +429,7 @@ OBSERVED SIDE EFFECTS
 - MIN_CONFIDENCE on the gold row recorded as 0.94.
 - Straight-through rate counted this document as a clean pass.
 - recon/reconcile.py subsequently reported 16 MISSING_EXTERNAL breaks against the
-  Aladdin feed, which is what Priya escalated.
+  Aladdin feed, which is what Preeti escalated.
 
 NOTES
 - Reproduced 3/3 times.
@@ -472,7 +472,7 @@ Save your write-up as a comment on NWD-142. Put tests in tests/test_extract.py a
 tests/test_rules.py.
 ```
 
-The single most useful line in that whole prompt is Ananya's: *"The bronze payload is intact and it does contain page 2's rows, so extraction from Azure worked. We lose them after that."*
+The single most useful line in that whole prompt is Pankaj's: *"The bronze payload is intact and it does contain page 2's rows, so extraction from Azure worked. We lose them after that."*
 
 That one sentence eliminates half the system. Azure did its job. The PDF is fine. The model is fine. The defect is in our code, downstream of the API response, and the API response is sitting in a file you can load in a test. **A QA engineer who checks the raw payload before filing is worth two engineers who do not.**
 
@@ -585,7 +585,7 @@ Reproduced. 31 against an expected 47, offline, in 0.31 seconds, no Azure call.
 **STOPPING HERE.** Waiting for "reproduced".
 ````
 
-Tomas replies `reproduced`.
+Ravi replies `reproduced`.
 
 ### Steps 4–5, up to the second gate
 
@@ -659,9 +659,9 @@ The system validates the quality of what it found. It never validates the quanti
 **STOPPING HERE.** Waiting for "confirmed".
 ````
 
-Ananya, reading over Tomas's shoulder, says the sentence that ends up in the retrospective: *"So the gate isn't broken. The gate answers a question we never should have thought was the only question."*
+Pankaj, reading over Ravi's shoulder, says the sentence that ends up in the retrospective: *"So the gate isn't broken. The gate answers a question we never should have thought was the only question."*
 
-Tomas replies `confirmed`.
+Ravi replies `confirmed`.
 
 ### Steps 6–9
 
@@ -881,7 +881,7 @@ That is an architecture conversation, not a code change. Stopping here.
 
 Five things in that output deserve more attention than the rest.
 
-**The bash one-liner in step 3 is the highest-value thirty seconds of the session.** Before writing any test, the AI printed the shape of the fixture: two documents, 31 and 16 line items. That single command converts a theory ("something drops page 2") into an arithmetic fact ("31 + 16 = 47, and we return 31"). It also quietly kills Ananya's guess about the missing header row — the model *did* recognise page 2's table, it just put it in a different place. **When a reproduction is available, look at it before you reason about it.**
+**The bash one-liner in step 3 is the highest-value thirty seconds of the session.** Before writing any test, the AI printed the shape of the fixture: two documents, 31 and 16 line items. That single command converts a theory ("something drops page 2") into an arithmetic fact ("31 + 16 = 47, and we return 31"). It also quietly kills Pankaj's guess about the missing header row — the model *did* recognise page 2's table, it just put it in a different place. **When a reproduction is available, look at it before you reason about it.**
 
 **The failure message is the deliverable.** `assert 31 == 47` is worth more than three paragraphs of explanation. It is unambiguous, it is machine-checkable, and it is the thing you will re-run after the fix. Notice also that it runs in 0.31 seconds with no network and no credentials, because the bronze layer handed us the input for free.
 
@@ -891,7 +891,7 @@ Five things in that output deserve more attention than the rest.
 
 **Step 7 found a live bug nobody had reported.** `core/extract.py:141`, the `broker_beta_em` confirmation path, has the identical mistake and has been dropping rows in production. That is the single highest-value line in the entire output, and it came from a step that costs one `rg` command. It is also a good illustration of why missing-data bugs need this step more than any other class: nobody complains about rows that were never there.
 
-**The part that is commonly wrong:** the *reading order* test. `test_line_items_are_in_reading_order` asserts two specific security identifiers at two specific indices. That test is correct and it is also brittle — regenerate the fixture and it breaks for reasons unrelated to the bug. Tomas kept it anyway, and wrote a comment saying why: ordering matters because the transform assigns a `line_no` used in the reconciliation key, so a silent reordering would produce a different and equally invisible class of break. **A brittle test that guards a real invariant is better than no test, as long as the next person can tell from the comment why it exists.**
+**The part that is commonly wrong:** the *reading order* test. `test_line_items_are_in_reading_order` asserts two specific security identifiers at two specific indices. That test is correct and it is also brittle — regenerate the fixture and it breaks for reasons unrelated to the bug. Ravi kept it anyway, and wrote a comment saying why: ordering matters because the transform assigns a `line_no` used in the reconciliation key, so a silent reordering would produce a different and equally invisible class of break. **A brittle test that guards a real invariant is better than no test, as long as the next person can tell from the comment why it exists.**
 
 ---
 
@@ -918,7 +918,7 @@ Done is four separate conditions, and all four have to hold. This is stricter th
 - [ ] Step 9 has a letter and a quote from the spec.
 - [ ] QA has re-tested against the original steps to reproduce, not against your test.
 
-That last box is not decoration. Your test proves your code does what you now believe. Ananya's re-test proves the *system* does what the business needs. They are different claims and only one of them is what the ticket asked for.
+That last box is not decoration. Your test proves your code does what you now believe. Pankaj's re-test proves the *system* does what the business needs. They are different claims and only one of them is what the ticket asked for.
 
 ### Why you should stop rather than keep prompting
 
@@ -926,15 +926,15 @@ Two failure modes, and they pull in opposite directions.
 
 **Scope creep, dressed as thoroughness.** The AI has now read `core/extract.py` closely and has opinions. It will offer to add type hints, extract the mapping helpers, introduce a dataclass, guard the other unchecked dictionary access. Every suggestion is reasonable. None of them are NWD-142. A fix diff that is 90% unrelated improvement is a diff that cannot be reviewed and cannot be reverted, and reverting a bug fix cleanly is something you will one day need to do at 11pm.
 
-Tomas's rule after this sprint: **the diff should be readable as an answer to "which line fixed it".** Everything the AI noticed goes in the "other things I noticed" list at the end of the write-up, and from there into [P36 — Tech Debt Triage](../phase-8-improve/P36-tech-debt-triage.md).
+Ravi's rule after this sprint: **the diff should be readable as an answer to "which line fixed it".** Everything the AI noticed goes in the "other things I noticed" list at the end of the write-up, and from there into [P36 — Tech Debt Triage](../phase-8-improve/P36-tech-debt-triage.md).
 
-**Chasing the class instead of the instance.** The opposite trap, and the more seductive one because it feels like good engineering. Having understood that the system validates quality but never quantity, it is tempting to keep prompting until you have designed a general completeness framework. Do not. That design belongs to Sofia, it changes a specification four stories depend on, and it needs the Product Owner to agree that a document failing a completeness check should go to the exception queue — which has a real cost, because it lowers the straight-through rate that Farhan reports every Friday.
+**Chasing the class instead of the instance.** The opposite trap, and the more seductive one because it feels like good engineering. Having understood that the system validates quality but never quantity, it is tempting to keep prompting until you have designed a general completeness framework. Do not. That design belongs to Hem, it changes a specification four stories depend on, and it needs the Product Owner to agree that a document failing a completeness check should go to the exception queue — which has a real cost, because it lowers the straight-through rate that Atul reports every Friday.
 
 **The code fix closes the ticket. The design change opens a different one.** Keeping those separate is what stops a bug fix from turning into an unreviewable architecture change.
 
 ### The signal that you are NOT done
 
-**Ananya re-tests with the original steps and still sees a wrong number.** Not a different wrong number, not a smaller wrong number — any wrong number. That takes you straight to §8, which is the longest section in this file for a reason.
+**Pankaj re-tests with the original steps and still sees a wrong number.** Not a different wrong number, not a smaller wrong number — any wrong number. That takes you straight to §8, which is the longest section in this file for a reason.
 
 ---
 
@@ -945,14 +945,14 @@ This is the section the author of this book asked for by name, and it is the one
 | What you're seeing | What's actually wrong | Run this next |
 |---|---|---|
 | The test still fails after the fix | The fix does not address what the test asserts. Either the diagnosis is wrong or the fix is in a code path the test does not exercise | §8.1 |
-| The test passes but Ananya still sees the bug | Your test and the real system disagree about what the code does. Usually a layer mismatch or a config difference | §8.2 |
+| The test passes but Pankaj still sees the bug | Your test and the real system disagree about what the code does. Usually a layer mismatch or a config difference | §8.2 |
 | The fix works but three other tests went red | You changed behaviour something else relied on. Which is a finding, not necessarily a mistake | §8.3 |
 | QA re-opened the ticket with a *different* symptom | Either an adjacent bug the fix exposed, or an incomplete fix. These need different responses | §8.4 |
 | The AI keeps producing variations on the same fix | It has anchored on a wrong diagnosis and is now defending it | §8.5 |
 | It turns out the behaviour is correct and the report is wrong | Not a bug. This is a real outcome and it needs handling properly, not silently | §8.6 |
 | Step 9 came back (b) or (c) | The spec has a hole or an error in it | **[P29](P29-the-spec-was-wrong.md)** |
 | The AI has now failed twice in the same way | Prompting harder will not help | **[P30](P30-when-the-ai-is-stuck.md)** |
-| Rahul's review comments arrive on the fix PR | Sort them before you act on them | **[P28](P28-respond-to-code-review-feedback.md)** |
+| Gautam's review comments arrive on the fix PR | Sort them before you act on them | **[P28](P28-respond-to-code-review-feedback.md)** |
 
 ### 8.1 "The fix is in and the test still fails"
 
@@ -980,7 +980,7 @@ What changes: instead of a second guess, you get a discrimination between three 
 
 ### 8.2 "The test passes but QA still sees the bug"
 
-Use this when your suite is green, you are confident, and Ananya runs the original reproduction steps and gets 31 rows again. This is the most disorienting outcome in the whole loop.
+Use this when your suite is green, you are confident, and Pankaj runs the original reproduction steps and gets 31 rows again. This is the most disorienting outcome in the whole loop.
 
 ```text
 My test passes. QA ran the original steps to reproduce and still observes the defect.
@@ -1037,7 +1037,7 @@ What changes: you find out whether you broke something or whether you exposed so
 
 ### 8.4 "QA re-opened it with a different symptom"
 
-Use this when the original defect is genuinely fixed and Ananya files against the same ticket with a new observation. Now 47 rows appear, but the market values on 3 of them are wrong.
+Use this when the original defect is genuinely fixed and Pankaj files against the same ticket with a new observation. Now 47 rows appear, but the market values on 3 of them are wrong.
 
 ```text
 QA re-opened [TICKET ID]. Original defect is fixed — [STATE THE EVIDENCE]. New
@@ -1122,7 +1122,7 @@ What changes: you get a closure that respects the report and, usually, one small
 
 The distinction that matters most is question 2. **"The spec says so" is an explanation, not a justification.** If the specified behaviour is genuinely wrong, you have not closed a bug — you have found a spec defect, and that is [P29](P29-the-spec-was-wrong.md).
 
-At Northwind, **NWD-139** — the exception queue showing confidence as `0.8234567` instead of `82%` — was very nearly closed as "works as designed", because the data contract does specify a float. Ji-woo pushed back with question 3: Priya reads forty of these a day and is comparing them to a threshold expressed as a percentage. The fix was one line of formatting. The lesson was that "as designed" and "as needed" are not the same sentence.
+At Northwind, **NWD-139** — the exception queue showing confidence as `0.8234567` instead of `82%` — was very nearly closed as "works as designed", because the data contract does specify a float. Dzmitry pushed back with question 3: Preeti reads forty of these a day and is comparing them to a threshold expressed as a percentage. The fix was one line of formatting. The lesson was that "as designed" and "as needed" are not the same sentence.
 
 ### The loop
 
@@ -1139,7 +1139,7 @@ flowchart TD
     I -->|"Other tests red"| J["8.3 classify<br/>each failure"] --> H
     I -->|Yes| K["Step 9<br/>spec verdict"]
     K -->|"(b) or (c)"| L["P29"] --> H
-    K -->|"(a)"| M["Ananya re-tests"]
+    K -->|"(a)"| M["Pankaj re-tests"]
     M -->|"Re-opened"| N["8.4 extend,<br/>discover, or<br/>regress?"] --> E
     M -->|Passes| O["Done → P28"]
 ```
@@ -1166,7 +1166,7 @@ The test fails. The fix makes it pass. Everything looks right, and the fixture w
 
 This is the single most common way P27 produces confident, useless output.
 
-The fix is the `[FIXTURE OR RAW PAYLOAD PATH]` placeholder and the prompt's explicit rule: *use the real captured input; do not hand-craft a synthetic input that you think reproduces it.* If you genuinely have no captured input, that is the problem to solve first. And if your architecture does not preserve raw responses before parsing, NWD-142 is a good argument for changing that — this is exactly the payoff Sofia predicted when she wrote the bronze layer into the ADR.
+The fix is the `[FIXTURE OR RAW PAYLOAD PATH]` placeholder and the prompt's explicit rule: *use the real captured input; do not hand-craft a synthetic input that you think reproduces it.* If you genuinely have no captured input, that is the problem to solve first. And if your architecture does not preserve raw responses before parsing, NWD-142 is a good argument for changing that — this is exactly the payoff Hem predicted when she wrote the bronze layer into the ADR.
 
 ### The fix makes the symptom stop for the wrong reason
 
@@ -1194,7 +1194,7 @@ Three situations look like a QA bug and are not.
 
 **Something threw.** If there is a stack trace, the machine has already narrowed the search for you and P27's reproduction step is wasted effort. Use [P26](P26-debug-an-error-fast.md).
 
-**It is a change request wearing a bug's clothes.** "The exception queue should sort by confidence ascending" is not a defect; it is a new requirement filed on the wrong form. Fixing it under a bug ticket means it skips the Product Owner, skips estimation, and skips the acceptance criteria conversation. Amara will find out when it ships. Send it back to the backlog and run [P07](../phase-1-discovery/P07-slice-the-prd-into-stories.md).
+**It is a change request wearing a bug's clothes.** "The exception queue should sort by confidence ascending" is not a defect; it is a new requirement filed on the wrong form. Fixing it under a bug ticket means it skips the Product Owner, skips estimation, and skips the acceptance criteria conversation. Preetinka will find out when it ships. Send it back to the backlog and run [P07](../phase-1-discovery/P07-slice-the-prd-into-stories.md).
 
 **The report describes a data problem, not a code problem.** "The security identifiers are wrong for 12 rows" might be an extraction bug — or Broker Alpha might have sent a statement with wrong identifiers. Those have entirely different owners. [P25 — Data Quality Validation](../phase-5-verify/P25-data-quality-validation.md) is the prompt for telling them apart, and it is worth running before P27 whenever the symptom is "wrong values" rather than "wrong behaviour".
 
@@ -1204,11 +1204,11 @@ Three situations look like a QA bug and are not.
 
 Three handoffs come out of one P27 run, and they go to three different people. Getting them all is what stops a fixed bug from leaving a system that is quietly less true than it was before.
 
-**To Ananya, immediately.** She re-tests against the original steps to reproduce — not against your test. Your test proves the code does what you believe. Her re-test proves the system does what the business needs. On NWD-142 that meant dropping `BA_POS_20260729.pdf` into the raw zone again, letting the queue worker run, and counting rows in silver. She got 47. She then did the thing that makes her good at her job and dropped in `BA_POS_20260722.pdf` as well, the other statement from her report, which was a different shape. That one produced 47 too, and also produced NWD-145.
+**To Pankaj, immediately.** She re-tests against the original steps to reproduce — not against your test. Your test proves the code does what you believe. Her re-test proves the system does what the business needs. On NWD-142 that meant dropping `BA_POS_20260729.pdf` into the raw zone again, letting the queue worker run, and counting rows in silver. She got 47. She then did the thing that makes her good at her job and dropped in `BA_POS_20260722.pdf` as well, the other statement from her report, which was a different shape. That one produced 47 too, and also produced NWD-145.
 
-**To Sofia, because step 9 came back (b).** The spec is silent on completeness and needs a rule it never contemplated. That is [P29 — The Spec Was Wrong](P29-the-spec-was-wrong.md), and it is genuinely a separate piece of work with a separate approval path: Sofia drafts, Amara agrees the operational cost — a completeness failure sends a document to the exception queue, which is human time and a lower straight-through rate — and Rahul re-checks the four other stories built from that spec. Only then does the code change that implements the new rule get written, and it gets written as its own story, not smuggled into a bug fix.
+**To Hem, because step 9 came back (b).** The spec is silent on completeness and needs a rule it never contemplated. That is [P29 — The Spec Was Wrong](P29-the-spec-was-wrong.md), and it is genuinely a separate piece of work with a separate approval path: Hem drafts, Preetinka agrees the operational cost — a completeness failure sends a document to the exception queue, which is human time and a lower straight-through rate — and Gautam re-checks the four other stories built from that spec. Only then does the code change that implements the new rule get written, and it gets written as its own story, not smuggled into a bug fix.
 
-**To Rahul, at review.** The pull request goes up with the write-up as its description. His review prompt is [P23](../phase-5-verify/P23-review-someone-elses-code.md), and what he is looking for is not whether the code is elegant — it is whether the diff matches the claimed root cause and whether the regression test would actually fail without it. When his comments come back, you run [P28 — Respond to Code Review Feedback](P28-respond-to-code-review-feedback.md), which exists because "address this review" is a genuinely bad instruction to give an AI.
+**To Gautam, at review.** The pull request goes up with the write-up as its description. His review prompt is [P23](../phase-5-verify/P23-review-someone-elses-code.md), and what he is looking for is not whether the code is elegant — it is whether the diff matches the claimed root cause and whether the regression test would actually fail without it. When his comments come back, you run [P28 — Respond to Code Review Feedback](P28-respond-to-code-review-feedback.md), which exists because "address this review" is a genuinely bad instruction to give an AI.
 
 There is a fourth, quieter handoff. The "other things I noticed" list at the end of the write-up goes into the tech debt backlog for [P36](../phase-8-improve/P36-tech-debt-triage.md). Not into the diff. Ever.
 
@@ -1228,13 +1228,13 @@ There is a fourth, quieter handoff. The "other things I noticed" list at the end
 
 ## 11. In the case study
 
-NWD-142 is the spine of [`08-sprint-3-rework.md`](../../Case-Study/Python-ETL/08-sprint-3-rework.md). It arrives at the end of [`07-sprint-3-verify.md`](../../Case-Study/Python-ETL/07-sprint-3-verify.md) as the last of five defects Ananya files, and it eats the rest of the sprint. The report itself is checked in at [`artifacts/bug-NWD-142.md`](../../Case-Study/Python-ETL/artifacts/bug-NWD-142.md), unedited, because half the point of the chapter is that a bug report written well enough to paste into a prompt is a deliverable in its own right.
+NWD-142 is the spine of [`08-sprint-3-rework.md`](../../Case-Study/Python-ETL/08-sprint-3-rework.md). It arrives at the end of [`07-sprint-3-verify.md`](../../Case-Study/Python-ETL/07-sprint-3-verify.md) as the last of five defects Pankaj files, and it eats the rest of the sprint. The report itself is checked in at [`artifacts/bug-NWD-142.md`](../../Case-Study/Python-ETL/artifacts/bug-NWD-142.md), unedited, because half the point of the chapter is that a bug report written well enough to paste into a prompt is a deliverable in its own right.
 
-The thing that actually happened, and the reason this chapter exists in the shape it does: **Tomas fixed it in eleven minutes and it took a day and a half to close.** He read the report, saw `documents[0]`, changed it to a loop, ran the suite, and moved the ticket to Done before lunch. Rahul rejected it at review with one question — *"How do you know that's the reason, and what stops it coming back?"* — and Tomas had no answer to either half. There was no failing test, so there was no proof the diagnosis was right rather than lucky. There was no regression test, so there was nothing to stop the next refactor undoing it. He went back and ran the full prompt, and the full prompt found the second live instance in the `broker_beta_em` confirmation path — a bug that had been silently corrupting the EM book for eleven days and that nobody had filed, because sixteen extra breaks in a book that already had two hundred does not stand out.
+The thing that actually happened, and the reason this chapter exists in the shape it does: **Ravi fixed it in eleven minutes and it took a day and a half to close.** He read the report, saw `documents[0]`, changed it to a loop, ran the suite, and moved the ticket to Done before lunch. Gautam rejected it at review with one question — *"How do you know that's the reason, and what stops it coming back?"* — and Ravi had no answer to either half. There was no failing test, so there was no proof the diagnosis was right rather than lucky. There was no regression test, so there was nothing to stop the next refactor undoing it. He went back and ran the full prompt, and the full prompt found the second live instance in the `broker_beta_em` confirmation path — a bug that had been silently corrupting the EM book for eleven days and that nobody had filed, because sixteen extra breaks in a book that already had two hundred does not stand out.
 
-The second thing worth reading the chapter for is Ananya's sentence in the standup the next morning, which Farhan wrote on the whiteboard and left there for the rest of the project: *"The gate isn't broken. The gate answers a question we never should have thought was the only question."* That is the sentence that turns a bug fix into a spec change, and it is what makes NWD-142 the hinge of the whole book — the moment where the team stops treating the AI's output as the thing to verify, and starts treating the *specification* as the thing to verify.
+The second thing worth reading the chapter for is Pankaj's sentence in the standup the next morning, which Atul wrote on the whiteboard and left there for the rest of the project: *"The gate isn't broken. The gate answers a question we never should have thought was the only question."* That is the sentence that turns a bug fix into a spec change, and it is what makes NWD-142 the hinge of the whole book — the moment where the team stops treating the AI's output as the thing to verify, and starts treating the *specification* as the thing to verify.
 
-Amara's contribution was the least technical and the most consequential. When Sofia proposed the completeness rule in [`03-sprint-1-design.md`](../../Case-Study/Python-ETL/03-sprint-1-design.md)'s revised spec, Amara asked what it would do to the straight-through rate — the headline metric, 61% at the time, target 85%. The answer was that it would push more documents to Priya for manual review, and the rate would go down before it went up. She approved it anyway, in four words that Farhan quoted in the retrospective: *"A wrong number is worse than no number."* Which is design invariant number one, written into the project's foundations in Sprint 1, arriving back on the table in Sprint 3 to justify a decision that made a metric look worse. That is what an invariant is for.
+Preetinka's contribution was the least technical and the most consequential. When Hem proposed the completeness rule in [`03-sprint-1-design.md`](../../Case-Study/Python-ETL/03-sprint-1-design.md)'s revised spec, Preetinka asked what it would do to the straight-through rate — the headline metric, 61% at the time, target 85%. The answer was that it would push more documents to Preeti for manual review, and the rate would go down before it went up. She approved it anyway, in four words that Atul quoted in the retrospective: *"A wrong number is worse than no number."* Which is design invariant number one, written into the project's foundations in Sprint 1, arriving back on the table in Sprint 3 to justify a decision that made a metric look worse. That is what an invariant is for.
 
 ---
 

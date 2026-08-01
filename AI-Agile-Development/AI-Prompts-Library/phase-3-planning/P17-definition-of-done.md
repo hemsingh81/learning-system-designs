@@ -7,28 +7,28 @@
 | | |
 |---|---|
 | **Phase** | 3 — Planning |
-| **Who runs it** | Team Lead + QA (Rahul Nair and Ananya Iyer), together |
+| **Who runs it** | Team Lead + QA (Gautam  and Pankaj ), together |
 | **When** | Once, before the first build sprint. Revisited at retrospectives, not mid-sprint |
 | **Takes in** | `artifacts/CLAUDE.md`, `artifacts/sprint-2-plan.md`, the team's actual CI setup, any client contractual requirements |
 | **Produces** | `artifacts/definition-of-done.md` |
-| **Hands off to** | Backend Engineer (Tomas Vargas), who runs [P18](../phase-4-build/P18-implement-a-story.md) — and every other prompt in phases 4 through 7, all of which reference this file |
+| **Hands off to** | Backend Engineer (Ravi Mullick), who runs [P18](../phase-4-build/P18-implement-a-story.md) — and every other prompt in phases 4 through 7, all of which reference this file |
 | **Time to run** | 20 minutes to generate; a 60-minute session with the whole team to agree it |
 
 ---
 
 ## 1. The scene
 
-Monday afternoon. Sprint planning is over, Farhan's plan is committed, and Rahul Nair has asked for an hour with the team before anyone opens an editor.
+Monday afternoon. Sprint planning is over, Atul's plan is committed, and Gautam  has asked for an hour with the team before anyone opens an editor.
 
-He puts one question on the screen: **"Tomas says NWD-101 is done. What did he just tell us?"**
+He puts one question on the screen: **"Ravi says NWD-101 is done. What did he just tell us?"**
 
-Silence, then five different answers. Tomas means the code works and he ran it locally. Ananya assumes it means she can test it. Amara assumes it means she can show it to Northwind. Sofia assumes the ADR has been updated if the design moved. Farhan assumes it means the eight points come off the board and the burndown moves.
+Silence, then five different answers. Ravi means the code works and he ran it locally. Pankaj assumes it means she can test it. Preetinka assumes it means she can show it to Northwind. Hem assumes the ADR has been updated if the design moved. Atul assumes it means the eight points come off the board and the burndown moves.
 
 All five are reasonable. None of them is written down anywhere. Which means that for the last two sprints, "done" has meant whatever the person saying it thought it meant.
 
-This is not a hypothetical problem for Kestrel. In the previous engagement — the one Rahul, Ananya and the earlier books cover — a story was called done on a Thursday, moved to the done column, counted in the velocity, demoed on the Friday, and then failed in QA the following Tuesday because nobody had written a test for the error path. The team's velocity for that sprint was, in a real sense, a lie. Not through dishonesty: through the absence of one shared sentence.
+This is not a hypothetical problem for Kestrel. In the previous engagement — the one Gautam, Pankaj and the earlier books cover — a story was called done on a Thursday, moved to the done column, counted in the velocity, demoed on the Friday, and then failed in QA the following Tuesday because nobody had written a test for the error path. The team's velocity for that sprint was, in a real sense, a lie. Not through dishonesty: through the absence of one shared sentence.
 
-There's a newer version of the same problem, and it's the one Rahul is actually worried about this time. Tomas is now writing code with an AI. Some of it is very good. Some of it is very good **and nobody has read it.** In the previous project Rahul found a 90-line retry helper in the codebase that no human on the team could explain, because it had appeared in a single AI-generated commit, the tests were green, and the reviewer had approved it in four minutes.
+There's a newer version of the same problem, and it's the one Gautam is actually worried about this time. Ravi is now writing code with an AI. Some of it is very good. Some of it is very good **and nobody has read it.** In the previous project Gautam found a 90-line retry helper in the codebase that no human on the team could explain, because it had appeared in a single AI-generated commit, the tests were green, and the reviewer had approved it in four minutes.
 
 **A Definition of Done is one checklist, agreed by the whole team, that every story must pass before anyone is allowed to say the word "done".** It's the cheapest document in agile and the one most teams skip, and the arrival of AI-written code has made it considerably less optional.
 
@@ -109,7 +109,7 @@ Most Definition of Done templates you'll find online were written before a machi
 
 #### Clause 1 — "A human has read every line the AI wrote"
 
-This is the one Rahul insists on, and it's the one that gets pushback.
+This is the one Gautam insists on, and it's the one that gets pushback.
 
 The objection is reasonable: *we don't read every line of the libraries we import, so why this?* The answer is that a library has a public interface, a version number, a maintainer, a test suite, and a hundred thousand other users who'd have found the bug. Freshly generated code in your repository has none of those. It has exactly one safeguard, and that safeguard is you.
 
@@ -128,7 +128,7 @@ This clause is why the always-shippable step sequencing in [P15](P15-implementat
 
 This is the sharpest one, and it needs explaining because at first glance it looks unreasonable.
 
-Here's the situation it catches. Tomas has a failing test. He asks Claude to fix it. Claude has two options: change the code so the behaviour is right, or change the test so it agrees with the current behaviour. Both make the suite green. Both look like a fix in the diff. And the second one is much easier, so it's what happens by default a distressing proportion of the time.
+Here's the situation it catches. Ravi has a failing test. He asks Claude to fix it. Claude has two options: change the code so the behaviour is right, or change the test so it agrees with the current behaviour. Both make the suite green. Both look like a fix in the diff. And the second one is much easier, so it's what happens by default a distressing proportion of the time.
 
 The change is often nearly invisible in review. An assertion goes from `assert result.passed is False` to `assert result.passed is not None`. A threshold in the test moves from 0.92 to 0.90. A case gets `@pytest.mark.skip` with a plausible comment. The suite is green, the story is done, and the behaviour the test was protecting is gone.
 
@@ -136,13 +136,13 @@ The clause is not "never change a test". Tests change constantly and legitimatel
 
 That's it. One sentence. If the author can write "the old assertion checked 0.90, but ADR-0002 sets Broker Alpha's currency threshold to 0.92, so the test was wrong" — fine, good, that's a real fix. If the only sentence they can write is "it was failing", the code is wrong and the test was right.
 
-Rahul's version of the rule, which is easier to remember: **the test is the requirement written in code. You don't get to edit the requirement to pass the exam.**
+Gautam's version of the rule, which is easier to remember: **the test is the requirement written in code. You don't get to edit the requirement to pass the exam.**
 
 #### Clause 3 — "The spec was updated if behaviour diverged"
 
 Code moves faster than documents, and AI-assisted code moves much faster. A three-day story now takes a day, and the spec that took a week to write is now a day behind after every story.
 
-The specific failure: Tomas implements the gate, discovers during Step 3 that the spec never said what happens when a field is *absent* rather than low-confidence, decides sensibly that absence is a failure, and implements it. The spec still doesn't mention it. Six weeks later somebody reads the spec, believes it, and builds something that assumes absent fields pass.
+The specific failure: Ravi implements the gate, discovers during Step 3 that the spec never said what happens when a field is *absent* rather than low-confidence, decides sensibly that absence is a failure, and implements it. The spec still doesn't mention it. Six weeks later somebody reads the spec, believes it, and builds something that assumes absent fields pass.
 
 The clause is: **if the code does something the spec doesn't describe, the story is not done until the spec describes it.** Not a big rewrite. Usually a sentence and a date.
 
@@ -162,7 +162,7 @@ Four properties. A clause missing any of them will be ignored within two sprints
 
 **Checkable in under a minute.** If verifying it takes half an hour, it will be skipped on day nine. Automate what you can — linting, coverage floor, secret scanning — and keep the human ones cheap.
 
-**Owned.** Somebody specific says yes. Not "the team agrees". Ananya signs the test clauses; Rahul signs the review clauses; Amara signs acceptance. Unowned clauses are decorative.
+**Owned.** Somebody specific says yes. Not "the team agrees". Pankaj signs the test clauses; Gautam signs the review clauses; Preetinka signs acceptance. Unowned clauses are decorative.
 
 **Costed.** The team knows roughly what each clause adds per story. A DoD nobody has costed is a DoD that gets abandoned under pressure, because the first time it costs a day nobody expected, it becomes "the thing slowing us down".
 
@@ -188,7 +188,7 @@ And one anti-property, which is the most common way DoDs die: **it must be short
 
 ## 3. The prompt
 
-Run this once, before the first build sprint. Rahul and Ananya run it together — the review clauses and the test clauses need both of them or you get a DoD that's strong on one side and thin on the other.
+Run this once, before the first build sprint. Gautam and Pankaj run it together — the review clauses and the test clauses need both of them or you get a DoD that's strong on one side and thin on the other.
 
 ```text
 You are the team lead and the QA engineer, together, writing this team's
@@ -268,8 +268,8 @@ someone could apply the whole document to a story in under ten minutes.
 | `[TEST TOOLING]` | What you use to test, both sides | `pytest with coverage; Vitest + React Testing Library; Playwright for E2E` | The test clauses can't name a command, so they can't be checked |
 | `[WHAT CI ACTUALLY RUNS TODAY]` | Honestly, what's automated right now | `ruff, pytest, coverage floor 70%, gitleaks secret scan. No E2E in CI yet.` | The single most important input. Overstate it and half your clauses are unenforced |
 | `[ENVIRONMENT]` | Where "done" means deployed to | `the shared dev subscription, not local` | Done means "works on my laptop", which is where the whole class of environment bugs hides |
-| `[REVIEWER(S)]` | Who actually reviews | `Rahul Nair, or Sofia Marchetti for anything touching the rules engine` | "Someone reviews it" — which means the fastest available approver, which means four-minute approvals |
-| `[ACCEPTANCE SIGNER]` | Who says the business is satisfied | `Amara Osei` | Engineers declare business acceptance, which is how a story passes and the client rejects it |
+| `[REVIEWER(S)]` | Who actually reviews | `Gautam , or Hem Singh for anything touching the rules engine` | "Someone reviews it" — which means the fastest available approver, which means four-minute approvals |
+| `[ACCEPTANCE SIGNER]` | Who says the business is satisfied | `Preetinka Sharma` | Engineers declare business acceptance, which is how a story passes and the client rejects it |
 | `[CONSTRAINTS]` | Client or regulatory non-negotiables | `no PII in logs; no API keys in the repo (managed identity only); every warehouse row traceable to a bronze path` | The DoD misses the clauses that actually get you in trouble |
 | `[PROPORTION AND HOW]` | How much of the code is AI-written, honestly | `most first drafts are AI-generated one step at a time, then reviewed line by line by the author before review` | The AI clauses come out generic. Say how you work and they come out fitted to it |
 | `[MAX CLAUSES]` | Your ceiling | `14` | No ceiling means creep. Every incident adds a clause and none ever leave |
@@ -279,7 +279,7 @@ someone could apply the whole document to a story in under ten minutes.
 
 ## 5. The filled-in example
 
-Rahul and Ananya run this on the Monday afternoon of Sprint 2, sitting at one desk, before the team session at four o'clock.
+Gautam and Pankaj run this on the Monday afternoon of Sprint 2, sitting at one desk, before the team session at four o'clock.
 
 ```text
 You are the team lead and the QA engineer, together, writing this team's
@@ -304,9 +304,9 @@ clause would only make sense for one story, it does not belong in this document.
 - CI: GitHub Actions running ruff, pytest, a 70% coverage floor, and a gitleaks
   secret scan on every push. E2E is manual today.
 - Deployment target for "done": the shared dev subscription. Not local.
-- Who reviews code: Rahul Nair by default; Sofia Marchetti for anything touching
+- Who reviews code: Gautam  by default; Hem Singh for anything touching
   core/rules.py or the data contract.
-- Who signs off acceptance: Amara Osei.
+- Who signs off acceptance: Preetinka Sharma.
 - Hard constraints from the client: no PII in logs or telemetry; no API keys
   anywhere in the repository — managed identity via DefaultAzureCredential only,
   Snowflake by key-pair; every row that reaches the warehouse must be traceable
@@ -356,7 +356,7 @@ apply the whole document to a story in under ten minutes.
 ```markdown
 # Definition of Done
 Kestrel Software · Northwind counterparty ingestion
-Agreed Sprint 2, day 1 · Owners: Rahul Nair (lead), Ananya Iyer (QA)
+Agreed Sprint 2, day 1 · Owners: Gautam  (lead), Pankaj  (QA)
 
 This applies to **every** story. It is not the acceptance criteria — those are
 per-story and live in `artifacts/acceptance-criteria-*.md`. A story is done when
@@ -397,14 +397,14 @@ which offers helpers nobody asked for.
 named so a reader can match it to the criterion.**
 - Check: reviewer maps AC number to test name in the pull request description.
   One line per criterion.
-- Owner: Ananya Iyer
+- Owner: Pankaj 
 - Cost: 15 min
 
 **D5 — The failure path is tested, not only the success path.**
 For every new behaviour: at least one test where the input is absent, null,
 malformed, or below threshold. A story with only happy-path tests is not done.
 - Check: reviewer confirms at least one negative test per new public function.
-- Owner: Ananya Iyer
+- Owner: Pankaj 
 - Cost: 15 min
 
 **D6 — Coverage on changed files is at or above 70%, and no changed file went
@@ -445,7 +445,7 @@ large case — the spec was actively wrong — raise it with the architect and f
 the spec-change route instead of editing quietly.
 - Check: reviewer asks "does the spec describe what this does?" and the answer is
   yes, or the same pull request contains the spec edit.
-- Owner: Sofia Marchetti for the rules engine and data contract; Rahul otherwise
+- Owner: Hem Singh for the rules engine and data contract; Gautam otherwise
 - Cost: 10 min
 
 ---
@@ -454,7 +454,7 @@ the spec-change route instead of editing quietly.
 
 **D10 — One other person has approved the change, and it was not the author.**
 Anything touching `core/rules.py`, `core/confidence.py` or the data contract goes
-to Sofia. Everything else to Rahul.
+to Hem. Everything else to Gautam.
 - Check: GitHub approval on the pull request.
 - Owner: reviewer
 - Cost: 0 min for the author
@@ -502,11 +502,11 @@ assignment gaps and configuration drift, which is most of what goes wrong.
 
 ## Product acceptance
 
-**D15 — Amara has seen it work and said yes.**
+**D15 — Preetinka has seen it work and said yes.**
 For backend stories this can be a two-minute screen share or a query result. It
 is not "the tests pass".
-- Check: Amara moves the ticket to Accepted herself. Nobody moves it for her.
-- Owner: Amara Osei
+- Check: Preetinka moves the ticket to Accepted herself. Nobody moves it for her.
+- Owner: Preetinka Sharma
 - Cost: 10 min
 
 ---
@@ -517,7 +517,7 @@ These would be clauses if the tooling existed. They are not clauses today, and
 nobody should pretend otherwise.
 
 - **E2E in CI.** Playwright runs manually. Until it runs on every merge, E2E
-  passing cannot be a done condition. Tracked; Ananya owns it, Sprint 3.
+  passing cannot be a done condition. Tracked; Pankaj owns it, Sprint 3.
 - **Automated diff-coverage gate.** Coverage is reported but not enforced per
   file. Today D6 relies on the reviewer reading the report.
 - **Automated dead-code detection.** D2 is a human grep. `vulture` was trialled
@@ -539,7 +539,7 @@ against one of these.
 - **Performance benchmarks per story.** Volume is ~200 documents a day. We are
   nowhere near a performance problem, and measuring one we do not have costs
   time we do need. Revisit if daily volume passes 1,000.
-- **Sign-off from Northwind on every story.** Amara represents the business.
+- **Sign-off from Northwind on every story.** Preetinka represents the business.
   Northwind sees the sprint demo, not every ticket.
 ```
 
@@ -547,7 +547,7 @@ against one of these.
 
 **Read the cost line at the top first.** Ninety minutes per story is the honest number, and putting it at the top does something important: it turns the DoD from a moral document into an operational one. It's a cost you either plan for in [P16](P16-sprint-plan-and-assignment.md) or you don't, and if you don't, it will be paid out of the last two days of the sprint, which is where it gets skipped.
 
-**D7 is the clause that does the most work, and the check is the clever part.** Not "the author confirms they read it" — a checkbox anyone will tick. It's "the reviewer picks a line and asks about it." That's ten seconds of the reviewer's time and it converts a promise into a test. Rahul picked this up from code review practice and it's the single highest-value line in the document.
+**D7 is the clause that does the most work, and the check is the clever part.** Not "the author confirms they read it" — a checkbox anyone will tick. It's "the reviewer picks a line and asks about it." That's ten seconds of the reviewer's time and it converts a promise into a test. Gautam picked this up from code review practice and it's the single highest-value line in the document.
 
 **D8's check is ordering, not content.** "Reviewer looks at the test diff *first*, before the code diff." That ordering matters more than any wording, because once you've read and approved the code, a weakened assertion reads as consistent rather than as suspicious. Look at the tests cold.
 
@@ -561,7 +561,7 @@ against one of these.
 
 **What "done" means here.** The DoD is done when every person on the team has read it, at least one person has argued with a clause, and something was changed as a result. A DoD nobody pushed back on is a DoD nobody read.
 
-That's a genuine exit criterion, not a nice sentiment. If Tomas doesn't push back on D7 costing twenty minutes a story, he hasn't understood that it's twenty minutes of *his* day, every day, and he'll quietly stop doing it in three weeks.
+That's a genuine exit criterion, not a nice sentiment. If Ravi doesn't push back on D7 costing twenty minutes a story, he hasn't understood that it's twenty minutes of *his* day, every day, and he'll quietly stop doing it in three weeks.
 
 **The checklist:**
 
@@ -714,7 +714,7 @@ What changes: you get one short section that stops the same argument recurring e
 
 ```mermaid
 flowchart TD
-    A[Run P17 with Rahul and Ananya] --> B[Read every clause aloud in the team session]
+    A[Run P17 with Gautam and Pankaj] --> B[Read every clause aloud in the team session]
     B --> C{Would two people answer this the same way?}
     C -- no --> D[8.1 make it binary] --> B
     C -- yes --> E{Does the check exist today?}
@@ -736,7 +736,7 @@ The commonest failure by a distance. The DoD is agreed in a workshop, committed,
 
 The cause is that nothing forces you to look at it. It sits in a folder with no connection to the work.
 
-The fix is mechanical, not cultural: **put the clause list in the pull request template.** Fourteen checkboxes that appear automatically every time anyone opens a PR. That's it. The document becomes the template, and the template is unavoidable. Kestrel did this in Sprint 2 and D7 was ticked-without-doing exactly twice before Rahul's "pick a line and ask" check made that uncomfortable.
+The fix is mechanical, not cultural: **put the clause list in the pull request template.** Fourteen checkboxes that appear automatically every time anyone opens a PR. That's it. The document becomes the template, and the template is unavoidable. Kestrel did this in Sprint 2 and D7 was ticked-without-doing exactly twice before Gautam's "pick a line and ask" check made that uncomfortable.
 
 ### It's used as a stick
 
@@ -744,7 +744,7 @@ A DoD's purpose is to make finishing well the default. It is not a way to catch 
 
 The tell is when clauses start being cited at a person rather than at a change. "Your PR failed D5" is fine. "You keep failing D5" is the start of a DoD nobody argues with in the room and everyone games in the pull request.
 
-Rahul's rule: the DoD is checked by the reviewer, discussed at the retro, and never mentioned in a one-to-one. If a clause fails a lot, the clause is probably wrong or expensive, and that's a retro conversation.
+Gautam's rule: the DoD is checked by the reviewer, discussed at the retro, and never mentioned in a one-to-one. If a clause fails a lot, the clause is probably wrong or expensive, and that's a retro conversation.
 
 ### The AI clauses become theatre
 
@@ -758,7 +758,7 @@ This is not a discipline problem. It's a **structure** problem, and it points ba
 
 You'll see this in two symptoms. Either the DoD fills up with story-specific detail — "the currency threshold for Broker Alpha is 0.92" has no business in a team-wide document — or acceptance criteria get thin because everyone assumes the DoD covers it.
 
-The second is more dangerous. A story with the DoD passing and no acceptance criteria has been built well and possibly built wrong. Ananya has seen a story pass every clause in this document while doing the opposite of what Amara asked, because nobody wrote down what Amara asked.
+The second is more dangerous. A story with the DoD passing and no acceptance criteria has been built well and possibly built wrong. Pankaj has seen a story pass every clause in this document while doing the opposite of what Preetinka asked, because nobody wrote down what Preetinka asked.
 
 The rule is short enough to remember: **story-specific goes in acceptance criteria, universal goes in the DoD.** If you find yourself writing a broker name, a threshold or a field name into the DoD, you're in the wrong document.
 
@@ -782,9 +782,9 @@ This is the file the rest of the library leans on. From here forward, almost eve
 - [P28](../phase-6-rework/P28-respond-to-code-review-feedback.md) leans on D11: every comment resolved in code or answered in writing.
 - [P32](../phase-7-release/P32-release-readiness-check.md) asks whether every story in the release passed all of it, which is only answerable if it was checked as you went.
 
-Tomas picks it up first, tomorrow morning, when he opens NWD-101 and runs [P18](../phase-4-build/P18-implement-a-story.md). What he's guaranteed to find in this file is a specific, finite list of what he owes beyond working code — and, importantly, a cost he can point at when someone asks why the story took a day longer than the estimate.
+Ravi picks it up first, tomorrow morning, when he opens NWD-101 and runs [P18](../phase-4-build/P18-implement-a-story.md). What he's guaranteed to find in this file is a specific, finite list of what he owes beyond working code — and, importantly, a cost he can point at when someone asks why the story took a day longer than the estimate.
 
-Ji-woo picks it up for [P19](../phase-4-build/P19-build-the-ui-from-the-brief.md) and finds that D5 — the failure path is tested, not only the success path — maps almost exactly onto the UI brief's insistence that loading, empty and error states are built before the happy path. That alignment isn't a coincidence; Ananya wrote D5 and reviewed the UI brief in the same week.
+Dzmitry picks it up for [P19](../phase-4-build/P19-build-the-ui-from-the-brief.md) and finds that D5 — the failure path is tested, not only the success path — maps almost exactly onto the UI brief's insistence that loading, empty and error states are built before the happy path. That alignment isn't a coincidence; Pankaj wrote D5 and reviewed the UI brief in the same week.
 
 > **Artifact contract — `artifacts/definition-of-done.md`**
 > Anyone reading this file can rely on finding:
@@ -805,15 +805,15 @@ Ji-woo picks it up for [P19](../phase-4-build/P19-build-the-ui-from-the-brief.md
 
 This runs in [Chapter 4 — Sprint 2 Planning](../../Case-Study/Python-ETL/04-sprint-2-planning.md) and produces [`definition-of-done.md`](../../Case-Study/Python-ETL/artifacts/definition-of-done.md).
 
-The argument in the room was about D7. Tomas's objection was completely fair: twenty minutes a story, across eight stories, is most of a working day out of a sprint where he's already carrying 34 points. He asked whether reading the tests carefully and trusting the code was enough.
+The argument in the room was about D7. Ravi's objection was completely fair: twenty minutes a story, across eight stories, is most of a working day out of a sprint where he's already carrying 34 points. He asked whether reading the tests carefully and trusting the code was enough.
 
-Ananya's answer is the one that settled it, and it's worth repeating because it's the whole case in two sentences. **The tests were written by the same AI, in the same session, from the same misunderstanding. If the model misread the spec, the code and the test agree with each other and both are wrong.** Reading the tests instead of the code doesn't give you an independent check; it gives you the same check twice.
+Pankaj's answer is the one that settled it, and it's worth repeating because it's the whole case in two sentences. **The tests were written by the same AI, in the same session, from the same misunderstanding. If the model misread the spec, the code and the test agree with each other and both are wrong.** Reading the tests instead of the code doesn't give you an independent check; it gives you the same check twice.
 
-Sofia added the clause about the spec, D9, and she added it because of something that had already happened in Sprint 1 — a field-map decision landed in the code that the data contract never described, and she only found it because she happened to be reading `sources.yaml` for something else.
+Hem added the clause about the spec, D9, and she added it because of something that had already happened in Sprint 1 — a field-map decision landed in the code that the data contract never described, and she only found it because she happened to be reading `sources.yaml` for something else.
 
-The clause that got cut, incidentally, was a documentation one: "every module has a README section". Rahul killed it on rule 3 from §8.2 — it had never once caught anything, because engineers write module docs when the module is confusing and skip them when it isn't, which is roughly the right behaviour anyway.
+The clause that got cut, incidentally, was a documentation one: "every module has a README section". Gautam killed it on rule 3 from §8.2 — it had never once caught anything, because engineers write module docs when the module is confusing and skip them when it isn't, which is roughly the right behaviour anyway.
 
-And the honest postscript: D7 did not catch NWD-142. Tomas read every line of the extraction code and could explain all of it. The bug was in a line that wasn't there — the loop only ever saw page one's rows, so there was nothing on the page to notice. Reading code catches wrong code. It does not catch absent code, and that distinction is the whole subject of [Chapter 8](../../Case-Study/Python-ETL/08-sprint-3-rework.md).
+And the honest postscript: D7 did not catch NWD-142. Ravi read every line of the extraction code and could explain all of it. The bug was in a line that wasn't there — the loop only ever saw page one's rows, so there was nothing on the page to notice. Reading code catches wrong code. It does not catch absent code, and that distinction is the whole subject of [Chapter 8](../../Case-Study/Python-ETL/08-sprint-3-rework.md).
 
 ---
 

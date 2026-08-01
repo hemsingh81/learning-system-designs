@@ -60,7 +60,7 @@ This is the big one.
 
 The original PRD prompt ends well: *"Save it as docs/prd-[feature].md so every later prompt can reference it."* Good instinct. But then three later prompts say some version of "reference the PRD" — and **nothing anywhere defines what the next person is guaranteed to find in it.**
 
-So here's what actually happens on a real team. Amara writes a PRD. Sofia needs it. Sofia opens it, skims it, and then describes the problem to her own AI **in her own words**, because that's faster than pasting six pages. Her words are 90% the same as Amara's. The missing 10% is the part about what happens when the extraction is uncertain.
+So here's what actually happens on a real team. Preetinka writes a PRD. Hem needs it. Hem opens it, skims it, and then describes the problem to her own AI **in her own words**, because that's faster than pasting six pages. Her words are 90% the same as Preetinka's. The missing 10% is the part about what happens when the extraction is uncertain.
 
 Two weeks later there's a design that has no concept of an exception queue.
 
@@ -128,7 +128,7 @@ Nothing was deleted outright. Five were re-scoped to a role, two pairs were spli
 | 02 | Create Your CLAUDE.md | **Re-scope + promote** | [P01](AI-Prompts-Library/phase-0-foundation/P01-generate-the-project-context-file.md) | Promoted to the first prompt in the book. Everything downstream depends on it existing, so it earns Sprint 0 position rather than being an afterthought. |
 | 03 | Ultra Plan Mode | **Split** | [P10](AI-Prompts-Library/phase-2-design/P10-ultra-plan-mode.md) | Was doing two jobs: *choose an approach* and *sequence the build*. Now it does only the first, as the Architect. The stop gate moves to the top of the prompt where it can't be skimmed past. |
 | 04 | Spec-Driven Development | **Re-scope** | [P11](AI-Prompts-Library/phase-2-design/P11-write-the-technical-spec.md) | Overlapped heavily with the PRD prompt. Now clearly the Architect's behaviour contract, distinct from the PO's business document, with the difference explained rather than assumed. |
-| 05 | Full UI & UX Design Brief | **Re-scope** | [P14](AI-Prompts-Library/phase-2-design/P14-ui-ux-design-brief.md) | Now anchored to a real user's working day (Priya, forty exceptions a morning) rather than a component inventory. |
+| 05 | Full UI & UX Design Brief | **Re-scope** | [P14](AI-Prompts-Library/phase-2-design/P14-ui-ux-design-brief.md) | Now anchored to a real user's working day (Preeti, forty exceptions a morning) rather than a component inventory. |
 | 06 | Implementation Plan | **Split (other half)** | [P15](AI-Prompts-Library/phase-3-planning/P15-implementation-plan.md) | The sequencing half of the old #03. Team Lead's job. The "compiles and runs after every step" rule gets a full explanation of why it matters more with AI. |
 | 07 | Wire Up an MCP Server | **Regroup** | [P03](AI-Prompts-Library/phase-0-foundation/P03-wire-up-an-mcp-server.md) | Not a lifecycle prompt — it's environment setup. Moved to Sprint 0. Now explains what MCP actually is before using the acronym. |
 | 08 | Connect Your Database | **Regroup** | [P02](AI-Prompts-Library/phase-0-foundation/P02-connect-the-database.md) | Same — Sprint 0. Extended for the two-warehouse reality (Azure SQL silver, Snowflake gold) and serverless connection pooling. |
@@ -138,7 +138,7 @@ Nothing was deleted outright. Five were re-scoped to a role, two pairs were spli
 | 12 | Clean Up Dead Code | **Keep, re-home** | [P34](AI-Prompts-Library/phase-8-improve/P34-clean-up-dead-code.md) | Moved to Improve. Gains the AI-era observation: AI-assisted work generates dead code faster, because abandoned approaches leave their helpers behind and nobody remembers they were speculative. |
 | 13 | Write Clean Git Commits | **Keep, strengthen** | [P31](AI-Prompts-Library/phase-7-release/P31-write-clean-git-commits.md) | The *splitting* step gets much more weight: an AI session routinely touches eight files for three unrelated reasons, which was rare when a human made every edit deliberately. |
 | 14 | Hooks as Guardrails | **Regroup** | [P04](AI-Prompts-Library/phase-0-foundation/P04-hooks-as-guardrails.md) | Sprint 0. Now leads with the actual point: a hook is the only way to guarantee something happens *every* time, because it's run by the harness, not chosen by the AI. |
-| 15 | Turn a Task Into a Skill | **Regroup** | [P05](AI-Prompts-Library/phase-0-foundation/P05-turn-a-repeated-task-into-a-skill.md) | Sprint 0, and now connected back to [AI-Skills](../AI-Skills/README.md) where Rahul built his first one. |
+| 15 | Turn a Task Into a Skill | **Regroup** | [P05](AI-Prompts-Library/phase-0-foundation/P05-turn-a-repeated-task-into-a-skill.md) | Sprint 0, and now connected back to [AI-Skills](../AI-Skills/README.md) where Gautam built his first one. |
 
 ---
 
@@ -170,7 +170,7 @@ Grouped by which gap they close.
 |---|---|---|
 | [P07](AI-Prompts-Library/phase-1-discovery/P07-slice-the-prd-into-stories.md) | Slice the PRD into Stories | Vertical slicing, and why slicing by layer is the classic failure |
 | [P09](AI-Prompts-Library/phase-1-discovery/P09-estimate-and-rank-the-backlog.md) | Estimate and Rank the Backlog | And why AI changes the estimate for some story shapes and not others |
-| [P16](AI-Prompts-Library/phase-3-planning/P16-sprint-plan-and-assignment.md) | Sprint Plan and Assignment | Capacity, goals, and the dependency Farhan spots three weeks early |
+| [P16](AI-Prompts-Library/phase-3-planning/P16-sprint-plan-and-assignment.md) | Sprint Plan and Assignment | Capacity, goals, and the dependency Atul spots three weeks early |
 | [P21](AI-Prompts-Library/phase-4-build/P21-daily-standup-summary.md) | Daily Standup Summary | Where seven private AI sessions get reconciled |
 | [P32](AI-Prompts-Library/phase-7-release/P32-release-readiness-check.md) | Release Readiness Check | Parallel run — the gate that tests alone can't replace |
 | [P35](AI-Prompts-Library/phase-8-improve/P35-run-the-retrospective.md) | Run the Retrospective | And why "we'll be more careful" is not an action item |

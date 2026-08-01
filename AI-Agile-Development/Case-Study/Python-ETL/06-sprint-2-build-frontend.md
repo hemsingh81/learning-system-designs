@@ -1,4 +1,4 @@
-# Sprint 2 — Ji-woo Builds the Exception Queue
+# Sprint 2 — Dzmitry Builds the Exception Queue
 
 ← [Previous](05-sprint-2-build-backend.md) · [Case study index](README.md) · Next: [Sprint 3 — Verify](07-sprint-3-verify.md)
 
@@ -6,21 +6,21 @@
 
 ---
 
-## 1. Monday, 6 July — Ji-woo sits behind Priya for three hours
+## 1. Monday, 6 July — Dzmitry sits behind Preeti for three hours
 
-Sprint 2 is the build sprint. Tomas has the pipeline, which you watched him build in [the previous chapter](05-sprint-2-build-backend.md). Ji-woo has story **NWD-108 — Exception queue screen for analyst review**, and a [UI brief](artifacts/ui-brief-exception-queue.md) that Amara and Ji-woo wrote together in Sprint 1 using [P14](../../AI-Prompts-Library/phase-2-design/P14-ui-ux-design-brief.md).
+Sprint 2 is the build sprint. Ravi has the pipeline, which you watched him build in [the previous chapter](05-sprint-2-build-backend.md). Dzmitry has story **NWD-108 — Exception queue screen for analyst review**, and a [UI brief](artifacts/ui-brief-exception-queue.md) that Preetinka and Dzmitry wrote together in Sprint 1 using [P14](../../AI-Prompts-Library/phase-2-design/P14-ui-ux-design-brief.md).
 
-Before writing a line of it, Ji-woo asks for three hours on a video call with Priya Raman, the operations analyst at Northwind who currently does this job by hand, and just watches.
+Before writing a line of it, Dzmitry asks for three hours on a video call with Preeti Singh, the operations analyst at Northwind who currently does this job by hand, and just watches.
 
 Here is what that looks like, because it is the entire design input for this chapter.
 
-Priya has two monitors. On the left, Adobe Acrobat, full screen, a Broker Alpha daily position statement. On the right, Excel. Between them, a paper notepad with a pencil line drawn down the middle — the left column is the row she is on, the right column is anything that looked odd and she will come back to.
+Preeti has two monitors. On the left, Adobe Acrobat, full screen, a Broker Alpha daily position statement. On the right, Excel. Between them, a paper notepad with a pencil line drawn down the middle — the left column is the row she is on, the right column is anything that looked odd and she will come back to.
 
 She reads a position off the PDF. She clicks into Excel. She types it. She clicks back to the PDF. Acrobat has kept her scroll position, which is the only reason this is survivable. She reads the next one.
 
 At 9:12am she gets an email, deals with it, and comes back to the PDF. Acrobat has kept her place. She finds her row again by looking at the pencil mark on the notepad.
 
-**The number Ji-woo writes down and underlines twice: Priya does this about forty times in a morning.**
+**The number Dzmitry writes down and underlines twice: Preeti does this about forty times in a morning.**
 
 Not forty fields. Forty documents. Forty times through the whole cycle of open, orient, find the problem, fix it, confirm, move on.
 
@@ -30,13 +30,13 @@ That number is the design.
 
 ## 2. The arithmetic of a click
 
-Here is the framing Ji-woo brings back to the team, and it is worth stealing whole.
+Here is the framing Dzmitry brings back to the team, and it is worth stealing whole.
 
 **In a screen used once, a click costs a click. In a screen used forty times before lunch, a click costs forty clicks.**
 
 That sounds obvious written down. It is not obvious when you are building the thing, because you build each interaction once and you test it once, and one click feels like nothing.
 
-Ji-woo makes a table for the standup. Left column, a design decision that seems harmless. Right column, what it actually costs Priya per morning.
+Dzmitry makes a table for the standup. Left column, a design decision that seems harmless. Right column, what it actually costs Preeti per morning.
 
 | A decision that seems small | What it costs across forty documents |
 |---|---|
@@ -49,9 +49,9 @@ Ji-woo makes a table for the standup. Left column, a design decision that seems 
 
 That last row is in the table on 6 July. Hold on to it.
 
-Farhan looks at the table and asks his usual question — *what happens if that takes twice as long* — and Ji-woo gives the answer that gets the extra two days approved: **"If the screen is bad, Priya does the same job she does today with more steps, and we've spent £180,000 making her morning worse."**
+Atul looks at the table and asks his usual question — *what happens if that takes twice as long* — and Dzmitry gives the answer that gets the extra two days approved: **"If the screen is bad, Preeti does the same job she does today with more steps, and we've spent £180,000 making her morning worse."**
 
-Amara, who spent six years on an operations floor, does not need convincing.
+Preetinka, who spent six years on an operations floor, does not need convincing.
 
 ---
 
@@ -59,13 +59,13 @@ Amara, who spent six years on an operations floor, does not need convincing.
 
 Before the code, the plain-language version. If you have not read the earlier chapters, this is the whole context you need.
 
-**Where the exceptions come from.** Tomas's pipeline reads a counterparty PDF, sends it to Azure AI Document Intelligence — a service you hand a PDF and get back structured fields rather than a wall of text — and each field comes back with a **confidence score**, a number from 0 to 1 saying how sure the model was. The rules engine compares each score against a threshold and applies a set of other checks. If anything fails, the whole document is refused and written to a table called `etl.extraction_exception` with the reason attached.
+**Where the exceptions come from.** Ravi's pipeline reads a counterparty PDF, sends it to Azure AI Document Intelligence — a service you hand a PDF and get back structured fields rather than a wall of text — and each field comes back with a **confidence score**, a number from 0 to 1 saying how sure the model was. The rules engine compares each score against a threshold and applies a set of other checks. If anything fails, the whole document is refused and written to a table called `etl.extraction_exception` with the reason attached.
 
-**Why the whole document and not just the bad field.** Because half a statement in the warehouse produces a reconciliation break that looks exactly like a real settlement failure, and nobody downstream can tell the difference. That is [ADR-0003](artifacts/adr/), and it is the decision Tomas argued against and later stopped arguing against.
+**Why the whole document and not just the bad field.** Because half a statement in the warehouse produces a reconciliation break that looks exactly like a real settlement failure, and nobody downstream can tell the difference. That is [ADR-0003](artifacts/adr/), and it is the decision Ravi argued against and later stopped arguing against.
 
-**What the screen is.** A queue of refused documents. Priya opens one, sees the original PDF on the left and the extracted fields on the right, with the specific failing fields marked and the reason spelled out. She corrects them and confirms. The corrected document goes back into the pipeline at the transform step, and her corrections are kept as training data for the next version of the model.
+**What the screen is.** A queue of refused documents. Preeti opens one, sees the original PDF on the left and the extracted fields on the right, with the specific failing fields marked and the reason spelled out. She corrects them and confirms. The corrected document goes back into the pipeline at the transform step, and her corrections are kept as training data for the next version of the model.
 
-**What "refused" carries with it.** Every row in that table has: the content hash of the document, a path to the original PDF in blob storage, a path to the raw Azure response in the bronze layer, the counterparty key, a short reason string, and a JSON array of structured violations. Tomas's `write_exception` in `sinks/sql_sink.py` writes exactly that, and Ji-woo reads exactly that. Nothing is re-derived on the UI side.
+**What "refused" carries with it.** Every row in that table has: the content hash of the document, a path to the original PDF in blob storage, a path to the raw Azure response in the bronze layer, the counterparty key, a short reason string, and a JSON array of structured violations. Ravi's `write_exception` in `sinks/sql_sink.py` writes exactly that, and Dzmitry reads exactly that. Nothing is re-derived on the UI side.
 
 That last sentence is the handoff working. The backend does not send `"validation failed"` and let the frontend guess. It sends this, per violation:
 
@@ -82,13 +82,13 @@ That last sentence is the handoff working. The backend does not send `"validatio
 }
 ```
 
-Priya can fix that in one pass because it tells her the row, the field, what is there, and what the arithmetic says should be there. **A boolean would have told her nothing and cost her a morning.**
+Preeti can fix that in one pass because it tells her the row, the field, what is there, and what the arithmetic says should be there. **A boolean would have told her nothing and cost her a morning.**
 
 ---
 
 ## 4. Running P19 — build the UI from the brief
 
-Ji-woo's app lives in its own repository, `northwind-exception-queue`, separate from `doc_ingestion`. Different deploy cadence, different pipeline, no shared build. React 19 with TypeScript, Vite for the build, Vitest for tests.
+Dzmitry's app lives in its own repository, `northwind-exception-queue`, separate from `doc_ingestion`. Different deploy cadence, different pipeline, no shared build. React 19 with TypeScript, Vite for the build, Vitest for tests.
 
 Quick definitions, because the style of this book is that you should not have to open a search engine:
 
@@ -103,7 +103,7 @@ Quick definitions, because the style of this book is that you should not have to
 | **PDF.js** | Mozilla's library for rendering a PDF inside a web page, so you are not embedding a plugin or a viewer you do not control. |
 | **SAS URL** | Shared Access Signature. A time-limited link to one blob in Azure Storage. It lets the browser fetch the PDF directly without the app holding a storage key. |
 
-Here is [P19](../../AI-Prompts-Library/phase-4-build/P19-build-the-ui-from-the-brief.md) as Ji-woo actually fills it in. Note how much of it is constraints rather than description.
+Here is [P19](../../AI-Prompts-Library/phase-4-build/P19-build-the-ui-from-the-brief.md) as Dzmitry actually fills it in. Note how much of it is constraints rather than description.
 
 ```text
 You are a senior React 19 / TypeScript 5 engineer building one screen of the
@@ -130,7 +130,7 @@ say so and stop.
 
 ## The user, and the constraint that follows from her
 
-Priya Raman clears about forty exceptions in a morning. Every interaction in
+Preeti Singh clears about forty exceptions in a morning. Every interaction in
 this screen is multiplied by forty. Therefore:
 
 * Every action in the review screen MUST have a keyboard binding, and the
@@ -176,7 +176,7 @@ Do not build the queue list screen — that already exists.
 
 ### Every placeholder, explained
 
-| Placeholder | What Ji-woo put in it | What goes wrong if you skip it |
+| Placeholder | What Dzmitry put in it | What goes wrong if you skip it |
 |---|---|---|
 | The full brief text | All of `ui-brief-exception-queue.md`, pasted, not summarised | Summarising is where your own taste leaks in. The brief's phrase "no confirmation modal on save" would not have survived a summary, and it is the single most contested decision in the screen |
 | The data contract | The literal endpoint shapes plus a pointer to the generated types | Without it the AI invents a plausible API and you get a beautiful screen bound to fields that do not exist |
@@ -185,13 +185,13 @@ Do not build the queue list screen — that already exists.
 | The rules block | Framework, data layer, styling, strictness | Each missing rule is a second way of doing something in your codebase, forever |
 | The do-not block | No invented fields, no bonus features, no tests yet | Bonus features are the most expensive thing an AI gives you for free, because you have to review them |
 
-The one that matters most is the third. **"Priya clears forty in a morning" is doing more work than the entire rules section**, because it is the only line that tells the model what kind of screen this is.
+The one that matters most is the third. **"Preeti clears forty in a morning" is doing more work than the entire rules section**, because it is the only line that tells the model what kind of screen this is.
 
 ---
 
-## 5. What came back, and what Ji-woo kept
+## 5. What came back, and what Dzmitry kept
 
-The first pass is about four hundred lines across five files. Ji-woo keeps roughly two thirds of it, rewrites the keyboard layer entirely, and throws away a "helpful" auto-save that the brief did not ask for.
+The first pass is about four hundred lines across five files. Dzmitry keeps roughly two thirds of it, rewrites the keyboard layer entirely, and throws away a "helpful" auto-save that the brief did not ask for.
 
 Here is the core of what shipped.
 
@@ -241,11 +241,11 @@ Two things to notice.
 
 `observed` and `expected` are `unknown`, not `any`. `unknown` in TypeScript means "there is a value here and you must check what it is before using it". `any` means "stop checking". The difference is that `unknown` makes the compiler force you to handle the case where the backend sends a number and you assumed a string — which is exactly what happens with `observed`, because a `cross_field_product` violation reports a decimal and a `required_fields` violation reports `null`.
 
-`boundingBox` comes from the bronze payload. **Bronze is the layer where the full raw Azure response is stored before anything parses it**, and Sofia insisted on it in Sprint 1 for a cost reason — reprocessing a parsing bug should be free rather than costing $30 per thousand pages again. It turns out to also be the reason Ji-woo can draw a box around the exact field on the exact page. Design decisions pay off in places you did not plan.
+`boundingBox` comes from the bronze payload. **Bronze is the layer where the full raw Azure response is stored before anything parses it**, and Hem insisted on it in Sprint 1 for a cost reason — reprocessing a parsing bug should be free rather than costing $30 per thousand pages again. It turns out to also be the reason Dzmitry can draw a box around the exact field on the exact page. Design decisions pay off in places you did not plan.
 
 ### The keyboard layer
 
-This is the piece Ji-woo rewrote from scratch, because the first pass bound keys with a global `window.addEventListener` and it fired while Priya was typing into a text input.
+This is the piece Dzmitry rewrote from scratch, because the first pass bound keys with a global `window.addEventListener` and it fired while Preeti was typing into a text input.
 
 ```typescript
 // src/features/review/useReviewKeys.ts
@@ -322,11 +322,11 @@ export function useReviewKeys(handlers: ReviewKeyHandlers, enabled: boolean): vo
 }
 ```
 
-The `isTypingTarget` guard is eleven lines and it is the whole difference between a keyboard-first screen and an unusable one. Without it, Priya types `n` into a security name and the app jumps to the next failure.
+The `isTypingTarget` guard is eleven lines and it is the whole difference between a keyboard-first screen and an unusable one. Without it, Preeti types `n` into a security name and the app jumps to the next failure.
 
-The `Escape` handler blurs the current input rather than closing anything. That is deliberate: Priya's hands stay on the keys, she escapes out of the field she is editing, and `j`/`k` start working again immediately. No mouse.
+The `Escape` handler blurs the current input rather than closing anything. That is deliberate: Preeti's hands stay on the keys, she escapes out of the field she is editing, and `j`/`k` start working again immediately. No mouse.
 
-**The binding list, which Ji-woo made the AI report back explicitly, because a keyboard scheme that lives only in a switch statement is one nobody can review:**
+**The binding list, which Dzmitry made the AI report back explicitly, because a keyboard scheme that lives only in a switch statement is one nobody can review:**
 
 | Key | Does |
 |---|---|
@@ -341,7 +341,7 @@ The `Escape` handler blurs the current input rather than closing anything. That 
 
 ### Locking the PDF to the field list
 
-This is the piece Priya notices, and the piece nobody would have specified without watching her work.
+This is the piece Preeti notices, and the piece nobody would have specified without watching her work.
 
 ```typescript
 // src/features/review/PdfPane.tsx
@@ -362,7 +362,7 @@ export function PdfPane({ url, pageCount, selected }: Props) {
 
   // Scroll to the selected field's page — and only when the PAGE changes.
   // Selecting another field on the page you are already looking at must not
-  // move the document under Priya's eyes.
+  // move the document under Preeti's eyes.
   const targetPage = selected?.pageNumber ?? null;
   const lastPage = useRef<number | null>(null);
 
@@ -399,7 +399,7 @@ export function PdfPane({ url, pageCount, selected }: Props) {
 }
 ```
 
-The comment above `lastPage` is the design decision. The obvious implementation scrolls whenever the selection changes. That is wrong, and you only find out it is wrong by watching someone use it: Priya moves down a field, the page jumps two pixels to re-centre, and her eye loses the row. **Scrolling only on a page change is one extra `useRef` and it is the difference between a viewer that helps and a viewer that fights you.**
+The comment above `lastPage` is the design decision. The obvious implementation scrolls whenever the selection changes. That is wrong, and you only find out it is wrong by watching someone use it: Preeti moves down a field, the page jumps two pixels to re-centre, and her eye loses the row. **Scrolling only on a page change is one extra `useRef` and it is the difference between a viewer that helps and a viewer that fights you.**
 
 `renderTextLayer={false}` is there for a duller reason. PDF.js draws an invisible layer of selectable text over the rendered page, and on a scanned Broker Alpha statement that layer is both useless and slow. Turning it off took the render of a three-page statement from about 900ms to about 300ms.
 
@@ -461,27 +461,27 @@ Two things here that are worth copying regardless of what you are building.
 
 **The edits are a reducer, not a pile of `useState` calls.** A reducer is a single function that takes the current state and an action and returns the new state. That is what makes `u` for undo a five-line addition instead of a rewrite — undo is just "pop the last action off and replay". With scattered `useState` you would be reconstructing history from nothing.
 
-**There is no confirmation modal.** The brief forbids one, and the reason is the ×40 arithmetic: a modal is one extra keystroke and one broken train of thought, forty times. What replaces it is that `Ctrl+Enter` is *reversible* — resolving a document moves it to a `resolved` state that Priya can reopen from the queue for the rest of the day. **Reversibility is almost always cheaper than confirmation, and it is always kinder.**
+**There is no confirmation modal.** The brief forbids one, and the reason is the ×40 arithmetic: a modal is one extra keystroke and one broken train of thought, forty times. What replaces it is that `Ctrl+Enter` is *reversible* — resolving a document moves it to a `resolved` state that Preeti can reopen from the queue for the rest of the day. **Reversibility is almost always cheaper than confirmation, and it is always kinder.**
 
 ---
 
-## 6. What Ji-woo refused to build
+## 6. What Dzmitry refused to build
 
-Amara asks for a bulk-accept: select twelve documents in the queue, accept them all.
+Preetinka asks for a bulk-accept: select twelve documents in the queue, accept them all.
 
-Ji-woo says no, and the reasoning is worth recording because it is a product argument made by an engineer and it holds.
+Dzmitry says no, and the reasoning is worth recording because it is a product argument made by an engineer and it holds.
 
 > "Bulk accept means accepting things you haven't looked at. The whole system is built on the idea that a wrong number is worse than no number. If I give her a button that accepts twelve documents in one keystroke, on a bad Friday she will use it, and then we have a control that can be switched off by someone under time pressure."
 
-Amara pushes once, then agrees, and it goes on the backlog as a `won't do` with the reason written down, which is more useful than deleting it. **A refused feature with a recorded reason does not come back every sprint.**
+Preetinka pushes once, then agrees, and it goes on the backlog as a `won't do` with the reason written down, which is more useful than deleting it. **A refused feature with a recorded reason does not come back every sprint.**
 
-She does get one thing: a filter on the queue by counterparty and by reason, so Priya can do all fourteen `low_confidence: quantity` documents in a row while her eye is already tuned for it. That one is genuinely a nice-to-have that turned out not to be.
+She does get one thing: a filter on the queue by counterparty and by reason, so Preeti can do all fourteen `low_confidence: quantity` documents in a row while her eye is already tuned for it. That one is genuinely a nice-to-have that turned out not to be.
 
 ---
 
 ## 7. Running P20 — the tests, written alongside
 
-[P20](../../AI-Prompts-Library/phase-4-build/P20-write-tests-alongside-the-code.md) is the same prompt Tomas runs on the Python side, pointed at a different stack. The rule Rahul put in the [Definition of Done](artifacts/definition-of-done.md) applies to both: **the tests are written in a separate pass from the code, and the AI is never allowed to edit a test to make it pass.**
+[P20](../../AI-Prompts-Library/phase-4-build/P20-write-tests-alongside-the-code.md) is the same prompt Ravi runs on the Python side, pointed at a different stack. The rule Gautam put in the [Definition of Done](artifacts/definition-of-done.md) applies to both: **the tests are written in a separate pass from the code, and the AI is never allowed to edit a test to make it pass.**
 
 The separate pass matters more than it sounds. If you ask for code and tests in one go, you get tests that assert what the code does, which is a tautology dressed as a safety net.
 
@@ -545,7 +545,7 @@ describe("ExceptionReview keyboard navigation", () => {
 });
 ```
 
-The second test is the one that earns its place. `JOHNSON & JOHNSON` contains `j`, `n`, `a` and `u` — four of the six single-key bindings. It is the exact string Ji-woo used by hand to find the bug in the AI's first keyboard implementation, and turning that manual check into a test took ninety seconds.
+The second test is the one that earns its place. `JOHNSON & JOHNSON` contains `j`, `n`, `a` and `u` — four of the six single-key bindings. It is the exact string Dzmitry used by hand to find the bug in the AI's first keyboard implementation, and turning that manual check into a test took ninety seconds.
 
 **When you find a bug by hand, the test that catches it is already written in your head. Write it down before the feeling fades.**
 
@@ -553,15 +553,15 @@ The second test is the one that earns its place. `JOHNSON & JOHNSON` contains `j
 
 ## 8. The bug that is not a crisis
 
-Thursday 16 July. The screen works. Rahul reviews it with [P23](../../AI-Prompts-Library/phase-5-verify/P23-review-someone-elses-code.md), leaves two comments about the reducer's action types, both fair, both fixed in ten minutes. NWD-108 goes to Done.
+Thursday 16 July. The screen works. Gautam reviews it with [P23](../../AI-Prompts-Library/phase-5-verify/P23-review-someone-elses-code.md), leaves two comments about the reducer's action types, both fair, both fixed in ten minutes. NWD-108 goes to Done.
 
-Then Sprint 3 starts and Ananya opens it with a real document in front of her, and files this:
+Then Sprint 3 starts and Pankaj opens it with a real document in front of her, and files this:
 
 ```text
 ID: NWD-139
 Title: Exception queue shows raw confidence value, not a percentage
 Severity: Cosmetic
-Found by: Ananya Iyer
+Found by: Pankaj 
 Found in: Sprint 3 acceptance testing, build 1.0.0-rc2
 
 STEPS TO REPRODUCE
@@ -597,14 +597,14 @@ That is the whole bug. `{value}` where `{formatConfidence(value)}` should be.
 
 Most of what QA finds is this. A wrong label. A number in the wrong format. A column that jumps. The rework loop you are about to watch in [chapter 8](08-sprint-3-rework.md) is real and it is where the sprint went, but if you come away believing every defect requires a reproduction fixture, a root-cause trace and a specification change, you will have learned the wrong lesson and you will make your team miserable.
 
-**Match the process to the defect.** NWD-139 does not need [P27](../../AI-Prompts-Library/phase-6-rework/P27-fix-from-a-qa-bug-report.md). It does not need a stop gate. Ji-woo reads it, sees the line, and fixes it:
+**Match the process to the defect.** NWD-139 does not need [P27](../../AI-Prompts-Library/phase-6-rework/P27-fix-from-a-qa-bug-report.md). It does not need a stop gate. Dzmitry reads it, sees the line, and fixes it:
 
 ```diff
 --- a/src/features/review/ConfidenceBadge.tsx
 +++ b/src/features/review/ConfidenceBadge.tsx
 @@ -1,7 +1,20 @@
 +/**
-+ * Confidence as Priya reads it, not as the model emits it.
++ * Confidence as Preeti reads it, not as the model emits it.
 + *
 + * Rounded to a whole percent and rendered in tabular figures so the chip does
 + * not change width between 9% and 82%. NWD-139.
@@ -642,43 +642,43 @@ Twenty minutes end to end, including the test. No prompt was needed at all.
 
 ### How it got in
 
-Worth two sentences, because the answer is not "Ji-woo was careless."
+Worth two sentences, because the answer is not "Dzmitry was careless."
 
-The brief said *"show the field's confidence."* It did not say in what unit. The AI rendered the value it was given, which is exactly what it was asked to do. Rahul's review looked at the reducer, the data flow and the keyboard layer — the things where a mistake is expensive — and did not look hard at a badge. Ji-woo had been staring at raw confidence values in JSON for a fortnight and had stopped seeing them as anything but normal.
+The brief said *"show the field's confidence."* It did not say in what unit. The AI rendered the value it was given, which is exactly what it was asked to do. Gautam's review looked at the reducer, the data flow and the keyboard layer — the things where a mistake is expensive — and did not look hard at a badge. Dzmitry had been staring at raw confidence values in JSON for a fortnight and had stopped seeing them as anything but normal.
 
-The `title={value.toFixed(4)}` in the fix is Ji-woo hedging honestly: Priya sees `82%`, and if she ever needs the real number she can hover. The rounded value is for reading; the precise one is for arguing.
+The `title={value.toFixed(4)}` in the fix is Dzmitry hedging honestly: Preeti sees `82%`, and if she ever needs the real number she can hover. The rounded value is for reading; the precise one is for arguing.
 
-**Three people looked at this screen and none of them saw it, because none of them were the person who has to read it forty times before lunch.** That is not a failure of care. It is what fresh eyes are for, and it is why Ananya's chapter is next.
+**Three people looked at this screen and none of them saw it, because none of them were the person who has to read it forty times before lunch.** That is not a failure of care. It is what fresh eyes are for, and it is why Pankaj's chapter is next.
 
 ---
 
-## 9. What Ji-woo hands over
+## 9. What Dzmitry hands over
 
-By Friday 17 July, NWD-108 is done in the sense the [Definition of Done](artifacts/definition-of-done.md) means it: reviewed, tested, deployed to the dev environment, and demonstrated to Amara and Priya on a call.
+By Friday 17 July, NWD-108 is done in the sense the [Definition of Done](artifacts/definition-of-done.md) means it: reviewed, tested, deployed to the dev environment, and demonstrated to Preetinka and Preeti on a call.
 
 What crosses the handoff into Sprint 3:
 
 | Artifact | Where | For whom |
 |---|---|---|
-| The review screen | `northwind-exception-queue`, deployed to dev | Ananya, to test against real refused documents |
-| The keyboard binding table | In the README and in the screen's own `?` overlay | Priya, and Ananya's E2E scripts |
-| The API contract types | `src/api/types.ts`, generated from the backend | Tomas, who now cannot change a field name without breaking a build |
-| Two open questions | On NWD-108 as comments | Amara |
+| The review screen | `northwind-exception-queue`, deployed to dev | Pankaj, to test against real refused documents |
+| The keyboard binding table | In the README and in the screen's own `?` overlay | Preeti, and Pankaj's E2E scripts |
+| The API contract types | `src/api/types.ts`, generated from the backend | Ravi, who now cannot change a field name without breaking a build |
+| Two open questions | On NWD-108 as comments | Preetinka |
 
 The two open questions, written down rather than resolved by guessing:
 
-1. When Priya corrects a field, do her corrections need to be visible to a second reviewer before the document reloads? Northwind's audit team may want four-eyes on any manual override. Nobody has asked them.
+1. When Preeti corrects a field, do her corrections need to be visible to a second reviewer before the document reloads? Northwind's audit team may want four-eyes on any manual override. Nobody has asked them.
 2. What happens if the same document is open in two browser tabs? Right now, last write wins, silently.
 
 Neither is a defect. Both are things nobody decided, and writing them on the story is what stops them becoming a defect in November.
 
-Priya's reaction on the demo call, which Farhan writes down verbatim and reads out in the retro three weeks later:
+Preeti's reaction on the demo call, which Atul writes down verbatim and reads out in the retro three weeks later:
 
 > "So I don't have to type the good ones any more. I only look at the ones that are actually hard."
 
 That is the whole project in one sentence from the only person whose opinion is a fact.
 
-Now Ananya gets hold of it.
+Now Pankaj gets hold of it.
 
 ---
 

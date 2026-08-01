@@ -7,30 +7,30 @@
 | | |
 |---|---|
 | **Phase** | 2 — Design |
-| **Who runs it** | Architect (Sofia Marchetti) |
+| **Who runs it** | Architect (Hem Singh) |
 | **When** | The same day a decision is made. Sprint 1, days 4–5, three times in one week. |
 | **Takes in** | The approved plan from [P10](P10-ultra-plan-mode.md), the draft spec from [P11](P11-write-the-technical-spec.md), and whatever conversation actually settled the question |
 | **Produces** | `Case-Study/Python-ETL/artifacts/adr/0003-one-failing-field-rejects-the-document.md` (and 0001, 0002) |
-| **Hands off to** | Sofia + Tomas running [P13](P13-design-the-data-contract.md); every later reviewer who asks "why is it like this?" |
+| **Hands off to** | Hem + Ravi running [P13](P13-design-the-data-contract.md); every later reviewer who asks "why is it like this?" |
 | **Time to run** | Twenty minutes. Genuinely. If it takes an hour you are writing a design document, not an ADR. |
 
 ---
 
 ## 1. The scene
 
-Thursday morning of Sprint 1. Sofia is in a review of the confidence gate spec with Amara, Rahul and Tomas. Everything is going fine until rule R3.
+Thursday morning of Sprint 1. Hem is in a review of the confidence gate spec with Preetinka, Gautam and Ravi. Everything is going fine until rule R3.
 
 R3 says: the document decision is ACCEPT only when every field passes. One failure sends the whole document to review, with no rows written.
 
-Tomas objects, and his objection is completely reasonable. "A Broker Alpha statement has fourteen positions. If one settlement date scores 0.83, we're throwing away thirteen perfectly good rows and giving Priya a whole document to re-key. That's going to wreck the straight-through rate and she's going to hate us."
+Ravi objects, and his objection is completely reasonable. "A Broker Alpha statement has fourteen positions. If one settlement date scores 0.83, we're throwing away thirteen perfectly good rows and giving Preeti a whole document to re-key. That's going to wreck the straight-through rate and she's going to hate us."
 
-Rahul thinks partial ingestion sounds sensible too. Amara is not sure. Sofia explains: a partially-loaded statement produces a reconciliation break for the missing rows that looks exactly like a genuine settlement failure, so operations chase a ghost. Amara — who came off the operations floor at a custodian bank — immediately agrees, because she has chased that ghost.
+Gautam thinks partial ingestion sounds sensible too. Preetinka is not sure. Hem explains: a partially-loaded statement produces a reconciliation break for the missing rows that looks exactly like a genuine settlement failure, so operations chase a ghost. Preetinka — who came off the operations floor at a custodian bank — immediately agrees, because she has chased that ghost.
 
 Decision made. Meeting moves on. Everyone is satisfied.
 
-Nine weeks later, in Sprint 3, a different engineer looks at the same rule with fresh eyes and says the same thing Tomas said, almost word for word. Nobody in the room can reconstruct the argument. Amara is on leave. What people remember is "Sofia wanted it that way," which is not a reason, and the decision gets re-litigated for two hours and very nearly reversed.
+Nine weeks later, in Sprint 3, a different engineer looks at the same rule with fresh eyes and says the same thing Ravi said, almost word for word. Nobody in the room can reconstruct the argument. Preetinka is on leave. What people remember is "Hem wanted it that way," which is not a reason, and the decision gets re-litigated for two hours and very nearly reversed.
 
-**That two hours — repeated every time somebody new meets a surprising decision — is what an ADR costs twenty minutes to prevent.** Sofia goes back to her desk and writes ADR-0003.
+**That two hours — repeated every time somebody new meets a surprising decision — is what an ADR costs twenty minutes to prevent.** Hem goes back to her desk and writes ADR-0003.
 
 ---
 
@@ -61,7 +61,7 @@ Five parts. There are many published templates and they all reduce to these.
 | **Consequences** | What does this cost us, now and later? | Only listing the good ones |
 | **Status** | Proposed / Accepted / Superseded / Deprecated | Leaving it at Proposed forever |
 
-The section people skip is **Consequences**, and it is the section that makes the document worth writing. An ADR that lists only benefits is a sales pitch. A real consequences section says things like "Priya's queue will be larger than it needs to be, and the straight-through rate will read lower than the underlying extraction quality." That sentence is what makes the decision defensible nine weeks later, because it proves the cost was known and accepted rather than missed.
+The section people skip is **Consequences**, and it is the section that makes the document worth writing. An ADR that lists only benefits is a sales pitch. A real consequences section says things like "Preeti's queue will be larger than it needs to be, and the straight-through rate will read lower than the underlying extraction quality." That sentence is what makes the decision defensible nine weeks later, because it proves the cost was known and accepted rather than missed.
 
 ### Written at the moment of deciding — never reconstructed
 
@@ -71,7 +71,7 @@ An ADR written on the day carries something no later reconstruction can: the alt
 
 Reconstructed ADRs have a distinctive smell. They are tidy. Every option lines up neatly against the criteria. The chosen one wins on every axis. Real decisions do not look like that — real decisions have an option that was better on two of four criteria and lost anyway, and the ADR that says so is worth ten that do not.
 
-There is a practical corollary: **if you cannot write the ADR in twenty minutes, you have not actually made the decision yet.** The difficulty of writing it is a measurement. Sofia uses this deliberately — when a decision feels agreed but the ADR will not come out, she goes back to the room, because something is still open.
+There is a practical corollary: **if you cannot write the ADR in twenty minutes, you have not actually made the decision yet.** The difficulty of writing it is a measurement. Hem uses this deliberately — when a decision feels agreed but the ADR will not come out, she goes back to the room, because something is still open.
 
 ### Why not just put this in the spec?
 
@@ -86,9 +86,9 @@ There is a neat way to see the difference. The spec's rule R3 tells you the docu
 And a third document type for completeness: the **PRD** says what the business wants and why. Three documents, three questions:
 
 ```
-PRD   → why does the business want this?          (Amara, living)
-ADR   → why did we choose this over that?         (Sofia, frozen)
-Spec  → what exactly does the system do?          (Sofia, living)
+PRD   → why does the business want this?          (Preetinka, living)
+ADR   → why did we choose this over that?         (Hem, frozen)
+Spec  → what exactly does the system do?          (Hem, living)
 ```
 
 ### The three Northwind ADRs
@@ -102,7 +102,7 @@ Comes straight out of the plan in [P10](P10-ultra-plan-mode.md). The deciding fa
 "Bronze" is the raw layer of a medallion architecture — a common convention where data lands in three tiers: **bronze** is exactly what arrived, untouched; **silver** is cleaned and typed; **gold** is modelled for consumption. The decision is that the complete JSON response from Document Intelligence is written to blob storage at `bronze/{broker}/{yyyy-mm-dd}/{sha256}.json` *before* a single field is read out of it. The cost is storage, which is negligible. The benefit is that a parsing bug found next month is fixed by reprocessing files you already have, instead of re-uploading 12,600 pages and paying $378 again. It also gives an auditor the actual bytes the decision was made from.
 
 **ADR-0003 — One failing field sends the whole document to review.**
-The counter-intuitive one, and the worked example below. It is counter-intuitive because it looks like it throws away good data for no reason, and it gets challenged repeatedly — by Tomas in Sprint 1, by a reviewer in Sprint 3, and by Farhan in the release readiness check when he sees what it does to the straight-through number. That repetition is exactly why it needs the strongest ADR of the three.
+The counter-intuitive one, and the worked example below. It is counter-intuitive because it looks like it throws away good data for no reason, and it gets challenged repeatedly — by Ravi in Sprint 1, by a reviewer in Sprint 3, and by Atul in the release readiness check when he sees what it does to the straight-through number. That repetition is exactly why it needs the strongest ADR of the three.
 
 ### Why ADR-0003 is the right thing to practise on
 
@@ -119,7 +119,7 @@ Three properties make it the best teaching example in the book.
 Split them three ways, because the second and third are the ones people forget.
 
 - **What this makes easier.** Reconciliation output is trustworthy. There is exactly one state per document, so the exception queue is simple.
-- **What this makes harder.** The straight-through rate reads lower. Priya re-checks fields that were fine. Extraction quality on one field can dominate the metric for a whole counterparty.
+- **What this makes harder.** The straight-through rate reads lower. Preeti re-checks fields that were fine. Extraction quality on one field can dominate the metric for a whole counterparty.
 - **What this makes impossible until we revisit.** Loading the thirteen good positions and flagging the fourteenth. Not merely discouraged — the schema has one status per document, so partial loading would require a data model change, not a config change.
 
 That third category is the one worth insisting on. It converts "we prefer not to" into "we cannot without changing X", which is a far more honest description of what a decision costs.
@@ -235,7 +235,7 @@ Save to [OUTPUT PATH]. Use the number [NUMBER], which is the next unused number 
 | Placeholder | What to put in it | Northwind example | What happens if you get it wrong |
 |---|---|---|---|
 | `[THE DECISION IN ONE SENTENCE]` | The choice, in the imperative, naming the thing chosen and the thing rejected | "One failing field sends the whole document to review; partial ingestion of a statement is not permitted." | Vague input gives you a vague ADR. "Improve our approach to confidence" is not a decision and will produce an essay. |
-| `[WHEN AND WHO]` | The date and the people in the room. Real names | "Thursday 12 March, spec review — Sofia, Amara, Rahul, Tomas" | Missing deciders is the single most common gap. In nine months the useful question is "who agreed to this", and "the team" is not an answer. |
+| `[WHEN AND WHO]` | The date and the people in the room. Real names | "Thursday 12 March, spec review — Hem, Preetinka, Gautam, Ravi" | Missing deciders is the single most common gap. In nine months the useful question is "who agreed to this", and "the team" is not an answer. |
 | `[CONTEXT]` | What was true at the time, with numbers. Do not include the answer | "~200 documents/day, each with up to ~20 positions. Every field carries a confidence score. Reconciliation full-outer-joins against Aladdin and classifies missing rows as `MISSING_EXTERNAL`." | Weak context produces an unfalsifiable ADR. A reader six months later must be able to check whether the situation still holds. |
 | `[OPTIONS CONSIDERED]` | Every option that got airtime, including the one somebody argued for and lost | 1. Reject whole document. 2. Load passing rows, flag failing ones. 3. Load passing rows and suppress that document from reconciliation until resolved. | Give it one option and you get an ADR with two invented straw men, which is worse than no ADR because it looks thorough. |
 | `[DECIDING FACTOR]` | Your best statement of what actually settled it. It is fine to be unsure — the AI will sharpen it | "A partially-loaded statement produces reconciliation breaks that are indistinguishable from genuine settlement failures." | If you supply five factors you will get five, and no one deciding factor, and the ADR will not survive a challenge. |
@@ -248,7 +248,7 @@ Save to [OUTPUT PATH]. Use the number [NUMBER], which is the next unused number 
 
 ## 5. The filled-in example
 
-Sofia writes this at 11:40 on Thursday, forty minutes after the spec review ended, in the same session where she drafted the spec.
+Hem writes this at 11:40 on Thursday, forty minutes after the spec review ended, in the same session where she drafted the spec.
 
 ```text
 You are a **software architect** writing an Architecture Decision Record (ADR). An ADR captures ONE
@@ -260,9 +260,9 @@ statement — no rows are written to silver unless every extracted field passes 
 threshold.
 
 **When and where it was made, and by whom:**
-Thursday 12 March 2024, in the NWD-103 spec review. Present: Sofia Marchetti (architect),
-Amara Osei (product owner), Rahul Nair (team lead), Tomas Vargas (backend). Tomas objected;
-Amara backed the decision on operational grounds.
+Thursday 12 March 2024, in the NWD-103 spec review. Present: Hem Singh (architect),
+Preetinka Sharma (product owner), Gautam  (team lead), Ravi Mullick (backend). Ravi objected;
+Preetinka backed the decision on operational grounds.
 
 **The situation that forced it — what was true at the time:**
 - ~200 counterparty documents a day, each carrying up to ~20 position lines
@@ -273,12 +273,12 @@ Amara backed the decision on operational grounds.
   classifies anything present in Aladdin but absent externally as MISSING_EXTERNAL
 - The headline business metric is the straight-through rate: the percentage of documents needing zero
   human touch. Currently 61%, target 85%
-- Priya Raman, the Northwind operations analyst, works the exception queue and clears roughly 40
+- Preeti Singh, the Northwind operations analyst, works the exception queue and clears roughly 40
   items in a morning
 
 **The options that were genuinely on the table:**
 1. Reject the whole document — no rows written, one exception record per failing field.
-2. Load the passing rows into silver, write an exception only for the failing field. Tomas argued
+2. Load the passing rows into silver, write an exception only for the failing field. Ravi argued
    for this: thirteen good positions out of fourteen should not be thrown away.
 3. Load the passing rows but suppress that counterparty/date combination from the reconciliation run
    until the exception is resolved.
@@ -286,7 +286,7 @@ Amara backed the decision on operational grounds.
 **The deciding factor, as far as I can state it:**
 A partially-loaded statement produces MISSING_EXTERNAL breaks for the rows that were never loaded,
 and those breaks are indistinguishable from a genuine settlement failure. Operations then investigate
-a problem that does not exist, which is worse than having no data at all — it actively costs Priya
+a problem that does not exist, which is worse than having no data at all — it actively costs Preeti
 time and erodes trust in the break report.
 
 **Source material — read this and use it, do not invent around it:**
@@ -320,7 +320,7 @@ This is the file, essentially as written. ADRs are short by design, so almost no
 
 **Status:** Accepted
 **Date:** 2024-03-12
-**Deciders:** Sofia Marchetti, Amara Osei, Rahul Nair, Tomas Vargas
+**Deciders:** Hem Singh, Preetinka Sharma, Gautam , Ravi Mullick
 **Supersedes:** none
 **Related:** NWD-103 · `artifacts/spec-confidence-gate.md` (R3) · ADR-0001
 
@@ -342,7 +342,7 @@ The headline business metric is the straight-through rate: the share of document
 touch at all. It stands at 61% and the target is 85%. Anything that sends more documents to a human
 pushes that number down.
 
-Priya Raman, the Northwind operations analyst, works the exception queue. She clears roughly forty
+Preeti Singh, the Northwind operations analyst, works the exception queue. She clears roughly forty
 items in a morning. Every additional item is a real cost to a real person, and every unnecessary one
 is a reason to stop trusting the queue.
 
@@ -366,11 +366,11 @@ Snowflake merge — has a single simple rule to follow.
 
 ### Option 2 — Load the passing rows, flag only the failing field
 
-Thirteen good positions go to silver, the fourteenth becomes an exception. Argued for by Tomas on the
+Thirteen good positions go to silver, the fourteenth becomes an exception. Argued for by Ravi on the
 grounds that discarding correct data is waste, and that it protects the straight-through rate.
 
 **The strongest case for it:** it is the intuitively correct answer, it maximises usable data, and it
-minimises what Priya has to re-check. If the only cost of a low-confidence field were that field,
+minimises what Preeti has to re-check. If the only cost of a low-confidence field were that field,
 this option would be obviously right and there would be no ADR.
 
 **Why it lost:** the cost is not local. The thirteen loaded rows make the statement *look* complete.
@@ -410,7 +410,7 @@ manage. Loss of trust in the break report is not recoverable by tuning.
 **What this makes easier**
 - `recon/reconcile.py` can treat every `MISSING_EXTERNAL` break as genuine. No provenance checking,
   no partial-load exclusion list.
-- The exception queue has one document-level state, so Ji-woo's screen shows one PDF and one decision
+- The exception queue has one document-level state, so Dzmitry's screen shows one PDF and one decision
   rather than a per-row status grid (see `artifacts/ui-brief-exception-queue.md`).
 - The Snowflake merge is simple: a document contributes all its rows or none, so
   `MIN_CONFIDENCE` at row level is meaningful and comparable.
@@ -420,7 +420,7 @@ manage. Loss of trust in the break report is not recoverable by tuning.
 - The straight-through rate is directly suppressed. One weak field on a twenty-position statement
   costs a whole document. At launch this will read materially below the 85% target and the number
   will understate actual extraction quality. **Accepted knowingly.**
-- Priya re-checks fields that were fine, because the queue presents the whole document. The UI must
+- Preeti re-checks fields that were fine, because the queue presents the whole document. The UI must
   make the failing field obvious and everything else fast to skim, or this becomes forty minutes of
   wasted attention a morning.
 - One consistently weak field on one counterparty — broker_alpha's currency scans — can dominate the
@@ -447,14 +447,14 @@ producing the most single-field exceptions, and measure whether false-break volu
 
 ## Notes
 
-Tomas raised the obvious objection at the time — thirteen good rows should not be thrown away — and
+Ravi raised the obvious objection at the time — thirteen good rows should not be thrown away — and
 it is the right instinct. The counter is that the cost of the fourteenth row is not paid in the
 ingestion pipeline; it is paid two systems downstream, by a different team, in a form that looks like
 a real problem. Expect this decision to be challenged again by anyone reading `core/rules.py` in
 isolation, because from inside that file the choice looks purely wasteful. That is the nature of a
 decision whose justification lives elsewhere.
 
-Amara's framing in the review, worth keeping: "a break I have to chase and then find out was never
+Preetinka's framing in the review, worth keeping: "a break I have to chase and then find out was never
 real costs me more than a document I have to key."
 ```
 
@@ -464,11 +464,11 @@ real costs me more than a document I have to key."
 
 **Option 2's "strongest case" is the best paragraph in the document.** It concedes that the rejected option is the intuitive one and would be obviously right if the cost were local. When somebody challenges this decision in Sprint 3, that paragraph is what stops the conversation being adversarial — their argument is already in the document, stated better than they would state it, with the answer attached.
 
-**The "makes harder" list contains the number that hurts.** The straight-through rate is the headline metric of the whole project and this decision damages it. Saying so, in the ADR, marked **Accepted knowingly**, is what makes it survivable when Farhan sees 61% in [P32](../phase-7-release/P32-release-readiness-check.md) and asks why. The answer is not improvisation; it is a link.
+**The "makes harder" list contains the number that hurts.** The straight-through rate is the headline metric of the whole project and this decision damages it. Saying so, in the ADR, marked **Accepted knowingly**, is what makes it survivable when Atul sees 61% in [P32](../phase-7-release/P32-release-readiness-check.md) and asks why. The answer is not improvisation; it is a link.
 
 **The reversal trigger is observable.** "Roughly 60 documents a day sustained for two weeks, more than half being single-field failures on otherwise-strong documents." Somebody can build that query. Compare with the usual formulation — "revisit if this becomes a problem" — which is not a trigger, it is a shrug.
 
-**And the part that is commonly wrong:** the Notes section is where fabrication creeps in. The AI will happily invent who said what, complete with a plausible quote. Here Amara's line is real, because Sofia was in the room and wrote it down. The prompt's `Do not invent who said what` instruction, and its instruction to write `TO CONFIRM`, exist because the first draft attributed a quote about audit trails to Rahul that Rahul never said. Attributed quotes in a repo document are a small thing that damages trust badly.
+**And the part that is commonly wrong:** the Notes section is where fabrication creeps in. The AI will happily invent who said what, complete with a plausible quote. Here Preetinka's line is real, because Hem was in the room and wrote it down. The prompt's `Do not invent who said what` instruction, and its instruction to write `TO CONFIRM`, exist because the first draft attributed a quote about audit trails to Gautam that Gautam never said. Attributed quotes in a repo document are a small thing that damages trust badly.
 
 ---
 
@@ -560,7 +560,7 @@ Then, in one sentence: **who pays the biggest cost of this decision, and do they
 answer is somebody outside this team, that sentence goes in Notes.
 ```
 
-What changes: the last question is the useful one. On ADR-0003 the answer was Priya — a person outside Kestrel entirely — and it is what made Ji-woo's UI brief in [P14](P14-ui-ux-design-brief.md) treat scanning speed as a hard requirement rather than a nicety.
+What changes: the last question is the useful one. On ADR-0003 the answer was Preeti — a person outside Kestrel entirely — and it is what made Dzmitry's UI brief in [P14](P14-ui-ux-design-brief.md) treat scanning speed as a hard requirement rather than a nicety.
 
 ### 8.3 "It's an essay, not an ADR"
 
@@ -625,7 +625,7 @@ List each decision you find, give it a title in the imperative, and tell me whic
 number [NUMBER] and which need new numbers. Then rewrite only the one that keeps the number.
 ```
 
-What changes: this is how ADR-0002 came to exist. Sofia's first draft of 0001 covered both the extraction service *and* the decision to persist the raw response to bronze first. They are independent — you would persist raw responses whichever service you used — so they became two ADRs, and 0002 is the one people cite most often when a parsing bug shows up.
+What changes: this is how ADR-0002 came to exist. Hem's first draft of 0001 covered both the extraction service *and* the decision to persist the raw response to bronze first. They are independent — you would persist raw responses whichever service you used — so they became two ADRs, and 0002 is the one people cite most often when a parsing bug shows up.
 
 ### The loop
 
@@ -659,11 +659,11 @@ What is lost is specific: the options that were genuinely live, and the state of
 
 Then somebody who *was* in the room reads it and finds it does not match what happened, and stops trusting the ADR folder entirely.
 
-**The fix:** write it the same day, and if that is impossible, write it late but say so. A line reading "written 3 April from notes; the option list may be incomplete" costs you nothing and preserves trust. Sofia does exactly this on ADR-0002, which was written two days late.
+**The fix:** write it the same day, and if that is impossible, write it late but say so. A line reading "written 3 April from notes; the option list may be incomplete" costs you nothing and preserves trust. Hem does exactly this on ADR-0002, which was written two days late.
 
 ### It becomes documentation of the code
 
-An ADR that says "we use `evaluate_confidence(fields, policy)` returning a `GateResult` with a decision, a min confidence and a failure list" is describing the code, not a decision. It will be wrong the first time Tomas refactors, and a wrong ADR poisons the rest of the folder.
+An ADR that says "we use `evaluate_confidence(fields, policy)` returning a `GateResult` with a decision, a min confidence and a failure list" is describing the code, not a decision. It will be wrong the first time Ravi refactors, and a wrong ADR poisons the rest of the folder.
 
 The test is durability: **an ADR should still be true after a rewrite of the module it concerns.** ADR-0003 survives any refactor of `rules.py` because it is about what happens to the other thirteen positions, which is a policy, not a signature.
 
@@ -687,7 +687,7 @@ An ADR is a repo artifact. It travels with the checkout, it appears in pull requ
 
 ### You wrote an ADR for a decision that costs nothing to reverse — the wrong-tool case
 
-Not every decision needs a record. Whether `GateResult` is a dataclass or a NamedTuple is not an architecture decision; it is a preference Tomas can change on a Tuesday afternoon.
+Not every decision needs a record. Whether `GateResult` is a dataclass or a NamedTuple is not an architecture decision; it is a preference Ravi can change on a Tuesday afternoon.
 
 The test is the same one from [P10](P10-ultra-plan-mode.md): cost of reversal. If a decision can be undone in under a day without touching another component or another team, it does not need an ADR. Writing one anyway dilutes the folder, and a folder of thirty ADRs where four matter is a folder nobody reads.
 
@@ -697,13 +697,13 @@ The test is the same one from [P10](P10-ultra-plan-mode.md): cost of reversal. I
 
 ## 10. The handoff
 
-The immediate consumer is the spec. Sofia goes back to [`spec-confidence-gate.md`](../../Case-Study/Python-ETL/artifacts/spec-confidence-gate.md) and adds `(ADR-0003)` to rule R3, so the two documents are joined and neither has to repeat the other. The spec says what happens; the ADR says why that was chosen. A reader who wants the reasoning follows one link.
+The immediate consumer is the spec. Hem goes back to [`spec-confidence-gate.md`](../../Case-Study/Python-ETL/artifacts/spec-confidence-gate.md) and adds `(ADR-0003)` to rule R3, so the two documents are joined and neither has to repeat the other. The spec says what happens; the ADR says why that was chosen. A reader who wants the reasoning follows one link.
 
-The second consumer is Ji-woo, and this one is easy to miss. ADR-0003's "makes harder" list contains the sentence about Priya re-checking fields that were fine. That sentence is a design requirement for the exception queue, and it arrives in [P14 — UI/UX Design Brief](P14-ui-ux-design-brief.md) as a hard constraint: the failing field must be findable in under two seconds, and the fields that passed must be skimmable without reading them. Ji-woo does not need to have been in the spec review to know that. She needs to have read one ADR.
+The second consumer is Dzmitry, and this one is easy to miss. ADR-0003's "makes harder" list contains the sentence about Preeti re-checking fields that were fine. That sentence is a design requirement for the exception queue, and it arrives in [P14 — UI/UX Design Brief](P14-ui-ux-design-brief.md) as a hard constraint: the failing field must be findable in under two seconds, and the fields that passed must be skimmable without reading them. Dzmitry does not need to have been in the spec review to know that. She needs to have read one ADR.
 
-The third consumer is the code review in [P23](../phase-5-verify/P23-review-someone-elses-code.md) and the release check in [P32](../phase-7-release/P32-release-readiness-check.md). When Farhan sees the straight-through rate at 61% and asks whether something is broken, the answer is a link, not a meeting.
+The third consumer is the code review in [P23](../phase-5-verify/P23-review-someone-elses-code.md) and the release check in [P32](../phase-7-release/P32-release-readiness-check.md). When Atul sees the straight-through rate at 61% and asks whether something is broken, the answer is a link, not a meeting.
 
-Sofia's own next step is [P13 — Design the Data Contract](P13-design-the-data-contract.md), with Tomas. Writing ADR-0003 made something explicit that had been implicit: the silver schema carries one status per document, which is *why* partial loading is a data-model change rather than a flag. That sentence is a claim about a schema nobody has written down yet, and claims about a schema that does not exist are exactly how contracts get broken.
+Hem's own next step is [P13 — Design the Data Contract](P13-design-the-data-contract.md), with Ravi. Writing ADR-0003 made something explicit that had been implicit: the silver schema carries one status per document, which is *why* partial loading is a data-model change rather than a flag. That sentence is a claim about a schema nobody has written down yet, and claims about a schema that does not exist are exactly how contracts get broken.
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/adr/NNNN-*.md`**
 > Anyone reading an ADR in this folder can rely on finding:
@@ -724,11 +724,11 @@ Sofia's own next step is [P13 — Design the Data Contract](P13-design-the-data-
 
 All three Sprint 1 ADRs are written in [Chapter 3 — Sprint 1: Design](../../Case-Study/Python-ETL/03-sprint-1-design.md), and ADR-0003 is the one that keeps coming back. The file is [`artifacts/adr/0003-one-failing-field-rejects-the-document.md`](../../Case-Study/Python-ETL/artifacts/adr/0003-one-failing-field-rejects-the-document.md).
 
-The moment worth reading is in [Chapter 7](../../Case-Study/Python-ETL/07-sprint-3-verify.md), during code review. A reviewer reads `core/rules.py`, sees the whole-document rejection, and writes exactly the comment Sofia predicted in the Notes section: "this discards valid rows, suggest we flag per-row instead." Rahul replies with a single line — the path to ADR-0003 — and the thread closes in one exchange. Sofia's prediction that the decision would be challenged by anyone reading the module in isolation turns out to be correct within nine weeks of her writing it down.
+The moment worth reading is in [Chapter 7](../../Case-Study/Python-ETL/07-sprint-3-verify.md), during code review. A reviewer reads `core/rules.py`, sees the whole-document rejection, and writes exactly the comment Hem predicted in the Notes section: "this discards valid rows, suggest we flag per-row instead." Gautam replies with a single line — the path to ADR-0003 — and the thread closes in one exchange. Hem's prediction that the decision would be challenged by anyone reading the module in isolation turns out to be correct within nine weeks of her writing it down.
 
-The awkward moment is in [Chapter 9](../../Case-Study/Python-ETL/09-sprint-4-release.md). Farhan runs the release readiness check, sees the straight-through rate at 61% against a stated target of 85%, and asks whether the system is working. It is. The gap is mostly this decision plus broker_alpha's scan quality, and both are documented — the metric damage is in ADR-0003's "makes harder" list, marked **Accepted knowingly**, and Amara's reset of 85% to a quarter-three target is in the spec review notes from [Chapter 3](../../Case-Study/Python-ETL/03-sprint-1-design.md).
+The awkward moment is in [Chapter 9](../../Case-Study/Python-ETL/09-sprint-4-release.md). Atul runs the release readiness check, sees the straight-through rate at 61% against a stated target of 85%, and asks whether the system is working. It is. The gap is mostly this decision plus broker_alpha's scan quality, and both are documented — the metric damage is in ADR-0003's "makes harder" list, marked **Accepted knowingly**, and Preetinka's reset of 85% to a quarter-three target is in the spec review notes from [Chapter 3](../../Case-Study/Python-ETL/03-sprint-1-design.md).
 
-Farhan's reaction is the sentence the retrospective in [Chapter 10](../../Case-Study/Python-ETL/10-retrospective.md) ends on: "I don't mind a bad number. I mind a bad number nobody predicted." ADR-0003 predicted it, in writing, ten weeks earlier, which is the entire reason the release went ahead on schedule.
+Atul's reaction is the sentence the retrospective in [Chapter 10](../../Case-Study/Python-ETL/10-retrospective.md) ends on: "I don't mind a bad number. I mind a bad number nobody predicted." ADR-0003 predicted it, in writing, ten weeks earlier, which is the entire reason the release went ahead on schedule.
 
 ---
 

@@ -7,18 +7,18 @@
 | | |
 |---|---|
 | **Phase** | 5 — Verify |
-| **Who runs it** | QA Engineer (Ananya Iyer) with Backend Engineer (Tomas Vargas) |
-| **When** | Sprint 3, day 5. The E2E suite is green, the security review is written, and Ananya still doesn't trust the numbers. |
+| **Who runs it** | QA Engineer (Pankaj ) with Backend Engineer (Ravi Mullick) |
+| **When** | Sprint 3, day 5. The E2E suite is green, the security review is written, and Pankaj still doesn't trust the numbers. |
 | **Takes in** | `Case-Study/Python-ETL/artifacts/data-contract-counterparty-position.md`, `code/doc_ingestion/sql/schema.sql`, a real day of loaded data in silver and gold, the Aladdin feed for the same day |
 | **Produces** | `code/doc_ingestion/quality/checks.py` + `quality/checks.sql`, and a report at `artifacts/data-quality-report-2026-03-13.md` |
-| **Hands off to** | Backend Engineer (Tomas), who takes the failures into [P26](../phase-6-rework/P26-debug-an-error-fast.md) and [P27](../phase-6-rework/P27-fix-from-a-qa-bug-report.md) |
+| **Hands off to** | Backend Engineer (Ravi), who takes the failures into [P26](../phase-6-rework/P26-debug-an-error-fast.md) and [P27](../phase-6-rework/P27-fix-from-a-qa-bug-report.md) |
 | **Time to run** | 90 minutes to write the checks. 20 minutes to run them. Then a very long afternoon. |
 
 ---
 
 ## 1. The scene
 
-Friday morning. Ananya has had a good week by every measure that usually counts. The E2E suite from [P22](P22-e2e-test-the-application.md) is green on all four journeys. Rahul's review from [P23](P23-review-someone-elses-code.md) found two blockers and Tomas has fixed one. The security assessment from [P24](P24-find-security-gaps.md) is written and Sofia has signed the summary.
+Friday morning. Pankaj has had a good week by every measure that usually counts. The E2E suite from [P22](P22-e2e-test-the-application.md) is green on all four journeys. Gautam's review from [P23](P23-review-someone-elses-code.md) found two blockers and Ravi has fixed one. The security assessment from [P24](P24-find-security-gaps.md) is written and Hem has signed the summary.
 
 And she is not happy, and she has been trying since Wednesday to say why.
 
@@ -28,9 +28,9 @@ None of them ask the question Northwind actually cares about, which is: **of the
 
 She can't answer that. Nobody can. Not because the system is broken — as far as anyone knows it isn't — but because nothing is looking. The pipeline reports success. Application Insights shows 197 documents processed, 3 sent to review, zero errors. That's a green dashboard describing a system whose output nobody has checked.
 
-Tomas, when she says this, is defensive for about ninety seconds and then he isn't. He pulls up yesterday's load. 197 documents. He counts rows in `silver.counterparty_position`: 2,844.
+Ravi, when she says this, is defensive for about ninety seconds and then he isn't. He pulls up yesterday's load. 197 documents. He counts rows in `silver.counterparty_position`: 2,844.
 
-Ananya asks the question that starts the whole afternoon. "How many should there be?"
+Pankaj asks the question that starts the whole afternoon. "How many should there be?"
 
 Neither of them knows. There is no number to compare it to.
 
@@ -164,7 +164,7 @@ Two decimal places lost on one quantity is nothing. Two decimal places lost on t
 
 The check is to compare stored precision against the source: for each numeric column, how many rows have a source value with more decimal places than the column can hold? At Northwind this is checkable because the bronze layer holds the unparsed response — you have the original string. That's one of the underrated benefits of persisting bronze before parsing.
 
-The related trap is **float versus decimal**. A `FLOAT` (also called `REAL` or `DOUBLE`) stores numbers in binary and cannot exactly represent most decimal fractions — `0.1 + 0.2` is famously not `0.3`. `DECIMAL`/`NUMERIC` stores digits and is exact. **Money and quantities are always `DECIMAL`.** Rahul's review flagged `min_confidence` stored as `FLOAT` against a data contract that says `DECIMAL(5,4)`; this is the check that would have caught it independently.
+The related trap is **float versus decimal**. A `FLOAT` (also called `REAL` or `DOUBLE`) stores numbers in binary and cannot exactly represent most decimal fractions — `0.1 + 0.2` is famously not `0.3`. `DECIMAL`/`NUMERIC` stores digits and is exact. **Money and quantities are always `DECIMAL`.** Gautam's review flagged `min_confidence` stored as `FLOAT` against a data contract that says `DECIMAL(5,4)`; this is the check that would have caught it independently.
 
 #### 7. Timezone drift
 
@@ -241,7 +241,7 @@ These are not tests in the CI sense. They don't run against fixtures; they run a
 
 - **Post-load, in-pipeline.** The check runs as the last step of each load and marks the batch as verified or quarantined. Strongest, because bad data never reaches consumers.
 - **Scheduled, daily.** A job that runs the full suite each morning and reports. Simplest to add to an existing system.
-- **On demand, during investigation.** What Ananya is doing on this Friday.
+- **On demand, during investigation.** What Pankaj is doing on this Friday.
 
 Northwind ended up with all three, and the same `quality/checks.py` module backs all of them. That's why the prompt asks for the checks as a module with a report, not as a one-off script.
 
@@ -377,7 +377,7 @@ Save the checks to [SQL OUTPUT PATH] and [PY OUTPUT PATH], and the report to [RE
 
 ## 5. The filled-in example
 
-Ananya and Tomas, Friday morning of Sprint 3, connected to the test warehouse with yesterday's load in it.
+Pankaj and Ravi, Friday morning of Sprint 3, connected to the test warehouse with yesterday's load in it.
 
 ```text
 You are a **data quality engineer**. Write executable data quality checks for a loaded
@@ -900,9 +900,9 @@ This metric alone, tracked from day one, would have flagged the problem without 
 
 **DQ-01 is NWD-142, found in twenty seconds by comparing two numbers that were both already in the database.** The statement says 14 positions. Seven rows loaded. Every affected document has more than one page. That's not a hint or a lead — it's the bug, with its cause visible in the `pages` column of the same table.
 
-Ananya had already found NWD-142 by hand on Wednesday, on one document, by opening a PDF and counting. What this report added was the scale — 11 documents, 89 rows, in one day's load — and the pattern that names the cause. One document is an anecdote you argue about. Eleven documents all with `page_count > 1` and all missing exactly the rows that don't fit on page one is a diagnosis.
+Pankaj had already found NWD-142 by hand on Wednesday, on one document, by opening a PDF and counting. What this report added was the scale — 11 documents, 89 rows, in one day's load — and the pattern that names the cause. One document is an anecdote you argue about. Eleven documents all with `page_count > 1` and all missing exactly the rows that don't fit on page one is a diagnosis.
 
-**Section 3's DQ-15 is the sentence that made Farhan go quiet.** Eighty-nine of the ninety-seven reconciliation breaks are not breaks. They're the same missing rows. Without this report, an operations analyst spends a day opening queries with brokers about positions the brokers reported correctly — which is precisely the manual work Kestrel was hired to eliminate, reappearing in a new form because the automation was quietly wrong.
+**Section 3's DQ-15 is the sentence that made Atul go quiet.** Eighty-nine of the ninety-seven reconciliation breaks are not breaks. They're the same missing rows. Without this report, an operations analyst spends a day opening queries with brokers about positions the brokers reported correctly — which is precisely the manual work Kestrel was hired to eliminate, reappearing in a new form because the automation was quietly wrong.
 
 **The trend table is the cheapest insurance in the document.** Mean rows per document fell 14.5% overnight. That single number, tracked from the first day the pipeline ran, would have raised a flag with no other check in place. It requires no reference data, no Aladdin feed, no stated count — just yesterday's value.
 
@@ -1164,7 +1164,7 @@ Every check here validates structure, completeness, consistency and plausibility
 
 The only things that catch that are the confidence gate — which is why it exists and why "a wrong number is worse than no number" is invariant number one — and a human comparing the row to the PDF.
 
-So the honest framing, and the one Ananya used with Amara: **data quality checks catch missing, duplicated, malformed and structurally wrong data, at scale, every day. They do not catch a plausible wrong number. That's what the gate is for, and it's why the straight-through rate is 62% and not 100%.**
+So the honest framing, and the one Pankaj used with Preetinka: **data quality checks catch missing, duplicated, malformed and structurally wrong data, at scale, every day. They do not catch a plausible wrong number. That's what the gate is for, and it's why the straight-through rate is 62% and not 100%.**
 
 If someone asks you to replace the gate with data quality checks because the exception queue is annoying, this paragraph is your answer.
 
@@ -1172,15 +1172,15 @@ If someone asks you to replace the gate with data quality checks because the exc
 
 ## 10. The handoff
 
-The report goes to Tomas and it goes as a quarantine, not a suggestion. Yesterday's batch is not published to gold. That's the point of a verdict written in code — nobody had to decide it on a Friday afternoon.
+The report goes to Ravi and it goes as a quarantine, not a suggestion. Yesterday's batch is not published to gold. That's the point of a verdict written in code — nobody had to decide it on a Friday afternoon.
 
-Tomas takes DQ-01 into [P26](../phase-6-rework/P26-debug-an-error-fast.md) first, because the report already contains the diagnostic lead: every affected document has `page_count > 1`, the loaded count matches what fits on page one, and `core/extract.py:88` takes `tables[0]`. That's about as good a starting position as a debugging session ever gets. From there it becomes NWD-142 properly, through [P27](../phase-6-rework/P27-fix-from-a-qa-bug-report.md) — the flagship of the rework chapter.
+Ravi takes DQ-01 into [P26](../phase-6-rework/P26-debug-an-error-fast.md) first, because the report already contains the diagnostic lead: every affected document has `page_count > 1`, the loaded count matches what fits on page one, and `core/extract.py:88` takes `tables[0]`. That's about as good a starting position as a debugging session ever gets. From there it becomes NWD-142 properly, through [P27](../phase-6-rework/P27-fix-from-a-qa-bug-report.md) — the flagship of the rework chapter.
 
-And it doesn't stop at code, which is the part worth watching. The spec has no rule for a positions table that continues across a page boundary. There is nothing in `spec-confidence-gate.md` or in the extraction spec saying what should happen, so the code isn't wrong so much as unguided. That makes it a [P29](../phase-6-rework/P29-the-spec-was-wrong.md) job for Sofia — a table-continuation rule, written down, with a matching test class added through [P20](../phase-4-build/P20-write-tests-alongside-the-code.md).
+And it doesn't stop at code, which is the part worth watching. The spec has no rule for a positions table that continues across a page boundary. There is nothing in `spec-confidence-gate.md` or in the extraction spec saying what should happen, so the code isn't wrong so much as unguided. That makes it a [P29](../phase-6-rework/P29-the-spec-was-wrong.md) job for Hem — a table-continuation rule, written down, with a matching test class added through [P20](../phase-4-build/P20-write-tests-alongside-the-code.md).
 
-DQ-05 and DQ-07 map to NWD-140 and NWD-138, both already filed from Ananya's manual testing. The report adds scale and a reproduction path to each, which turns two "I saw this once" bugs into two bugs with a query that finds every instance.
+DQ-05 and DQ-07 map to NWD-140 and NWD-138, both already filed from Pankaj's manual testing. The report adds scale and a reproduction path to each, which turns two "I saw this once" bugs into two bugs with a query that finds every instance.
 
-The check suite itself outlives the sprint. It runs at 07:00 every morning from Sprint 4 onward, quarantines any batch with a FAIL, and its trend table becomes the source of the straight-through-rate number that Farhan reports to Northwind. It is the only artifact in Phase 5 that is still doing work six months later.
+The check suite itself outlives the sprint. It runs at 07:00 every morning from Sprint 4 onward, quarantines any batch with a FAIL, and its trend table becomes the source of the straight-through-rate number that Atul reports to Northwind. It is the only artifact in Phase 5 that is still doing work six months later.
 
 > **Artifact contract — `code/doc_ingestion/quality/checks.py` + `checks.sql` + the dated report**
 >
@@ -1201,13 +1201,13 @@ The check suite itself outlives the sprint. It runs at 07:00 every morning from 
 
 Sprint 3, day 5, in [`07-sprint-3-verify.md`](../../Case-Study/Python-ETL/07-sprint-3-verify.md), and it's the hinge of the sprint.
 
-Ananya had already found NWD-142 on the Wednesday, by hand, on one document, by opening `BA_POS_20260312_0614.pdf` and counting fourteen positions where the warehouse had seven. She filed it. The reaction was proportionate to the evidence — one document, one broker, probably an odd statement, Tomas would look at it next week.
+Pankaj had already found NWD-142 on the Wednesday, by hand, on one document, by opening `BA_POS_20260312_0614.pdf` and counting fourteen positions where the warehouse had seven. She filed it. The reaction was proportionate to the evidence — one document, one broker, probably an odd statement, Ravi would look at it next week.
 
 Friday's report changed the size of the thing. Eleven documents in a single day's load. Eighty-nine missing rows. Every affected document multi-page, every single-page document perfect. And the line that made the room go quiet: eighty-nine of the ninety-seven reconciliation breaks were the same eighty-nine rows. The break report Northwind was going to use to chase brokers was 92% noise generated by Kestrel's own pipeline.
 
-Farhan did the arithmetic out loud, which is a very Farhan thing to do. Roughly 12% of documents are multi-page. At 200 documents a day, that's 24 a day, averaging around 8 dropped rows each — call it 190 phantom breaks a day. Northwind's whole reason for the project was to get break detection from T+2 to T+1. They would have got it to T+1 and buried the operations team in false positives, which is worse than T+2, because at T+2 the numbers were at least right.
+Atul did the arithmetic out loud, which is a very Atul thing to do. Roughly 12% of documents are multi-page. At 200 documents a day, that's 24 a day, averaging around 8 dropped rows each — call it 190 phantom breaks a day. Northwind's whole reason for the project was to get break detection from T+2 to T+1. They would have got it to T+1 and buried the operations team in false positives, which is worse than T+2, because at T+2 the numbers were at least right.
 
-The uncomfortable retrospective note ([`10-retrospective.md`](../../Case-Study/Python-ETL/10-retrospective.md)) is Tomas's, not Ananya's: *"The number I needed was already in the database. We extracted `stated_position_count` in Sprint 2 because it was on the statement and it seemed like it might be useful. It sat in a column for three weeks. Nobody wrote the one line of SQL that compares it to `COUNT(*)`."*
+The uncomfortable retrospective note ([`10-retrospective.md`](../../Case-Study/Python-ETL/10-retrospective.md)) is Ravi's, not Pankaj's: *"The number I needed was already in the database. We extracted `stated_position_count` in Sprint 2 because it was on the statement and it seemed like it might be useful. It sat in a column for three weeks. Nobody wrote the one line of SQL that compares it to `COUNT(*)`."*
 
 That's the honest lesson and it generalises. The check that catches your worst bug is usually a comparison between two numbers you already have.
 

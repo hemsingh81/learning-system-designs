@@ -1,30 +1,30 @@
-# Sprint 2 — Tomas Builds the Confidence Gate
+# Sprint 2 — Ravi Builds the Confidence Gate
 
 ← [Previous](04-sprint-2-planning.md) · [Case study index](README.md) · Next: [Sprint 2 — Frontend](06-sprint-2-build-frontend.md)
 
-> **One line:** three days for something estimated at two weeks, and it genuinely works — plus the standup where Tomas raises a blocker that did not exist as a category three years ago.
+> **One line:** three days for something estimated at two weeks, and it genuinely works — plus the standup where Ravi raises a blocker that did not exist as a category three years ago.
 
 ---
 
 ## 1. Tuesday, 7 July, 09:05
 
-Tomas Vargas opens [`artifacts/implementation-plan-NWD-103.md`](artifacts/implementation-plan-NWD-103.md) and reads Step 0.
+Ravi Mullick opens [`artifacts/implementation-plan-NWD-103.md`](artifacts/implementation-plan-NWD-103.md) and reads Step 0.
 
 Forty minutes later he has an answer, and the answer is yes: Azure AI Document Intelligence does return a confidence score on every cell inside a table, not just on top-level fields. The whole design survives contact with reality. He deletes `scratch/`, as the plan told him to, and starts Step 1.
 
-By Friday afternoon NWD-103 is done. Reviewed, tested, deployed to the shared dev subscription, demonstrated to Amara Osei on a two-minute screen share.
+By Friday afternoon NWD-103 is done. Reviewed, tested, deployed to the shared dev subscription, demonstrated to Preetinka Sharma on a two-minute screen share.
 
 **The proposal Kestrel sent Northwind in April estimated the confidence gate at two weeks.**
 
 That number was not careless. It was written by an experienced engineer costing a piece of work he had done the equivalent of before: a config-driven validation layer with per-type thresholds, per-client overrides, structured failure reporting, a persistence path, and a metric. Two weeks is roughly what that costs to build carefully by hand.
 
-It took three working days, one of which Tomas spent at a wedding.
+It took three working days, one of which Ravi spent at a wedding.
 
 This chapter is about how, and about the two things that got harder rather than easier.
 
 ---
 
-## 2. What Tomas is actually building
+## 2. What Ravi is actually building
 
 If you have skipped the earlier chapters, this is everything you need.
 
@@ -32,13 +32,13 @@ If you have skipped the earlier chapters, this is everything you need.
 
 **What the gate does with them.** It compares each score against a threshold and decides whether the document is trustworthy enough to load. Money is gated hardest, at 0.90. Quantities the same, because a quantity is money by another name. Dates at 0.85. Descriptive text at 0.75, because a slightly wrong security *name* does not break a reconciliation that matches on identifier and quantity, and a slightly wrong *quantity* does.
 
-**The three rules that make it the shape it is**, all from Sofia Marchetti's spec and all argued about in [Chapter 3](03-sprint-1-design.md):
+**The three rules that make it the shape it is**, all from Hem Singh's spec and all argued about in [Chapter 3](03-sprint-1-design.md):
 
 1. A **wrong number is worse than no number.** Low confidence never silently enters the warehouse.
 2. A field the model **did not return** is a failure, not a pass. Absence is not evidence of correctness.
 3. **One failing field sends the whole document to review.** Not the field. Not the row. The document.
 
-Rule 3 is the one Tomas argued against in the spec review and lost. He is about to implement it, which is a slightly odd position to be in and he mentions it exactly once.
+Rule 3 is the one Ravi argued against in the spec review and lost. He is about to implement it, which is a slightly odd position to be in and he mentions it exactly once.
 
 ---
 
@@ -48,7 +48,7 @@ Rule 3 is the one Tomas argued against in the spec review and lost. He is about 
 
 [P18](../../AI-Prompts-Library/phase-4-build/P18-implement-a-story.md) is run once per step. Not once per story. The session stays open across steps because the accumulated context is genuinely useful, but the prompt is re-issued fresh each time with a new step number.
 
-Here is the opening as Tomas fills it in for Step 1:
+Here is the opening as Ravi fills it in for Step 1:
 
 ```text
 You are a Python 3.11 engineer implementing ONE step of an agreed implementation
@@ -87,7 +87,7 @@ Every clause in that prompt exists because of a specific way this goes wrong. Th
 
 > **A stop gate** is an instruction that halts work at a named point regardless of how obvious the next move is. The awkwardness is the mechanism.
 
-**"Anything that makes you think the step as written is wrong"** is the escape hatch. Rahul added it after Sprint 0. A plan written on Friday by somebody who has not slept on it can contain a step that is simply a bad idea, and an AI that silently implements a bad step is worse than one that argues.
+**"Anything that makes you think the step as written is wrong"** is the escape hatch. Gautam added it after Sprint 0. A plan written on Friday by somebody who has not slept on it can contain a step that is simply a bad idea, and an AI that silently implements a bad step is worse than one that argues.
 
 **The design constraint about purity** is one paragraph and it is the highest-value input in the prompt. More on that in a moment.
 
@@ -148,11 +148,11 @@ class GateResult:
 
 Three things in twenty lines are worth naming.
 
-**The reason codes are string constants, not an enum.** The comment in the file says why: *"Kept as literals rather than an enum so the value survives a round trip through the exception queue's JSON column unchanged."* That failure reason is written into a JSON column in Azure SQL, read back by an API, sent to Ji-woo's React screen and rendered to Priya. Every one of those hops is a chance for a fancy type to become a slightly different string. This is a decision about the *system*, made inside a module that only sees its own boundary, and it is exactly the sort of thing a reviewer should ask about.
+**The reason codes are string constants, not an enum.** The comment in the file says why: *"Kept as literals rather than an enum so the value survives a round trip through the exception queue's JSON column unchanged."* That failure reason is written into a JSON column in Azure SQL, read back by an API, sent to Dzmitry's React screen and rendered to Preeti. Every one of those hops is a chance for a fancy type to become a slightly different string. This is a decision about the *system*, made inside a module that only sees its own boundary, and it is exactly the sort of thing a reviewer should ask about.
 
-**`failures` is a list of dicts and not a list of dataclasses**, which is the one design choice in this file Rahul queries in review. Tomas's answer is that the exception queue's storage is a JSON column and every failure goes into it verbatim, so a shape that serialises without a conversion step is one fewer place for the two sides to drift. Rahul accepts it and writes `Fair` on the thread.
+**`failures` is a list of dicts and not a list of dataclasses**, which is the one design choice in this file Gautam queries in review. Ravi's answer is that the exception queue's storage is a JSON column and every failure goes into it verbatim, so a shape that serialises without a conversion step is one fewer place for the two sides to drift. Gautam accepts it and writes `Fair` on the thread.
 
-**`reason` sorts the field names.** One line, easy to miss, and it exists so that the same document produces the same reason string every time. Otherwise Priya's queue shows `low_confidence: quantity, market_value` on Tuesday and `low_confidence: market_value, quantity` on Wednesday for the same problem, and her filter stops grouping them.
+**`reason` sorts the field names.** One line, easy to miss, and it exists so that the same document produces the same reason string every time. Otherwise Preeti's queue shows `low_confidence: quantity, market_value` on Tuesday and `low_confidence: market_value, quantity` on Wednesday for the same problem, and her filter stops grouping them.
 
 ### The check, which is three questions in a fixed order
 
@@ -212,7 +212,7 @@ The second check catches the same trap from the other direction. A field with a 
 
 **Whether an unscored field passes or fails is not a technical question at all.** It is Northwind's business deciding that a wrong number is worse than no number, and the second `if` in that function is where the decision lives.
 
-### The evaluation, and the comprehension Tomas does not like
+### The evaluation, and the comprehension Ravi does not like
 
 ```python
 def evaluate(doc: ExtractedDocument, source: SourceConfig) -> GateResult:
@@ -236,11 +236,11 @@ def evaluate(doc: ExtractedDocument, source: SourceConfig) -> GateResult:
     )
 ```
 
-**Failures are collected, not short-circuited**, and the docstring says why in one sentence: Priya needs everything wrong with the document in one pass. A gate that returns the first failure produces a document that bounces through review three times, and the second and third trips cost as much as the first.
+**Failures are collected, not short-circuited**, and the docstring says why in one sentence: Preeti needs everything wrong with the document in one pass. A gate that returns the first failure produces a document that bounces through review three times, and the second and third trips cost as much as the first.
 
 The `:=` is Python's assignment expression — informally, the walrus operator. It lets you compute `_check(...)` once, bind it to `c`, and test it, inside a comprehension. It is compact and it is correct.
 
-Tomas does not like it. That is section 5.
+Ravi does not like it. That is section 5.
 
 ### Carrying the audit number
 
@@ -340,29 +340,29 @@ and Broker Alpha's poor scan quality arrives as three:
         currency: 0.92      # override: this broker's scan quality is weaker
 ```
 
-**Look at the `message` string in that adapter.** It is not decoration. It is what Priya reads at 8:40 in the morning: *"market_value scored 0.87 against a threshold of 0.92 (below_threshold)"*. She can act on that without opening anything. `confidence_gate: failed` would tell her nothing and cost her ten minutes, forty times a morning.
+**Look at the `message` string in that adapter.** It is not decoration. It is what Preeti reads at 8:40 in the morning: *"market_value scored 0.87 against a threshold of 0.92 (below_threshold)"*. She can act on that without opening anything. `confidence_gate: failed` would tell her nothing and cost her ten minutes, forty times a morning.
 
 ---
 
 ## 6. Wednesday standup — a blocker that did not used to exist
 
-Standup is fifteen minutes at 09:30, standing up, which is the only reason it stays fifteen minutes. Farhan runs it with [P21](../../AI-Prompts-Library/phase-4-build/P21-daily-standup-summary.md), which produces the summary afterwards rather than replacing the conversation.
+Standup is fifteen minutes at 09:30, standing up, which is the only reason it stays fifteen minutes. Atul runs it with [P21](../../AI-Prompts-Library/phase-4-build/P21-daily-standup-summary.md), which produces the summary afterwards rather than replacing the conversation.
 
-Ji-woo goes first: the fixture agreement held, the queue list renders six rows, no blockers.
+Dzmitry goes first: the fixture agreement held, the queue list renders six rows, no blockers.
 
-Then Tomas.
+Then Ravi.
 
-> **Tomas:** "Steps one to three are done. Tests pass. Um — I've got a blocker and it's a weird one."
+> **Ravi:** "Steps one to three are done. Tests pass. Um — I've got a blocker and it's a weird one."
 >
-> **Farhan:** "Go on."
+> **Atul:** "Go on."
 >
-> **Tomas:** "The AI produced something I don't fully understand yet, and I'm not comfortable merging it."
+> **Ravi:** "The AI produced something I don't fully understand yet, and I'm not comfortable merging it."
 >
 > *(a pause of about two seconds)*
 >
-> **Rahul:** "Which bit?"
+> **Gautam:** "Which bit?"
 >
-> **Tomas:** "The number normaliser. It handles Broker Alpha writing one-two-three-four-point-five-six with a comma, and Broker Beta writing it with a dot as the thousands separator and a comma as the decimal. It decides which convention you're in by looking at the *last* separator in the string. I've read it four times. I believe it's right. I can't tell you why it's right for a number with no separators at all, and I can't name an input that breaks it."
+> **Ravi:** "The number normaliser. It handles Broker Alpha writing one-two-three-four-point-five-six with a comma, and Broker Beta writing it with a dot as the thousands separator and a comma as the decimal. It decides which convention you're in by looking at the *last* separator in the string. I've read it four times. I believe it's right. I can't tell you why it's right for a number with no separators at all, and I can't name an input that breaks it."
 
 Here is what he is looking at, in `core/rules.py`:
 
@@ -378,17 +378,17 @@ def _strip_grouping(text: str) -> str:
 
 **This is a legitimate blocker and it is a new category.**
 
-For most of the history of this job, "I don't understand this code" meant one of two things: you were new, or the code was bad. Both had known responses. Neither of them is what is happening here. The code is good, Tomas is not new, and he did not write it — he asked for it and received it, complete, correct-looking, in about nine seconds.
+For most of the history of this job, "I don't understand this code" meant one of two things: you were new, or the code was bad. Both had known responses. Neither of them is what is happening here. The code is good, Ravi is not new, and he did not write it — he asked for it and received it, complete, correct-looking, in about nine seconds.
 
-Rahul's response is the reason this gets raised out loud rather than merged quietly at 6pm:
+Gautam's response is the reason this gets raised out loud rather than merged quietly at 6pm:
 
-> **Rahul:** "That's D7. Don't merge it. What's your next move?"
+> **Gautam:** "That's D7. Don't merge it. What's your next move?"
 >
-> **Tomas:** "Ask it to explain?"
+> **Ravi:** "Ask it to explain?"
 >
-> **Rahul:** "Ask it to explain and you'll get a very good explanation of what it wrote, which you'll believe. Do that second. Do the boring thing first."
+> **Gautam:** "Ask it to explain and you'll get a very good explanation of what it wrote, which you'll believe. Do that second. Do the boring thing first."
 
-The boring thing takes Tomas twenty minutes and produces a table:
+The boring thing takes Ravi twenty minutes and produces a table:
 
 | Input | Convention | Should be |
 |---|---|---|
@@ -403,10 +403,10 @@ He writes the table by hand, from the two counterparties' actual documents, befo
 
 It passes all six. And row five is where the twenty minutes pays for itself, because the answer turns out to be *"Broker Alpha never sends a bare `1,234` — quantities always carry two decimal places"*, which is true of every document in the fixture set and is **not a property of the code at all**. It is a property of one counterparty's formatting, held nowhere, relied on silently.
 
-Tomas adds it as a comment and a test, and raises it as an open question on the story rather than solving it. Farhan's standup summary carries one line about it, which is what a standup summary is for:
+Ravi adds it as a comment and a test, and raises it as an open question on the story rather than solving it. Atul's standup summary carries one line about it, which is what a standup summary is for:
 
 ```text
-Tomas — NWD-103 steps 1-3 done, tests green.
+Ravi — NWD-103 steps 1-3 done, tests green.
   Blocked (self): number normaliser understood but one input class is
   undecidable from the string alone (`1,234`). Currently safe because
   broker_alpha always emits 2dp. Unsafe if a third counterparty doesn't.
@@ -415,11 +415,11 @@ Tomas — NWD-103 steps 1-3 done, tests green.
 
 **Three things about this standup are worth taking away.**
 
-**"I don't understand what the AI gave me" has to be sayable.** If it is heard as an admission of weakness, nobody says it, and the code merges anyway. The only difference is that the not-understanding is now invisible and in production. Rahul's entire contribution to making it sayable is that he treated it as a normal engineering fact and asked what the next move was.
+**"I don't understand what the AI gave me" has to be sayable.** If it is heard as an admission of weakness, nobody says it, and the code merges anyway. The only difference is that the not-understanding is now invisible and in production. Gautam's entire contribution to making it sayable is that he treated it as a normal engineering fact and asked what the next move was.
 
 **Asking the AI to explain its own code is a fine second move and a terrible first one.** You will get a fluent, plausible, confident explanation, and you have no independent way to check it. Worse, once you have read it you *feel* like you understand the code, and the feeling is indistinguishable from the real thing. Build your own model first — a table of cases, a handful of inputs, a prediction of what each should do — and use the explanation to check yours rather than to replace it.
 
-**The thing Tomas found was not in the code.** It was an assumption about a counterparty's document formatting that the code depended on and nothing recorded. You do not find those by reading a diff. You find them by trying to predict what the code does and discovering you cannot.
+**The thing Ravi found was not in the code.** It was an assumption about a counterparty's document formatting that the code depended on and nothing recorded. You do not find those by reading a diff. You find them by trying to predict what the code does and discovering you cannot.
 
 > **Comprehension debt is code in production that nobody on the team can explain.** It is invisible, it accrues silently, and it is called in during an incident, at night, by whoever understands it least. Clause D7 exists to stop it accruing, and standup is where it gets declared.
 
@@ -441,7 +441,7 @@ under-specified — say so and stop, rather than guessing.
 
 **A test is only worth having if it could disagree with the code.** Generate it in the same session that wrote the code and it never can — you get a suite that asserts the implementation does what the implementation does, which is a tautology wearing a safety net's clothes. It goes green forever, including when the behaviour is wrong.
 
-So the model is given the acceptance criteria, the spec, the Definition of Done, and the **signatures only** of the things it is testing. No bodies. Tomas gets that placeholder wrong the first time, pastes the dataclasses with their methods, notices, and starts again. It costs him four minutes and it is the single most common way this prompt is misused.
+So the model is given the acceptance criteria, the spec, the Definition of Done, and the **signatures only** of the things it is testing. No bodies. Ravi gets that placeholder wrong the first time, pastes the dataclasses with their methods, notices, and starts again. It costs him four minutes and it is the single most common way this prompt is misused.
 
 ### The four tests
 
@@ -507,15 +507,15 @@ def test_one_bad_line_item_fails_whole_document(source: SourceConfig) -> None:
     assert result.failures[0]["row"] == 1
 ```
 
-**Test four is the least intuitive of the four and it is the one Tomas is pleased with.**
+**Test four is the least intuitive of the four and it is the one Ravi is pleased with.**
 
 He is pleased with it for a reason that is worth stating, because he argued the opposite position in the spec review six days ago and lost. A reasonable engineer looks at a statement with fourteen positions, one of which has a weak settlement date, and wants to load the thirteen good ones. Most systems do exactly that. Here it is forbidden, because a statement loaded with thirteen of its fourteen positions produces a reconciliation break on the fourteenth that looks precisely like a genuine settlement failure, and the analyst chasing it will spend half a day emailing a broker about a position that was simply never loaded.
 
-Tomas lost that argument to Amara, whose framing went into [ADR-0003](artifacts/adr/) verbatim: *"a break I have to chase and then find out was never real costs me more than a document I have to key."*
+Ravi lost that argument to Preetinka, whose framing went into [ADR-0003](artifacts/adr/) verbatim: *"a break I have to chase and then find out was never real costs me more than a document I have to key."*
 
-This test is that ADR, in code, enforced. It is the only test in the file that reasons about line items as a **collection** rather than one field at a time: it builds a list of rows and asserts something about the document as a whole. The second assertion — `result.failures[0]["row"] == 1` — is Step 3's off-by-one hazard, the one Rahul flagged in "Where a human must look", pinned down permanently.
+This test is that ADR, in code, enforced. It is the only test in the file that reasons about line items as a **collection** rather than one field at a time: it builds a list of rows and asserts something about the document as a whole. The second assertion — `result.failures[0]["row"] == 1` — is Step 3's off-by-one hazard, the one Gautam flagged in "Where a human must look", pinned down permanently.
 
-Tomas reads it, checks the row index is zero-based and that the bad row is index 1, and moves on to the next thing on his list.
+Ravi reads it, checks the row index is zero-based and that the bad row is index 1, and moves on to the next thing on his list.
 
 ### What the suite looks like
 
@@ -524,7 +524,7 @@ $ pytest -q tests/test_confidence.py
 9 passed in 0.19s
 ```
 
-Nine tests. No mocks, none needed. Under a fifth of a second, which means Tomas runs them on every save rather than every commit, which is the difference between tests you use and tests you have.
+Nine tests. No mocks, none needed. Under a fifth of a second, which means Ravi runs them on every save rather than every commit, which is the difference between tests you use and tests you have.
 
 The names alone read as a specification, which is the actual test of a behaviour-driven suite:
 
@@ -540,7 +540,7 @@ min confidence is the weakest field
 min confidence treats unscored as zero
 ```
 
-Hand that list to Amara and she can check it. Not one name mentions `evaluate`, `_check` or `GateResult`. Rewrite the module tomorrow and, if the behaviour is the same, this file does not change.
+Hand that list to Preetinka and she can check it. Not one name mentions `evaluate`, `_check` or `GateResult`. Rewrite the module tomorrow and, if the behaviour is the same, this file does not change.
 
 ### Criteria-to-test map, and the things it could not test
 
@@ -582,9 +582,9 @@ TESTS I COULD NOT WRITE
    operationally alarming. Needs a criterion.
 ```
 
-Tomas reads all three. He agrees with all three.
+Ravi reads all three. He agrees with all three.
 
-Item 1 is straightforwardly correct as a statement about the module: a function handed a list has no way to know what is not in it, and no amount of cleverness inside `evaluate` changes that. Items 2 and 3 are real gaps in the acceptance criteria, and he raises both with Amara that afternoon; an empty document now fails, and an unknown field type gets the hard default of 0.90.
+Item 1 is straightforwardly correct as a statement about the module: a function handed a list has no way to know what is not in it, and no amount of cleverness inside `evaluate` changes that. Items 2 and 3 are real gaps in the acceptance criteria, and he raises both with Preetinka that afternoon; an empty document now fails, and an unknown field type gets the hard default of 0.90.
 
 Item 1 he leaves, because it reads as a description of where the module's boundary is rather than as something that needs doing, and because it is Friday afternoon and NWD-106 is next.
 
@@ -592,7 +592,7 @@ Item 1 he leaves, because it reads as a description of where the module's bounda
 
 ## 8. The rest of the backend
 
-NWD-103 is the flagship and it is not the sprint. Over the fortnight Tomas lands six more stories the same way — one step, one verification, one read-through, next step.
+NWD-103 is the flagship and it is not the sprint. Over the fortnight Ravi lands six more stories the same way — one step, one verification, one read-through, next step.
 
 | Story | What it does | Landed |
 |---|---|---|
@@ -614,36 +614,36 @@ The commit that wires up extraction is `7c30fb1`, 8 July, *"NWD-102 wire up extr
 
 ---
 
-## 9. What Tomas hands over, and the thing that nearly went wrong
+## 9. What Ravi hands over, and the thing that nearly went wrong
 
-By Friday 17 July the backend is done in the sense the [Definition of Done](artifacts/definition-of-done.md) means it: merged, green, reviewed by a second person, deployed to the shared dev subscription, exercised there, and accepted by Amara.
+By Friday 17 July the backend is done in the sense the [Definition of Done](artifacts/definition-of-done.md) means it: merged, green, reviewed by a second person, deployed to the shared dev subscription, exercised there, and accepted by Preetinka.
 
 | What crosses into Sprint 3 | Where | For |
 |---|---|---|
-| The pipeline, end to end for Broker Alpha | `doc_ingestion`, dev subscription | Ananya, to test |
+| The pipeline, end to end for Broker Alpha | `doc_ingestion`, dev subscription | Pankaj, to test |
 | 41 tests on the gate and the rules engine | `tests/` | Everyone |
-| A real exception-queue endpoint | Azure SQL + API | Ji-woo, who swaps out the fixture on day 6 |
-| Three open questions on NWD-106 | Story comments | Sofia and Amara |
+| A real exception-queue endpoint | Azure SQL + API | Dzmitry, who swaps out the fixture on day 6 |
+| Three open questions on NWD-106 | Story comments | Hem and Preetinka |
 
 **And here is the honest close, because a chapter about a thing that went well is not worth much on its own.**
 
-The speed was real. Three days against two weeks is not a rounding error and it is not a trick — the code in this chapter is the code that ships, it does what the spec says, and it is better tested than most code written under a two-week estimate. Rahul is right when he says at the demo that the plan-then-step-then-test loop is the reason, and that the loop matters more than the model does.
+The speed was real. Three days against two weeks is not a rounding error and it is not a trick — the code in this chapter is the code that ships, it does what the spec says, and it is better tested than most code written under a two-week estimate. Gautam is right when he says at the demo that the plan-then-step-then-test loop is the reason, and that the loop matters more than the model does.
 
 But nobody costed what the speed does to everything downstream of it, and one thing quietly bent under it.
 
-On the Friday, Rahul reviews the whole of NWD-103 in one sitting: eight steps, roughly six hundred lines including tests, in ninety minutes, because the pull request opened at eleven and the sprint demo is at three. Clause D7 says a human has read every line and can explain what it does, and the check is that the reviewer picks a line and asks the author about it.
+On the Friday, Gautam reviews the whole of NWD-103 in one sitting: eight steps, roughly six hundred lines including tests, in ninety minutes, because the pull request opened at eleven and the sprint demo is at three. Clause D7 says a human has read every line and can explain what it does, and the check is that the reviewer picks a line and asks the author about it.
 
-He picks a line from `core/confidence.py` and Tomas answers it well.
+He picks a line from `core/confidence.py` and Ravi answers it well.
 
-Rahul admits at the retrospective, three weeks later, that by the time he reached `sinks/sql_sink.py` — the last file in the review, the one that writes exception rows — he was reading for shape rather than for meaning. Nothing was wrong with it. He would not have known if there had been.
+Gautam admits at the retrospective, three weeks later, that by the time he reached `sinks/sql_sink.py` — the last file in the review, the one that writes exception rows — he was reading for shape rather than for meaning. Nothing was wrong with it. He would not have known if there had been.
 
-**The Definition of Done costs ninety minutes a story, and Farhan planned for that.** What nobody planned for is that a team producing code three times faster is asking one reviewer to read three times as much, on the same day, with the same demo at three o'clock. Review capacity was reserved at half a day a day and it was never the thing that got faster.
+**The Definition of Done costs ninety minutes a story, and Atul planned for that.** What nobody planned for is that a team producing code three times faster is asking one reviewer to read three times as much, on the same day, with the same demo at three o'clock. Review capacity was reserved at half a day a day and it was never the thing that got faster.
 
 That is not the bug in this book. The bug is somewhere else entirely and it is already in the repository, in a line of `7c30fb1` that every one of them read and approved, and it will be another three weeks before anybody counts the rows on a PDF by hand.
 
 ---
 
-**Next:** [Chapter 6 — Sprint 2: Build, frontend](06-sprint-2-build-frontend.md). Ji-woo builds the screen where a human fixes what the machine got wrong, having spent a morning watching the human do it the old way first.
+**Next:** [Chapter 6 — Sprint 2: Build, frontend](06-sprint-2-build-frontend.md). Dzmitry builds the screen where a human fixes what the machine got wrong, having spent a morning watching the human do it the old way first.
 
 ---
 

@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | **Phase** | 1 — Discovery |
-| **Who runs it** | Product Owner + QA, in the same room (Amara Osei and Ananya Iyer) |
+| **Who runs it** | Product Owner + QA, in the same room (Preetinka Sharma and Pankaj ) |
 | **When** | Sprint 1, day four, immediately after the backlog is sliced and before anything is estimated |
 | **Takes in** | `Case-Study/Python-ETL/artifacts/stories/NWD-103.md` (from [P07](P07-slice-the-prd-into-stories.md)), `Case-Study/Python-ETL/artifacts/prd-counterparty-ingestion.md` |
 | **Produces** | `Case-Study/Python-ETL/artifacts/acceptance-criteria-NWD-103.md` |
@@ -18,15 +18,15 @@
 
 ## 1. The scene
 
-Thursday morning. Amara has eight stories, one of which — NWD-103, gate every extracted field on its confidence score — is the reason the project exists. Farhan wants estimates by Friday so he can plan Sprint 2. Rahul wants to know whether the confidence gate is one week or three. Nobody can answer either question, because nobody can say what "done" means for NWD-103.
+Thursday morning. Preetinka has eight stories, one of which — NWD-103, gate every extracted field on its confidence score — is the reason the project exists. Atul wants estimates by Friday so he can plan Sprint 2. Gautam wants to know whether the confidence gate is one week or three. Nobody can answer either question, because nobody can say what "done" means for NWD-103.
 
 The story says: *any value the system is unsure about is held back, and if any single value fails, the whole document is held.* That is a good story. It has a beneficiary, an outcome and a demo. It is also, if you are the person who has to decide whether the finished code is correct, almost useless. Unsure by how much? Held back to where? What counts as a value? What happens if the document has forty values and one of them is a blank field that was always going to be blank?
 
-Amara books a room and asks Ananya Iyer to join. This is not a courtesy. **Ananya is there because Amara has learned that she writes the happy path and Ananya writes everything else, and everything else is where the defects live.**
+Preetinka books a room and asks Pankaj  to join. This is not a courtesy. **Pankaj is there because Preetinka has learned that she writes the happy path and Pankaj writes everything else, and everything else is where the defects live.**
 
-Amara's first pass, alone, produced six criteria. All six described a document processing correctly, or a document with one bad field being held. All six passed on the code Tomas eventually wrote. Ananya's additions took it to nineteen, and eleven of those nineteen described things going wrong — a document with no values at all, a value present but blank, a confidence score the service did not return, the same document arriving twice while one copy is already held.
+Preetinka's first pass, alone, produced six criteria. All six described a document processing correctly, or a document with one bad field being held. All six passed on the code Ravi eventually wrote. Pankaj's additions took it to nineteen, and eleven of those nineteen described things going wrong — a document with no values at all, a value present but blank, a confidence score the service did not return, the same document arriving twice while one copy is already held.
 
-Three of Ananya's eleven caught real defects during Sprint 3. One of them did not catch the defect it should have, and that story — why nineteen criteria written by two careful people still missed bug [NWD-142](../../Case-Study/Python-ETL/artifacts/bug-NWD-142.md) — is the most useful thing in this file.
+Three of Pankaj's eleven caught real defects during Sprint 3. One of them did not catch the defect it should have, and that story — why nineteen criteria written by two careful people still missed bug [NWD-142](../../Case-Study/Python-ETL/artifacts/bug-NWD-142.md) — is the most useful thing in this file.
 
 ---
 
@@ -38,7 +38,7 @@ Three of Ananya's eleven caught real defects during Sprint 3. One of them did no
 
 They belong to the story. One story, one set of criteria, written before anyone builds anything. Write them before the build and they are a specification of intent — the developer knows what to aim at, the tester knows what to check, and the Product Owner knows what she is accepting. Write them after the build and they are a description of what got built, which is a very expensive way of agreeing with yourself.
 
-**They are not test cases.** A test case has data in it: this exact PDF, this exact expected value. Acceptance criteria describe a class of situation. One criterion usually becomes three or four test cases. Ananya writes the test cases later, in [P20](../phase-4-build/P20-write-tests-alongside-the-code.md) and [P22](../phase-5-verify/P22-e2e-test-the-application.md), and she writes them faster because the criteria exist.
+**They are not test cases.** A test case has data in it: this exact PDF, this exact expected value. Acceptance criteria describe a class of situation. One criterion usually becomes three or four test cases. Pankaj writes the test cases later, in [P20](../phase-4-build/P20-write-tests-alongside-the-code.md) and [P22](../phase-5-verify/P22-e2e-test-the-application.md), and she writes them faster because the criteria exist.
 
 **They are not the Definition of Done.** The **Definition of Done** is one checklist that applies to *every* story — code reviewed, tests written, deployed to staging, documentation updated. It is the same for NWD-101 and NWD-108 and it lives in [P17](../phase-3-planning/P17-definition-of-done.md). Acceptance criteria are different for every story and describe what *that* story does. A story is finished when it meets its acceptance criteria **and** the Definition of Done. Confusing the two is the single most common vocabulary mistake in agile teams, and it causes real arguments in sprint reviews.
 
@@ -78,7 +78,7 @@ This is the central claim of this file so it gets the bold.
 
 **A Product Owner writing acceptance criteria alone will describe what should happen. A QA engineer writing them will describe what happens when it doesn't. You need both, and only one of them is instinctive.**
 
-It is not that Product Owners are careless. A Product Owner's job is holding the desired outcome in mind, and holding that while simultaneously imagining forty ways it fails is two jobs. The second one is a distinct professional skill. What Ananya adds, concretely, in categories:
+It is not that Product Owners are careless. A Product Owner's job is holding the desired outcome in mind, and holding that while simultaneously imagining forty ways it fails is two jobs. The second one is a distinct professional skill. What Pankaj adds, concretely, in categories:
 
 | Category | The question she asks | Northwind example |
 |---|---|---|
@@ -93,7 +93,7 @@ It is not that Product Owners are careless. A Product Owner's job is holding the
 
 That last row is the one that matters most and the one that gets left out most often. Hold that thought too.
 
-The practical consequence: **run this prompt with both people present, not sequentially.** Amara running it and emailing the output to Ananya produces a document Ananya annotates. Both of them in a room produces an argument, and the argument is the value. The Northwind session ran ninety minutes and forty of those were Ananya saying "okay, but what if" and Amara saying "that can't happen" and then, twice, "actually it can."
+The practical consequence: **run this prompt with both people present, not sequentially.** Preetinka running it and emailing the output to Pankaj produces a document Pankaj annotates. Both of them in a room produces an argument, and the argument is the value. The Northwind session ran ninety minutes and forty of those were Pankaj saying "okay, but what if" and Preetinka saying "that can't happen" and then, twice, "actually it can."
 
 ### Where criteria come from
 
@@ -115,7 +115,7 @@ Not from imagination. From four specific places, and the prompt walks all four. 
 
 **Nothing may be counted without saying what happens to the ones not counted.** This is a lesson learned from NWD-142 and it was added to this prompt *after* Sprint 3. §11 explains why.
 
-**A "criteria I could not write" section is mandatory.** Where the story is genuinely ambiguous, the model must say so rather than invent a rule. Amara would rather have four open questions than four fabricated thresholds.
+**A "criteria I could not write" section is mandatory.** Where the story is genuinely ambiguous, the model must say so rather than invent a rule. Preetinka would rather have four open questions than four fabricated thresholds.
 
 ### What the AI is actually doing
 
@@ -256,7 +256,7 @@ matching criterion about the items not counted.
 
 ## 5. The filled-in example
 
-Thursday, 10:15. Amara at the keyboard, Ananya beside her with the PRD open on paper because she likes marking it up.
+Thursday, 10:15. Preetinka at the keyboard, Pankaj beside her with the PRD open on paper because she likes marking it up.
 
 ```text
 You are helping a **Product Owner and a QA engineer, working together**, write acceptance
@@ -374,7 +374,7 @@ This is the real artifact, lightly abridged. Nineteen criteria across three pass
 # Acceptance Criteria — NWD-103
 
 **Story:** Gate every extracted field on its confidence score
-**Written by:** Amara Osei (Product Owner) and Ananya Iyer (QA), Sprint 1 day 4
+**Written by:** Preetinka Sharma (Product Owner) and Pankaj  (QA), Sprint 1 day 4
 **Enforces PRD constraints:** C1, C2, C5
 
 ---
@@ -442,7 +442,7 @@ reconciliation break indistinguishable from a genuine settlement failure.*
 **And** the output does not report them as missing from the external side, because they
 were never claimed
 
-*Tag: constraint C1 and C5. Ananya's addition. A held document must be invisible
+*Tag: constraint C1 and C5. Pankaj's addition. A held document must be invisible
 downstream, not visible-and-empty.*
 
 ### AC-07 — The source document is retained regardless (C2)
@@ -475,7 +475,7 @@ that a helpful developer does not build half of NWD-108 inside this story.*
 **And** the document is held with the reason "no rows extracted"
 **And** it is distinguishable in the queue from a document held for low confidence
 
-*Tag: absence. Ananya's. An empty result is not the same problem as a bad result.*
+*Tag: absence. Pankaj's. An empty result is not the same problem as a bad result.*
 
 ### AC-11 — A field the layout expects is entirely missing
 **Given** a document whose layout defines a settlement date field
@@ -510,7 +510,7 @@ threshold" are the same sentence to a human and different code.*
 **And** the document is held with a reason an analyst can act on
 **And** the failure does not stop the processing of other documents
 
-*Tag: malformed. The last clause is Ananya's and it is about the batch, not the document.*
+*Tag: malformed. The last clause is Pankaj's and it is about the batch, not the document.*
 
 ### Partial
 
@@ -541,7 +541,7 @@ the note at the end of this document.*
 **When** the reconciliation process runs at that moment
 **Then** it sees either all of that document's rows or none, never some
 
-*Tag: downstream. Ananya's, and the one Tomas argued about longest.*
+*Tag: downstream. Pankaj's, and the one Ravi argued about longest.*
 
 ### Recovery
 
@@ -576,15 +576,15 @@ returning nothing is covered by AC-10 (zero rows) and AC-15 (fewer fields than e
    project fails its straight-through goal, but that is not observable on a single
    document. It is a measurement over a sample and belongs in a data-quality check.
 2. **"The reason text is genuinely useful to an analyst."** AC-04 checks the reason names
-   the field, the score and the threshold. Whether Priya can actually act on it is a
+   the field, the score and the threshold. Whether Preeti can actually act on it is a
    usability question and needs her in the room, not a criterion.
 ```
 
 ### How to read this
 
-**Count them.** Four happy-path criteria, five constraint criteria, ten failure-path criteria. That ratio — roughly one to three — is what the three-pass structure buys you. Amara's solo attempt on Wednesday produced six criteria and five of them were variations on AC-01.
+**Count them.** Four happy-path criteria, five constraint criteria, ten failure-path criteria. That ratio — roughly one to three — is what the three-pass structure buys you. Preetinka's solo attempt on Wednesday produced six criteria and five of them were variations on AC-01.
 
-**Look at AC-05 and then AC-06.** AC-05 says a held document writes zero rows. AC-06 says the reconciliation process cannot see it. Those look like the same criterion and they are not. AC-05 is about the write; AC-06 is about the read. A system could satisfy AC-05 by writing rows and marking them inactive, and fail AC-06 if reconciliation does not filter on the flag. Ananya added AC-06 for exactly that reason.
+**Look at AC-05 and then AC-06.** AC-05 says a held document writes zero rows. AC-06 says the reconciliation process cannot see it. Those look like the same criterion and they are not. AC-05 is about the write; AC-06 is about the read. A system could satisfy AC-05 by writing rows and marking them inactive, and fail AC-06 if reconciliation does not filter on the flag. Pankaj added AC-06 for exactly that reason.
 
 **Look at AC-11.** A missing field has no confidence score. A threshold check that iterates over the fields it received never sees it, so a naive implementation passes a document that is missing half its data. That criterion is the single most valuable line in this document and it came out of the Absence category, which the prompt forces you to walk.
 
@@ -602,7 +602,7 @@ So when bug [NWD-142](../../Case-Study/Python-ETL/artifacts/bug-NWD-142.md) happ
 
 ### What "done" means here
 
-The criteria are done when **Tomas can read them and start building without asking a question, and Ananya can read them and start writing tests without asking a different question.** Both halves matter. Criteria precise enough for QA but not for the developer are usually missing the setup — a Given that assumes context. Criteria precise enough for the developer but not for QA are usually stating internal behaviour rather than observable outcomes.
+The criteria are done when **Ravi can read them and start building without asking a question, and Pankaj can read them and start writing tests without asking a different question.** Both halves matter. Criteria precise enough for QA but not for the developer are usually missing the setup — a Given that assumes context. Criteria precise enough for the developer but not for QA are usually stating internal behaviour rather than observable outcomes.
 
 There is a cheaper test that catches most problems: read each Then aloud and ask *how would I check that, right now, with the tools I have?* If the answer involves reading source code, it is not a criterion.
 
@@ -822,15 +822,15 @@ Note that 8.4 is inside the loop rather than a branch off it. On any story that 
 
 ### The Product Owner writes them alone
 
-This is the default, it is nobody's fault, and it produces happy-path criteria every time. Amara is good at this and her solo pass still produced six criteria that were all variations on "it works." Not because she is careless — because holding the desired outcome in mind is her job, and the mental move required to write AC-11 is the opposite move. You have to stop wanting the thing to work.
+This is the default, it is nobody's fault, and it produces happy-path criteria every time. Preetinka is good at this and her solo pass still produced six criteria that were all variations on "it works." Not because she is careless — because holding the desired outcome in mind is her job, and the mental move required to write AC-11 is the opposite move. You have to stop wanting the thing to work.
 
-The fix is not a better prompt. It is a second person, and specifically a person whose professional instinct is suspicion. If your QA engineer genuinely cannot be in the room, run §8.1 and §8.4 and treat their output as a QA engineer's first draft rather than a finished set. It is worse than having Ananya there. It is much better than nothing.
+The fix is not a better prompt. It is a second person, and specifically a person whose professional instinct is suspicion. If your QA engineer genuinely cannot be in the room, run §8.1 and §8.4 and treat their output as a QA engineer's first draft rather than a finished set. It is worse than having Pankaj there. It is much better than nothing.
 
 ### Criteria become test cases
 
 You start with "a score at the threshold passes" and forty minutes later you are writing "a score of 0.90 on the quantity field of row 3 of `broker_alpha_20240115.pdf` results in row 3 appearing in staging with quantity 4,500."
 
-That is a test case. It is a good test case. It belongs in Ananya's test suite and not in a document Amara signs. The moment criteria contain test data, three things happen: the document gets long, the Product Owner stops reading it, and the criteria go stale the first time the fixture file changes. The fix: keep the rule, drop the instance. "At or above the threshold passes" is the rule. Which file proves it is Ananya's business.
+That is a test case. It is a good test case. It belongs in Pankaj's test suite and not in a document Preetinka signs. The moment criteria contain test data, three things happen: the document gets long, the Product Owner stops reading it, and the criteria go stale the first time the fixture file changes. The fix: keep the rule, drop the instance. "At or above the threshold passes" is the rule. Which file proves it is Pankaj's business.
 
 ### The criteria describe the output and ignore the input
 
@@ -860,9 +860,9 @@ The fix is scheduling, not prompting: criteria are written in discovery, before 
 
 ## 10. The handoff
 
-The criteria file goes to Farhan and Rahul, who run [P09](P09-estimate-and-rank-the-backlog.md) on the whole backlog. This is the direct dependency that makes P08 come before P09 rather than after: **you cannot size a story whose done-condition is unknown.** A team estimating NWD-103 without these nineteen criteria is estimating a sentence, and their number will be wrong by a factor of two in a direction they cannot predict. Rahul reads them for a different reason than Farhan — he is looking for criteria that imply work nobody has thought about, and AC-18, about reconciliation seeing a consistent view mid-processing, implies transactional behaviour that nothing in the story mentions.
+The criteria file goes to Atul and Gautam, who run [P09](P09-estimate-and-rank-the-backlog.md) on the whole backlog. This is the direct dependency that makes P08 come before P09 rather than after: **you cannot size a story whose done-condition is unknown.** A team estimating NWD-103 without these nineteen criteria is estimating a sentence, and their number will be wrong by a factor of two in a direction they cannot predict. Gautam reads them for a different reason than Atul — he is looking for criteria that imply work nobody has thought about, and AC-18, about reconciliation seeing a consistent view mid-processing, implies transactional behaviour that nothing in the story mentions.
 
-Then the file has a long second life. Tomas reads it before he writes a line of NWD-103 in [P18](../phase-4-build/P18-implement-a-story.md), and the nineteen criteria become the structure of his test file in [P20](../phase-4-build/P20-write-tests-alongside-the-code.md). Ananya reads it when she builds the E2E suite in [P22](../phase-5-verify/P22-e2e-test-the-application.md). Amara reads it in the sprint review to decide whether to accept the story. And when Ananya files [NWD-142](../../Case-Study/Python-ETL/artifacts/bug-NWD-142.md) in Sprint 3, the first question everyone asks is which criterion should have caught it, and the answer — none of them — is what sends the fix through [P29](../phase-6-rework/P29-the-spec-was-wrong.md) rather than straight to a code change.
+Then the file has a long second life. Ravi reads it before he writes a line of NWD-103 in [P18](../phase-4-build/P18-implement-a-story.md), and the nineteen criteria become the structure of his test file in [P20](../phase-4-build/P20-write-tests-alongside-the-code.md). Pankaj reads it when she builds the E2E suite in [P22](../phase-5-verify/P22-e2e-test-the-application.md). Preetinka reads it in the sprint review to decide whether to accept the story. And when Pankaj files [NWD-142](../../Case-Study/Python-ETL/artifacts/bug-NWD-142.md) in Sprint 3, the first question everyone asks is which criterion should have caught it, and the answer — none of them — is what sends the fix through [P29](../phase-6-rework/P29-the-spec-was-wrong.md) rather than straight to a code change.
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/acceptance-criteria-NWD-103.md`**
 >
@@ -882,11 +882,11 @@ Then the file has a long second life. Tomas reads it before he writes a line of 
 
 ## 11. In the case study
 
-This runs on Thursday of Sprint 1, in [`02-sprint-1-discovery.md`](../../Case-Study/Python-ETL/02-sprint-1-discovery.md). Ninety minutes, two people, nineteen criteria, and one of the better sessions in the project. Three of Ananya's failure-path criteria caught real defects in Sprint 3: AC-11 caught a missing-field case in Tomas's first implementation, AC-16 is the criterion that NWD-140 violates, and AC-19 caught a re-gating gap in Ji-woo's release flow. And then there is AC-15, which is the reason this section is worth reading twice.
+This runs on Thursday of Sprint 1, in [`02-sprint-1-discovery.md`](../../Case-Study/Python-ETL/02-sprint-1-discovery.md). Ninety minutes, two people, nineteen criteria, and one of the better sessions in the project. Three of Pankaj's failure-path criteria caught real defects in Sprint 3: AC-11 caught a missing-field case in Ravi's first implementation, AC-16 is the criterion that NWD-140 violates, and AC-19 caught a re-gating gap in Dzmitry's release flow. And then there is AC-15, which is the reason this section is worth reading twice.
 
-AC-15 says: if extraction returns eight of twelve defined fields with no error, hold the document and name the four that are missing. It is a good criterion. Ananya wrote it under the Partial category. It went into the test suite, it passed, and everyone was satisfied that partial extraction was covered.
+AC-15 says: if extraction returns eight of twelve defined fields with no error, hold the document and name the four that are missing. It is a good criterion. Pankaj wrote it under the Partial category. It went into the test suite, it passed, and everyone was satisfied that partial extraction was covered.
 
-Six weeks later Ananya finds bug [NWD-142](../../Case-Study/Python-ETL/artifacts/bug-NWD-142.md). A Broker Alpha statement where the positions table spans a page boundary. The line items on page two are dropped. Every field that was extracted has high confidence — the gate passes it, cleanly, and it loads into Snowflake with half its positions. Reconciliation then reports `MISSING_EXTERNAL` breaks for the dropped rows, which look exactly like a genuine settlement failure, which is precisely the outcome the entire project exists to prevent.
+Six weeks later Pankaj finds bug [NWD-142](../../Case-Study/Python-ETL/artifacts/bug-NWD-142.md). A Broker Alpha statement where the positions table spans a page boundary. The line items on page two are dropped. Every field that was extracted has high confidence — the gate passes it, cleanly, and it loads into Snowflake with half its positions. Reconciliation then reports `MISSING_EXTERNAL` breaks for the dropped rows, which look exactly like a genuine settlement failure, which is precisely the outcome the entire project exists to prevent.
 
 AC-15 did not catch it. It was written to catch it — Partial is the right category, the instinct was right — and it did not, and it is worth being exact about why.
 

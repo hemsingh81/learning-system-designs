@@ -7,26 +7,26 @@
 | | |
 |---|---|
 | **Phase** | 5 — Verify |
-| **Who runs it** | Team Lead (Rahul Nair), reviewing Tomas Vargas's work |
-| **When** | Sprint 3, day 3. NWD-103 is merged, Ananya's E2E suite is red on two journeys, and Rahul has the branch open. |
-| **Takes in** | The diff for NWD-103, `Case-Study/Python-ETL/artifacts/acceptance-criteria-NWD-103.md`, `artifacts/spec-confidence-gate.md`, `artifacts/definition-of-done.md`, `artifacts/CLAUDE.md`, Ananya's failing tests from [P22](P22-e2e-test-the-application.md) |
+| **Who runs it** | Team Lead (Gautam ), reviewing Ravi Mullick's work |
+| **When** | Sprint 3, day 3. NWD-103 is merged, Pankaj's E2E suite is red on two journeys, and Gautam has the branch open. |
+| **Takes in** | The diff for NWD-103, `Case-Study/Python-ETL/artifacts/acceptance-criteria-NWD-103.md`, `artifacts/spec-confidence-gate.md`, `artifacts/definition-of-done.md`, `artifacts/CLAUDE.md`, Pankaj's failing tests from [P22](P22-e2e-test-the-application.md) |
 | **Produces** | `Case-Study/Python-ETL/artifacts/code-review-NWD-103.md` |
-| **Hands off to** | Backend Engineer (Tomas), who runs [P28](../phase-6-rework/P28-respond-to-code-review-feedback.md) |
-| **Time to run** | 20 minutes to generate. An hour with Rahul's own reading on top. The hour is not optional. |
+| **Hands off to** | Backend Engineer (Ravi), who runs [P28](../phase-6-rework/P28-respond-to-code-review-feedback.md) |
+| **Time to run** | 20 minutes to generate. An hour with Gautam's own reading on top. The hour is not optional. |
 
 ---
 
 ## 1. The scene
 
-Wednesday morning. Rahul has the NWD-103 branch open in one window and Ananya's E2E report in the other. Two journeys red: Priya's correction path, and the Spanish confirmation.
+Wednesday morning. Gautam has the NWD-103 branch open in one window and Pankaj's E2E report in the other. Two journeys red: Preeti's correction path, and the Spanish confirmation.
 
 He's been the team lead on this crew since `AI-Skills`, and in each of the previous books he built the same thing in a slightly better form. In `AI-Skills` it was a review skill — a set of instructions the AI picked up automatically when he said "review this." In `AI-Workflows` it became a workflow, a fixed plan with five review passes running in parallel: correctness, tests, security, readability, spec compliance. In `AI-Agents` it became an agent that could decide for itself which files to open next based on what the first file turned up.
 
-All three still exist in this repo. Rahul uses the agent version daily and it's good. But this morning he's doing something different, and it's worth understanding why.
+All three still exist in this repo. Gautam uses the agent version daily and it's good. But this morning he's doing something different, and it's worth understanding why.
 
-The confidence gate is the flagship story. It is the piece of code that decides whether a number reaches Northwind's warehouse or reaches Priya. Sofia wrote an ADR about it. Amara wrote seven acceptance criteria. If it's subtly wrong, the failure mode is not a crash — it's a quietly wrong number in a reconciliation report, which is exactly the thing Northwind hired Kestrel to stop happening.
+The confidence gate is the flagship story. It is the piece of code that decides whether a number reaches Northwind's warehouse or reaches Preeti. Hem wrote an ADR about it. Preetinka wrote seven acceptance criteria. If it's subtly wrong, the failure mode is not a crash — it's a quietly wrong number in a reconciliation report, which is exactly the thing Northwind hired Kestrel to stop happening.
 
-So Rahul wants a review that produces a document, not a chat. Something with file and line numbers, a severity per finding, and a clear "must fix before merge" versus "nice to have" split — because that document is what Tomas will work from, and it's what Rahul will point at in three weeks when someone asks why the code looks the way it does.
+So Gautam wants a review that produces a document, not a chat. Something with file and line numbers, a severity per finding, and a clear "must fix before merge" versus "nice to have" split — because that document is what Ravi will work from, and it's what Gautam will point at in three weeks when someone asks why the code looks the way it does.
 
 He also has a specific worry. Roughly two-thirds of the diff was written by AI. It reads beautifully. Consistent naming, docstrings on everything, type hints throughout, no dead code. **The classic review checklist finds nothing in AI-written code, and that is not the same thing as the code being right.**
 
@@ -46,9 +46,9 @@ Here is the honest list, in order of how much value each one carries.
 
 **3. Catching unclear intent.** Not "add a comment." The deeper version: this code is correct and nobody reading it in April will be able to tell *why* it's correct, so the first person who touches it will break it. If a reviewer has to reconstruct the reasoning, the reasoning isn't in the code.
 
-**4. Spreading knowledge.** After the review, two people understand the confidence gate instead of one. This matters more than most teams admit. When Tomas is on holiday and month-end goes wrong, someone has to be able to open `rules.py`.
+**4. Spreading knowledge.** After the review, two people understand the confidence gate instead of one. This matters more than most teams admit. When Ravi is on holiday and month-end goes wrong, someone has to be able to open `rules.py`.
 
-**5. Checking it matches what was agreed.** Amara wrote seven acceptance criteria. Sofia wrote an ADR. Does the code do what those say? Tests check the criteria that got tested. Review checks the ones that didn't.
+**5. Checking it matches what was agreed.** Preetinka wrote seven acceptance criteria. Hem wrote an ADR. Does the code do what those say? Tests check the criteria that got tested. Review checks the ones that didn't.
 
 Notice what's not on the list: style. Whether you use single or double quotes is a formatter's job. If your review is finding style issues, your tooling is broken, and you're spending human attention on something a machine does for free.
 
@@ -110,7 +110,7 @@ There's no signal in the code that says "this bit I knew, this bit I invented." 
 
 Worth stating plainly, because it's the argument for this whole file.
 
-Rahul ran his standard review agent from `AI-Agents` on the NWD-103 diff first. It returned six findings. Two were about docstring formatting. Two suggested extracting a helper. One flagged a broad `except Exception`. One noted a variable name could be clearer.
+Gautam ran his standard review agent from `AI-Agents` on the NWD-103 diff first. It returned six findings. Two were about docstring formatting. Two suggested extracting a helper. One flagged a broad `except Exception`. One noted a variable name could be clearer.
 
 All six were true. None of them were the undeclared-field-type bug, the duplicate rounding function, or the test that tested its own mocks. The checklist was looking for a hurried human and the code wasn't written by one.
 
@@ -136,10 +136,10 @@ Three distinct activities, with very different reliability.
 | Searching the repo for duplicates and near-duplicates | Excellent | It's a search problem and the model is fast at it. This is the highest-value thing you get. |
 | Comparing the code against a written spec, clause by clause | Very good | Both texts are in front of it. It's a matching exercise. |
 | Reasoning about what input reaches which branch | Good | Reliable on straightforward control flow. Gets shakier across three or four files. |
-| Judging whether an abstraction is right for this codebase | Weak | Needs taste and knowledge of where the code is going. This is the part Rahul does himself. |
+| Judging whether an abstraction is right for this codebase | Weak | Needs taste and knowledge of where the code is going. This is the part Gautam does himself. |
 | Knowing whether a magic number is correct | Cannot | It has no way to know. The best it can do is flag that it's unverified — which is why the prompt asks for exactly that. |
 
-**The practical consequence: the report is a very good first pass and a bad final word.** Rahul reads every finding and adds his own. The AI found the duplicate rounding function in eleven seconds — he'd have taken twenty minutes. He found the abstraction problem in `rules.py` that the AI called "well structured."
+**The practical consequence: the report is a very good first pass and a bad final word.** Gautam reads every finding and adds his own. The AI found the duplicate rounding function in eleven seconds — he'd have taken twenty minutes. He found the abstraction problem in `rules.py` that the AI called "well structured."
 
 ### The one idea to keep
 
@@ -249,20 +249,20 @@ Save the review as `[OUTPUT PATH]`.
 |---|---|---|---|
 | `[BRANCH OR DIFF COMMAND]` | The exact way to see the change. A branch name, or a git command the AI can run. Prefer the command — it gets the real diff, not a summary. | `git diff main...feature/NWD-103-confidence-gate` | Give it a vague "the recent changes" and it reviews whatever files are open, including ones nobody touched. You get findings about code that isn't in the change. |
 | `[STORY ID AND ONE-LINE TITLE]` | The story this implements. Anchors the review to a purpose. | `NWD-103 — Gate every extracted field on its confidence score` | The review has no notion of what the code was supposed to do, so criterion coverage becomes guesswork. |
-| `[AUTHOR NAME]` | Whose branch it is. Genuinely changes the tone. | `Tomas` | Reviews written for nobody read like a compliance audit. Tomas is more likely to act on findings addressed to him. |
+| `[AUTHOR NAME]` | Whose branch it is. Genuinely changes the tone. | `Ravi` | Reviews written for nobody read like a compliance audit. Ravi is more likely to act on findings addressed to him. |
 | `[PATH TO SPEC]` | The design document the code implements. | `Case-Study/Python-ETL/artifacts/spec-confidence-gate.md` | Without it, the review can only check the code against itself. It will find style issues and miss the fact that the spec says 0.92 for `broker_alpha` currency and the code says 0.90. |
 | `[PATH TO ACCEPTANCE CRITERIA]` | What "done" means for this story. | `Case-Study/Python-ETL/artifacts/acceptance-criteria-NWD-103.md` | The coverage table is fabricated from the code's own structure. It will look complete and mean nothing. |
 | `[PATH TO PROJECT CONTEXT FILE]` | The repo conventions file from [P01](../phase-0-foundation/P01-generate-the-project-context-file.md). | `Case-Study/Python-ETL/artifacts/CLAUDE.md` | The review invents conventions. You get told to use a logging pattern the team deliberately rejected in Sprint 0. |
 | `[PATH TO DOD]` | The Definition of Done from [P17](../phase-3-planning/P17-definition-of-done.md). | `Case-Study/Python-ETL/artifacts/definition-of-done.md` | The review checks the code but not whether the story is actually shippable — no logging, no runbook entry, no migration. |
-| `[PATH OR PASTE OF FAILING TEST OUTPUT]` | Ananya's red tests. Optional, and it sharpens the review a lot when present. | The two failing journeys from [P22](P22-e2e-test-the-application.md) | You lose the review's best lead. A reviewer who knows *which* journey fails looks in the right file first. |
+| `[PATH OR PASTE OF FAILING TEST OUTPUT]` | Pankaj's red tests. Optional, and it sharpens the review a lot when present. | The two failing journeys from [P22](P22-e2e-test-the-application.md) | You lose the review's best lead. A reviewer who knows *which* journey fails looks in the right file first. |
 | `[DOMAIN CONSEQUENCE]` | How to phrase "why it matters" so it lands with your team. | "a wrong number reaching Northwind's reconciliation, or a document held that should have loaded" | Consequences come out as "this could cause a bug," which is true of everything and therefore useless for prioritising. |
-| `[OUTPUT PATH]` | Where the document goes. It must be a file, not chat. | `Case-Study/Python-ETL/artifacts/code-review-NWD-103.md` | The review lives in a chat window, Tomas can't reference it in his PR, and in three weeks nobody can find why the code looks like it does. |
+| `[OUTPUT PATH]` | Where the document goes. It must be a file, not chat. | `Case-Study/Python-ETL/artifacts/code-review-NWD-103.md` | The review lives in a chat window, Ravi can't reference it in his PR, and in three weeks nobody can find why the code looks like it does. |
 
 ---
 
 ## 5. The filled-in example
 
-Rahul, Wednesday of Sprint 3, with `feature/NWD-103-confidence-gate` checked out and Ananya's report open.
+Gautam, Wednesday of Sprint 3, with `feature/NWD-103-confidence-gate` checked out and Pankaj's report open.
 
 ```text
 You are a **senior engineer reviewing a colleague's branch before it ships**. Produce a
@@ -272,7 +272,7 @@ written review document, not a conversation.
 
 - **Branch / diff:** git diff main...feature/NWD-103-confidence-gate
 - **Story:** NWD-103 — Gate every extracted field on its confidence score
-- **Author:** Tomas — a colleague. Write findings you would be comfortable saying to their
+- **Author:** Ravi — a colleague. Write findings you would be comfortable saying to their
   face.
 
 **Read these first.** Everything you flag must be justified against one of them or against
@@ -281,7 +281,7 @@ the code itself:
 - Acceptance criteria: Case-Study/Python-ETL/artifacts/acceptance-criteria-NWD-103.md
 - Project conventions: Case-Study/Python-ETL/artifacts/CLAUDE.md
 - Definition of Done: Case-Study/Python-ETL/artifacts/definition-of-done.md
-- Failing tests: two E2E journeys are red — "Priya corrects the flagged field and the whole
+- Failing tests: two E2E journeys are red — "Preeti corrects the flagged field and the whole
   document loads to silver" and "a Spanish Broker Beta confirmation loads with the security
   identifier unchanged". Output in tests/e2e/report/index.html.
 
@@ -345,8 +345,8 @@ Abridged — the real file is longer — but this is the substance.
 # Code review — NWD-103: Gate every extracted field on its confidence score
 
 **Branch:** `feature/NWD-103-confidence-gate`
-**Author:** Tomas
-**Reviewer:** Rahul (AI-assisted first pass)
+**Author:** Ravi
+**Reviewer:** Gautam (AI-assisted first pass)
 **Date:** 2026-03-11
 **Files changed:** 7 (+412 / −38)
 
@@ -425,7 +425,7 @@ Spec §4.2 sets it at 0.92 because their OCR misreads decimals. Running them at 
 band between 0.90 and 0.92 — exactly the band the spec identified as unreliable — flows
 straight through to the warehouse.
 
-This is also AC-7, which Ananya's E2E traceability table marks `UNCOVERED`. Nothing in the test
+This is also AC-7, which Pankaj's E2E traceability table marks `UNCOVERED`. Nothing in the test
 suite is watching it, which is why it merged.
 
 **Suggested fix:** load the override at the call site, from the already-loaded source config:
@@ -513,7 +513,7 @@ def test_gate_rejects_currency_below_broker_threshold(tmp_path):
 from the first failing field. If the failure came from a raised exception rather than a gate
 comparison, `rejection_reason` stays `None`.
 
-**Why it matters:** Priya opens the exception queue and sees a document with no explanation.
+**Why it matters:** Preeti opens the exception queue and sees a document with no explanation.
 AC-4 requires the reason to name the field and the threshold. The E2E test covering AC-4 passes,
 because it uses the gate-comparison path, not the exception path.
 
@@ -545,7 +545,7 @@ it cannot be omitted, rather than a field assigned afterwards.
 
 ---
 
-## 5. Questions for Tomas
+## 5. Questions for Ravi
 
 1. `rules.py:118` passes `overrides={}` — was the override wiring deliberately deferred, or
    missed? If deferred, there is no TODO or issue reference, so I could not tell.
@@ -565,7 +565,7 @@ it cannot be omitted, rather than a field assigned afterwards.
 | AC-2 | A field below threshold sends the whole document to review | Covered | `rules.py:190-210` |
 | AC-3 | No partial rows are written when a document is held | Covered | Transaction boundary at `sql_sink.py:98` is correct |
 | AC-4 | The rejection reason names the field and the threshold | **Partly** | Gate path yes; exception path leaves it `None`. See Major 3. |
-| AC-5 | A corrected document loads in full and is marked CORRECTED | **Partly** | `review_status` set, `reviewed_by` never written. Ananya's E2E asserts it — this is one of her two red journeys. |
+| AC-5 | A corrected document loads in full and is marked CORRECTED | **Partly** | `review_status` set, `reviewed_by` never written. Pankaj's E2E asserts it — this is one of her two red journeys. |
 | AC-6 | `min_confidence` and `bronze_path` reach the warehouse | Covered at silver | Type is wrong — see Minor 4. Snowflake MERGE not in this diff. |
 | AC-7 | Per-broker threshold override is applied | **Not covered** | See Blocker 2. |
 
@@ -589,11 +589,11 @@ it cannot be omitted, rather than a field assigned afterwards.
 
 **Start at the verdict and the blockers, and notice they are not code-quality findings.** Both blockers are missing behaviour — a case that falls through, and a config key that is read nowhere. Neither would be caught by a linter, a formatter, a type checker, or any test that currently exists. This is the "review what's missing" idea in concrete form.
 
-**Look at Major 2, the mocked test.** It's the most uncomfortable finding in the document because the test exists, it's well written, and it's green. The review's question — "what would have to break in production for this to go red?" — is the thing that exposes it. Rahul now has a rule from this: any test that patches more than one thing gets read twice.
+**Look at Major 2, the mocked test.** It's the most uncomfortable finding in the document because the test exists, it's well written, and it's green. The review's question — "what would have to break in production for this to go red?" — is the thing that exposes it. Gautam now has a rule from this: any test that patches more than one thing gets read twice.
 
 **Section 7 is what makes the document trustworthy.** A review that claims complete coverage is lying, and everyone reading it knows it's lying, so they discount the whole thing. Listing the blind spots explicitly means the findings that *are* there get taken at face value.
 
-**The part that is commonly wrong:** the Minor list. There are eight items and at least three of them (5, 6, 8) are the sort of thing a formatter or a stricter type check should have caught, which means they're really a tooling gap, not a review finding. Rahul's actual response was to add a docstring check and a stricter `mypy` setting rather than to send items 5, 6 and 8 to Tomas. Findings that repeat across reviews are configuration problems wearing a review's clothes.
+**The part that is commonly wrong:** the Minor list. There are eight items and at least three of them (5, 6, 8) are the sort of thing a formatter or a stricter type check should have caught, which means they're really a tooling gap, not a review finding. Gautam's actual response was to add a docstring check and a stricter `mypy` setting rather than to send items 5, 6 and 8 to Ravi. Findings that repeat across reviews are configuration problems wearing a review's clothes.
 
 ---
 
@@ -620,11 +620,11 @@ The last clause is the one people skip and it is not optional. The AI produced a
 
 The over-prompting failure mode here is very specific: **you keep asking for more findings and you get longer prose about smaller things.**
 
-Ask "anything else?" and the model will find something, because it can always find something. The fifteenth finding is a variable name. The twentieth is a suggestion to extract a two-line function. The document grows, the signal-to-noise ratio collapses, and Tomas — who has to act on this — starts skimming. A 40-finding review gets the same amount of attention as a 6-finding review, spread thinner.
+Ask "anything else?" and the model will find something, because it can always find something. The fifteenth finding is a variable name. The twentieth is a suggestion to extract a two-line function. The document grows, the signal-to-noise ratio collapses, and Ravi — who has to act on this — starts skimming. A 40-finding review gets the same amount of attention as a 6-finding review, spread thinner.
 
 The second trap is asking the AI to justify a finding you disagree with. It will comply, at length, and it will sound convincing, because producing plausible justification is exactly what it's good at. If you think a finding is wrong, strike it. Don't debate it.
 
-The third: don't ask it to re-review after Tomas fixes things until Tomas has actually fixed things. Reviewing a review is a loop with no exit.
+The third: don't ask it to re-review after Ravi fixes things until Ravi has actually fixed things. Reviewing a review is a loop with no exit.
 
 ### The signal that you are NOT done
 
@@ -641,7 +641,7 @@ The third: don't ask it to re-review after Tomas fixes things until Tomas has ac
 | Every finding is "Major" | No severity definitions took hold. Severity carries no information. | **8.3** below |
 | Findings are true but you can't act on them | No file:line, or the fix is described rather than shown. | **8.4** below |
 | The coverage table says everything is covered | It generated the table from the code, not the criteria. Classic. | **8.5** below |
-| Findings are right and the author disagrees | Not a prompting problem. A conversation problem. | Talk to Tomas. Then **[P28](../phase-6-rework/P28-respond-to-code-review-feedback.md)** |
+| Findings are right and the author disagrees | Not a prompting problem. A conversation problem. | Talk to Ravi. Then **[P28](../phase-6-rework/P28-respond-to-code-review-feedback.md)** |
 | A blocker turns out to be a spec problem, not a code problem | The code matches a spec that is wrong. | **[P29](../phase-6-rework/P29-the-spec-was-wrong.md)** |
 
 ### 8.1 "The review is all nitpicks and no substance"
@@ -700,7 +700,7 @@ Then answer this directly: **why did the first review miss it?** One of:
 I want that answer even if it is unflattering. It tells me what to change in how I ask.
 ```
 
-What changes: you get a diagnosis of the review process as well as the bug. Rahul ran this after the review missed a transaction-scope problem in `sql_sink.py`, and the answer — "the defect is in an interaction between the sink and the rules engine; I reviewed each file's correctness in isolation" — is why the prompt in §3 now explicitly says to search outside the changed files.
+What changes: you get a diagnosis of the review process as well as the bug. Gautam ran this after the review missed a transaction-scope problem in `sql_sink.py`, and the answer — "the defect is in an interaction between the sink and the rules engine; I reviewed each file's correctness in isolation" — is why the prompt in §3 now explicitly says to search outside the changed files.
 
 ### 8.3 "Everything is Major"
 
@@ -786,7 +786,7 @@ flowchart TD
     F -- yes --> H{You read it and<br/>added your own?}
     H -- no --> I[Read it properly]
     I --> H
-    H -- yes --> J[Send to Tomas → P28]
+    H -- yes --> J[Send to Ravi → P28]
     J --> K{A finding is really<br/>a spec problem?}
     K -- yes --> L[P29: the spec was wrong]
     K -- no --> M[Done]
@@ -804,7 +804,7 @@ Don't. Two reasons, and the second is the important one.
 
 First, some findings will be wrong. Not many, but some, and a wrong finding costs the author an hour proving it's wrong and costs you credibility you'll want later.
 
-Second — and this is the real cost — **the review is also a conversation, and you just opted out of it.** Tomas is going to read this and think about how he writes code next time. If the document is entirely the AI's, you've delegated the one part of a lead's job that isn't delegable. Rahul's rule: he strikes at least one finding and adds at least one of his own before sending. If he can't do either, he didn't read it.
+Second — and this is the real cost — **the review is also a conversation, and you just opted out of it.** Ravi is going to read this and think about how he writes code next time. If the document is entirely the AI's, you've delegated the one part of a lead's job that isn't delegable. Gautam's rule: he strikes at least one finding and adds at least one of his own before sending. If he can't do either, he didn't read it.
 
 ### No spec, so the review checks the code against itself
 
@@ -820,7 +820,7 @@ Six sprints in, every review comes back with the same eight findings: docstring 
 
 That's a tooling gap, not a review finding. Every finding that repeats across three reviews should become a lint rule, a `mypy` setting, or a hook from [P04](../phase-0-foundation/P04-hooks-as-guardrails.md). Review is expensive human-shaped attention; spending it on something a machine catches for free is a waste twice over — once for the cost, once because the real findings get buried.
 
-Rahul's version of this rule: **if the review found it twice, automate it. If it found it three times and you didn't automate it, that's on you, not the author.**
+Gautam's version of this rule: **if the review found it twice, automate it. If it found it three times and you didn't automate it, that's on you, not the author.**
 
 ### You review the diff and miss the interaction
 
@@ -828,7 +828,7 @@ The diff touches `confidence.py`, `rules.py` and `sql_sink.py`. Each file is cor
 
 Reviewing files is easy. Reviewing the seams between them is hard, and it's where the expensive bugs live — partial writes, double transactions, retries that aren't idempotent, two components that both think they own an error.
 
-The fix is to review the *path*, not the files. Pick one document and trace it: blob arrival → classify → extract → gate → transform → sink. Read the code in that order rather than in diff order. It's slower and it finds a different class of problem. Rahul does this once per story, on the flagship one, and skips it on the small ones.
+The fix is to review the *path*, not the files. Pick one document and trace it: blob arrival → classify → extract → gate → transform → sink. Read the code in that order rather than in diff order. It's slower and it finds a different class of problem. Gautam does this once per story, on the flagship one, and skips it on the small ones.
 
 ### This is the wrong tool entirely: the code is fine and the design is wrong
 
@@ -836,7 +836,7 @@ Here's the failure mode where you should put this prompt down.
 
 Symptom: the review keeps producing findings that are all variations of "this is awkward." The abstraction fights you. Every fix suggestion is a workaround. You've been through two rounds and it still doesn't feel right.
 
-That's not a review problem. The code is a faithful implementation of a design that doesn't fit, and no amount of review will fix a design from below. What you need is [P29](../phase-6-rework/P29-the-spec-was-wrong.md) — go back to the spec, decide what it should have said, and change it deliberately with Sofia in the room.
+That's not a review problem. The code is a faithful implementation of a design that doesn't fit, and no amount of review will fix a design from below. What you need is [P29](../phase-6-rework/P29-the-spec-was-wrong.md) — go back to the spec, decide what it should have said, and change it deliberately with Hem in the room.
 
 This happened on NWD-142. The page-boundary bug was not a code defect in any meaningful sense; the spec had no rule for a table that continues across pages, so there was nothing for the code to be wrong about. Reviewing `extract.py` harder would never have produced the fix. The fix was a new clause in the spec and a new class of test.
 
@@ -844,13 +844,13 @@ This happened on NWD-142. The page-boundary bug was not a code defect in any mea
 
 ## 10. The handoff
 
-The review goes to Tomas, and it goes as a file in the repository, not as a comment thread. That matters more than it sounds. A PR comment disappears when the branch merges; `artifacts/code-review-NWD-103.md` is still there in June when someone asks why `threshold_for` raises instead of defaulting, and the answer is in Blocker 1 with the reasoning attached.
+The review goes to Ravi, and it goes as a file in the repository, not as a comment thread. That matters more than it sounds. A PR comment disappears when the branch merges; `artifacts/code-review-NWD-103.md` is still there in June when someone asks why `threshold_for` raises instead of defaulting, and the answer is in Blocker 1 with the reasoning attached.
 
-Tomas runs [P28](../phase-6-rework/P28-respond-to-code-review-feedback.md) against it. That prompt takes the review as input and produces a response per finding — fixed, disagreed with and why, or deferred with a ticket. Not every finding gets fixed, and the review is not a list of orders. Tomas pushed back on Major 1, the rounding consolidation, on the grounds that it touches four files outside NWD-103 and belongs in its own change. Rahul agreed, and it became a tech-debt item for [P36](../phase-8-improve/P36-tech-debt-triage.md).
+Ravi runs [P28](../phase-6-rework/P28-respond-to-code-review-feedback.md) against it. That prompt takes the review as input and produces a response per finding — fixed, disagreed with and why, or deferred with a ticket. Not every finding gets fixed, and the review is not a list of orders. Ravi pushed back on Major 1, the rounding consolidation, on the grounds that it touches four files outside NWD-103 and belongs in its own change. Gautam agreed, and it became a tech-debt item for [P36](../phase-8-improve/P36-tech-debt-triage.md).
 
-Two of the review's questions go to Sofia rather than Tomas. Question 2 — was `DEFAULT_THRESHOLD = 0.75` chosen or accidental — is a spec question, and the spec has nothing to say about a default at all. That gap is real and it becomes an amendment to `spec-confidence-gate.md` via [P29](../phase-6-rework/P29-the-spec-was-wrong.md).
+Two of the review's questions go to Hem rather than Ravi. Question 2 — was `DEFAULT_THRESHOLD = 0.75` chosen or accidental — is a spec question, and the spec has nothing to say about a default at all. That gap is real and it becomes an amendment to `spec-confidence-gate.md` via [P29](../phase-6-rework/P29-the-spec-was-wrong.md).
 
-Meanwhile Ananya carries on. The review answered why one of her two red journeys is red; the other, NWD-138, is a different story. She moves to [P24](P24-find-security-gaps.md), which is the same review instinct pointed at a different threat model — and with Sofia joining her, because half the findings there are architecture decisions, not code.
+Meanwhile Pankaj carries on. The review answered why one of her two red journeys is red; the other, NWD-138, is a different story. She moves to [P24](P24-find-security-gaps.md), which is the same review instinct pointed at a different threat model — and with Hem joining her, because half the findings there are architecture decisions, not code.
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/code-review-NWD-103.md`**
 >
@@ -871,13 +871,13 @@ Meanwhile Ananya carries on. The review answered why one of her two red journeys
 
 This is Sprint 3, day 3, in [`07-sprint-3-verify.md`](../../Case-Study/Python-ETL/07-sprint-3-verify.md). The artifact is [`code-review-NWD-103.md`](../../Case-Study/Python-ETL/artifacts/code-review-NWD-103.md).
 
-The moment worth remembering: Rahul ran his existing review agent first — the one he'd built in `AI-Agents` and used every day for months — and it returned six findings, all of them style. He nearly approved the branch on that basis. What stopped him was Ananya's failing test on the correction path, which was pointing at code the review had called clean.
+The moment worth remembering: Gautam ran his existing review agent first — the one he'd built in `AI-Agents` and used every day for months — and it returned six findings, all of them style. He nearly approved the branch on that basis. What stopped him was Pankaj's failing test on the correction path, which was pointing at code the review had called clean.
 
 So he ran it again with the four-question hunt list, and it came back with Blocker 2 in about forty seconds: `threshold_overrides` appears in `sources.yaml` and in one test fixture and nowhere else in the repository. Broker Alpha's 0.92 threshold — the whole reason that override exists, because their scans are bad — had never been wired up. The code had been in `main` for four days.
 
-The uncomfortable part is the arithmetic. Broker Alpha is roughly 40% of Northwind's daily document volume. Four days of running their currency fields at 0.90 instead of 0.92 means the 0.90–0.92 band flowed straight through — the exact band Sofia identified in the ADR as the one you cannot trust from that counterparty. Nothing had broken visibly. It would have shown up eventually as reconciliation breaks nobody could explain, which is precisely the outcome Kestrel was hired to eliminate.
+The uncomfortable part is the arithmetic. Broker Alpha is roughly 40% of Northwind's daily document volume. Four days of running their currency fields at 0.90 instead of 0.92 means the 0.90–0.92 band flowed straight through — the exact band Hem identified in the ADR as the one you cannot trust from that counterparty. Nothing had broken visibly. It would have shown up eventually as reconciliation breaks nobody could explain, which is precisely the outcome Kestrel was hired to eliminate.
 
-Rahul's line in the retrospective ([`10-retrospective.md`](../../Case-Study/Python-ETL/10-retrospective.md)) was blunt: *"My review agent was calibrated for code a tired human wrote. Nobody on this team is writing that code any more."*
+Gautam's line in the retrospective ([`10-retrospective.md`](../../Case-Study/Python-ETL/10-retrospective.md)) was blunt: *"My review agent was calibrated for code a tired human wrote. Nobody on this team is writing that code any more."*
 
 ---
 

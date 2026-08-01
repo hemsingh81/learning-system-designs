@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | **Phase** | 0 — Foundation (Sprint 0) |
-| **Who runs it** | Team Lead (Rahul Nair) |
+| **Who runs it** | Team Lead (Gautam ) |
 | **When** | Day three of Sprint 0, once `CLAUDE.md` has been ignored at least once |
 | **Takes in** | `CLAUDE.md` from [P01](P01-generate-the-project-context-file.md); the lint, type-check and test commands; the list of files nobody may edit casually |
 | **Produces** | `.claude/settings.json` hooks block, `scripts/hooks/*.sh`, and a line in `docs/mcp-setup.md`'s sibling `docs/hooks.md` |
@@ -18,19 +18,19 @@
 
 ## 1. The scene
 
-Wednesday of Sprint 0. Still nothing shipped, and Farhan has moved on to worrying about Sprint 2.
+Wednesday of Sprint 0. Still nothing shipped, and Atul has moved on to worrying about Sprint 2.
 
-Rahul runs an experiment. He opens a fresh session, with `CLAUDE.md` loaded and the MCP servers from [P03](P03-wire-up-an-mcp-server.md) connected, and asks for something entirely ordinary: add support for a third counterparty called `broker_gamma`, English, standard thresholds.
+Gautam runs an experiment. He opens a fresh session, with `CLAUDE.md` loaded and the MCP servers from [P03](P03-wire-up-an-mcp-server.md) connected, and asks for something entirely ordinary: add support for a third counterparty called `broker_gamma`, English, standard thresholds.
 
 The assistant does a good job. It reads `config/sources.yaml`, adds a block, follows the existing shape, gets the threshold structure right. Then, being helpful, it notices that `broker_gamma` will need a row in a lookup table, opens `sql/schema.sql`, and adds one.
 
 `sql/schema.sql` is the file Northwind's DBA team owns. The one from the Unknowns list in [P01](P01-generate-the-project-context-file.md), where the answer came back "our DBA team, and they will not accept an automated migration from a vendor." It is written in the context file. The assistant had read it. It edited the file anyway, because the edit was a reasonable thing to do and the rule was a sentence in a document.
 
-Rahul does the same thing three more times with different phrasings. Twice it asks first. Once it does not.
+Gautam does the same thing three more times with different phrasings. Twice it asks first. Once it does not.
 
 He also goes back through Tuesday's transcripts and counts something else. `CLAUDE.md` says the project runs `ruff` and `mypy`. Across nineteen Python edits on Tuesday, the assistant ran ruff eleven times. Not zero, which would at least be a clear failure. Eleven out of nineteen, which is the worst possible number, because it means everyone has been assuming it happens.
 
-**The lesson Rahul writes on the whiteboard: a rule that is followed most of the time is not a rule, it is a habit, and habits do not survive a long session at 17:40 on a Friday.**
+**The lesson Gautam writes on the whiteboard: a rule that is followed most of the time is not a rule, it is a habit, and habits do not survive a long session at 17:40 on a Friday.**
 
 That afternoon he sets up hooks.
 
@@ -64,7 +64,7 @@ Everything about working with these tools gets clearer once you sort your requir
 | Good for | Judgement, taste, design, anything with exceptions | Checks, gates, formatting, anything with no exceptions |
 | Wrong tool when | The rule must hold every single time | The rule needs judgement about when it applies |
 
-**Put every requirement in one bucket deliberately.** The mistake Rahul made on Tuesday was leaving a deterministic requirement — ruff runs after edits — in the probabilistic bucket, where it delivered 11 out of 19.
+**Put every requirement in one bucket deliberately.** The mistake Gautam made on Tuesday was leaving a deterministic requirement — ruff runs after edits — in the probabilistic bucket, where it delivered 11 out of 19.
 
 The corollary matters too: do not push judgement into a hook. A hook that tries to enforce "functions should be small" by failing on anything over forty lines will block a legitimate ninety-line state machine and train the team to bypass it. Taste goes in `CLAUDE.md`. Rules go in hooks.
 
@@ -112,7 +112,7 @@ Matchers are how you keep hooks cheap. `Edit|Write` for file-modifying tools. `B
 
 ### The four hooks this project needs
 
-Rahul picked four. Each maps to something that was already going wrong.
+Gautam picked four. Each maps to something that was already going wrong.
 
 #### 1. `PostToolUse` — ruff and mypy after every Python edit
 
@@ -126,7 +126,7 @@ The obvious reason is that it happens every time.
 
 The subtle reason is *timing*. The error arrives while the model still has full context on the change it just made — what it was trying to do, why, what the surrounding code looks like. It fixes it in the same turn, cheaply. Compare that with the alternative, where lint runs in CI forty minutes later, and someone has to reconstruct the intent from a diff. **The value of a fast feedback loop is not that it catches more; it is that it catches things while fixing them is still cheap.**
 
-**The cost:** every Python edit gets slower by however long ruff and mypy take. Ruff is fast, single-file, tens of milliseconds. Mypy is not fast, and mypy on a single file with imports can take seconds. This is why the prompt below insists you scope and time the hook, and why Rahul ended up running mypy only on the edited file with a cache, not on the whole project.
+**The cost:** every Python edit gets slower by however long ruff and mypy take. Ruff is fast, single-file, tens of milliseconds. Mypy is not fast, and mypy on a single file with imports can take seconds. This is why the prompt below insists you scope and time the hook, and why Gautam ended up running mypy only on the edited file with a cache, not on the whole project.
 
 #### 2. `PreToolUse` — block edits to `sql/schema.sql` and `config/sources.yaml`
 
@@ -152,7 +152,7 @@ The subtle reason is *timing*. The error arrives while the model still has full 
 
 **Why `Stop` and not `PostToolUse`:** cost. The suite takes tens of seconds. Running it after every single edit would make the tool unusable, and would also run it mid-way through multi-file changes when it is guaranteed to be red. `Stop` is the moment the model believes it is finished, which is exactly when "are the tests actually green" is a meaningful question.
 
-**The trap:** if the suite takes four minutes, this hook makes every interaction end with a four-minute wait, and within two days somebody will comment it out. Keep the `Stop` hook on the fast subset — unit tests only, no integration, no network — and leave the slow suite to CI. Rahul's threshold: **if it takes longer than thirty seconds, it does not go in a `Stop` hook.**
+**The trap:** if the suite takes four minutes, this hook makes every interaction end with a four-minute wait, and within two days somebody will comment it out. Keep the `Stop` hook on the fast subset — unit tests only, no integration, no network — and leave the slow suite to CI. Gautam's threshold: **if it takes longer than thirty seconds, it does not go in a `Stop` hook.**
 
 #### 4. `Notification` — tell me when it needs me
 
@@ -172,13 +172,13 @@ Four real costs. Anyone selling you hooks without these is selling.
 
 **A noisy hook trains you to ignore it.** If the lint hook fires warnings on every edit that nobody acts on, within a week the whole team reads past hook output. Then the one that matters gets read past too. Hooks must be quiet when things are fine.
 
-**They can be wrong.** A `PreToolUse` block on a file pattern that is too broad will stop legitimate work, and the model cannot argue with it. Rahul's first version blocked anything matching `*.sql`, which blocked the migration files too, which meant Tomas could not do his job for an hour on Thursday.
+**They can be wrong.** A `PreToolUse` block on a file pattern that is too broad will stop legitimate work, and the model cannot argue with it. Gautam's first version blocked anything matching `*.sql`, which blocked the migration files too, which meant Ravi could not do his job for an hour on Thursday.
 
 ### Where the configuration lives
 
 Hooks are declared in your harness's settings file. In Claude Code that is `.claude/settings.json` in the repository — checked in, shared by the whole team, reviewed like any other file. Personal overrides go in `.claude/settings.local.json`, which is git-ignored.
 
-The distinction matters: **the guardrails belong in the shared file.** A hook that only exists on Rahul's laptop protects nothing. If it is worth enforcing, it is worth enforcing for everyone, and it should show up in a pull request when it changes.
+The distinction matters: **the guardrails belong in the shared file.** A hook that only exists on Gautam's laptop protects nothing. If it is worth enforcing, it is worth enforcing for everyone, and it should show up in a pull request when it changes.
 
 ### The one idea to remember
 
@@ -250,14 +250,14 @@ Save to the paths above.
 | `[SETTINGS PATH]` | The shared, committed settings file. | `.claude/settings.json` | Put it in the local override file and the guardrails exist on one laptop, which is the same as not existing. |
 | `[SCRIPTS PATH]` | Where hook scripts live, in the repo. | `scripts/hooks/` | Inline shell in JSON is unreadable, untestable, and impossible to review in a diff. |
 | `[DOCS PATH]` | Where you explain the hooks to the team. | `docs/hooks.md` | Without it, the first person a hook blocks assumes it is a bug and disables it. |
-| `[PROTECTED FILES]` | The exact paths that may not be edited without a human. Exact, not patterns. | `sql/schema.sql` and `config/sources.yaml` | A pattern like `*.sql` also blocks the migration files, which is the mistake that cost Tomas an hour. Name the files. |
+| `[PROTECTED FILES]` | The exact paths that may not be edited without a human. Exact, not patterns. | `sql/schema.sql` and `config/sources.yaml` | A pattern like `*.sql` also blocks the migration files, which is the mistake that cost Ravi an hour. Name the files. |
 | `[FORMATTER]` | The one tool permitted to rewrite files automatically, if any. | `ruff check --fix` and `ruff format` | If you allow silent rewrites without saying so, the model's next read of the file disagrees with what it just wrote and it gets confused about its own change. |
 
 ---
 
 ## 5. The filled-in example
 
-Rahul ran this on Wednesday afternoon, after the schema-edit experiment.
+Gautam ran this on Wednesday afternoon, after the schema-edit experiment.
 
 ```text
 You are the **Team Lead** configuring hooks — commands the harness runs automatically on
@@ -571,7 +571,7 @@ Both halves, again. A hook you configured and never observed is a configuration 
 
 Ask the AI what else could be hooked and you will get a wonderful list: check commit message format, enforce docstrings, block `TODO` comments, verify import ordering, warn on functions over fifty lines, scan for secrets on every edit. Each is defensible. Together they add two seconds to every action and produce output on every second edit.
 
-What happens next is entirely predictable, and Rahul has watched it on two previous engagements. The team tolerates it for a week. Someone comments out the noisiest one. A fortnight later the whole `hooks` block is commented out with a `// TODO: re-enable` above it, and the two hooks that actually mattered are gone along with the ten that did not.
+What happens next is entirely predictable, and Gautam has watched it on two previous engagements. The team tolerates it for a week. Someone comments out the noisiest one. A fortnight later the whole `hooks` block is commented out with a `// TODO: re-enable` above it, and the two hooks that actually mattered are gone along with the ten that did not.
 
 **Four hooks that always run beat fifteen that got disabled.** Protect the small set.
 
@@ -649,7 +649,7 @@ For the negative test, pick the thing that was just wrongly blocked.
 wrong and you are patching symptoms. Fix the match.
 ```
 
-What changes: `*.sql` becomes `sql/schema.sql`, and `sql/migrations/` becomes editable again. Tomas gets his hour back.
+What changes: `*.sql` becomes `sql/schema.sql`, and `sql/migrations/` becomes editable again. Ravi gets his hour back.
 
 ### 8.3 "Everything is slow now"
 
@@ -761,7 +761,7 @@ The test: **can you state the rule with no exceptions, ever?** "ruff must pass" 
 
 ### 9.2 The matcher is broader than the rule
 
-This is the one that actually happened. Rahul's first `protect_paths.sh` matched `*.sql`, reasoning that the SQL files were the DBA-owned ones. `sql/migrations/003_add_exception_history.sql` is also a `.sql` file, and Tomas spent an hour on Thursday unable to write a migration, initially convinced his editor was broken.
+This is the one that actually happened. Gautam's first `protect_paths.sh` matched `*.sql`, reasoning that the SQL files were the DBA-owned ones. `sql/migrations/003_add_exception_history.sql` is also a `.sql` file, and Ravi spent an hour on Thursday unable to write a migration, initially convinced his editor was broken.
 
 It happens because the protected thing has a natural category ("the SQL") that is bigger than the actual rule ("this one file"). Broad matchers feel safer. They are not — they are just differently unsafe, and the damage is invisible because the model cannot tell you it was blocked unfairly.
 
@@ -769,7 +769,7 @@ The fix is in §8.2 and it is the negative test. For every blocking hook, write 
 
 ### 9.3 The hooks are on one laptop
 
-Rahul writes the hooks. They work. Three weeks later Ji-woo joins for the frontend work, clones the repo, and has none of them, because the config went into `.claude/settings.local.json` — the personal, git-ignored file — during testing and never moved.
+Gautam writes the hooks. They work. Three weeks later Dzmitry joins for the frontend work, clones the repo, and has none of them, because the config went into `.claude/settings.local.json` — the personal, git-ignored file — during testing and never moved.
 
 The symptom is confusing: the same rules are enforced for some people and not others, so bugs appear that nobody can reproduce, and the team slowly stops trusting the guardrails.
 
@@ -797,13 +797,13 @@ Three cases.
 
 ## 10. The handoff
 
-The hooks land on Wednesday evening of Sprint 0, and their first real effect happens on Thursday morning, which is when Tomas cannot write a migration. That is a genuine cost and Rahul does not pretend otherwise — an hour lost to a matcher that was one character too broad. It gets fixed with §8.2 and a negative test, and the negative test is the thing that stays.
+The hooks land on Wednesday evening of Sprint 0, and their first real effect happens on Thursday morning, which is when Ravi cannot write a migration. That is a genuine cost and Gautam does not pretend otherwise — an hour lost to a matcher that was one character too broad. It gets fixed with §8.2 and a negative test, and the negative test is the thing that stays.
 
-Rahul moves straight to the last piece of Sprint 0, [P05 — Turn a Repeated Task into a Skill](P05-turn-a-repeated-task-into-a-skill.md), and the reason is the first line of §9.5. The hooks now enforce checks — things that are true or false about a file, evaluated on an event. What they cannot express is a *procedure*: adding a counterparty is nine steps in a specific order, spanning YAML, a trained model, a fixture, a test and a docs entry, and there is no event that fires when someone starts doing it. That needs a different container, and P05 is where the Sprint 0 story finishes.
+Gautam moves straight to the last piece of Sprint 0, [P05 — Turn a Repeated Task into a Skill](P05-turn-a-repeated-task-into-a-skill.md), and the reason is the first line of §9.5. The hooks now enforce checks — things that are true or false about a file, evaluated on an event. What they cannot express is a *procedure*: adding a counterparty is nine steps in a specific order, spanning YAML, a trained model, a fixture, a test and a docs entry, and there is no event that fires when someone starts doing it. That needs a different container, and P05 is where the Sprint 0 story finishes.
 
-Ananya inherits something from this file that she does not know about yet. In Sprint 3, when she runs acceptance testing and files five bugs, the `Stop` hook is what means "Tomas says it's fixed" and "the test suite is green" are the same statement. On the previous engagement they were not, and about a third of her retest cycles were wasted on changes that had never passed locally. It is a small thing that removes a whole category of friction from the rework loop in [P27](../phase-6-rework/P27-fix-from-a-qa-bug-report.md).
+Pankaj inherits something from this file that she does not know about yet. In Sprint 3, when she runs acceptance testing and files five bugs, the `Stop` hook is what means "Ravi says it's fixed" and "the test suite is green" are the same statement. On the previous engagement they were not, and about a third of her retest cycles were wasted on changes that had never passed locally. It is a small thing that removes a whole category of friction from the rework loop in [P27](../phase-6-rework/P27-fix-from-a-qa-bug-report.md).
 
-Sofia takes one thing into Sprint 1: the `protect_paths` list is a list of things the team decided are owned elsewhere, which is exactly the kind of decision that deserves an ADR rather than living in a shell script. ADR-0003 records why `sql/schema.sql` is DBA-owned and what the handoff process is.
+Hem takes one thing into Sprint 1: the `protect_paths` list is a list of things the team decided are owned elsewhere, which is exactly the kind of decision that deserves an ADR rather than living in a shell script. ADR-0003 records why `sql/schema.sql` is DBA-owned and what the handoff process is.
 
 > **Artifact contract — `.claude/settings.json` and `scripts/hooks/`**
 >
@@ -825,13 +825,13 @@ Sofia takes one thing into Sprint 1: the `protect_paths` list is a list of thing
 This is Wednesday and Thursday of
 [`Case-Study/Python-ETL/01-sprint-0-foundations.md`](../../Case-Study/Python-ETL/01-sprint-0-foundations.md).
 
-The thing that went wrong is the `*.sql` matcher, and it is worth telling properly because the interesting part is not the mistake, it is how long it took to identify. Tomas spent his hour not diagnosing a hook, but diagnosing his editor, then his file permissions, then the MCP server from [P03](P03-wire-up-an-mcp-server.md). It never occurred to him that a guardrail he had watched Rahul demo the previous evening was the cause, because from inside the session the block looked like a tool malfunction rather than a policy.
+The thing that went wrong is the `*.sql` matcher, and it is worth telling properly because the interesting part is not the mistake, it is how long it took to identify. Ravi spent his hour not diagnosing a hook, but diagnosing his editor, then his file permissions, then the MCP server from [P03](P03-wire-up-an-mcp-server.md). It never occurred to him that a guardrail he had watched Gautam demo the previous evening was the cause, because from inside the session the block looked like a tool malfunction rather than a policy.
 
-That is the real lesson about blocking hooks, and it is why §8.5 and the "explain every block" rule are in the prompt at all. A guardrail that stops you without telling you it was a guardrail is indistinguishable from a broken tool. Rahul's fix was not just narrowing the matcher — it was rewriting the message so the first line is the word BLOCKED and the second line names the hook script, so the next person's first question is "what is `protect_paths.sh`" rather than "is my editor broken."
+That is the real lesson about blocking hooks, and it is why §8.5 and the "explain every block" rule are in the prompt at all. A guardrail that stops you without telling you it was a guardrail is indistinguishable from a broken tool. Gautam's fix was not just narrowing the matcher — it was rewriting the message so the first line is the word BLOCKED and the second line names the hook script, so the next person's first question is "what is `protect_paths.sh`" rather than "is my editor broken."
 
-The second thing worth recording is the number Rahul put in the Sprint 0 review, because Farhan asked what any of this was for. Across Tuesday, before hooks: nineteen Python edits, eleven lint runs, four lint errors reaching a commit. Across Thursday and Friday, after hooks: thirty-one Python edits, thirty-one lint runs, zero lint errors reaching a commit.
+The second thing worth recording is the number Gautam put in the Sprint 0 review, because Atul asked what any of this was for. Across Tuesday, before hooks: nineteen Python edits, eleven lint runs, four lint errors reaching a commit. Across Thursday and Friday, after hooks: thirty-one Python edits, thirty-one lint runs, zero lint errors reaching a commit.
 
-Farhan wrote it down. It came up again in the Sprint 4 retrospective ([P35](../phase-8-improve/P35-run-the-retrospective.md)) as the single clearest piece of evidence that Sprint 0 had been worth having, on an engagement where the sprint that shipped nothing was the one people had been most sceptical about.
+Atul wrote it down. It came up again in the Sprint 4 retrospective ([P35](../phase-8-improve/P35-run-the-retrospective.md)) as the single clearest piece of evidence that Sprint 0 had been worth having, on an engagement where the sprint that shipped nothing was the one people had been most sceptical about.
 
 ---
 

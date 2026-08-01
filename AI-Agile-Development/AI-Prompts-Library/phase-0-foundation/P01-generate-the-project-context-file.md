@@ -7,11 +7,11 @@
 | | |
 |---|---|
 | **Phase** | 0 — Foundation (Sprint 0) |
-| **Who runs it** | Team Lead (Rahul Nair) |
+| **Who runs it** | Team Lead (Gautam ) |
 | **When** | Day one of Sprint 0, before anyone writes a line of production code |
 | **Takes in** | The repository skeleton at `Case-Study/Python-ETL/code/doc_ingestion/`, and the one-page brief from Northwind |
 | **Produces** | `CLAUDE.md` at the repo root — archived in the book as `Case-Study/Python-ETL/artifacts/CLAUDE.md` |
-| **Hands off to** | Backend Engineer (Tomas Vargas), who runs [P02 — Connect the Database](P02-connect-the-database.md) |
+| **Hands off to** | Backend Engineer (Ravi Mullick), who runs [P02 — Connect the Database](P02-connect-the-database.md) |
 | **Time to run** | 30 minutes to generate, an hour to argue about and trim |
 
 ---
@@ -20,15 +20,15 @@
 
 It is Monday morning of Sprint 0. Kestrel Software has just signed the Northwind Asset Management engagement, and the whole team is sitting in a room with a repository that contains eleven files, most of them empty.
 
-Nothing ships this sprint. That is not a failure of planning, it is the plan. Sprint 0 exists so that the five sprints after it do not spend their first two days re-litigating decisions nobody wrote down. Farhan, the project manager, put it on the board as "Foundations" and told everyone that the demo at the end of the week is a demo of the *setup*, not of the product. Amara raised an eyebrow. Farhan said the thing he always says, which is "what happens if that takes twice as long," and everyone let it go.
+Nothing ships this sprint. That is not a failure of planning, it is the plan. Sprint 0 exists so that the five sprints after it do not spend their first two days re-litigating decisions nobody wrote down. Atul, the project manager, put it on the board as "Foundations" and told everyone that the demo at the end of the week is a demo of the *setup*, not of the product. Preetinka raised an eyebrow. Atul said the thing he always says, which is "what happens if that takes twice as long," and everyone let it go.
 
-Rahul has done this before. In the three earlier engagements the team ran — the ones that became `AI-Skills`, `AI-Workflows` and `AI-Agents` — he watched the same thing happen every single time. Someone opens an AI coding assistant on a fresh repository, asks for something reasonable, and gets back code that is competent, idiomatic, and completely wrong for this project.
+Gautam has done this before. In the three earlier engagements the team ran — the ones that became `AI-Skills`, `AI-Workflows` and `AI-Agents` — he watched the same thing happen every single time. Someone opens an AI coding assistant on a fresh repository, asks for something reasonable, and gets back code that is competent, idiomatic, and completely wrong for this project.
 
-Here is the exact thing that happened at 09:40 on that Monday. Tomas, wanting to feel productive, asked the assistant for "a function that writes extracted positions into Azure SQL." Ten seconds later he had a clean, well-typed, tested-looking function. It opened a connection with a connection string. The connection string had a password in it, read from an environment variable called `SQL_PASSWORD`.
+Here is the exact thing that happened at 09:40 on that Monday. Ravi, wanting to feel productive, asked the assistant for "a function that writes extracted positions into Azure SQL." Ten seconds later he had a clean, well-typed, tested-looking function. It opened a connection with a connection string. The connection string had a password in it, read from an environment variable called `SQL_PASSWORD`.
 
 That is a perfectly normal way to connect to a database. It is also, on this project, a hard no. Northwind's security review has one non-negotiable line in it: **no API keys, no passwords, anywhere.** Every Azure service is reached with managed identity — a mechanism where the running code proves who it is using the platform's own identity system rather than a secret it carries around. The assistant had no way of knowing that. Nobody had told it.
 
-Rahul closed Tomas's laptop lid about two inches, which is his version of shouting, and said: before anyone generates another line, we generate the context file.
+Gautam closed Ravi's laptop lid about two inches, which is his version of shouting, and said: before anyone generates another line, we generate the context file.
 
 ---
 
@@ -67,7 +67,7 @@ That works. Once. It fails as a strategy for four reasons, and they compound:
 | Why "just tell it each time" fails | What it looks like in practice |
 |---|---|
 | You forget | You remember the managed-identity rule on Monday. On Thursday you are tired and you do not. The password version ships. |
-| Other people do not know the rules | Ji-woo joins the frontend work in Sprint 2. She has never heard of your SQL convention. Neither has her assistant. |
+| Other people do not know the rules | Dzmitry joins the frontend work in Sprint 2. She has never heard of your SQL convention. Neither has her assistant. |
 | The rules grow | By Sprint 3 there are nineteen conventions. Nobody types nineteen conventions into a prompt. |
 | It costs you the good part of the prompt | Every token you spend restating conventions is a token you did not spend describing the actual task. |
 
@@ -220,7 +220,7 @@ Save the result to [OUTPUT PATH].
 
 ## 5. The filled-in example
 
-This is what Rahul actually pasted, at 09:55 on the Monday of Sprint 0, in the root of the Northwind repository.
+This is what Gautam actually pasted, at 09:55 on the Monday of Sprint 0, in the root of the Northwind repository.
 
 ```text
 You are the **Team Lead** joining a new engineering project. Your goal is to produce the
@@ -367,7 +367,7 @@ rather than T+2.
 - (supplied) Logging is structured. One event per document, carrying `document_sha256`,
   `counterparty`, and `min_confidence`. Never log extracted field values.
 - (supplied) Errors that a human must act on become rows in `etl.extraction_exception`, not
-  log lines. Log lines are for engineers; the exception queue is for Priya.
+  log lines. Log lines are for engineers; the exception queue is for Preeti.
 - (observed) Tests are named `test_<behaviour>_<condition>`, e.g.
   `test_gate_rejects_currency_below_threshold`.
 - (supplied) `core/` may not import from `sinks/` or `sources/`. Dependencies point inward.
@@ -394,13 +394,13 @@ rather than T+2.
 
 Three things to look at, and one that is usually wrong.
 
-**Look at the invariants section first.** That is the part doing the work. Every future prompt in this library relies on it. When Tomas runs [P02](P02-connect-the-database.md) tomorrow and asks for a SQL sink, invariant 6 is what stops him getting a password in a connection string again.
+**Look at the invariants section first.** That is the part doing the work. Every future prompt in this library relies on it. When Ravi runs [P02](P02-connect-the-database.md) tomorrow and asks for a SQL sink, invariant 6 is what stops him getting a password in a connection string again.
 
 **Look at the `(observed)` / `(supplied)` tags.** Anything tagged `(observed)` you can verify in thirty seconds by opening the named file. Anything tagged `(supplied)` is your own claim reflected back at you, so if it is wrong, that is on the brief, not the AI. This split is what makes the file reviewable instead of just plausible.
 
-**Look at the Unknowns.** A generated context file with an empty Unknowns section has failed. It means the AI filled gaps with guesses. Rahul's actual output had five, and question 4 — who owns `schema.sql` in production — turned into an entire conversation with Northwind that changed the deployment design.
+**Look at the Unknowns.** A generated context file with an empty Unknowns section has failed. It means the AI filled gaps with guesses. Gautam's actual output had five, and question 4 — who owns `schema.sql` in production — turned into an entire conversation with Northwind that changed the deployment design.
 
-**The part that is commonly wrong: the repository map on a young repo.** On Monday of Sprint 0, half those folders had one empty file in them. The AI cheerfully described `core/` as "pure logic, no I/O" because that is what the folder name implies, not because it read code proving it. Rahul kept the line anyway — but he moved it mentally from "description" to "rule," and that distinction matters. On a mature codebase, the same line would be a fact. On day one, it is an intention. Know which one you are writing.
+**The part that is commonly wrong: the repository map on a young repo.** On Monday of Sprint 0, half those folders had one empty file in them. The AI cheerfully described `core/` as "pure logic, no I/O" because that is what the folder name implies, not because it read code proving it. Gautam kept the line anyway — but he moved it mentally from "description" to "rule," and that distinction matters. On a mature codebase, the same line would be a fact. On day one, it is an intention. Know which one you are writing.
 
 ---
 
@@ -428,9 +428,9 @@ The failure mode here is very specific and very seductive: **the AI is excellent
 
 Ask for another pass and you will get more sections. A "Testing philosophy" section. An "Architecture overview" with a diagram. A "Common tasks" cookbook. Each addition is individually reasonable and collectively fatal, because the file's entire value is that it gets read every session, and a file that gets read every session is competing for the same working memory as your actual question.
 
-Rahul's rule, from the earlier engagements: **if adding a line does not change what the assistant would do, it is not context, it is decoration.** Cut it.
+Gautam's rule, from the earlier engagements: **if adding a line does not change what the assistant would do, it is not context, it is decoration.** Cut it.
 
-The second reason to stop: this file is meant to be wrong at first. It gets corrected by contact with reality, not by more prompting. You will edit it four times in Sprint 1 and twice more in Sprint 3 after Ananya finds NWD-142, and each of those edits will be worth more than the polish pass you skipped today.
+The second reason to stop: this file is meant to be wrong at first. It gets corrected by contact with reality, not by more prompting. You will edit it four times in Sprint 1 and twice more in Sprint 3 after Pankaj finds NWD-142, and each of those edits will be worth more than the polish pass you skipped today.
 
 ### The signal that you are NOT done
 
@@ -552,7 +552,7 @@ Here is the offending code:
 Show me the old and new wording side by side. **Do not** change any other invariant.
 ```
 
-What changes: invariant 6 went from "No API keys anywhere, use managed identity" to a version naming `sinks/`, `sources/` and `core/clients.py` explicitly and carrying a two-line wrong/right example. Tomas never got a password in a connection string again.
+What changes: invariant 6 went from "No API keys anywhere, use managed identity" to a version naming `sinks/`, `sources/` and `core/clients.py` explicitly and carrying a two-line wrong/right example. Ravi never got a password in a connection string again.
 
 ### The loop
 
@@ -586,7 +586,7 @@ The fix is mechanical, not cultural. Put "does this change need a `CLAUDE.md` li
 
 The context file is a normal file in a normal repository. It gets committed, pushed, cloned onto laptops, and read by every tool you point at the repo.
 
-People put connection strings in it. People put the client's actual account numbers in it as "examples." Sofia caught exactly this in Sprint 0 — an early draft of the repository map used a real Northwind account number in a sample path, copied straight out of a test PDF, because the assistant had read a fixture file and helpfully used what it found.
+People put connection strings in it. People put the client's actual account numbers in it as "examples." Hem caught exactly this in Sprint 0 — an early draft of the repository map used a real Northwind account number in a sample path, copied straight out of a test PDF, because the assistant had read a fixture file and helpfully used what it found.
 
 The fix: never paste real documents or credentials into the generation prompt, and add a line to the file itself saying no secrets, no client data, no real identifiers. Then let [P24 — Find Security Gaps](../phase-5-verify/P24-find-security-gaps.md) check it in Sprint 3 like any other file.
 
@@ -618,13 +618,13 @@ Two situations where you should not run P01.
 
 ## 10. The handoff
 
-The context file lands in the repository root before lunch on the Monday of Sprint 0. Rahul commits it with a message that says exactly what it is, because he knows from the earlier engagements that a file called `CLAUDE.md` with the commit message "add docs" gets ignored for a month.
+The context file lands in the repository root before lunch on the Monday of Sprint 0. Gautam commits it with a message that says exactly what it is, because he knows from the earlier engagements that a file called `CLAUDE.md` with the commit message "add docs" gets ignored for a month.
 
-Tomas picks it up next. His first real task is the one he tried and failed to do at 09:40 — get the project talking to Azure SQL and Snowflake — and he runs [P02 — Connect the Database](P02-connect-the-database.md) to do it. He does not need to explain the managed-identity rule in that prompt, because invariant 6 is already loaded before he types a word. That is the whole return on this file: **every prompt from here on is shorter and safer because this one exists.**
+Ravi picks it up next. His first real task is the one he tried and failed to do at 09:40 — get the project talking to Azure SQL and Snowflake — and he runs [P02 — Connect the Database](P02-connect-the-database.md) to do it. He does not need to explain the managed-identity rule in that prompt, because invariant 6 is already loaded before he types a word. That is the whole return on this file: **every prompt from here on is shorter and safer because this one exists.**
 
-Rahul then runs the remaining three Sprint 0 prompts himself. [P03](P03-wire-up-an-mcp-server.md) gives the assistant a way to read the real database schema instead of inferring it from `schema.sql`. [P04](P04-hooks-as-guardrails.md) converts the invariants that can be mechanically checked into things the harness enforces automatically. [P05](P05-turn-a-repeated-task-into-a-skill.md) takes the nine-step counterparty onboarding ritual and makes it a single command. All three of them read the context file as their starting point, so all three of them inherit the invariants without restating them.
+Gautam then runs the remaining three Sprint 0 prompts himself. [P03](P03-wire-up-an-mcp-server.md) gives the assistant a way to read the real database schema instead of inferring it from `schema.sql`. [P04](P04-hooks-as-guardrails.md) converts the invariants that can be mechanically checked into things the harness enforces automatically. [P05](P05-turn-a-repeated-task-into-a-skill.md) takes the nine-step counterparty onboarding ritual and makes it a single command. All three of them read the context file as their starting point, so all three of them inherit the invariants without restating them.
 
-Sofia reads it for a different reason. She is about to write the first ADR — an Architecture Decision Record, a short document capturing one decision and why it was made — and the `Deliberately not doing` section is her list of decisions that were made informally and now need to be made properly. Two of the four lines in that section became ADRs in Sprint 1.
+Hem reads it for a different reason. She is about to write the first ADR — an Architecture Decision Record, a short document capturing one decision and why it was made — and the `Deliberately not doing` section is her list of decisions that were made informally and now need to be made properly. Two of the four lines in that section became ADRs in Sprint 1.
 
 > **Artifact contract — `CLAUDE.md`**
 >
@@ -648,9 +648,9 @@ This prompt is the first thing that happens in
 and the artifact it produced is at
 [`Case-Study/Python-ETL/artifacts/CLAUDE.md`](../../Case-Study/Python-ETL/artifacts/CLAUDE.md).
 
-The thing that went wrong is worth knowing about. Rahul's first run produced a context file with the invariants in the wrong order — the managed-identity rule was invariant 6, near the bottom, below four rules about confidence scoring. That felt right at the time, because confidence scoring is what the project is *about*. Two days later, in the middle of a long session where Tomas was building out the Snowflake sink, the assistant produced a `snowflake.connector.connect()` call with a password parameter, and did it while cheerfully citing the confidence invariants at the top of the file.
+The thing that went wrong is worth knowing about. Gautam's first run produced a context file with the invariants in the wrong order — the managed-identity rule was invariant 6, near the bottom, below four rules about confidence scoring. That felt right at the time, because confidence scoring is what the project is *about*. Two days later, in the middle of a long session where Ravi was building out the Snowflake sink, the assistant produced a `snowflake.connector.connect()` call with a password parameter, and did it while cheerfully citing the confidence invariants at the top of the file.
 
-Rahul's read on it: rules at the top of a long file get applied; rules at the bottom get skimmed. He reordered so that the two security invariants sit at positions 1 and 2, and the confidence rules follow. That ordering survived the rest of the project. It is also why §8.4's diagnosis list includes option (d), "the rule is buried below other content," which most people never think to check.
+Gautam's read on it: rules at the top of a long file get applied; rules at the bottom get skimmed. He reordered so that the two security invariants sit at positions 1 and 2, and the confidence rules follow. That ordering survived the rest of the project. It is also why §8.4's diagnosis list includes option (d), "the rule is buried below other content," which most people never think to check.
 
 The second thing worth knowing: the Unknowns section did its job. Question 4, about who owns `sql/schema.sql` in production, got asked in the Wednesday call with Northwind. The answer was "our DBA team, and they will not accept an automated migration from a vendor." That single answer changed the entire deployment design in [P02](P02-connect-the-database.md), added a manual approval step to the runbook in [P33](../phase-7-release/P33-write-the-runbook.md), and is the direct reason `sql/schema.sql` ended up behind a blocking hook in [P04](P04-hooks-as-guardrails.md). A generated document that admits what it does not know is worth more than a confident one that does not.
 

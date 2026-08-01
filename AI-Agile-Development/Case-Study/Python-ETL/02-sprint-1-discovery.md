@@ -2,13 +2,13 @@
 
 ← [01 — Sprint 0: Foundations](01-sprint-0-foundations.md) · [Case study index](README.md) · Next: [03 — Sprint 1: Design](03-sprint-1-design.md)
 
-> **One line:** Amara turns a rambling email into eight stories, and asks a four-word question that adds a whole screen to the project.
+> **One line:** Preetinka turns a rambling email into eight stories, and asks a four-word question that adds a whole screen to the project.
 
 ---
 
 ## 1. Monday, 09:20
 
-Amara Osei arrives with a printed email, which is unusual enough that Farhan comments on it.
+Preetinka Sharma arrives with a printed email, which is unusual enough that Atul comments on it.
 
 It is two pages from Northwind's head of operations. It arrived three weeks after it was promised, opens with an apology about month-end and two people on leave, and contains — in its most specific paragraph — the entire written requirement for a project Kestrel has already signed a contract for:
 
@@ -16,7 +16,7 @@ It is two pages from Northwind's head of operations. It arrived three weeks afte
 
 Everything else in the email is background, the apology, and a list of four people who should be on the distribution list.
 
-Amara has seen this before. She spent six years on the operations floor of a custodian bank before moving into product, which means she can read that sentence and immediately produce about forty questions. What counts as a broker statement? All eleven counterparties or the top four? What happens when the PDF is unreadable? Who fixes it? Does "stop manually keying" mean zero human touch, or does it mean a human only touches the hard ones — because those are two different projects with two different budgets and two different go-live dates.
+Preetinka has seen this before. She spent six years on the operations floor of a custodian bank before moving into product, which means she can read that sentence and immediately produce about forty questions. What counts as a broker statement? All eleven counterparties or the top four? What happens when the PDF is unreadable? Who fixes it? Does "stop manually keying" mean zero human touch, or does it mean a human only touches the hard ones — because those are two different projects with two different budgets and two different go-live dates.
 
 **She is not going to get those answers by emailing the client forty questions.** She is going to get them by writing down her best current understanding in a form specific enough that somebody can point at a sentence and say "no, that's wrong."
 
@@ -33,8 +33,8 @@ Most of this is jargon dressed as ordinary English. None of it is complicated. I
 | **Agile** | A family of ways of running projects where you build a small useful thing, show it to somebody, and change your plan based on what they say. The alternative — 200-page spec, disappear for a year, deliver something nobody wants — is what it was a reaction to. |
 | **Sprint** | A fixed block of time, usually two weeks, in which the team commits to a specific list. The length never moves; the list does. Northwind runs Sprints 0 to 4. |
 | **Backlog** | The ordered list of everything the team might build, most important first. Not a wish list. An ordered queue. |
-| **Product Owner** | Owns that ordering and owns what "done" means to the business. Amara. When somebody asks "translation or the review screen first," she answers and her answer is final. |
-| **Project Manager** | Owns dates, risk and sequencing. Farhan. Amara owns *what* and *why*; Farhan owns *when* and *what happens if it slips*. |
+| **Product Owner** | Owns that ordering and owns what "done" means to the business. Preetinka. When somebody asks "translation or the review screen first," she answers and her answer is final. |
+| **Project Manager** | Owns dates, risk and sequencing. Atul. Preetinka owns *what* and *why*; Atul owns *when* and *what happens if it slips*. |
 | **PRD** | Product Requirements Document. One document answering: what problem, for whom, measured how, and what's explicitly out. |
 | **User story** | One small unit of work in the backlog, written from the point of view of somebody who wants an outcome. |
 | **Acceptance criteria** | The specific, checkable conditions that make one story done. |
@@ -47,7 +47,7 @@ Most of this is jargon dressed as ordinary English. None of it is complicated. I
 
 ## 3. P06 — writing the PRD
 
-Amara runs [P06 — Write a Full PRD](../../AI-Prompts-Library/phase-1-discovery/P06-write-a-full-prd.md) at 09:40, with the operations email open in a second window.
+Preetinka runs [P06 — Write a Full PRD](../../AI-Prompts-Library/phase-1-discovery/P06-write-a-full-prd.md) at 09:40, with the operations email open in a second window.
 
 ### The two inputs that do all the work
 
@@ -57,7 +57,7 @@ The prompt has a lot of structure, but two blocks at the bottom carry it.
 
 > **Why verbatim matters.** If you summarise the brief before pasting it, you have already made the interpretation calls the PRD is supposed to surface, and you've made them invisibly. The mess is information. The fact that the head of operations spent a whole paragraph on a failed pilot from two years ago and one sentence on the actual ask tells you which one he cares about.
 
-**What Amara already knows that isn't in the email.** Six lines of domain knowledge from the kickoff call:
+**What Preetinka already knows that isn't in the email.** Six lines of domain knowledge from the kickoff call:
 
 ```text
 - Northwind runs two reporting books: EM (Emerging Markets) and EQ (Equity).
@@ -66,7 +66,7 @@ The prompt has a lot of structure, but two blocks at the bottom carry it.
   REST API. That side is structured and reliable. The problem is entirely the
   counterparty side.
 - Volume is roughly 200 documents a day, 3 pages average, spiking hard at month-end.
-- The named analyst on the client side is Priya Raman. She is currently the person
+- The named analyst on the client side is Preeti Singh. She is currently the person
   doing the keying, and she will be the primary user of whatever we build.
 - Their current straight-through rate — documents needing zero human touch — is 61%,
   because 61% is the share that already arrives as machine-readable data feeds
@@ -74,7 +74,7 @@ The prompt has a lot of structure, but two blocks at the bottom carry it.
 - Compliance require an audit trail on anything that touches the books of record.
 ```
 
-It's tempting to leave that block empty and let the assistant ask. Amara doesn't, and the reason is arithmetic: those six lines removed four items from the open-questions list, which meant the client meeting on Wednesday spent its time on the questions that actually needed a client.
+It's tempting to leave that block empty and let the assistant ask. Preetinka doesn't, and the reason is arithmetic: those six lines removed four items from the open-questions list, which meant the client meeting on Wednesday spent its time on the questions that actually needed a client.
 
 ### What came back, and the one number that matters
 
@@ -115,7 +115,7 @@ symmetric and the system's design must reflect that.
 
 The whole of that note came from one paragraph of a rambling email about a failed pilot.
 
-**When a client tells you about a previous failure, that story is usually the real requirement.** Amara says a version of this out loud on the Tuesday and it's the most useful sentence anybody says that week.
+**When a client tells you about a previous failure, that story is usually the real requirement.** Preetinka says a version of this out loud on the Tuesday and it's the most useful sentence anybody says that week.
 
 ### Why the goals aren't model metrics
 
@@ -125,7 +125,7 @@ The obvious version of G2 is *"the extraction model achieves an F1 score of at l
 
 > **F1 score.** One number between 0 and 1 combining how often the model's answers were right with how many of the right answers it found. Data scientists use it because it's one number instead of two. It's a fine internal diagnostic. It's a terrible business goal, because nobody's day gets better when it moves from 0.93 to 0.94.
 
-The version in the PRD is *"straight-through rate rises from 61% to 85% within one quarter."* Both are numbers. Only one of them means anything to Priya.
+The version in the PRD is *"straight-through rate rises from 61% to 85% within one quarter."* Both are numbers. Only one of them means anything to Preeti.
 
 **The metric shapes the system, and this one shapes it hard.** If success were extraction accuracy, a system that guesses confidently would score well. Because success is straight-through rate *and* T+1 break detection, a system that guesses confidently scores terribly — its wrong guesses create fake breaks, operations stops trusting the break report, and T+1 gets further away rather than closer.
 
@@ -133,7 +133,7 @@ The version in the PRD is *"straight-through rate rises from 61% to 85% within o
 
 ## 4. The key scene: "rejected to where?"
 
-**Monday, 11:15.** Amara is reading the draft properly for the first time — not skimming her own output, actually reading it — and she stops at CAP-04.
+**Monday, 11:15.** Preetinka is reading the draft properly for the first time — not skimming her own output, actually reading it — and she stops at CAP-04.
 
 Here is what the first draft said, in full:
 
@@ -148,13 +148,13 @@ materially worse than a descriptive text field that is wrong.
 
 That is a good capability. It's specific, it's checkable, it comes directly from the brief, and it names the asymmetry. Nothing in it is wrong.
 
-Amara reads it twice and then asks, to nobody, because there is nobody else in the room:
+Preetinka reads it twice and then asks, to nobody, because there is nobody else in the room:
 
 > **"Rejected to where?"**
 
-She takes it to Rahul at lunch and says it properly:
+She takes it to Gautam at lunch and says it properly:
 
-> "Rejected to where? Priya still has to do something with it. Right now you've built her a system that does 80% of her job and gives her the other 20% in a worse format than she had before."
+> "Rejected to where? Preeti still has to do something with it. Right now you've built her a system that does 80% of her job and gives her the other 20% in a worse format than she had before."
 
 ### Why this is the pivotal moment of the whole project
 
@@ -162,15 +162,15 @@ Read CAP-04 again with that question in your head.
 
 It says values below the threshold must not reach the reconciliation input. It says nothing about where they *do* go. And the natural reading — the reading an engineer will take, the reading an AI will take, the reading almost every pipeline in the world implements — is **rejected and logged**.
 
-Rejected and logged is perfectly reasonable. It's what a lot of pipelines do. It's also, from Priya's side, a catastrophe, and it's worth being precise about why:
+Rejected and logged is perfectly reasonable. It's what a lot of pipelines do. It's also, from Preeti's side, a catastrophe, and it's worth being precise about why:
 
-**Before the project**, Priya opens 200 documents and types them. Slow, but she has a complete picture. She knows what's done and what isn't. She has the PDF in front of her.
+**Before the project**, Preeti opens 200 documents and types them. Slow, but she has a complete picture. She knows what's done and what isn't. She has the PDF in front of her.
 
-**After the project, with "rejected and logged"**, Priya gets 170 documents she never sees, and 30 documents that failed — as **log lines**. In an engineer's log. With no PDF beside them, no indication of which field failed, and no way to fix and release. Her working day is now: monitor a log she doesn't have access to, find the failed documents, hunt down the originals in an email folder, open each one, type the whole thing into the spreadsheet again.
+**After the project, with "rejected and logged"**, Preeti gets 170 documents she never sees, and 30 documents that failed — as **log lines**. In an engineer's log. With no PDF beside them, no indication of which field failed, and no way to fix and release. Her working day is now: monitor a log she doesn't have access to, find the failed documents, hunt down the originals in an email folder, open each one, type the whole thing into the spreadsheet again.
 
 **She has lost the batch and kept the work.** The 20% that remains is harder than it was, not easier, because the system has taken away her overview and given her nothing in return.
 
-Amara has personally chased a reconciliation break at 7pm on a settlement date, which is why she reads a capability and instinctively asks what the person on the other end does with it. That instinct is not a product-management technique. It's six years on an operations floor.
+Preetinka has personally chased a reconciliation break at 7pm on a settlement date, which is why she reads a capability and instinctively asks what the person on the other end does with it. That instinct is not a product-management technique. It's six years on an operations floor.
 
 ### What the question produces
 
@@ -186,7 +186,7 @@ correct it, and release it. The reason must be specific enough to act on.
 "Extraction failed" is not sufficient.
 ```
 
-The last two sentences are Amara's, written by hand, and they are the sentences Ji-woo builds a screen from six weeks later.
+The last two sentences are Preetinka's, written by hand, and they are the sentences Dzmitry builds a screen from six weeks later.
 
 **Second, a change to a non-goal.** The non-goals list gains:
 
@@ -204,7 +204,7 @@ Which sounds like a caveat and is actually a design decision. It says out loud t
 
 **The AI did not do anything wrong.** CAP-04 is a faithful, well-written capability derived from the source material. The email said "I'd rather it told us it didn't know than gave us a number that's wrong," and CAP-04 says exactly that.
 
-What the email did not say, and what the AI therefore had no way to supply, is what happens to the ones it doesn't know. That gap existed in the client's own head — the head of operations knows perfectly well that Priya will deal with the rejects, so obviously he didn't write it down.
+What the email did not say, and what the AI therefore had no way to supply, is what happens to the ones it doesn't know. That gap existed in the client's own head — the head of operations knows perfectly well that Preeti will deal with the rejects, so obviously he didn't write it down.
 
 **A gap that everyone considers obvious is the gap that survives every review.** It survived the client's email. It survived the first PRD draft. It survives, in [Chapter 3](03-sprint-1-design.md), a second time, in a place where it is considerably more expensive.
 
@@ -212,7 +212,7 @@ What the email did not say, and what the AI therefore had no way to supply, is w
 
 ## 5. Wednesday: the client answers
 
-Amara sends the PRD Tuesday morning with eleven open questions and a note saying she'd like forty-five minutes on four of them.
+Preetinka sends the PRD Tuesday morning with eleven open questions and a note saying she'd like forty-five minutes on four of them.
 
 The call is on Wednesday. Nine of eleven questions get answered, one gets "ask Compliance, they'll be slow," and one — **Q2** — gets a five-minute answer that runs twice as long as it needed to because the head of operations wants to tell the OCR-pilot story again.
 
@@ -225,11 +225,11 @@ Q2, as written:
        most important design decision in the project |
 ```
 
-Amara expected the answer to be no. Her working assumption, from the operations floor, was that people want as many rows as they can get and will tolerate gaps.
+Preetinka expected the answer to be no. Her working assumption, from the operations floor, was that people want as many rows as they can get and will tolerate gaps.
 
 The answer was the opposite, emphatically:
 
-> "Hold the whole thing. All of it. I'd rather Priya opened forty documents a day than have one half-loaded statement produce a break that looks real. We've done the other version. It cost us a fortnight."
+> "Hold the whole thing. All of it. I'd rather Preeti opened forty documents a day than have one half-loaded statement produce a break that looks real. We've done the other version. It cost us a fortnight."
 
 That answer becomes design invariant number two — **one failing field sends the whole document to review** — and it is the rule the whole architecture is built around. It is also the rule that gets argued about in [Chapter 3](03-sprint-1-design.md), challenged again in [Chapter 7](07-sprint-3-verify.md), and violated in [Chapter 8](08-sprint-3-rework.md) by a bug nobody saw coming.
 
@@ -239,7 +239,7 @@ That answer becomes design invariant number two — **one failing field sends th
 
 ## 6. P07 — slicing it into stories
 
-Wednesday afternoon, ten minutes after the call ends. Amara runs [P07 — Slice the PRD into Stories](../../AI-Prompts-Library/phase-1-discovery/P07-slice-the-prd-into-stories.md).
+Wednesday afternoon, ten minutes after the call ends. Preetinka runs [P07 — Slice the PRD into Stories](../../AI-Prompts-Library/phase-1-discovery/P07-slice-the-prd-into-stories.md).
 
 ### The one rule that makes or breaks this
 
@@ -253,7 +253,7 @@ Story 4: Build the database schema
 Story 5: Build the UI
 ```
 
-That's **horizontal slicing** and it's very tempting because it matches how the system is drawn and how the team is organised. It's also close to useless, for one reason: **nothing works until all of it works.** You can't demo Story 1. You can't test Story 4 end to end. And you can't learn anything from any of them, because the questions you actually need answered — does the gate reject too much, does the screen make sense to Priya, does translation break the identifier match — all live in the interaction between layers.
+That's **horizontal slicing** and it's very tempting because it matches how the system is drawn and how the team is organised. It's also close to useless, for one reason: **nothing works until all of it works.** You can't demo Story 1. You can't test Story 4 end to end. And you can't learn anything from any of them, because the questions you actually need answered — does the gate reject too much, does the screen make sense to Preeti, does translation break the identifier match — all live in the interaction between layers.
 
 **Vertical slicing** cuts the other way. Each slice is thin, but it goes all the way through every layer, and at the end of it something observable is different.
 
@@ -283,7 +283,7 @@ There's an honest complication. Some genuinely necessary work has no user-visibl
 | [NWD-107](artifacts/stories/NWD-107.md) | Load positions into Azure SQL and Snowflake idempotently | Backend |
 | [NWD-108](artifacts/stories/NWD-108.md) | Exception queue screen for analyst review | Frontend |
 
-**NWD-108 exists because of a question asked on Monday at 11:15.** Without it there are seven stories, all backend, and Ji-woo has nothing to do until Sprint 4.
+**NWD-108 exists because of a question asked on Monday at 11:15.** Without it there are seven stories, all backend, and Dzmitry has nothing to do until Sprint 4.
 
 Here it is in full, because it's the one this chapter is about:
 
@@ -301,7 +301,7 @@ the work that was automated stays automated
 **Depends on:**
 - NWD-102 — needs classification failures to have something to show.
 - NWD-103 — needs confidence failures, which are the bulk of the queue.
-**Demo:** Show Priya the queue with six held documents. Open one. Show the failing
+**Demo:** Show Preeti the queue with six held documents. Open one. Show the failing
 field highlighted, its score shown as a percentage, and the source PDF page beside
 it. Correct the value, release it, and show it appear in staging within seconds.
 Show the queue count drop to five.
@@ -309,13 +309,13 @@ Show the queue count drop to five.
 - Bulk release of multiple documents. Open question Q6 in the PRD; not answered yet.
 - Editing a value that passed the gate. Only failing fields are editable.
 - Any reporting or analytics over the queue.
-**Notes:** The beneficiary here is Priya specifically and the demo should be run
+**Notes:** The beneficiary here is Preeti specifically and the demo should be run
 with her in the room, not for her. PRD goal G3 depends on this screen being fast
 to use — if clearing an exception takes ten minutes, the 85% straight-through
 target is irrelevant because the other 15% eats the day.
 ```
 
-Two things about that story. **The Demo line names a real person and a real number of documents**, which means when it's demoed in Sprint 2 there's no argument about whether it's finished. And the last note is a warning that turns out to be load-bearing: Ji-woo builds the whole screen around the sentence *"if clearing an exception takes ten minutes, the 85% target is irrelevant."*
+Two things about that story. **The Demo line names a real person and a real number of documents**, which means when it's demoed in Sprint 2 there's no argument about whether it's finished. And the last note is a warning that turns out to be load-bearing: Dzmitry builds the whole screen around the sentence *"if clearing an exception takes ten minutes, the 85% target is irrelevant."*
 
 ### The argument about CAP-08
 
@@ -332,13 +332,13 @@ CAP-08 is a design constraint on other stories and record it as such. Leaving it
 as-is means nobody ever verifies it.
 ```
 
-Rahul's position: adding a counterparty without a release is a property of the design, Sofia will honour it in the architecture, and a story for it is bureaucracy.
+Gautam's position: adding a counterparty without a release is a property of the design, Hem will honour it in the architecture, and a story for it is bureaucracy.
 
-Amara's position: **untested properties are not properties.**
+Preetinka's position: **untested properties are not properties.**
 
 They compromise. No new story, but NWD-102's acceptance criteria will include onboarding a ninth counterparty by configuration only. That criterion passes, and in Sprint 4 Northwind adds a counterparty in forty minutes without a deployment.
 
-Rahul was right about the design. Amara was right that nobody would have known.
+Gautam was right about the design. Preetinka was right that nobody would have known.
 
 ### The thing nobody caught
 
@@ -346,15 +346,15 @@ The output's dependency diagram put **NWD-105 (redact PII) after NWD-103**. NWD-
 
 So either redaction moves earlier, or NWD-103's staging write isn't really persistence, and one of those is a design change.
 
-Nobody caught it in the story review. It was caught eight days later by Sofia, writing the technical spec, asking her usual question. The fix was cheap because nothing had been built. It would not have been cheap in Sprint 3.
+Nobody caught it in the story review. It was caught eight days later by Hem, writing the technical spec, asking her usual question. The fix was cheap because nothing had been built. It would not have been cheap in Sprint 3.
 
 **Why it was missed is worth naming: the model ordered by data flow, and constraints do not respect the data flow diagram.** Everything in that diagram is correct as a description of how a document moves. The constraint cuts across it.
 
 ---
 
-## 7. P08 — acceptance criteria, with Ananya in the room
+## 7. P08 — acceptance criteria, with Pankaj in the room
 
-Thursday morning. Amara and Ananya Iyer sit down together and run [P08 — Write Acceptance Criteria](../../AI-Prompts-Library/phase-1-discovery/P08-write-acceptance-criteria.md) on NWD-103.
+Thursday morning. Preetinka and Pankaj  sit down together and run [P08 — Write Acceptance Criteria](../../AI-Prompts-Library/phase-1-discovery/P08-write-acceptance-criteria.md) on NWD-103.
 
 ### Why they do it together
 
@@ -362,9 +362,9 @@ This pairing is the whole point of the prompt and it's easy to skip.
 
 **Criteria written by a Product Owner alone describe what should happen.** They're correct, they're business-relevant, and they are almost entirely happy path, because a product owner thinks in terms of the outcome they want.
 
-**Criteria written with QA in the room describe what happens when it doesn't.** Ananya's contribution to every session she's in is the same shape: *"and what if there isn't one?"*
+**Criteria written with QA in the room describe what happens when it doesn't.** Pankaj's contribution to every session she's in is the same shape: *"and what if there isn't one?"*
 
-Amara drafts AC-1 through AC-3 in about ten minutes. Ananya adds AC-4 through AC-8 in twenty, and four of the five are cases where something is absent, null, or malformed.
+Preetinka drafts AC-1 through AC-3 in about ten minutes. Pankaj adds AC-4 through AC-8 in twenty, and four of the five are cases where something is absent, null, or malformed.
 
 ### The criteria
 
@@ -393,18 +393,18 @@ accepted.
 contain, when the document is processed, then the document is rejected with a
 reason naming that field, and the reason is distinguishable from a
 below-threshold failure.
-  [Ananya. "A missing field is not a low-confidence field and Priya's action is
+  [Pankaj. "A missing field is not a low-confidence field and Preeti's action is
    different — she is reading a value off the page, not judging one."]
 
 **AC-5** — Given a field that is present with a value and a null confidence, when
 the document is processed, then the document is rejected. A null confidence is
 never treated as zero and never treated as passing.
-  [Ananya. "If the service gives us nothing, we have not measured anything, and
+  [Pankaj. "If the service gives us nothing, we have not measured anything, and
    an unmeasured field is exactly the thing G4 is about."]
 
 **AC-6** — Given a document with three failing fields, when the document is
 processed, then all three appear in the exception queue, not just the first.
-  [Ananya. "Otherwise the document bounces. Priya fixes one, releases it, it
+  [Pankaj. "Otherwise the document bounces. Preeti fixes one, releases it, it
    fails again on the second. Three trips for one document."]
 
 **AC-8** — Given a new counterparty block added to configuration with a model id
@@ -415,13 +415,13 @@ are gated using the new thresholds and no Python file has changed.
 
 **AC-3 is the one to look at.** It asserts that something does *not* happen. Criteria that assert a non-effect are the ones people skip, and they're worth more than the happy paths, because without AC-3 an implementation with one global currency threshold passes every other criterion in the list.
 
-**AC-6 is Ananya's best contribution and she got it from imagining a Tuesday**, not from a technique. Priya has forty documents. If each one takes three round trips because failures are reported one at a time, that's a hundred and twenty interactions, and the 85% target becomes irrelevant because the other 15% has eaten the morning.
+**AC-6 is Pankaj's best contribution and she got it from imagining a Tuesday**, not from a technique. Preeti has forty documents. If each one takes three round trips because failures are reported one at a time, that's a hundred and twenty interactions, and the 85% target becomes irrelevant because the other 15% has eaten the morning.
 
 ---
 
 ## 8. P09 — estimating, and the failure mode nobody expected
 
-Friday. Farhan and Rahul run [P09 — Estimate and Rank the Backlog](../../AI-Prompts-Library/phase-1-discovery/P09-estimate-and-rank-the-backlog.md).
+Friday. Atul and Gautam run [P09 — Estimate and Rank the Backlog](../../AI-Prompts-Library/phase-1-discovery/P09-estimate-and-rank-the-backlog.md).
 
 ### What estimating is for
 
@@ -463,19 +463,19 @@ decisions cannot be derived from anything currently written down:
      shape of the extraction response for tables is not documented.
 
 Neither is a coding problem. Both are judgement calls that require looking at real
-documents and talking to Amara. I cannot size the second one at all and have
+documents and talking to Preetinka. I cannot size the second one at all and have
 included it at the top of the range.
 ```
 
-### The lesson, which is not the one Farhan expected
+### The lesson, which is not the one Atul expected
 
-Farhan has estimated backlogs for eleven years. He knows his own biases: he is usually 30% under on integration work and usually right on anything he's built before.
+Atul has estimated backlogs for eleven years. He knows his own biases: he is usually 30% under on integration work and usually right on anything he's built before.
 
 **What he'd never had to account for is that a third of the backlog collapsed and a third didn't, for reasons that have nothing to do with complexity.**
 
 Look at the table again with that in mind:
 
-| Story | What Farhan would have said in 2022 | What it came out at | Why |
+| Story | What Atul would have said in 2022 | What it came out at | Why |
 |---|---|---|---|
 | NWD-101 | 5 | **2** | Storage client, content hash, path convention. It's plumbing, the assistant writes it correctly first time, and Sprint 0's context file means it writes it *our way* first time. |
 | NWD-106 | 5 | **3** | Field mapping. Pure boilerplate with a schema on both sides. |
@@ -488,11 +488,11 @@ NWD-103 didn't collapse, and it didn't collapse for a reason worth stating preci
 
 > **The hard part of NWD-103 is deciding what number 0.90 should be, and no amount of code generation touches that.**
 
-You can ask an assistant what a good confidence threshold for a currency field is. It will give you an answer. The answer will be plausible, it will probably be 0.90, and it will be **entirely uninformed by the thing that actually determines it** — which is the observed confidence distribution on Broker Alpha's specific scans, weighed against how much of Priya's morning an additional rejection costs.
+You can ask an assistant what a good confidence threshold for a currency field is. It will give you an answer. The answer will be plausible, it will probably be 0.90, and it will be **entirely uninformed by the thing that actually determines it** — which is the observed confidence distribution on Broker Alpha's specific scans, weighed against how much of Preeti's morning an additional rejection costs.
 
 That is a judgement made by looking at real documents and talking to a product owner. It's not a knowledge gap the model has. It's a gap in *the world*: the information does not exist yet, anywhere, for anybody.
 
-### What Farhan changes about how he estimates
+### What Atul changes about how he estimates
 
 He splits every story into two numbers and stops reporting one.
 
@@ -510,7 +510,7 @@ A story is slow when (b) is non-zero, regardless of (a).
 
 Under that split, NWD-101 is `production: medium, judgement: none` and NWD-103 is `production: small, judgement: two open decisions`. And the second number is the one that predicts the calendar.
 
-**Farhan's line at the retro, six weeks later:** *"I used to estimate how much there was to build. Now I estimate how much there is to decide, and the building is a rounding error until it isn't."*
+**Atul's line at the retro, six weeks later:** *"I used to estimate how much there was to build. Now I estimate how much there is to decide, and the building is a rounding error until it isn't."*
 
 Hold on to the second half of that sentence. It matters in [Chapter 5](05-sprint-2-build-backend.md), where the building really is a rounding error, and in [Chapter 7](07-sprint-3-verify.md), where it turns out not to have been.
 
@@ -546,7 +546,7 @@ And one contract, written at the bottom of the PRD, which is the thing [Chapter 
 > Do not design against it.
 ```
 
-The third bullet is the one Amara added by hand on Monday afternoon, immediately after asking her question. She added it because she'd nearly lost the requirement once and wanted a named guarantee that would make losing it visible.
+The third bullet is the one Preetinka added by hand on Monday afternoon, immediately after asking her question. She added it because she'd nearly lost the requirement once and wanted a named guarantee that would make losing it visible.
 
 **It gets lost anyway, four days later, in a completely different way.** That's the next chapter.
 
@@ -554,15 +554,15 @@ The third bullet is the one Amara added by hand on Monday afternoon, immediately
 
 ## 10. The handoff
 
-Sofia Marchetti picks this up. She is the next reader of the PRD and the first person who will design against it.
+Hem Singh picks this up. She is the next reader of the PRD and the first person who will design against it.
 
 What she is guaranteed to find: eight capabilities with IDs, each described as an outcome rather than a mechanism, a non-goals list telling her what not to design, and constraints C1 through C5 stated as absolutes. C1 — *a wrong value is worse than a missing value* — is the sentence that produces the confidence gate and the sentence she quotes in [ADR-0001](artifacts/adr/) when she rejects the simpler design.
 
-Farhan takes the open-questions list and nothing else, at first. Eleven questions with named owners is his risk register for the week.
+Atul takes the open-questions list and nothing else, at first. Eleven questions with named owners is his risk register for the week.
 
-Ananya takes the acceptance criteria and starts thinking about what she'd need to test them, which turns into the E2E harness in Sprint 2 and the bug report in Sprint 3.
+Pankaj takes the acceptance criteria and starts thinking about what she'd need to test them, which turns into the E2E harness in Sprint 2 and the bug report in Sprint 3.
 
-Ji-woo takes NWD-108 and the two sentences Amara wrote by hand, and does not start building, because there is nothing to build against yet. She spends a day at Northwind watching Priya work instead, which turns out to be the highest-value day anybody spends in Sprint 1.
+Dzmitry takes NWD-108 and the two sentences Preetinka wrote by hand, and does not start building, because there is nothing to build against yet. She spends a day at Northwind watching Preeti work instead, which turns out to be the highest-value day anybody spends in Sprint 1.
 
 ---
 
@@ -572,13 +572,13 @@ The first run of P06 produced a capability called **CAP-09 — Provide a managem
 
 Nobody at Northwind asked for a dashboard. It appeared because dashboards appear in documents shaped like this one. It is a perfectly sensible thing for a document ingestion system to have, and it was entirely invented.
 
-Amara nearly left it in. It seemed harmless and probably useful. She cut it, moved it to open question Q12 — *"does operations want visibility into ingestion volumes, or is that already covered by existing monitoring?"* — and forgot about it.
+Preetinka nearly left it in. It seemed harmless and probably useful. She cut it, moved it to open question Q12 — *"does operations want visibility into ingestion volumes, or is that already covered by existing monitoring?"* — and forgot about it.
 
 Six weeks later, in Sprint 3, the client asked for exactly that dashboard. Because it had been sitting in the open-questions list as a **question** rather than in the capabilities list as a **commitment**, it was a scope conversation with a price attached, not a defect and an apology.
 
 **The assumption you write down as a question is the one that does not cost you a sprint.**
 
-The near-miss is the one in §4, and it's worth being blunt about how close it was. CAP-04 was written on Monday at 09:55. Amara read it properly at 11:15. If she had done what almost everybody does with their own AI output — skimmed it, thought "yes, that's what I meant," and sent it — then the PRD would have gone to the client with no exception queue in it, the client would have approved it (because from his side the rejects obviously go to Priya, that's not a thing you write down), and the first person to notice would have been Priya, at a demo, in Sprint 3.
+The near-miss is the one in §4, and it's worth being blunt about how close it was. CAP-04 was written on Monday at 09:55. Preetinka read it properly at 11:15. If she had done what almost everybody does with their own AI output — skimmed it, thought "yes, that's what I meant," and sent it — then the PRD would have gone to the client with no exception queue in it, the client would have approved it (because from his side the rejects obviously go to Preeti, that's not a thing you write down), and the first person to notice would have been Preeti, at a demo, in Sprint 3.
 
 That version costs a new screen, a new table, a new API surface, a change to the gate's output shape, and a conversation about the date.
 
@@ -586,7 +586,7 @@ It didn't happen. But the same gap opens again on Thursday, in the design sessio
 
 ---
 
-**Next:** [Chapter 3 — Sprint 1: Design](03-sprint-1-design.md). Sofia picks the extraction approach, writes three ADRs, has a real argument about one of them, and paraphrases the PRD from memory.
+**Next:** [Chapter 3 — Sprint 1: Design](03-sprint-1-design.md). Hem picks the extraction approach, writes three ADRs, has a real argument about one of them, and paraphrases the PRD from memory.
 
 ---
 

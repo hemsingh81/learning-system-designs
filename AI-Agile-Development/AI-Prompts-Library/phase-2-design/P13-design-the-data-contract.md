@@ -7,35 +7,35 @@
 | | |
 |---|---|
 | **Phase** | 2 — Design |
-| **Who runs it** | Architect (Sofia Marchetti) with the Backend Engineer (Tomas Vargas) |
+| **Who runs it** | Architect (Hem Singh) with the Backend Engineer (Ravi Mullick) |
 | **When** | Sprint 1, day 5, straight after ADR-0003. Before NWD-106 (transform) and NWD-107 (load) are started. |
 | **Takes in** | `artifacts/spec-confidence-gate.md`, `artifacts/adr/0001…0003`, `artifacts/stories/NWD-106`, `NWD-107`, the Aladdin field list, one real Broker Alpha statement |
 | **Produces** | `Case-Study/Python-ETL/artifacts/data-contract-counterparty-position.md` |
-| **Hands off to** | Tomas building `core/transform.py` and `sinks/*` via [P18](../phase-4-build/P18-implement-a-story.md); Ananya writing data-quality checks in [P25](../phase-5-verify/P25-data-quality-validation.md) |
-| **Time to run** | A morning. Forty minutes generating, two hours with Sofia and Tomas arguing about nullability and one decimal place. |
+| **Hands off to** | Ravi building `core/transform.py` and `sinks/*` via [P18](../phase-4-build/P18-implement-a-story.md); Pankaj writing data-quality checks in [P25](../phase-5-verify/P25-data-quality-validation.md) |
+| **Time to run** | A morning. Forty minutes generating, two hours with Hem and Ravi arguing about nullability and one decimal place. |
 
 ---
 
 ## 1. The scene
 
-Friday morning of Sprint 1. ADR-0003 is written and merged, and it contains a sentence Sofia typed without thinking much about it:
+Friday morning of Sprint 1. ADR-0003 is written and merged, and it contains a sentence Hem typed without thinking much about it:
 
 > the silver schema carries one status per document, so partial loading is a data-model change, not a config flag
 
-Rahul spots it in review and asks the obvious question. What silver schema?
+Gautam spots it in review and asks the obvious question. What silver schema?
 
 There isn't one. There is a story called NWD-106 — "Transform extracted fields into the canonical position schema" — which refers to a canonical position schema in the definite article, as though it exists, and nowhere in the repo is there a document saying what its columns are. There is a spec for the confidence gate. There is an ADR about extraction. There is a PRD full of business outcomes. Between them they mention `quantity`, `market_value`, `security_id`, `min_confidence` and `bronze_path`, in five different capitalisations, with no types.
 
-Sofia gets Tomas and a whiteboard. Within ten minutes they are stuck on something that sounds trivial and is not:
+Hem gets Ravi and a whiteboard. Within ten minutes they are stuck on something that sounds trivial and is not:
 
-Tomas: "Quantity's a float, obviously."
-Sofia: "What does this look like when it's wrong?"
-Tomas: "It's a number of shares. What's going to go wrong?"
-Sofia: "Reconciliation has a quantity tolerance of 0.0001 written into it. Why do you think that's there?"
+Ravi: "Quantity's a float, obviously."
+Hem: "What does this look like when it's wrong?"
+Ravi: "It's a number of shares. What's going to go wrong?"
+Hem: "Reconciliation has a quantity tolerance of 0.0001 written into it. Why do you think that's there?"
 
 It is there because floating-point arithmetic does not represent decimal fractions exactly, so a quantity that went through a float somewhere comes out as `14500.000000000002`, and comparing it to Aladdin's `14500` produces a difference. Somebody, at some point, papered over that with a tolerance instead of fixing the type. Now the tolerance is load-bearing, and a genuine break of 0.00005 shares would be invisible.
 
-**That conversation — types, precision, nullability, what a column actually means — is a data contract, and having it on a whiteboard on the Friday is the cheapest it will ever be.** Sofia opens a session.
+**That conversation — types, precision, nullability, what a column actually means — is a data contract, and having it on a whiteboard on the Friday is the cheapest it will ever be.** Hem opens a session.
 
 ---
 
@@ -145,7 +145,7 @@ Northwind has offices in London and Los Angeles, an eight-hour gap. "Today" is n
 
 **A business date** is a date with no time and no timezone. `AS_OF_DATE` is the date printed on the statement. It is not "midnight UTC on that day" and converting it to a timestamp is a mistake that will eventually shift it by one day for somebody. Store it as `DATE`. Compare it to other business dates. Never localise it.
 
-**An instant** is a moment in time. `EXTRACTED_AT_UTC` is when the pipeline processed the document. It is stored in UTC, always, with the suffix in the column name so nobody has to guess. Local time is a presentation concern and it belongs in Ji-woo's UI, not in the database.
+**An instant** is a moment in time. `EXTRACTED_AT_UTC` is when the pipeline processed the document. It is stored in UTC, always, with the suffix in the column name so nobody has to guess. Local time is a presentation concern and it belongs in Dzmitry's UI, not in the database.
 
 The rule, stated once: **business dates never carry a timezone; instants are always UTC and say so in the column name.** Mixing them is how a trade dated the 31st appears in the following month's report for the Los Angeles office only.
 
@@ -169,7 +169,7 @@ The standard set, in plain terms:
 
 The last row deserves emphasis. Changing a natural key is not a schema change, it is a new contract, and it needs a version bump and an ADR. Northwind versions the contract itself — `v1.0` — and the version travels in the document header. When the key changes, so does the major number, and the gold table gets a new name so both can coexist during migration.
 
-There is one more rule that is purely social and matters as much as the rest: **the contract names its owner and lists its consumers.** Sofia owns it. The listed consumers are `core/transform.py`, `sinks/sql_sink.py`, `sinks/snowflake_sink.py`, `recon/reconcile.py`, and Ji-woo's exception queue. A change proposal goes to all of them. Without that list, "who do I need to tell" is answered by memory.
+There is one more rule that is purely social and matters as much as the rest: **the contract names its owner and lists its consumers.** Hem owns it. The listed consumers are `core/transform.py`, `sinks/sql_sink.py`, `sinks/snowflake_sink.py`, `recon/reconcile.py`, and Dzmitry's exception queue. A change proposal goes to all of them. Without that list, "who do I need to tell" is answered by memory.
 
 ### What the AI is actually doing here
 
@@ -290,7 +290,7 @@ Save to [OUTPUT PATH].
 
 | Placeholder | What to put in it | Northwind example | What happens if you get it wrong |
 |---|---|---|---|
-| `[ARTIFACTS TO READ]` | Spec, ADRs, the transform/load stories, and — critically — one real source document or a screenshot of one | `artifacts/spec-confidence-gate.md`, `artifacts/adr/0001…0003`, `artifacts/stories/NWD-106`, `NWD-107`, a real Broker Alpha statement, the Aladdin position field list | Skip the real document and you get plausible field names that do not exist. Sofia's first run invented `trade_reference`, which Broker Alpha does not print. |
+| `[ARTIFACTS TO READ]` | Spec, ADRs, the transform/load stories, and — critically — one real source document or a screenshot of one | `artifacts/spec-confidence-gate.md`, `artifacts/adr/0001…0003`, `artifacts/stories/NWD-106`, `NWD-107`, a real Broker Alpha statement, the Aladdin position field list | Skip the real document and you get plausible field names that do not exist. Hem's first run invented `trade_reference`, which Broker Alpha does not print. |
 | `[RECORD NAME AND PURPOSE]` | The record's name and what exactly one row is | "`counterparty_position` — one row is one security holding, at one counterparty, in one account, on one business date, for one book (EM or EQ)" | "One row is a position" is not precise enough. If the grain is ambiguous, duplicates appear and nobody can say whether they are wrong. |
 | `[BOUNDARIES]` | Every producer and consumer by file or system name | Produced by `core/transform.py`; consumed by `sinks/sql_sink.py`, `sinks/snowflake_sink.py`, `recon/reconcile.py`, and the exception queue UI | Miss a consumer and the contract changes without them, which is exactly how the UI ends up rendering `0.8234567` (bug NWD-139). |
 | `[KNOWN FIELDS]` | Every field name you have seen, in whatever inconsistent form, with where you saw it | `quantity`, `market_value`, `security_id`, `securityId`, `SECURITY_ID`, `min_confidence`, `bronze_path`, `content_hash`, `as_of_date`, `currency` | Give it nothing and it invents a schema. Give it the mess and it normalises the mess, and tells you what it changed — which is the useful part. |
@@ -301,7 +301,7 @@ Save to [OUTPUT PATH].
 
 ## 5. The filled-in example
 
-Sofia and Tomas run this together on Friday at 10:15, with a printed Broker Alpha statement on the desk between them.
+Hem and Ravi run this together on Friday at 10:15, with a printed Broker Alpha statement on the desk between them.
 
 ```text
 You are a **data architect** writing a data contract. A data contract states the exact shape, types,
@@ -372,7 +372,7 @@ Sections 1–4 and 7–10 in full; 5 and 6 lightly trimmed.
 ```markdown
 # Data Contract — `counterparty_position` v1.0
 
-**Owner:** Sofia Marchetti · **Status:** Accepted · **Date:** 2024-03-13
+**Owner:** Hem Singh · **Status:** Accepted · **Date:** 2024-03-13
 **Related:** NWD-106, NWD-107 · ADR-0002, ADR-0003 · `artifacts/spec-confidence-gate.md`
 
 **Name normalisation applied:** `securityId` / `SECURITY_ID` / `security_id` → `SECURITY_ID`;
@@ -531,7 +531,7 @@ migration; consumers move one at a time.
 
 ## 8. Ownership and change process
 
-**Owner:** Sofia Marchetti. **Deputy:** Rahul Nair.
+**Owner:** Hem Singh. **Deputy:** Gautam .
 
 To change this contract:
 1. Open a pull request that edits **this file first**, before any code.
@@ -579,18 +579,18 @@ because the position is already in the base currency — V5 and V6 both hold.
 
 ## 10. Open questions
 
-- **Amara** — when Priya corrects a value in the exception queue, does the row keep the machine
+- **Preetinka** — when Preeti corrects a value in the exception queue, does the row keep the machine
   `MIN_CONFIDENCE` or get a sentinel? ASSUMED: keeps the machine value and gains a separate
   `MANUALLY_CORRECTED` flag, which is **not yet in this contract**. Confirm before NWD-108.
-- **Sofia** — `BASE_CURRENCY` is USD for both books at v1.0. If EM ever reports in a second currency
+- **Hem** — `BASE_CURRENCY` is USD for both books at v1.0. If EM ever reports in a second currency
   this becomes per-account rather than per-book. Adding it now costs nothing; adding it later is a
   meaning change. Decide.
-- **Tomas** — does Broker Alpha ever print a security with no ISIN? If so, `SECURITY_ID_TYPE` needs
+- **Ravi** — does Broker Alpha ever print a security with no ISIN? If so, `SECURITY_ID_TYPE` needs
   `INTERNAL` handling at transform and the reconciliation match rule changes.
-- **Ananya** — V11 drops zero-quantity lines. Should that emit a warning per document, or only a
+- **Pankaj** — V11 drops zero-quantity lines. Should that emit a warning per document, or only a
   counter? If a statement is entirely zero-quantity lines we currently produce a valid empty result,
   which looks identical to a successful parse of nothing.
-- **Sofia / Tomas** — `SOURCE_PAGE` is nullable because the extraction response may omit it. If a
+- **Hem / Ravi** — `SOURCE_PAGE` is nullable because the extraction response may omit it. If a
   multi-page table can produce line items with no page attribution, we cannot tell "page 2 was
   dropped" from "page 2 had no rows". ASSUMED: acceptable for v1.0. **This is the weakest point in
   the contract.**
@@ -602,9 +602,9 @@ because the position is already in the base currency — V5 and V6 both hold.
 
 **Look at what the nullable columns say.** `FX_RATE` does not say "optional." It says null means the currencies match, and it says a consumer must not substitute zero. That is three sentences that prevent a class of bug where a position denominated in USD quietly values at nothing.
 
-**Section 5's precision traps are the most reused part of the document.** Tomas printed them and stuck them on his monitor. `Decimal(0.1)` is not `Decimal("0.1")` is the kind of thing everyone knows and half of everyone forgets at 4pm.
+**Section 5's precision traps are the most reused part of the document.** Ravi printed them and stuck them on his monitor. `Decimal(0.1)` is not `Decimal("0.1")` is the kind of thing everyone knows and half of everyone forgets at 4pm.
 
-**And the part that is commonly wrong, which here is admitted rather than hidden:** the final open question. `SOURCE_PAGE` is nullable, and the contract states plainly that if page attribution is missing, you cannot distinguish "page 2 was dropped" from "page 2 was empty." That is bug **NWD-142** — the page-boundary bug Ananya finds in Sprint 3 — described in a data contract eleven weeks before it is filed, and labelled the weakest point in the document by the people who wrote it.
+**And the part that is commonly wrong, which here is admitted rather than hidden:** the final open question. `SOURCE_PAGE` is nullable, and the contract states plainly that if page attribution is missing, you cannot distinguish "page 2 was dropped" from "page 2 was empty." That is bug **NWD-142** — the page-boundary bug Pankaj finds in Sprint 3 — described in a data contract eleven weeks before it is filed, and labelled the weakest point in the document by the people who wrote it.
 
 They still shipped it. That is not a criticism; it was the right call with the information available. But it is the second time the same gap has appeared in a design artifact ([P11](P11-write-the-technical-spec.md)'s open questions had it too), and two independent artifacts flagging the same weakness is a signal worth more than either one alone. Nobody joined them up. [Chapter 8](../../Case-Study/Python-ETL/08-sprint-3-rework.md) is what it cost.
 
@@ -612,7 +612,7 @@ They still shipped it. That is not a criticism; it was the right call with the i
 
 ## 7. Why this is the final prompt
 
-**What "done" means here.** Tomas can write `core/transform.py` and both sinks without asking a single question about types, names or nullability, and Ananya can write data-quality checks in [P25](../phase-5-verify/P25-data-quality-validation.md) directly from section 6 without asking what a column means.
+**What "done" means here.** Ravi can write `core/transform.py` and both sinks without asking a single question about types, names or nullability, and Pankaj can write data-quality checks in [P25](../phase-5-verify/P25-data-quality-validation.md) directly from section 6 without asking what a column means.
 
 A sharper test: hand it to somebody and ask what `FX_RATE = null` means. If they hesitate, the contract is not finished.
 
@@ -635,7 +635,7 @@ None of them are in a story. Each one is a field somebody must populate, validat
 
 The rule: **a column earns its place by being needed by a named consumer for a named story.** Everything else goes in section 10 as a question, not in section 4 as a field.
 
-The second failure mode is prompting for more validation rules. Ten good ones that are enforced beat thirty that are aspirational. Ananya will add more in [P25](../phase-5-verify/P25-data-quality-validation.md) from real data, which is where the useful ones come from anyway.
+The second failure mode is prompting for more validation rules. Ten good ones that are enforced beat thirty that are aspirational. Pankaj will add more in [P25](../phase-5-verify/P25-data-quality-validation.md) from real data, which is where the useful ones come from anyway.
 
 ### The signal that you are NOT done
 
@@ -804,7 +804,7 @@ flowchart TD
     F -- yes --> H{Evolution + ownership<br/>sections real?}
     H -- no --> I[8.3 make it a contract]
     I --> H
-    H -- yes --> J[Merge — Tomas builds transform,<br/>Ananya writes checks from section 6]
+    H -- yes --> J[Merge — Ravi builds transform,<br/>Pankaj writes checks from section 6]
 ```
 
 ---
@@ -817,7 +817,7 @@ By far the most common. Somebody needs to load data on Tuesday, writes `CREATE T
 
 The result looks fine and is nearly useless, because it documents whatever decisions happened to be made under time pressure rather than the decisions you would make deliberately. Every ambiguity survives, promoted to official status. And nobody argues with a contract that describes a table that already has data in it.
 
-**The fix:** the contract is a Sprint 1 artifact, before the transform story is picked up. Sofia's rule is that a pull request creating a table is rejected if the contract does not exist. It sounds heavy-handed and it takes one Friday morning.
+**The fix:** the contract is a Sprint 1 artifact, before the transform story is picked up. Hem's rule is that a pull request creating a table is rejected if the contract does not exist. It sounds heavy-handed and it takes one Friday morning.
 
 ### Floats sneak in through a library
 
@@ -839,7 +839,7 @@ The contract's defence is the explicit meaning sentence plus the rule in section
 
 ### Nobody tells the consumers
 
-The contract changes. The pull request is reviewed by the person who wrote it and one other backend engineer. Both are consumers of the Azure SQL side. Neither is Ji-woo, whose UI reads `MIN_CONFIDENCE` and renders it.
+The contract changes. The pull request is reviewed by the person who wrote it and one other backend engineer. Both are consumers of the Azure SQL side. Neither is Dzmitry, whose UI reads `MIN_CONFIDENCE` and renders it.
 
 That is how NWD-139 happens — the exception queue showing `0.8234567` instead of `82%`. It is a one-line cosmetic bug, and it exists because a decimal type reached a screen nobody thought of as a consumer.
 
@@ -857,13 +857,13 @@ The test: **does anyone outside this module read this shape?** `GateResult` from
 
 ## 10. The handoff
 
-Tomas is the immediate consumer and he starts on Monday. He builds `core/transform.py` against section 4 and both sinks against sections 3 and 5, using [P18](../phase-4-build/P18-implement-a-story.md). What he is guaranteed to find: every field name settled in one casing, every numeric type with an explicit scale, the natural key with the MERGE semantics spelled out, and a worked example row he can paste into a test as a fixture. He does not have to decide anything about types, which is precisely the point — the decisions were made on Friday with Sofia in the room, not on Monday alone at speed.
+Ravi is the immediate consumer and he starts on Monday. He builds `core/transform.py` against section 4 and both sinks against sections 3 and 5, using [P18](../phase-4-build/P18-implement-a-story.md). What he is guaranteed to find: every field name settled in one casing, every numeric type with an explicit scale, the natural key with the MERGE semantics spelled out, and a worked example row he can paste into a test as a fixture. He does not have to decide anything about types, which is precisely the point — the decisions were made on Friday with Hem in the room, not on Monday alone at speed.
 
-Ananya reads section 6 and turns each numbered validation rule into a data-quality check in [P25](../phase-5-verify/P25-data-quality-validation.md). The numbering matters as much as it did in the spec: a failing check reported as "V5 violated on 14 rows" is unambiguous, and it is the kind of detail that makes her bug reports good enough to prompt with in [P27](../phase-6-rework/P27-fix-from-a-qa-bug-report.md).
+Pankaj reads section 6 and turns each numbered validation rule into a data-quality check in [P25](../phase-5-verify/P25-data-quality-validation.md). The numbering matters as much as it did in the spec: a failing check reported as "V5 violated on 14 rows" is unambiguous, and it is the kind of detail that makes her bug reports good enough to prompt with in [P27](../phase-6-rework/P27-fix-from-a-qa-bug-report.md).
 
-Ji-woo reads three rows of section 4 — `MIN_CONFIDENCE`, `SOURCE_PAGE`, `BRONZE_PATH` — and builds against them in [P14](P14-ui-ux-design-brief.md) and then [P19](../phase-4-build/P19-build-the-ui-from-the-brief.md). `SOURCE_PAGE` is why the exception queue can open the PDF at page 2 rather than page 1, which saves Priya a scroll on every multi-page document. Forty documents a morning, one scroll each.
+Dzmitry reads three rows of section 4 — `MIN_CONFIDENCE`, `SOURCE_PAGE`, `BRONZE_PATH` — and builds against them in [P14](P14-ui-ux-design-brief.md) and then [P19](../phase-4-build/P19-build-the-ui-from-the-brief.md). `SOURCE_PAGE` is why the exception queue can open the PDF at page 2 rather than page 1, which saves Preeti a scroll on every multi-page document. Forty documents a morning, one scroll each.
 
-And Sofia's next move is [P14 — UI/UX Design Brief](P14-ui-ux-design-brief.md), with Ji-woo and Amara. The contract has settled what the data *is*. The brief settles what a person does with it when it is wrong, which is the last unanswered question in the design phase.
+And Hem's next move is [P14 — UI/UX Design Brief](P14-ui-ux-design-brief.md), with Dzmitry and Preetinka. The contract has settled what the data *is*. The brief settles what a person does with it when it is wrong, which is the last unanswered question in the design phase.
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/data-contract-counterparty-position.md`**
 > Anyone reading this file can rely on finding:
@@ -887,13 +887,13 @@ And Sofia's next move is [P14 — UI/UX Design Brief](P14-ui-ux-design-brief.md)
 
 This runs at the end of [Chapter 3 — Sprint 1: Design](../../Case-Study/Python-ETL/03-sprint-1-design.md) and produces [`artifacts/data-contract-counterparty-position.md`](../../Case-Study/Python-ETL/artifacts/data-contract-counterparty-position.md).
 
-The scene worth reading is the argument about `PRICE`. Tomas wants it NOT NULL, computed as market value divided by quantity where the counterparty does not print it, because a null price makes the exception queue look broken. Sofia refuses, and her reason is the recurring one: what does this look like when it's wrong? A derived price that looks like an asserted price is a value that cannot be traced to any document, and the first time it disagrees with Aladdin nobody can say whether the counterparty is wrong or the pipeline is. It takes twenty minutes and it ends with the "consumers must not compute it" sentence in the Meaning column, which is a sentence written specifically to stop a future Tomas doing the sensible thing.
+The scene worth reading is the argument about `PRICE`. Ravi wants it NOT NULL, computed as market value divided by quantity where the counterparty does not print it, because a null price makes the exception queue look broken. Hem refuses, and her reason is the recurring one: what does this look like when it's wrong? A derived price that looks like an asserted price is a value that cannot be traced to any document, and the first time it disagrees with Aladdin nobody can say whether the counterparty is wrong or the pipeline is. It takes twenty minutes and it ends with the "consumers must not compute it" sentence in the Meaning column, which is a sentence written specifically to stop a future Ravi doing the sensible thing.
 
-The other thing that happens is quieter and matters more. The last open question — `SOURCE_PAGE` being nullable, and the resulting inability to distinguish a dropped page from an empty one — is written down, marked as the weakest point in the contract, and left. Sofia's own words. It is the second design artifact in two days to flag the same gap; [`spec-confidence-gate.md`](../../Case-Study/Python-ETL/artifacts/spec-confidence-gate.md) has it too, in different words, from a different angle.
+The other thing that happens is quieter and matters more. The last open question — `SOURCE_PAGE` being nullable, and the resulting inability to distinguish a dropped page from an empty one — is written down, marked as the weakest point in the contract, and left. Hem's own words. It is the second design artifact in two days to flag the same gap; [`spec-confidence-gate.md`](../../Case-Study/Python-ETL/artifacts/spec-confidence-gate.md) has it too, in different words, from a different angle.
 
-Eleven weeks later Ananya files **NWD-142**: on a Broker Alpha statement where the positions table spans a page boundary, the page-2 line items vanish, the confidence gate passes because everything present scored high, and half a statement loads into Snowflake. Reconciliation reports `MISSING_EXTERNAL` for the missing rows and operations chases settlements that never failed — which is precisely the harm ADR-0003 was written to prevent, arriving through a door nobody had locked.
+Eleven weeks later Pankaj files **NWD-142**: on a Broker Alpha statement where the positions table spans a page boundary, the page-2 line items vanish, the confidence gate passes because everything present scored high, and half a statement loads into Snowflake. Reconciliation reports `MISSING_EXTERNAL` for the missing rows and operations chases settlements that never failed — which is precisely the harm ADR-0003 was written to prevent, arriving through a door nobody had locked.
 
-When Rahul traces it in [Chapter 8](../../Case-Study/Python-ETL/08-sprint-3-rework.md), the finding is not that the team missed it. They found it twice. The finding is that no process joined two open questions in two different documents into one risk with one owner, and that is the concrete improvement that comes out of the retrospective in [Chapter 10](../../Case-Study/Python-ETL/10-retrospective.md).
+When Gautam traces it in [Chapter 8](../../Case-Study/Python-ETL/08-sprint-3-rework.md), the finding is not that the team missed it. They found it twice. The finding is that no process joined two open questions in two different documents into one risk with one owner, and that is the concrete improvement that comes out of the retrospective in [Chapter 10](../../Case-Study/Python-ETL/10-retrospective.md).
 
 ---
 

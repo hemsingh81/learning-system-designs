@@ -7,28 +7,28 @@
 | | |
 |---|---|
 | **Phase** | 5 — Verify |
-| **Who runs it** | QA Engineer (Ananya Iyer) |
-| **When** | Sprint 3, day 2. Tomas's pipeline and Ji-woo's exception queue are both merged to `main` and deployed to the test environment. Nobody has yet run a document all the way through in one go. |
+| **Who runs it** | QA Engineer (Pankaj ) |
+| **When** | Sprint 3, day 2. Ravi's pipeline and Dzmitry's exception queue are both merged to `main` and deployed to the test environment. Nobody has yet run a document all the way through in one go. |
 | **Takes in** | `Case-Study/Python-ETL/artifacts/acceptance-criteria-NWD-103.md`, `artifacts/ui-brief-exception-queue.md`, `artifacts/definition-of-done.md`, the deployed test environment |
 | **Produces** | `Case-Study/Python-ETL/code/doc_ingestion/tests/e2e/` — `exception_queue.spec.ts`, `pipeline_happy_path.spec.ts`, `fixtures/`, `helpers/` |
-| **Hands off to** | Team Lead (Rahul), who runs [P23](P23-review-someone-elses-code.md) on the code the failing tests point at |
+| **Hands off to** | Team Lead (Gautam), who runs [P23](P23-review-someone-elses-code.md) on the code the failing tests point at |
 | **Time to run** | Two hours for the first pass. Half a day including making the tests actually pass reliably. |
 
 ---
 
 ## 1. The scene
 
-It's Tuesday of Sprint 3. Yesterday's standup summary — the one [P21](../phase-4-build/P21-daily-standup-summary.md) produced — had a line in it that Farhan read out twice: *"NWD-103 and NWD-108 both merged Friday. No end-to-end run yet."*
+It's Tuesday of Sprint 3. Yesterday's standup summary — the one [P21](../phase-4-build/P21-daily-standup-summary.md) produced — had a line in it that Atul read out twice: *"NWD-103 and NWD-108 both merged Friday. No end-to-end run yet."*
 
-Farhan is the project manager and he is allergic to optimism. He asked the obvious question. "So we've built a pipeline and a screen, and nobody has actually put a PDF in one end and looked at the other end?"
+Atul is the project manager and he is allergic to optimism. He asked the obvious question. "So we've built a pipeline and a screen, and nobody has actually put a PDF in one end and looked at the other end?"
 
-Correct. Tomas has unit tests. Good ones — [P20](../phase-4-build/P20-write-tests-alongside-the-code.md) produced 47 of them and they all pass. `test_confidence.py` proves the gate rejects a 0.71 currency field. `test_transform.py` proves a Spanish date string becomes a proper `DATE`. Ji-woo has component tests that prove the exception queue table renders 200 rows without dying.
+Correct. Ravi has unit tests. Good ones — [P20](../phase-4-build/P20-write-tests-alongside-the-code.md) produced 47 of them and they all pass. `test_confidence.py` proves the gate rejects a 0.71 currency field. `test_transform.py` proves a Spanish date string becomes a proper `DATE`. Dzmitry has component tests that prove the exception queue table renders 200 rows without dying.
 
 None of that tells you what happens when a real Broker Alpha PDF lands in `raw/broker_alpha/2026-03-10/` at 06:14 and something in the middle quietly does the wrong thing.
 
-Ananya has been the QA engineer on this team since `AI-Skills`. She has a specific opinion about this moment, and it's the one she opens with every time: **the unit tests prove the parts do what Tomas thought they'd do. Nothing yet proves the parts are wired together.**
+Pankaj has been the QA engineer on this team since `AI-Skills`. She has a specific opinion about this moment, and it's the one she opens with every time: **the unit tests prove the parts do what Ravi thought they'd do. Nothing yet proves the parts are wired together.**
 
-So this morning she is going to write the tests that treat the whole system as a black box. Drop a file in blob storage. Wait. See a row in Azure SQL. Open the exception queue as Priya would, fix the field the gate rejected, click Submit, and watch the row appear in the warehouse. Two journeys, both of them the thing Northwind is actually paying for.
+So this morning she is going to write the tests that treat the whole system as a black box. Drop a file in blob storage. Wait. See a row in Azure SQL. Open the exception queue as Preeti would, fix the field the gate rejected, click Submit, and watch the row appear in the warehouse. Two journeys, both of them the thing Northwind is actually paying for.
 
 She is not going to write those by hand from a blank file. She is going to hand the acceptance criteria to the AI and make it do the tedious part — the selectors, the waits, the fixture wiring — while she keeps hold of the part that matters, which is deciding what a passing test actually proves.
 
@@ -40,7 +40,7 @@ She is not going to write those by hand from a blank file. She is going to hand 
 
 Here is the shape of the trap.
 
-Tomas wrote `core/confidence.py`. It has a function that takes a field and a threshold and returns pass or fail. He wrote a unit test that feeds it a field with confidence `0.71` and a threshold of `0.90` and asserts it fails. The test passes. The function is correct.
+Ravi wrote `core/confidence.py`. It has a function that takes a field and a threshold and returns pass or fail. He wrote a unit test that feeds it a field with confidence `0.71` and a threshold of `0.90` and asserts it fails. The test passes. The function is correct.
 
 Then somewhere in `core/rules.py` the code that *calls* that function passes the threshold for `string` (0.75) where it meant to pass the threshold for `currency` (0.90). Both files are individually correct. Both files have passing tests. The system is wrong.
 
@@ -75,7 +75,7 @@ flowchart LR
     C --> D[Row in Azure SQL silver]
     C --> E[Row in exception queue]
     D --> F[Test polls SQL<br/>until row appears]
-    E --> G[Test opens UI as Priya,<br/>fixes field, submits]
+    E --> G[Test opens UI as Preeti,<br/>fixes field, submits]
     G --> F
 ```
 
@@ -109,7 +109,7 @@ The bad choice — a **CSS selector chain** — describes where the element sits
 await page.click('div.container > div:nth-child(3) > table tbody tr:first-child button.btn-primary');
 ```
 
-That test breaks the moment Ji-woo wraps the table in one extra `<div>` for spacing. The behaviour didn't change. The test failed anyway. That's a **false failure** and it teaches the team to distrust the suite.
+That test breaks the moment Dzmitry wraps the table in one extra `<div>` for spacing. The behaviour didn't change. The test failed anyway. That's a **false failure** and it teaches the team to distrust the suite.
 
 The good choice describes the element the way a human describes it:
 
@@ -121,23 +121,23 @@ await page.getByRole('button', { name: 'Submit correction' }).click();
 
 Three reasons this is better and they are worth knowing separately:
 
-1. **It survives refactoring.** Ji-woo can restructure the whole component tree; as long as there is still a button that says "Submit correction," the test passes.
-2. **It tests what the user sees.** If the button's label changes to something confusing, the test fails, and it *should* fail, because Priya would also be confused.
-3. **It doubles as an accessibility check.** If `getByRole('button', { name: 'Submit correction' })` finds nothing because Ji-woo used a clickable `<div>` with no label, that's a real defect for anyone using a screen reader. The test catching it is a bonus, not an accident.
+1. **It survives refactoring.** Dzmitry can restructure the whole component tree; as long as there is still a button that says "Submit correction," the test passes.
+2. **It tests what the user sees.** If the button's label changes to something confusing, the test fails, and it *should* fail, because Preeti would also be confused.
+3. **It doubles as an accessibility check.** If `getByRole('button', { name: 'Submit correction' })` finds nothing because Dzmitry used a clickable `<div>` with no label, that's a real defect for anyone using a screen reader. The test catching it is a bonus, not an accident.
 
 The order of preference, best first: `getByRole`, `getByLabel` (for form fields, finds the input by its `<label>` text), `getByText`, and only as a last resort `getByTestId` — a `data-testid` attribute you add to the markup purely for tests. Test IDs are a legitimate escape hatch for things with no accessible name, like a coloured status dot. They are not the default.
 
-> **Watch out.** If you can't find an element by role or label, that is usually a bug in the UI, not a reason to reach for a CSS selector. Tell Ji-woo before you work around it.
+> **Watch out.** If you can't find an element by role or label, that is usually a bug in the UI, not a reason to reach for a CSS selector. Tell Dzmitry before you work around it.
 
 ### Test what the user sees, not what the implementation does
 
 The second teaching point, and it's the one people push back on.
 
-A test that reads the React component's internal state, or asserts that a specific function was called, is testing the implementation. When Ji-woo swaps a `useState` for a reducer, the behaviour is identical and the test breaks.
+A test that reads the React component's internal state, or asserts that a specific function was called, is testing the implementation. When Dzmitry swaps a `useState` for a reducer, the behaviour is identical and the test breaks.
 
 A test that asserts "after clicking Submit, the row disappears from the exception queue and a toast says 'Loaded to silver'" is testing the behaviour. It survives any rewrite that keeps the behaviour.
 
-The practical rule: **write the assertion as a sentence Priya could say.** "After I fix the quantity and submit, the document leaves my queue." If your assertion can't be said that way, you're testing the wrong layer.
+The practical rule: **write the assertion as a sentence Preeti could say.** "After I fix the quantity and submit, the document leaves my queue." If your assertion can't be said that way, you're testing the wrong layer.
 
 For the pipeline half, the same rule applies with the database standing in for the user: "after a Broker Alpha statement lands, there are fourteen position rows in `silver.counterparty_position` with `bronze_path` set." That's an outcome. `assert extract_fields() was called with 3 arguments` is not.
 
@@ -163,11 +163,11 @@ There is one deliberate exception, and it's worth naming: some fixture data is *
 
 Read §3 and you'll see the instructions come in a specific order. That order is not decoration.
 
-1. **Give it the acceptance criteria first.** The AI's job is not to invent what to test. Amara and Ananya already decided that in [P08](../phase-1-discovery/P08-write-acceptance-criteria.md). Handing over `acceptance-criteria-NWD-103.md` means the tests map to criteria one-for-one, and a reviewer can check that mapping in thirty seconds.
+1. **Give it the acceptance criteria first.** The AI's job is not to invent what to test. Preetinka and Pankaj already decided that in [P08](../phase-1-discovery/P08-write-acceptance-criteria.md). Handing over `acceptance-criteria-NWD-103.md` means the tests map to criteria one-for-one, and a reviewer can check that mapping in thirty seconds.
 2. **Describe the environment before asking for code.** The AI cannot guess that the queue takes up to 90 seconds, that the fixture PDFs live in `tests/fixtures/pdf/`, or that the UI runs on a URL with an auth token. Every one of those is a fact only you have. Left out, the AI invents a plausible wrong version and you spend an hour deleting it.
 3. **Ban CSS selectors explicitly.** Models default to CSS selectors because most of the test code on the internet uses them. You have to say no in the prompt or you get them.
 4. **Demand the polling helper be written once and reused.** Without that instruction you get the same 20-line wait loop copy-pasted into six tests with slightly different timeouts, and you will be maintaining that forever.
-5. **Ask for the traceability table at the end.** A short table mapping each test to the acceptance criterion it covers. That table is what Ananya pastes into the story when she moves it to Done, and it's what makes the coverage gap visible — if AC-4 has no test next to it, you can see that in one glance.
+5. **Ask for the traceability table at the end.** A short table mapping each test to the acceptance criterion it covers. That table is what Pankaj pastes into the story when she moves it to Done, and it's what makes the coverage gap visible — if AC-4 has no test next to it, you can see that in one glance.
 
 ### What the AI is actually doing when this runs
 
@@ -187,7 +187,7 @@ If you forget the rest of this file, keep this:
 
 **An end-to-end test is a claim about the user's journey, written down so a machine can check it every day. Everything else — the selectors, the waits, the fixtures — is plumbing in service of that claim.**
 
-When you're deciding whether a test is worth writing, ask what claim it makes. "Clicking Submit calls `handleSubmit`" is not a claim anyone at Northwind cares about. "A Broker Alpha statement with one low-confidence quantity reaches Priya's queue, and after she fixes it, all fourteen positions load" is the entire business case in one sentence.
+When you're deciding whether a test is worth writing, ask what claim it makes. "Clicking Submit calls `handleSubmit`" is not a claim anyone at Northwind cares about. "A Broker Alpha statement with one low-confidence quantity reaches Preeti's queue, and after she fixes it, all fourteen positions load" is the entire business case in one sentence.
 
 ---
 
@@ -274,7 +274,7 @@ in `[TEST OUTPUT PATH]/README.md`.
 |---|---|---|---|
 | `[PATH TO ACCEPTANCE CRITERIA]` | The acceptance criteria file for the stories under test. This is what stops the AI inventing requirements. | `Case-Study/Python-ETL/artifacts/acceptance-criteria-NWD-103.md` | The AI writes tests for a plausible generic document pipeline. They pass, they prove nothing, and the traceability table is fiction. |
 | `[PATH TO UI BRIEF]` | The design brief for the screen, so the AI knows the intended labels and flow. | `Case-Study/Python-ETL/artifacts/ui-brief-exception-queue.md` | Selectors get invented. You'll spend an hour replacing `'Save'` with `'Submit correction'` one at a time. |
-| `[PATH TO THE UI SOURCE FOLDER]` | The actual React source, so the AI reads the real button labels rather than guessing from the brief. | `Case-Study/Python-ETL/code/exception_queue/src/` | Same as above but worse, because the brief and the built UI have already drifted. Ji-woo renamed two fields during the build. |
+| `[PATH TO THE UI SOURCE FOLDER]` | The actual React source, so the AI reads the real button labels rather than guessing from the brief. | `Case-Study/Python-ETL/code/exception_queue/src/` | Same as above but worse, because the brief and the built UI have already drifted. Dzmitry renamed two fields during the build. |
 | `[SILVER TABLE NAME]` | The fully-qualified staging table the pipeline writes to. | `silver.counterparty_position` | Tests query a table that doesn't exist and every pipeline test errors on connection, which reads like an environment problem for the first twenty minutes. |
 | `[UI BASE URL]` | Where the exception queue is deployed in the test environment. | `https://nwd-exceptions-test.azurewebsites.net` | Tests try `localhost:3000`, hang, and time out. |
 | `[TYPICAL SECONDS]` / `[MAX SECONDS]` | How long the pipeline really takes, measured, not guessed. Typical is for the poll interval; max sets the deadline. | 25 typical, 90 max | Too short and every test is flaky at month-end when the queue backs up. Too long and a genuine hang takes six minutes to report. |
@@ -285,7 +285,7 @@ in `[TEST OUTPUT PATH]/README.md`.
 
 ## 5. The filled-in example
 
-This is what Ananya actually pasted on the Tuesday morning of Sprint 3, with the repo open at the root.
+This is what Pankaj actually pasted on the Tuesday morning of Sprint 3, with the repo open at the root.
 
 ```text
 You are a **senior QA automation engineer**. Write Playwright end-to-end tests for the
@@ -319,7 +319,7 @@ and wait for my confirmation.** One line each, in the form "As <who>, <does what
 2. As the system, a Broker Alpha statement with one quantity field below 0.90 confidence is
    held entirely — no partial rows in silver — and appears in the exception queue with the
    failing field and the reason named.
-3. As Priya (operations analyst), I open the exception queue, correct the flagged quantity,
+3. As Preeti (operations analyst), I open the exception queue, correct the flagged quantity,
    submit, and the document leaves my queue and all its positions load to silver.
 4. As the system, a Broker Beta EM confirmation in Spanish is translated and loads with the
    security identifier unchanged.
@@ -368,7 +368,7 @@ traceability table as a markdown section in
 `Case-Study/Python-ETL/code/doc_ingestion/tests/e2e/README.md`.
 ```
 
-Ananya confirmed the four journeys at the stop gate with one change — she added "and the raw blob is still present and unmodified" to journey 1, because Sofia's invariant is that bronze is immutable and nothing was checking it.
+Pankaj confirmed the four journeys at the stop gate with one change — she added "and the raw blob is still present and unmodified" to journey 1, because Hem's invariant is that bronze is immutable and nothing was checking it.
 
 ---
 
@@ -383,7 +383,7 @@ Journeys I will cover (confirm before I write code):
    silver with no human touch, carrying bronze_path and min_confidence.
 2. As the system, a Broker Alpha statement with one sub-threshold quantity is held whole and
    surfaces in the exception queue naming the field and reason.
-3. As Priya, I correct the flagged field in the exception queue and the whole document loads.
+3. As Preeti, I correct the flagged field in the exception queue and the whole document loads.
 4. As the system, a Spanish Broker Beta confirmation loads with descriptive fields translated
    and the security identifier byte-identical to the source.
 
@@ -393,7 +393,7 @@ Two things I need before writing:
 - Is there an existing fixture PDF set, or should the manifest reference files you will add?
 ```
 
-Both good questions. Ananya answered: a service-principal token in an env var, and yes, six fixture PDFs already exist under `tests/fixtures/pdf/`.
+Both good questions. Pankaj answered: a service-principal token in an env var, and yes, six fixture PDFs already exist under `tests/fixtures/pdf/`.
 
 Then the code. Here is the polling helper — the piece everything else depends on:
 
@@ -499,7 +499,7 @@ function requireEnv(key: string): string {
 }
 ```
 
-The straight-through test — journey 1, with Ananya's added bronze-immutability check:
+The straight-through test — journey 1, with Pankaj's added bronze-immutability check:
 
 ```typescript
 // tests/e2e/pipeline_happy_path.spec.ts
@@ -550,7 +550,7 @@ test.describe('Straight-through processing', () => {
       expect(row.market_value).not.toBeNull();
     }
 
-    // Sofia's invariant: the raw blob is immutable. Reprocessing must be free.
+    // Hem's invariant: the raw blob is immutable. Reprocessing must be free.
     const raw = await pollUntil('raw blob still present', async () => {
       const props = await rawBlobProperties(blobPath);
       return props ?? null;
@@ -611,7 +611,7 @@ test.describe('Analyst correction path', () => {
       ).toBeVisible();
     });
 
-  test('Priya corrects the flagged field and the whole document loads to silver',
+  test('Preeti corrects the flagged field and the whole document loads to silver',
     async ({ page }) => {
       const fixture = FIXTURES.brokerAlphaLowConfidenceQuantity;
 
@@ -624,7 +624,7 @@ test.describe('Analyst correction path', () => {
       );
       await item.getByRole('link', { name: 'Review' }).click();
 
-      // Found by label, the way Priya finds it: the field is labelled "Quantity".
+      // Found by label, the way Preeti finds it: the field is labelled "Quantity".
       const quantity = page.getByLabel('Quantity');
       await quantity.fill('12500');
       await page.getByRole('button', { name: 'Submit correction' }).click();
@@ -662,7 +662,7 @@ Finally, the traceability table it appended to `tests/e2e/README.md`:
 | AC-2 | A field below threshold sends the whole document to review | `a low-confidence quantity holds the whole document and names the failing field` | `exception_queue.spec.ts` |
 | AC-3 | No partial rows are written when a document is held | same as AC-2 (asserts `toHaveLength(0)`) | `exception_queue.spec.ts` |
 | AC-4 | The rejection reason names the field and the threshold | same as AC-2 | `exception_queue.spec.ts` |
-| AC-5 | A corrected document loads in full and is marked CORRECTED | `Priya corrects the flagged field and the whole document loads to silver` | `exception_queue.spec.ts` |
+| AC-5 | A corrected document loads in full and is marked CORRECTED | `Preeti corrects the flagged field and the whole document loads to silver` | `exception_queue.spec.ts` |
 | AC-6 | `min_confidence` and `bronze_path` reach the warehouse | **UNCOVERED at gold** — covered at silver only. Snowflake MERGE not tested E2E. | — |
 | AC-7 | Per-broker threshold override is applied (`broker_alpha` currency 0.92) | `UNCOVERED` | — |
 ```
@@ -671,13 +671,13 @@ Finally, the traceability table it appended to `tests/e2e/README.md`:
 
 Three things deserve your attention, and one of them is the reason this whole exercise was worth two hours.
 
-**The `UNCOVERED` rows are the most valuable output in the file.** AC-6 and AC-7 have no test. The AI did not quietly skip them and produce a clean-looking table — it was told to mark gaps, so it did. Ananya took that straight into standup: "Two acceptance criteria on the flagship story have no automated coverage. AC-7 is the per-broker override, which is the thing Broker Alpha specifically asked for." That's a conversation that would not have happened otherwise.
+**The `UNCOVERED` rows are the most valuable output in the file.** AC-6 and AC-7 have no test. The AI did not quietly skip them and produce a clean-looking table — it was told to mark gaps, so it did. Pankaj took that straight into standup: "Two acceptance criteria on the flagship story have no automated coverage. AC-7 is the per-broker override, which is the thing Broker Alpha specifically asked for." That's a conversation that would not have happened otherwise.
 
 **The `expect(rows).toHaveLength(0)` in the hold test is the invariant, written as code.** DOMAIN invariant #2 — one failing field sends the whole document to review — has lived in a spec document since Sprint 1. Now a machine checks it every night. If someone later "optimises" the pipeline to load the good rows and hold the bad one, that test goes red immediately and the reason is in the assertion message.
 
 **The `expect(rows).toHaveLength(fixture.expectedPositions)` in the happy path looks trivial and is not.** That single line is a row-count check, and it is the same class of check that [P25](P25-data-quality-validation.md) turns into a systematic thing. It works here only because the fixture manifest states how many positions the PDF contains. Two weeks from now, NWD-142 will be exactly this check failing on a two-page statement — and the reason it *didn't* catch NWD-142 in Sprint 3 is that the fixture set had no multi-page document in it. Hold that thought until P25.
 
-**The part that is commonly wrong:** the `pollUntil` wrapped around `page.reload()` in the queue tests. It works, but it is reloading the page every two seconds for up to 90 seconds, which is heavy and slightly rude to the test environment. The better version subscribes to the UI's own refresh, or polls the queue's API endpoint directly and only opens the browser once the item is known to be there. The AI will not do this unless you ask. Ananya asked, in follow-up 8.3 below.
+**The part that is commonly wrong:** the `pollUntil` wrapped around `page.reload()` in the queue tests. It works, but it is reloading the page every two seconds for up to 90 seconds, which is heavy and slightly rude to the test environment. The better version subscribes to the UI's own refresh, or polls the queue's API endpoint directly and only opens the browser once the item is known to be there. The AI will not do this unless you ask. Pankaj asked, in follow-up 8.3 below.
 
 ---
 
@@ -748,7 +748,7 @@ For (b), show me exactly which two tests collide and on what.
 For (d), stop and tell me — that is a bug report, not a test fix.
 ```
 
-What changes: you get a diagnosis per test instead of a blanket timeout bump. Ananya ran this on a Thursday and (b) turned out to be two tests both uploading `broker_alpha_clean.pdf` on the same date path — the run id was in the filename but not in the folder, so the blob trigger picked up the wrong one.
+What changes: you get a diagnosis per test instead of a blanket timeout bump. Pankaj ran this on a Thursday and (b) turned out to be two tests both uploading `broker_alpha_clean.pdf` on the same date path — the run id was in the filename but not in the folder, so the blob trigger picked up the wrong one.
 
 ### 8.2 "A cosmetic change broke six tests"
 
@@ -762,7 +762,7 @@ These E2E tests broke after a UI change that did not alter behaviour:
 - Find elements by accessible role and visible name, or by form label.
 - Do not use class names, structure, position, or `nth-child`.
 - Where an element has no accessible name, do not add a test id — tell me, because that is
-  an accessibility defect Ji-woo should fix in the component.
+  an accessibility defect Dzmitry should fix in the component.
 
 **Then tell me** which of the six failures were false alarms (test was wrong) and which, if
 any, were real (behaviour genuinely changed). Do not silently fix a real one.
@@ -861,7 +861,7 @@ flowchart TD
 
 This is the big one and it is seductive, because the AI is genuinely good at producing a plausible-looking test suite from nothing but a folder of source code.
 
-What you get is tests that mirror the implementation. If `rules.py` has six functions, you get six tests, one per function, at E2E level, each one slow and each one proving something a unit test already proved. What you don't get is the journey — because the journey is not visible in the code. It's in Amara's acceptance criteria and in Priya's actual working day.
+What you get is tests that mirror the implementation. If `rules.py` has six functions, you get six tests, one per function, at E2E level, each one slow and each one proving something a unit test already proved. What you don't get is the journey — because the journey is not visible in the code. It's in Preetinka's acceptance criteria and in Preeti's actual working day.
 
 The fix is the stop gate. Make the AI list the journeys in English and confirm them before a line of code exists. Thirty seconds of reading saves a suite you'll delete.
 
@@ -869,7 +869,7 @@ The fix is the stop gate. Make the AI list the journeys in English and confirm t
 
 This one bit Northwind directly, so it's worth being blunt about.
 
-Ananya's six fixture PDFs were all single-page or had tables entirely within one page. The suite passed. Two weeks later NWD-142 turned up: a Broker Alpha statement where the positions table spans a page boundary, and the line items on page 2 are silently dropped. Every field that *was* extracted had high confidence, so the gate passed it, and the document loaded to Snowflake with half its positions.
+Pankaj's six fixture PDFs were all single-page or had tables entirely within one page. The suite passed. Two weeks later NWD-142 turned up: a Broker Alpha statement where the positions table spans a page boundary, and the line items on page 2 are silently dropped. Every field that *was* extracted had high confidence, so the gate passed it, and the document loaded to Snowflake with half its positions.
 
 The E2E suite could have caught it in one line — `expect(rows).toHaveLength(14)` — if any fixture had been a two-page statement. It wasn't. The tests were correct and the fixture set was incomplete.
 
@@ -905,13 +905,13 @@ The counter-case, so this isn't a rule you follow off a cliff: **a bug that only
 
 ## 10. The handoff
 
-Ananya's suite goes to Rahul, and the handoff is not just "here are some tests."
+Pankaj's suite goes to Gautam, and the handoff is not just "here are some tests."
 
-Two of the four journeys pass. The third — Priya's correction path — fails on a detail: after Submit, the row leaves the queue but takes 40 seconds to appear in silver, and the toast says "Loaded to silver" before it actually has. That is a real defect, small, in the code Tomas wrote. The fourth, the Spanish confirmation, fails because the translated security name doesn't match the identifier the transform expects. That is NWD-138, and it is a bigger deal.
+Two of the four journeys pass. The third — Preeti's correction path — fails on a detail: after Submit, the row leaves the queue but takes 40 seconds to appear in silver, and the toast says "Loaded to silver" before it actually has. That is a real defect, small, in the code Ravi wrote. The fourth, the Spanish confirmation, fails because the translated security name doesn't match the identifier the transform expects. That is NWD-138, and it is a bigger deal.
 
-So Rahul's job now is to look at the code those two failures point at. He runs [P23](P23-review-someone-elses-code.md) on Tomas's NWD-103 branch, with the failing tests in hand — which changes the review completely, because a review with a red test attached to it asks a much sharper question than a review of code in the abstract.
+So Gautam's job now is to look at the code those two failures point at. He runs [P23](P23-review-someone-elses-code.md) on Ravi's NWD-103 branch, with the failing tests in hand — which changes the review completely, because a review with a red test attached to it asks a much sharper question than a review of code in the abstract.
 
-The traceability table travels with the suite. When Rahul reads it and sees AC-7 marked `UNCOVERED`, he knows before opening a single file that the per-broker threshold override is a place to look hardest, because nothing automated is watching it.
+The traceability table travels with the suite. When Gautam reads it and sees AC-7 marked `UNCOVERED`, he knows before opening a single file that the per-broker threshold override is a place to look hardest, because nothing automated is watching it.
 
 > **Artifact contract — `Case-Study/Python-ETL/code/doc_ingestion/tests/e2e/`**
 >
@@ -931,11 +931,11 @@ The traceability table travels with the suite. When Rahul reads it and sees AC-7
 
 This is Sprint 3, day 2, in [`07-sprint-3-verify.md`](../../Case-Study/Python-ETL/07-sprint-3-verify.md).
 
-The thing worth remembering from that morning is not the tests. It's what happened at the stop gate. The AI listed four journeys and then asked two questions — does the queue need sign-in, and do fixtures already exist — and Ananya answered both in about ninety seconds. Those ninety seconds are the difference between a suite that runs and a suite where every test has an invented auth helper you spend an afternoon unpicking.
+The thing worth remembering from that morning is not the tests. It's what happened at the stop gate. The AI listed four journeys and then asked two questions — does the queue need sign-in, and do fixtures already exist — and Pankaj answered both in about ninety seconds. Those ninety seconds are the difference between a suite that runs and a suite where every test has an invented auth helper you spend an afternoon unpicking.
 
-The thing that went wrong is more instructive. Ananya's fixture set had six PDFs and every one of them was a single-page statement, because that's what the team had been developing against since Sprint 2. The suite went green on the happy path and everyone felt good about it. NWD-142 — the page-boundary bug that drops half a statement's positions and loads it to Snowflake looking perfectly healthy — was sitting there the whole time, untouched by four passing tests, because no fixture had two pages.
+The thing that went wrong is more instructive. Pankaj's fixture set had six PDFs and every one of them was a single-page statement, because that's what the team had been developing against since Sprint 2. The suite went green on the happy path and everyone felt good about it. NWD-142 — the page-boundary bug that drops half a statement's positions and loads it to Snowflake looking perfectly healthy — was sitting there the whole time, untouched by four passing tests, because no fixture had two pages.
 
-Ananya's own note in the retrospective ([`10-retrospective.md`](../../Case-Study/Python-ETL/10-retrospective.md)) is the honest version: *"Our E2E tests proved the system was wired up correctly. They did not prove the data was right. Those are different jobs and I was doing one of them."*
+Pankaj's own note in the retrospective ([`10-retrospective.md`](../../Case-Study/Python-ETL/10-retrospective.md)) is the honest version: *"Our E2E tests proved the system was wired up correctly. They did not prove the data was right. Those are different jobs and I was doing one of them."*
 
 That sentence is the reason [P25](P25-data-quality-validation.md) exists in this library at all.
 

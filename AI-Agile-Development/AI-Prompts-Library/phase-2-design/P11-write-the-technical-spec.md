@@ -7,12 +7,12 @@
 | | |
 |---|---|
 | **Phase** | 2 — Design |
-| **Who runs it** | Architect (Sofia Marchetti) |
-| **When** | Sprint 1, day 5. The plan from [P10](P10-ultra-plan-mode.md) is approved and ADR-0001 is written. Tomas is scheduled to start NWD-103 on Monday. |
+| **Who runs it** | Architect (Hem Singh) |
+| **When** | Sprint 1, day 5. The plan from [P10](P10-ultra-plan-mode.md) is approved and ADR-0001 is written. Ravi is scheduled to start NWD-103 on Monday. |
 | **Takes in** | The approved plan from [P10](P10-ultra-plan-mode.md), `artifacts/stories/NWD-103-confidence-gate.md`, `artifacts/acceptance-criteria-NWD-103.md`, `artifacts/adr/0001-extraction-approach.md`, `artifacts/CLAUDE.md` |
 | **Produces** | `Case-Study/Python-ETL/artifacts/spec-confidence-gate.md` |
-| **Hands off to** | Sofia running [P12](P12-record-an-architecture-decision.md) for anything the spec exposed as a decision, then Rahul running [P15](../phase-3-planning/P15-implementation-plan.md) |
-| **Time to run** | Two hours. Twenty minutes of generation, ninety minutes of Sofia and Amara arguing about three of the error cases. |
+| **Hands off to** | Hem running [P12](P12-record-an-architecture-decision.md) for anything the spec exposed as a decision, then Gautam running [P15](../phase-3-planning/P15-implementation-plan.md) |
+| **Time to run** | Two hours. Twenty minutes of generation, ninety minutes of Hem and Preetinka arguing about three of the error cases. |
 
 ---
 
@@ -20,17 +20,17 @@
 
 Wednesday afternoon. ADR-0001 is written and merged. The team has agreed to build extraction on Azure AI Document Intelligence custom models, and the deciding factor — the only one that mattered — was that it returns a confidence score for every field.
 
-So far so good. Then Amara asks a question in the corridor that stops Sofia dead.
+So far so good. Then Preetinka asks a question in the corridor that stops Hem dead.
 
 "When a Broker Alpha statement comes in and the trade date scores 0.83, what happens to the fourteen positions on that page?"
 
-Sofia knows the answer. The threshold for a date is 0.85, so 0.83 fails, so the document goes to review. All fourteen positions. Not thirteen good ones plus one flagged one — the whole document.
+Hem knows the answer. The threshold for a date is 0.85, so 0.83 fails, so the document goes to review. All fourteen positions. Not thirteen good ones plus one flagged one — the whole document.
 
-But when she goes looking for where that is written down, it is not written down anywhere. The story NWD-103 says "gate every extracted field on its confidence score." The acceptance criteria say the thresholds are configurable per counterparty. The ADR says why Document Intelligence won. Nowhere does any document say what the system *does* when a field fails, whether a missing field counts as a failing field, what happens when Document Intelligence returns no confidence value at all, or what the exception row looks like when it lands in Priya's queue.
+But when she goes looking for where that is written down, it is not written down anywhere. The story NWD-103 says "gate every extracted field on its confidence score." The acceptance criteria say the thresholds are configurable per counterparty. The ADR says why Document Intelligence won. Nowhere does any document say what the system *does* when a field fails, whether a missing field counts as a failing field, what happens when Document Intelligence returns no confidence value at all, or what the exception row looks like when it lands in Preeti's queue.
 
-Every one of those is a decision. Right now every one of them is going to get made by Tomas, at speed, on Monday morning, alone, and the first anyone will hear about it is when Ananya tests it in Sprint 3.
+Every one of those is a decision. Right now every one of them is going to get made by Ravi, at speed, on Monday morning, alone, and the first anyone will hear about it is when Pankaj tests it in Sprint 3.
 
-**That gap — between "we know the approach" and "we know the behaviour" — is what a technical spec fills, and it is the single most commonly skipped artifact in software.** Sofia opens a session and runs this prompt.
+**That gap — between "we know the approach" and "we know the behaviour" — is what a technical spec fills, and it is the single most commonly skipped artifact in software.** Hem opens a session and runs this prompt.
 
 ---
 
@@ -38,19 +38,19 @@ Every one of those is a decision. Right now every one of them is going to get ma
 
 ### The problem: everyone thinks it is already written down
 
-Ask a team where the behaviour of a feature is specified and you get four answers: the story, the acceptance criteria, the ticket comments, and "ask Tomas." Three of those are not documents and the fourth is a person.
+Ask a team where the behaviour of a feature is specified and you get four answers: the story, the acceptance criteria, the ticket comments, and "ask Ravi." Three of those are not documents and the fourth is a person.
 
 Meanwhile the code gets written. And the code does specify the behaviour — perfectly, unambiguously, in complete detail. That is the trap. **Code is a perfect specification of what the system does and a terrible specification of what it was supposed to do**, because it cannot tell you which of its behaviours were chosen and which were accidents.
 
-When Ananya finds NWD-142 in Sprint 3 — line items on page 2 of a multi-page statement silently dropped — the argument that follows is entirely about whether that was a bug or an unstated requirement. With a spec, that argument takes four minutes. Without one it takes a day and ends in a compromise.
+When Pankaj finds NWD-142 in Sprint 3 — line items on page 2 of a multi-page statement silently dropped — the argument that follows is entirely about whether that was a bug or an unstated requirement. With a spec, that argument takes four minutes. Without one it takes a day and ends in a compromise.
 
 ### PRD versus spec — the confusion that costs the most
 
 Readers mix these up constantly, so here is the distinction in the plainest terms available.
 
-A **PRD** is a Product Requirements Document. It is written by the Product Owner — Amara — and it answers **what** we are building and **why the business wants it**. Its audience is everybody: sponsors, the PM, the team, occasionally the client's finance director. Its currency is outcomes.
+A **PRD** is a Product Requirements Document. It is written by the Product Owner — Preetinka — and it answers **what** we are building and **why the business wants it**. Its audience is everybody: sponsors, the PM, the team, occasionally the client's finance director. Its currency is outcomes.
 
-A **spec** is a technical specification. It is written by the Architect or the engineer — Sofia — and it answers **exactly how the system behaves**, in cases including the ugly ones. Its audience is the person who will build it and the person who will test it. Its currency is behaviour.
+A **spec** is a technical specification. It is written by the Architect or the engineer — Hem — and it answers **exactly how the system behaves**, in cases including the ugly ones. Its audience is the person who will build it and the person who will test it. Its currency is behaviour.
 
 Here is the same feature in both:
 
@@ -60,7 +60,7 @@ Here is the same feature in both:
 | The numbers | "Thresholds should be tunable per counterparty." | "Thresholds resolve in order: field-level override → counterparty override → type default → hard default 0.90. First match wins." |
 | The edge | (silent) | "A field present in the layout definition but absent from the response is treated as a failure with score `null` and reason `FIELD_MISSING`." |
 | Success | "Straight-through rate rises from 61% to 85%." | "Given 100 documents where 12 contain at least one sub-threshold field, exactly 88 produce silver rows and exactly 12 produce exception rows." |
-| Who owns it | Amara | Sofia |
+| Who owns it | Preetinka | Hem |
 
 Two rules follow from that table and they are worth memorising:
 
@@ -77,10 +77,10 @@ Spec-driven development is a working agreement with one rule:
 
 That is the whole thing. It sounds bureaucratic and it takes about ten minutes in practice, and it is the difference between a system whose documentation is true and one whose documentation is a historical record of intentions.
 
-The failure it prevents is specific. Tomas is building the gate on Tuesday. He discovers Document Intelligence sometimes returns a field with `confidence: null` rather than omitting it. The spec does not cover that. His options are:
+The failure it prevents is specific. Ravi is building the gate on Tuesday. He discovers Document Intelligence sometimes returns a field with `confidence: null` rather than omitting it. The spec does not cover that. His options are:
 
-- **Decide silently.** Treat null as 0.0, ship it, tell nobody. Now the spec is a lie and Ananya's test suite is testing something else.
-- **Stop and ask.** Message Sofia: "spec doesn't cover null confidence, I propose treating it as a failure with reason `CONFIDENCE_ABSENT`." Sofia says yes in four minutes. The spec gets a line. Ananya's tests get a case.
+- **Decide silently.** Treat null as 0.0, ship it, tell nobody. Now the spec is a lie and Pankaj's test suite is testing something else.
+- **Stop and ask.** Message Hem: "spec doesn't cover null confidence, I propose treating it as a failure with reason `CONFIDENCE_ABSENT`." Hem says yes in four minutes. The spec gets a line. Pankaj's tests get a case.
 
 The second path is spec-driven development. Notice it costs almost nothing — the expensive part is not the update, it is the stopping, and the stopping only feels expensive the first three times.
 
@@ -105,7 +105,7 @@ Example, in full:
 
 Why this shape and not prose? Three reasons, all practical.
 
-**It is testable without translation.** Ananya can turn that into a test case without asking anyone what it means. That property is why [P08](../phase-1-discovery/P08-write-acceptance-criteria.md) uses the same shape at the story level and why [P20](../phase-4-build/P20-write-tests-alongside-the-code.md) can generate tests directly from a spec.
+**It is testable without translation.** Pankaj can turn that into a test case without asking anyone what it means. That property is why [P08](../phase-1-discovery/P08-write-acceptance-criteria.md) uses the same shape at the story level and why [P20](../phase-4-build/P20-write-tests-alongside-the-code.md) can generate tests directly from a spec.
 
 **It forces the observable result.** "Then the document is rejected" is not a Then, because "rejected" is an internal state nobody can see. "Zero rows in silver, one row in the exception queue" is a Then.
 
@@ -117,20 +117,20 @@ One warning worth stating early: the value of Given/When/Then is entirely in the
 
 An **API shape** here does not mean a web endpoint. It means the signature of the seam: what goes in, what comes out, and what the types are. For a Python function that is the function signature and the return type. For an HTTP endpoint it is the route, the request body and the response body. For a database write it is the table and the columns.
 
-The spec names these because they are the parts other people build against. Ji-woo cannot build the exception queue screen without knowing what an exception row contains. Ananya cannot write a test without knowing what the function returns. If the shapes only exist in Tomas's head until Thursday, two people are blocked and neither of them knows it.
+The spec names these because they are the parts other people build against. Dzmitry cannot build the exception queue screen without knowing what an exception row contains. Pankaj cannot write a test without knowing what the function returns. If the shapes only exist in Ravi's head until Thursday, two people are blocked and neither of them knows it.
 
 What the spec does **not** do is write the implementation. The distinction:
 
 - **In scope:** `evaluate_confidence(fields: list[ExtractedField], policy: ConfidencePolicy) -> GateResult`, and what `GateResult` contains.
 - **Out of scope:** whether the function iterates with a list comprehension, whether the policy is a dataclass or a dict, whether thresholds are cached.
 
-The test: **if changing it would break someone else's code or someone else's test, it is in the spec. If it would not, it is Tomas's business.**
+The test: **if changing it would break someone else's code or someone else's test, it is in the spec. If it would not, it is Ravi's business.**
 
 ### Error cases are the whole point
 
 Most specs describe the happy path in loving detail and then stop. That is backwards — the happy path is the part everybody gets right anyway.
 
-Sofia's recurring question is "what does this look like when it's wrong?" and it is the reason her specs are longer than most. For the confidence gate, the wrong cases are:
+Hem's recurring question is "what does this look like when it's wrong?" and it is the reason her specs are longer than most. For the confidence gate, the wrong cases are:
 
 | Situation | The question the spec must answer |
 |---|---|
@@ -246,7 +246,7 @@ Save the result to [OUTPUT PATH].
 
 | Placeholder | What to put in it | Northwind example | What happens if you get it wrong |
 |---|---|---|---|
-| `[ARTIFACTS TO READ]` | Story, acceptance criteria, the approved plan, any ADR that constrains this, the project context file | `artifacts/stories/NWD-103-confidence-gate.md`, `artifacts/acceptance-criteria-NWD-103.md`, the approved P10 plan, `artifacts/adr/0001-extraction-approach.md`, `artifacts/CLAUDE.md` | Without the ADR, the spec re-opens a settled decision. Sofia's first draft contained a paragraph weighing an LLM fallback, which had been decided against the day before. |
+| `[ARTIFACTS TO READ]` | Story, acceptance criteria, the approved plan, any ADR that constrains this, the project context file | `artifacts/stories/NWD-103-confidence-gate.md`, `artifacts/acceptance-criteria-NWD-103.md`, the approved P10 plan, `artifacts/adr/0001-extraction-approach.md`, `artifacts/CLAUDE.md` | Without the ADR, the spec re-opens a settled decision. Hem's first draft contained a paragraph weighing an LLM fallback, which had been decided against the day before. |
 | `[FEATURE AND STORY ID]` | The component name plus the story ID it implements | "The confidence gate — NWD-103" | A spec without a story ID drifts into specifying the whole pipeline. The ID is the leash. |
 | `[IN SCOPE]` | Bullet list of the behaviours this spec must cover. Be specific enough to be checkable | Threshold resolution, per-type defaults, per-counterparty overrides, the accept/review decision, the exception row contents | Vague scope produces a spec that covers everything shallowly. "The confidence gate" alone gets you three pages on Document Intelligence. |
 | `[OUT OF SCOPE]` | What a reader might reasonably expect here but will not find, plus where it lives instead | Model training (NWD-102), translation (NWD-104), the exception queue UI (NWD-108, see [P14](P14-ui-ux-design-brief.md)), the Snowflake load (NWD-107) | Omit this and the spec grows to cover the pipeline. Every reviewer will also ask "what about translation?" and you will answer it five times. |
@@ -259,7 +259,7 @@ Save the result to [OUTPUT PATH].
 
 ## 5. The filled-in example
 
-Sofia runs this on Wednesday at 15:20, straight after the corridor conversation with Amara, in the same session that produced the approved plan.
+Hem runs this on Wednesday at 15:20, straight after the corridor conversation with Preetinka, in the same session that produced the approved plan.
 
 ```text
 You are a **software architect** writing a technical specification. The spec, not the code, is the
@@ -322,7 +322,7 @@ The real file is 230 lines. This is most of it — sections 8 and 10 are trimmed
 ```markdown
 # Spec — Confidence Gate (NWD-103)
 
-Status: Draft · Owner: Sofia Marchetti · Implements: NWD-103 · Constrained by: ADR-0001, ADR-0003
+Status: Draft · Owner: Hem Singh · Implements: NWD-103 · Constrained by: ADR-0001, ADR-0003
 
 ## 1. Purpose
 
@@ -397,7 +397,7 @@ document error. The gate raises `UnknownCounterpartyError`; the document remains
 raw zone and is retried after config is fixed. It does **not** land in the exception queue, because
 the exception queue is for documents an analyst can fix and this is not one.
 
-**R9** — All failing fields are reported, not just the first. Priya needs to see every problem in one
+**R9** — All failing fields are reported, not just the first. Preeti needs to see every problem in one
 pass; returning only the first failure means a document bounces through review repeatedly.
 
 **R10** — The gate performs no I/O. It receives fields and a policy and returns a result. Persisting
@@ -554,17 +554,17 @@ And no Python file has changed
 
 ## 9. Open questions
 
-- **Amara** — when Priya corrects a field in the exception queue, is the corrected value re-gated, or
+- **Preetinka** — when Preeti corrects a field in the exception queue, is the corrected value re-gated, or
   is a human edit trusted by definition? ASSUMED: trusted, and the row is written with
   `MIN_CONFIDENCE` set to the original machine minimum plus a `MANUALLY_CORRECTED` flag. Confirm.
-- **Amara** — does a document rejected purely on `CLASSIFIER_BELOW_THRESHOLD` go to the same queue as
-  a field failure? Priya's action is different — she is picking a counterparty, not fixing a number.
-- **Tomas** — does the Document Intelligence response ever return a confidence of exactly 0.0, or is
+- **Preetinka** — does a document rejected purely on `CLASSIFIER_BELOW_THRESHOLD` go to the same queue as
+  a field failure? Preeti's action is different — she is picking a counterparty, not fixing a number.
+- **Ravi** — does the Document Intelligence response ever return a confidence of exactly 0.0, or is
   absence the only signal? Changes whether R5 is a real case or a defensive one.
-- **Sofia** — line items are a repeating structure with per-item confidence. This spec treats fields
+- **Hem** — line items are a repeating structure with per-item confidence. This spec treats fields
   as flat. Does a low-confidence line item reject the document under the same rule?
   ASSUMED: yes, same rule. **This needs its own spec section before NWD-106.**
-- **Ananya** — do we need a scenario for a document whose table spans a page boundary? The extraction
+- **Pankaj** — do we need a scenario for a document whose table spans a page boundary? The extraction
   response shape for that case is not documented anywhere I can find.
 ```
 
@@ -574,15 +574,15 @@ And no Python file has changed
 
 **S3 exists only to prove S2 was not a global rule.** Scenarios that assert a *non*-effect are the ones people skip and they are worth more than the happy path. If S3 were missing, an implementation with a single global currency threshold would pass every other scenario in the list.
 
-**Section 9 is the most valuable section and the one that looks least finished.** Five open questions on a first draft is healthy. Sofia took them to Amara that afternoon; two were resolved in ten minutes, one produced a new story, and one — the last one, Ananya's — was left open.
+**Section 9 is the most valuable section and the one that looks least finished.** Five open questions on a first draft is healthy. Hem took them to Preetinka that afternoon; two were resolved in ten minutes, one produced a new story, and one — the last one, Pankaj's — was left open.
 
-**The part that is commonly wrong, and was here:** the fourth open question, about line items. The spec treats fields as a flat list. Real Document Intelligence responses have a repeating table structure with its own per-row confidence, and this spec never resolves how that interacts with R3. Sofia wrote "ASSUMED: yes, same rule" and moved on. That assumption is a first cousin of bug **NWD-142** eleven weeks later — line items on page 2 of a Broker Alpha statement dropped silently, every field that *was* extracted scoring high, gate passing cleanly. The spec did not cause the bug. But it is where the bug was visible earliest and cheapest, and nobody chased it. [P29 — The Spec Was Wrong](../phase-6-rework/P29-the-spec-was-wrong.md) is where that gets fixed, and the fix is a change to this file first and to `core/extract.py` second.
+**The part that is commonly wrong, and was here:** the fourth open question, about line items. The spec treats fields as a flat list. Real Document Intelligence responses have a repeating table structure with its own per-row confidence, and this spec never resolves how that interacts with R3. Hem wrote "ASSUMED: yes, same rule" and moved on. That assumption is a first cousin of bug **NWD-142** eleven weeks later — line items on page 2 of a Broker Alpha statement dropped silently, every field that *was* extracted scoring high, gate passing cleanly. The spec did not cause the bug. But it is where the bug was visible earliest and cheapest, and nobody chased it. [P29 — The Spec Was Wrong](../phase-6-rework/P29-the-spec-was-wrong.md) is where that gets fixed, and the fix is a change to this file first and to `core/extract.py` second.
 
 ---
 
 ## 7. Why this is the final prompt
 
-**What "done" means here.** Tomas can build from it without asking a question that changes behaviour, and Ananya can write tests from it without asking what a scenario means. Those two conditions, and nothing about prose quality.
+**What "done" means here.** Ravi can build from it without asking a question that changes behaviour, and Pankaj can write tests from it without asking what a scenario means. Those two conditions, and nothing about prose quality.
 
 The practical version: hand it to someone who was not in the design conversation and ask them what happens when a date scores 0.83 on a Broker Alpha statement. If they can answer in under a minute by reading, the spec is done.
 
@@ -602,9 +602,9 @@ Two specific failure modes, both of which look like progress.
 
 **Scope creep.** Ask for one more pass and the spec grows a section on retry policy, then one on observability, then one on the Snowflake merge. Each addition is individually reasonable. Collectively they turn a spec for one story into a spec for the pipeline, and the moment that happens the document stops being reviewable and starts being skimmed. The out-of-scope list exists to be enforced, not admired.
 
-**Prose polish.** The AI is very good at making a spec read better. Better-reading specs are not more correct, and re-generation carries a real risk: a regenerated spec quietly loses one of the edge cases you fought to include. Sofia lost the `CONFIDENCE_ABSENT` rule on a "tighten the wording" pass and only caught it because Ananya's test referenced R5 by number.
+**Prose polish.** The AI is very good at making a spec read better. Better-reading specs are not more correct, and re-generation carries a real risk: a regenerated spec quietly loses one of the edge cases you fought to include. Hem lost the `CONFIDENCE_ABSENT` rule on a "tighten the wording" pass and only caught it because Pankaj's test referenced R5 by number.
 
-Once the checklist passes, the remaining risk is not in the writing. It is in the open questions, and those are resolved by talking to Amara, not by prompting.
+Once the checklist passes, the remaining risk is not in the writing. It is in the open questions, and those are resolved by talking to Preetinka, not by prompting.
 
 ### The signal that you are NOT done
 
@@ -686,10 +686,10 @@ mark each one:
 - **INVENTED** — you created it
 
 For every INVENTED name: either replace it with the real name from the inputs, or move it to Open
-questions as a proposal — "propose `<name>` for `<purpose>`, confirm with Tomas" — and remove it from
+questions as a proposal — "propose `<name>` for `<purpose>`, confirm with Ravi" — and remove it from
 the body of the spec.
 
-Names are a contract. Ji-woo builds a screen against these names and Ananya writes assertions against
+Names are a contract. Dzmitry builds a screen against these names and Pankaj writes assertions against
 them. A name invented here becomes a rename ticket in Sprint 2.
 ```
 
@@ -708,7 +708,7 @@ types, reason-code strings, ordering guarantees, and anything visible from outsi
 **Delete:** algorithms, control flow, caching strategy, class structure, choice of data structures,
 performance micro-decisions, and any sentence beginning "the implementation should".
 
-Apply this test to each remaining sentence: *if Tomas did the opposite of this, would any other
+Apply this test to each remaining sentence: *if Ravi did the opposite of this, would any other
 person's code or test break?* If no, delete it — it is his decision, not the spec's.
 
 Then re-read section 5. If a return type is described only in prose, give me the concrete shape as a
@@ -767,11 +767,11 @@ The commonest failure and the hardest to see, because the result reads well. The
 
 It happens because the AI has the PRD in context and business framing is what makes documents feel complete. It is corrosive for one reason: **two documents that both claim to say what the system does will disagree within a month, and nobody will know which is authoritative.**
 
-**The fix:** the `Do not include business justification` line in the prompt, plus a hard rule in review — if a sentence would be equally at home in the PRD, cut it. Sofia's version of this rule is that a spec should be slightly boring to a business reader. If Amara enjoys reading it, something has leaked.
+**The fix:** the `Do not include business justification` line in the prompt, plus a hard rule in review — if a sentence would be equally at home in the PRD, cut it. Hem's version of this rule is that a spec should be slightly boring to a business reader. If Preetinka enjoys reading it, something has leaked.
 
 ### It specifies the implementation and goes stale in a week
 
-The spec says the policy is cached in a module-level dict. Tomas builds it with a dataclass loaded per invocation, because Azure Functions do not keep module state the way the spec assumed. Now the spec is wrong on a detail nobody cared about, and the next reader notices it is wrong and concludes the whole document is unreliable.
+The spec says the policy is cached in a module-level dict. Ravi builds it with a dataclass loaded per invocation, because Azure Functions do not keep module state the way the spec assumed. Now the spec is wrong on a detail nobody cared about, and the next reader notices it is wrong and concludes the whole document is unreliable.
 
 That conclusion is rational and it is fatal. A spec that is wrong about anything gets trusted about nothing.
 
@@ -781,7 +781,7 @@ That conclusion is rational and it is fatal. A spec that is wrong about anything
 
 This one nearly bit Northwind. An early draft contained the sentence "the minimum confidence across the document's fields is carried forward," which quietly assumes line items are fields. They are not; they are a nested repeating structure with their own confidences. The assumption was invisible because it was phrased as a rule.
 
-Assumptions phrased as rules are undetectable in review. Assumptions in an Open questions section, prefixed `ASSUMED:`, get read by Amara on a Wednesday afternoon and half of them get corrected.
+Assumptions phrased as rules are undetectable in review. Assumptions in an Open questions section, prefixed `ASSUMED:`, get read by Preetinka on a Wednesday afternoon and half of them get corrected.
 
 **The fix:** the mandatory Open questions section, plus a review habit — for each rule, ask "did the inputs tell us this, or did we decide it?" Anything decided moves to Open questions with a name attached.
 
@@ -797,7 +797,7 @@ That is the failure of spec-driven development in practice. Not that people refu
 
 Not every story needs this. NWD-139 — the exception queue showing confidence as `0.8234567` instead of `82%` — is a one-line fix with an obvious correct behaviour and no seam anybody else builds against. Writing a spec for it would take longer than the fix and would be a way of avoiding doing the fix.
 
-The test is the same one from [P10](P10-ultra-plan-mode.md), applied to behaviour rather than architecture: **does more than one person need to agree about this before it is built?** If only Tomas needs to know, the acceptance criteria are enough.
+The test is the same one from [P10](P10-ultra-plan-mode.md), applied to behaviour rather than architecture: **does more than one person need to agree about this before it is built?** If only Ravi needs to know, the acceptance criteria are enough.
 
 **The fix:** specs for seams — anything two people build against, anything with a stated threshold, anything with an error contract. Acceptance criteria for everything else.
 
@@ -807,13 +807,13 @@ The test is the same one from [P10](P10-ultra-plan-mode.md), applied to behaviou
 
 Three people pick this up, for three different reasons, and the spec has to serve all three.
 
-**Tomas** builds NWD-103 from it in [P18](../phase-4-build/P18-implement-a-story.md). What he is guaranteed to find is the resolution order in R2, the exact `GateResult` shape, and the five reason-code strings. He will not have to invent a single name. When he hits a case the spec does not cover — and he will, because Document Intelligence has behaviours nobody documented — the agreement is that he stops and gets one line added, rather than deciding alone.
+**Ravi** builds NWD-103 from it in [P18](../phase-4-build/P18-implement-a-story.md). What he is guaranteed to find is the resolution order in R2, the exact `GateResult` shape, and the five reason-code strings. He will not have to invent a single name. When he hits a case the spec does not cover — and he will, because Document Intelligence has behaviours nobody documented — the agreement is that he stops and gets one line added, rather than deciding alone.
 
-**Ananya** writes tests from it in [P20](../phase-4-build/P20-write-tests-alongside-the-code.md) and again in [P22](../phase-5-verify/P22-e2e-test-the-application.md). The scenario numbers matter to her more than anything else in the document, because a test named `test_S7_confidence_absent_is_not_zero` traces back to a line in a spec, and a bug report that says "S7 fails" is unambiguous. This is not decoration: her bug report for NWD-142 cites spec sections directly, which is what makes it good enough to prompt with in [P27](../phase-6-rework/P27-fix-from-a-qa-bug-report.md).
+**Pankaj** writes tests from it in [P20](../phase-4-build/P20-write-tests-alongside-the-code.md) and again in [P22](../phase-5-verify/P22-e2e-test-the-application.md). The scenario numbers matter to her more than anything else in the document, because a test named `test_S7_confidence_absent_is_not_zero` traces back to a line in a spec, and a bug report that says "S7 fails" is unambiguous. This is not decoration: her bug report for NWD-142 cites spec sections directly, which is what makes it good enough to prompt with in [P27](../phase-6-rework/P27-fix-from-a-qa-bug-report.md).
 
-**Ji-woo** reads exactly one part — the exception record table in section 5 — and builds the queue screen against it in [P19](../phase-4-build/P19-build-the-ui-from-the-brief.md). She needs `THRESHOLD_APPLIED` to exist, because "0.91 (needed 0.92)" is a far more useful thing to show Priya than "0.91". That column exists because Sofia wrote the spec before the UI brief, and the brief in [P14](P14-ui-ux-design-brief.md) could then assume it.
+**Dzmitry** reads exactly one part — the exception record table in section 5 — and builds the queue screen against it in [P19](../phase-4-build/P19-build-the-ui-from-the-brief.md). She needs `THRESHOLD_APPLIED` to exist, because "0.91 (needed 0.92)" is a far more useful thing to show Preeti than "0.91". That column exists because Hem wrote the spec before the UI brief, and the brief in [P14](P14-ui-ux-design-brief.md) could then assume it.
 
-Sofia's own next move is [P12](P12-record-an-architecture-decision.md), because writing this spec exposed a decision that was being treated as obvious — one failing field rejects the whole document — and obvious decisions are exactly the ones that get challenged in Sprint 3 with nobody able to remember why.
+Hem's own next move is [P12](P12-record-an-architecture-decision.md), because writing this spec exposed a decision that was being treated as obvious — one failing field rejects the whole document — and obvious decisions are exactly the ones that get challenged in Sprint 3 with nobody able to remember why.
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/spec-confidence-gate.md`**
 > Anyone reading this file can rely on finding:
@@ -835,11 +835,11 @@ Sofia's own next move is [P12](P12-record-an-architecture-decision.md), because 
 
 This is the second half of [Chapter 3 — Sprint 1: Design](../../Case-Study/Python-ETL/03-sprint-1-design.md), and it produces [`artifacts/spec-confidence-gate.md`](../../Case-Study/Python-ETL/artifacts/spec-confidence-gate.md).
 
-The scene worth reading is the review. Sofia takes the draft to Amara on Thursday morning expecting a ten-minute conversation about thresholds. What actually happens is that Amara reads R3 — one failing field rejects the whole document — and asks whether that is going to make the straight-through rate look terrible in the first month. Sofia says yes. Amara says the 85% target is a quarter-three number then, not a launch number, and writes that down. That single exchange, which happens because a rule was written explicitly enough to object to, resets a target that Farhan was about to commit to a client.
+The scene worth reading is the review. Hem takes the draft to Preetinka on Thursday morning expecting a ten-minute conversation about thresholds. What actually happens is that Preetinka reads R3 — one failing field rejects the whole document — and asks whether that is going to make the straight-through rate look terrible in the first month. Hem says yes. Preetinka says the 85% target is a quarter-three number then, not a launch number, and writes that down. That single exchange, which happens because a rule was written explicitly enough to object to, resets a target that Atul was about to commit to a client.
 
-The other thing that happens in that chapter is smaller and matters more later. Sofia writes the fourth open question — the one about line items being a nested structure rather than a flat field list — marks it `ASSUMED: yes, same rule`, and nobody follows it up. Eleven weeks later Ananya files **NWD-142**: on a Broker Alpha statement where the positions table spans a page boundary, the page-2 line items are dropped, every extracted field is high confidence, the gate passes, and half a statement loads into Snowflake. Reconciliation reports `MISSING_EXTERNAL` breaks that look exactly like genuine settlement failures.
+The other thing that happens in that chapter is smaller and matters more later. Hem writes the fourth open question — the one about line items being a nested structure rather than a flat field list — marks it `ASSUMED: yes, same rule`, and nobody follows it up. Eleven weeks later Pankaj files **NWD-142**: on a Broker Alpha statement where the positions table spans a page boundary, the page-2 line items are dropped, every extracted field is high confidence, the gate passes, and half a statement loads into Snowflake. Reconciliation reports `MISSING_EXTERNAL` breaks that look exactly like genuine settlement failures.
 
-When the team traces it back in [Chapter 8](../../Case-Study/Python-ETL/08-sprint-3-rework.md), the earliest point the bug was visible is that open question. It was written down. It was correct. It just was not chased. Rahul's note in the retrospective is the one worth stealing: **an open question with nobody's name on it is a decision to ignore it.**
+When the team traces it back in [Chapter 8](../../Case-Study/Python-ETL/08-sprint-3-rework.md), the earliest point the bug was visible is that open question. It was written down. It was correct. It just was not chased. Gautam's note in the retrospective is the one worth stealing: **an open question with nobody's name on it is a decision to ignore it.**
 
 ---
 

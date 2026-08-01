@@ -2,12 +2,12 @@
 
 | | |
 |---|---|
-| **Produced by** | Sofia Marchetti, Architect |
+| **Produced by** | Hem Singh, Architect |
 | **Using** | [P12 — Record an Architecture Decision](../../../../AI-Prompts-Library/phase-2-design/P12-record-an-architecture-decision.md) |
 | **Date** | 2026-06-17 |
 | **Status** | **Accepted, contested** |
 | **Version** | 1.0 |
-| **In the room** | Sofia Marchetti (Architect), Tomas Vargas (Backend), Amara Osei (PO), Rahul Nair (Team Lead), Ananya Iyer (QA) |
+| **In the room** | Hem Singh (Architect), Ravi Mullick (Backend), Preetinka Sharma (PO), Gautam  (Team Lead), Pankaj  (QA) |
 
 ---
 
@@ -31,13 +31,13 @@ So: if we load eleven of a statement's fourteen positions and drop three, the re
 
 **For.**
 - Higher straight-through rate on the headline metric, immediately and substantially. On the 60-document sample, row-level rejection would have loaded 94% of line items automatically against 61% of documents.
-- Less analyst work per document — Priya fixes three fields, not a whole statement.
+- Less analyst work per document — Preeti fixes three fields, not a whole statement.
 - Intuitively "wasting less". Eighty-seven good values are eighty-seven good values.
 
 **Against.**
 - Produces exactly the break class described above. This is not a hypothetical: it is what the 2024 spreadsheet-macro process at Northwind did, and the recs team's stated reason for distrusting it.
 - The straight-through metric becomes dishonest. A document 80% loaded is not 80% done; it is a document that has generated work in a different team.
-- Partial state is hard to correct. When Priya fixes line 7, the document is now half-loaded and half-queued, and "release" has to mean "merge the fix into a document that is already partly in the warehouse".
+- Partial state is hard to correct. When Preeti fixes line 7, the document is now half-loaded and half-queued, and "release" has to mean "merge the fix into a document that is already partly in the warehouse".
 
 ### Option B — Document-level rejection. One failing field sends the whole document to review.
 
@@ -45,7 +45,7 @@ So: if we load eleven of a statement's fourteen positions and drop three, the re
 
 **For.**
 - The warehouse contains only complete documents. A break in the report is a real break.
-- The unit of correction matches the unit of work: Priya opens a document, fixes it, releases it, and it is done.
+- The unit of correction matches the unit of work: Preeti opens a document, fixes it, releases it, and it is done.
 - Correction is simple — nothing was loaded, so releasing is a first load, not a reconciliation of partial state.
 - The straight-through rate measures something true.
 
@@ -73,7 +73,7 @@ So: if we load eleven of a statement's fourteen positions and drop three, the re
 
 1. **A wrong number is worse than no number, and a missing row is a wrong number in disguise.** A partially ingested statement does not present as incomplete data. It presents as a counterparty disagreeing with us, which is the most expensive false alarm this system can generate.
 2. **The gate sits upstream of reconciliation precisely so the break report stays trustworthy.** If low-confidence or partial data flows through, the break report fills with false positives, and a control that operations stops trusting is a control that does not exist. That is the failure Northwind hired us to fix, not one to reproduce more efficiently.
-3. **The unit of human work is the document.** Priya opens a PDF. She does not open a line item. Making the system's unit of decision match the analyst's unit of work is what makes one-pass correction possible, and one-pass correction is what makes forty documents a morning feasible.
+3. **The unit of human work is the document.** Preeti opens a PDF. She does not open a line item. Making the system's unit of decision match the analyst's unit of work is what makes one-pass correction possible, and one-pass correction is what makes forty documents a morning feasible.
 4. **One behaviour is testable; two are arguable.** The gate returns one verdict. There is no partial state anywhere in the pipeline, which removes an entire class of bug we would otherwise have found in production.
 
 We accept the cost in reason-form: a descriptive-field failure on an otherwise clean document sends it to review. Mitigation is the threshold, not the rule — descriptive strings are gated at 0.75, the loosest threshold in the system, precisely because they are the fields we least want to reject a document over.
@@ -90,7 +90,7 @@ We accept the cost in reason-form: a descriptive-field failure on an otherwise c
 
 ### What this costs us
 
-- A materially lower straight-through rate than Option A would report. Measured on the 60-document ground-truth set: 61% document-level against 94% line-item-level. Farhan raised this with Northwind before the parallel run so the number was expected rather than explained afterwards.
+- A materially lower straight-through rate than Option A would report. Measured on the 60-document ground-truth set: 61% document-level against 94% line-item-level. Atul raised this with Northwind before the parallel run so the number was expected rather than explained afterwards.
 - More analyst work per rejected document, since the analyst reviews the whole statement rather than the failing field. Mitigated by the exception queue showing **every** failure at once and opening the PDF at the failing page ([NWD-108](../stories/NWD-108.md), criteria 3 and 5).
 - Genuine waste on descriptive-field-only failures. Roughly a fifth of the rejections in the first parallel-run week were a security name and nothing else.
 
@@ -102,15 +102,15 @@ We accept the cost in reason-form: a descriptive-field failure on an otherwise c
 
 ### Objections on the record
 
-- **Tomas Vargas, 2026-06-17.** Objected, on the record, and asked for it to be minuted.
+- **Ravi Mullick, 2026-06-17.** Objected, on the record, and asked for it to be minuted.
 
   His argument, in summary: *"We are choosing to throw away eighty-seven correct values because three were uncertain, and we are doing it to protect a downstream report from a problem that report could solve itself. Reconciliation already classifies breaks. It could carry a `PARTIAL_SOURCE` classification and filter those breaks out — that's a one-line change in `recon/reconcile.py`. Instead we are paying for it forever, in every document, with analyst time. And the number we'll report to the client is a third lower than the number the same pipeline could report."*
 
-  **Not accepted.** The counter-argument, and Sofia's reasoning as recorded: a `PARTIAL_SOURCE` classification requires the reconciliation to know which rows were dropped, and it cannot know that — the dropped rows are precisely the ones no data exists for. It would have to infer partiality from the document-level record, which means the pipeline must reliably know it dropped something, which is the assumption that [NWD-142](../bug-NWD-142.md) later demonstrated we could not make. The objection was reasonable on the information available in June, and the July evidence went against it.
+  **Not accepted.** The counter-argument, and Hem's reasoning as recorded: a `PARTIAL_SOURCE` classification requires the reconciliation to know which rows were dropped, and it cannot know that — the dropped rows are precisely the ones no data exists for. It would have to infer partiality from the document-level record, which means the pipeline must reliably know it dropped something, which is the assumption that [NWD-142](../bug-NWD-142.md) later demonstrated we could not make. The objection was reasonable on the information available in June, and the July evidence went against it.
 
-  Tomas's second point — that the reported metric is a third lower for the same underlying quality — was accepted as true and is recorded above under costs. It is not a reason to change the decision.
+  Ravi's second point — that the reported metric is a third lower for the same underlying quality — was accepted as true and is recorded above under costs. It is not a reason to change the decision.
 
-  **Status:** Tomas implemented Option B as specified and raised no further objection. Ananya's note in the same meeting: *"If we do this, the exception queue has to be genuinely good, or we've just moved the cost onto Priya."* That became [NWD-108](../stories/NWD-108.md) criteria 3, 5, and 11.
+  **Status:** Ravi implemented Option B as specified and raised no further objection. Pankaj's note in the same meeting: *"If we do this, the exception queue has to be genuinely good, or we've just moved the cost onto Preeti."* That became [NWD-108](../stories/NWD-108.md) criteria 3, 5, and 11.
 
 ## Revisit when
 
@@ -129,15 +129,15 @@ We accept the cost in reason-form: a descriptive-field failure on an otherwise c
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/adr/0003-one-failing-field-rejects-the-document.md`**
 >
-> Produced by: Architect (Sofia Marchetti) using P12 — Record an Architecture Decision
-> Approved by: Amara Osei (PO) 2026-06-17 · Rahul Nair (Team Lead) 2026-06-17
+> Produced by: Architect (Hem Singh) using P12 — Record an Architecture Decision
+> Approved by: Preetinka Sharma (PO) 2026-06-17 · Gautam  (Team Lead) 2026-06-17
 >
 > Anyone consuming this file can rely on finding:
 > - Why partial ingestion is dangerous, explained in terms of what the recs team sees, not in terms of data
 > - Three options with honest arguments for and against, including the hybrid nobody wanted to rule out
 > - The decision with four numbered reasons
 > - Consequences in three parts, with the measured straight-through cost stated numerically (61% vs 94%)
-> - **Tomas Vargas's objection in full, attributed and dated, with the counter-argument and its outcome**
+> - **Ravi Mullick's objection in full, attributed and dated, with the counter-argument and its outcome**
 > - The connection to NWD-142, stated rather than implied
 > - A revisit trigger
 >
@@ -147,4 +147,4 @@ We accept the cost in reason-form: a descriptive-field failure on an otherwise c
 > **If any guarantee above is missing, this artifact is not done.**
 > Do not build on it — send it back.
 >
-> Changing this file: never edit the Decision section. Supersede with a new ADR, approved by Sofia Marchetti and Amara Osei jointly. Reversing this decision requires re-checking `core/confidence.py`, `core/rules.py`, `acceptance-criteria-NWD-103.md` (AC-08, AC-14), `ui-brief-exception-queue.md`, and `recon/reconcile.py`.
+> Changing this file: never edit the Decision section. Supersede with a new ADR, approved by Hem Singh and Preetinka Sharma jointly. Reversing this decision requires re-checking `core/confidence.py`, `core/rules.py`, `acceptance-criteria-NWD-103.md` (AC-08, AC-14), `ui-brief-exception-queue.md`, and `recon/reconcile.py`.

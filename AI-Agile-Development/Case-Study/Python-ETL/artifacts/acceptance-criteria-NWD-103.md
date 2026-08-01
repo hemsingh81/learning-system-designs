@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Produced by** | Amara Osei (Product Owner) and Ananya Iyer (QA Engineer), jointly |
+| **Produced by** | Preetinka Sharma (Product Owner) and Pankaj  (QA Engineer), jointly |
 | **Using** | [P08 — Write Acceptance Criteria](../../../AI-Prompts-Library/phase-1-discovery/P08-write-acceptance-criteria.md) |
 | **Date** | 2026-06-12 (Revision 1) · 2026-07-31 (Revision 2) |
 | **Status** | Approved · Revision 2 approved |
@@ -18,7 +18,7 @@ Each criterion is Given / When / Then and is written so that it can be turned in
 
 Criteria are grouped: happy paths first, then failure paths, then the paths that are neither — the ones where the pipeline itself is having a bad day.
 
-Ananya's rule for this document: **if a criterion cannot fail, it is not a criterion.** Two lines were cut in review for that reason.
+Pankaj's rule for this document: **if a criterion cannot fail, it is not a criterion.** Two lines were cut in review for that reason.
 
 ---
 
@@ -80,7 +80,7 @@ Ananya's rule for this document: **if a criterion cannot fail, it is not a crite
 > **And given** the same field at 0.8999999
 > **Then** it fails.
 
-*(Ananya added AC-07. The original draft said "below the threshold fails", which leaves the boundary itself undefined, and undefined boundaries are where the arguments happen.)*
+*(Pankaj added AC-07. The original draft said "below the threshold fails", which leaves the boundary itself undefined, and undefined boundaries are where the arguments happen.)*
 
 ---
 
@@ -104,7 +104,7 @@ Ananya's rule for this document: **if a criterion cannot fail, it is not a crite
 > **And** each entry carries `field`, `row`, `value`, `confidence`, `threshold`, and `why`
 > **And** the row index is present on line-item failures and absent on header failures.
 
-*Rationale, stated because it will be questioned: an analyst who fixes one field, resubmits, and discovers a second failure has been made to do the job twice. Priya works forty documents in a morning. Four round trips per document is the difference between this project working and not.*
+*Rationale, stated because it will be questioned: an analyst who fixes one field, resubmits, and discovers a second failure has been made to do the job twice. Preeti works forty documents in a morning. Four round trips per document is the difference between this project working and not.*
 
 ### AC-10 — A field the model did not return is a failure, not a pass
 
@@ -162,7 +162,7 @@ Ananya's rule for this document: **if a criterion cannot fail, it is not a crite
 > **When** the same content arrives again under a different filename
 > **Then** it is recognised as the same document by content hash
 > **And** it does not create a second exception queue row
-> **And** the existing exception row remains the one Priya works.
+> **And** the existing exception row remains the one Preeti works.
 
 ---
 
@@ -175,7 +175,7 @@ Ananya's rule for this document: **if a criterion cannot fail, it is not a crite
 > **Then** the document does not reach the warehouse
 > **And** `min_confidence` for such a document is 0.0, which is the honest reading of "we do not know".
 
-*Ananya's note: a naive gate returns `passed = true` here, because "no failures" and "nothing checked" look identical from inside the gate. The `min_line_items` rule is what actually catches it. Tested at the pipeline level, not the gate level.*
+*Pankaj's note: a naive gate returns `passed = true` here, because "no failures" and "nothing checked" look identical from inside the gate. The `min_line_items` rule is what actually catches it. Tested at the pipeline level, not the gate level.*
 
 ### AC-18 — The gate is deterministic and has no I/O
 
@@ -221,13 +221,13 @@ Ananya's rule for this document: **if a criterion cannot fail, it is not a crite
 
 ## Revision 2 — completeness (2026-07-31)
 
-**Added after [NWD-142](bug-NWD-142.md).** Amara Osei and Ananya Iyer, countersigned Sofia Marchetti.
+**Added after [NWD-142](bug-NWD-142.md).** Preetinka Sharma and Pankaj , countersigned Hem Singh.
 
 ### What this revision is fixing, stated plainly
 
 Revision 1 of this document is, as far as it goes, correct. Twenty criteria, every one of them testable, every one of them passing. And a Broker Alpha statement with a positions table spanning a page boundary loaded into Snowflake with nine of its fourteen positions, and not one criterion above was violated.
 
-Every field that was extracted was high confidence. The gate did exactly what it was written to do. The reconciliation then reported five `MISSING_EXTERNAL` breaks that looked identical to a genuine settlement failure, and Priya spent an afternoon on them.
+Every field that was extracted was high confidence. The gate did exactly what it was written to do. The reconciliation then reported five `MISSING_EXTERNAL` breaks that looked identical to a genuine settlement failure, and Preeti spent an afternoon on them.
 
 The criteria above answer the question *"is this number trustworthy?"* — thoroughly. Nobody wrote a criterion answering *"is this number here?"* AC-10 comes closest and does not cover it: AC-10 is about a **field** the model did not return within a line item it did return. It has nothing to say about a line item the model never returned at all.
 
@@ -262,20 +262,20 @@ That gap was in the story, the spec, and this document simultaneously, because a
 > **Then** the completeness rules do not fail it
 > **And** the reason is recorded in the run log as `line_item_count_not_declared`, so the coverage gap is visible rather than assumed away.
 
-*Included because Rahul asked the right question in review: "what does this rule do when it cannot do anything?" A completeness check that silently no-ops on half the counterparties is worse than no check, because everyone believes it is running.*
+*Included because Gautam asked the right question in review: "what does this rule do when it cannot do anything?" A completeness check that silently no-ops on half the counterparties is worse than no check, because everyone believes it is running.*
 
 ### Consequences of Revision 2
 
 - Three counterparty layouts must be checked for whether they state a line-item count. `broker_alpha` and `broker_beta_em` do; that is recorded in `config/sources.yaml` as `line_item_count_field`.
-- The straight-through rate will fall when these rules are enabled, because documents that previously loaded incorrectly will now go to review. That is a correct fall, not a regression, and Farhan was warned before the parallel-run numbers moved.
-- Every acceptance criteria document written before 2026-07-31 needs the same question asked of it: *does this cover completeness, or only correctness?* Rahul owns that sweep. See [`retrospective-sprint-3.md`](retrospective-sprint-3.md), action item 1.
+- The straight-through rate will fall when these rules are enabled, because documents that previously loaded incorrectly will now go to review. That is a correct fall, not a regression, and Atul was warned before the parallel-run numbers moved.
+- Every acceptance criteria document written before 2026-07-31 needs the same question asked of it: *does this cover completeness, or only correctness?* Gautam owns that sweep. See [`retrospective-sprint-3.md`](retrospective-sprint-3.md), action item 1.
 
 ---
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/acceptance-criteria-NWD-103.md`**
 >
-> Produced by: Product Owner (Amara Osei) and QA (Ananya Iyer) using P08 — Write Acceptance Criteria
-> Approved by: Rahul Nair (Team Lead) 2026-06-13 · Sofia Marchetti (Architect) 2026-07-31 for Revision 2
+> Produced by: Product Owner (Preetinka Sharma) and QA (Pankaj ) using P08 — Write Acceptance Criteria
+> Approved by: Gautam  (Team Lead) 2026-06-13 · Hem Singh (Architect) 2026-07-31 for Revision 2
 >
 > Anyone consuming this file can rely on finding:
 > - Given/When/Then criteria for the happy paths, with every threshold stated numerically and boundary behaviour defined
@@ -290,4 +290,4 @@ That gap was in the story, the spec, and this document simultaneously, because a
 > **If any guarantee above is missing, this artifact is not done.**
 > Do not build on it — send it back.
 >
-> Changing this file: Amara Osei and Ananya Iyer jointly; Sofia Marchetti countersigns any change touching thresholds or completeness. Adding or changing a criterion requires re-checking `spec-confidence-gate.md`, `tests/test_confidence.py`, `tests/test_rules.py`, and the traceability table in §D.
+> Changing this file: Preetinka Sharma and Pankaj  jointly; Hem Singh countersigns any change touching thresholds or completeness. Adding or changing a criterion requires re-checking `spec-confidence-gate.md`, `tests/test_confidence.py`, `tests/test_rules.py`, and the traceability table in §D.

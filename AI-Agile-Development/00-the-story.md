@@ -2,7 +2,7 @@
 
 ← [AI-Agents](../AI-Agents/README.md) · [README](README.md) →
 
-If you're arriving from [AI-Skills](../AI-Skills/00-the-story.md), [AI-Workflows](../AI-Workflows/00-the-story.md) and [AI-Agents](../AI-Agents/00-the-story.md), you already know Kestrel Software and you already know Rahul and Ananya. If you're arriving fresh — welcome. This book works on its own. It's the fourth chapter of one continuous story, but you won't be lost.
+If you're arriving from [AI-Skills](../AI-Skills/00-the-story.md), [AI-Workflows](../AI-Workflows/00-the-story.md) and [AI-Agents](../AI-Agents/00-the-story.md), you already know Kestrel Software and you already know Gautam and Pankaj. If you're arriving fresh — welcome. This book works on its own. It's the fourth chapter of one continuous story, but you won't be lost.
 
 ---
 
@@ -10,7 +10,7 @@ If you're arriving from [AI-Skills](../AI-Skills/00-the-story.md), [AI-Workflows
 
 You built a skill. Then a workflow. Then an agent.
 
-All three still run at Kestrel every day. Rahul's review tooling has looked at something like four hundred pull requests by now. Ananya's test suites catch things nobody would have caught by hand.
+All three still run at Kestrel every day. Gautam's review tooling has looked at something like four hundred pull requests by now. Pankaj's test suites catch things nobody would have caught by hand.
 
 And every single one of those three books had the same quiet assumption baked into it, which nobody said out loud:
 
@@ -32,14 +32,14 @@ Six weeks in, the project was a mess.
 
 Not because anyone did bad work. Because of this:
 
-- Amara, the product owner, wrote requirements with an AI. Good requirements.
-- Sofia, the architect, designed the system with an AI. Good design.
-- Except Sofia's design solved a slightly different problem than the one Amara had written down, because Sofia had described the problem to her AI **in her own words** rather than handing it Amara's document.
-- Tomas built what Sofia designed. Beautifully. In three days instead of two weeks.
-- Ananya tested what Tomas built and found five defects, one of which was serious enough that the fix changed the design.
+- Preetinka, the product owner, wrote requirements with an AI. Good requirements.
+- Hem, the architect, designed the system with an AI. Good design.
+- Except Hem's design solved a slightly different problem than the one Preetinka had written down, because Hem had described the problem to her AI **in her own words** rather than handing it Preetinka's document.
+- Ravi built what Hem designed. Beautifully. In three days instead of two weeks.
+- Pankaj tested what Ravi built and found five defects, one of which was serious enough that the fix changed the design.
 - And at that point **nobody knew what to do next.** There was no prompt for "the thing is built, it's wrong, and fixing it means going back three steps."
 
-Farhan, the project manager, put it more bluntly than that in the retro. What he actually said was:
+Atul, the project manager, put it more bluntly than that in the retro. What he actually said was:
 
 > "We've got seven people each running their own private AI session, each producing something excellent, and none of it fits together. We're not slow. We're just all going in slightly different directions very, very fast."
 
@@ -51,7 +51,7 @@ Read that story again and there are exactly two things wrong, and they're the tw
 
 ### Problem one: the handoff
 
-Amara produced a document. Sofia needed that document. What actually crossed the gap between them was **Sofia's memory of a conversation about the document.**
+Preetinka produced a document. Hem needed that document. What actually crossed the gap between them was **Hem's memory of a conversation about the document.**
 
 That's the handoff, and it's where AI-assisted teams fall apart. Not in the prompting — the prompting was fine. In the seam between one person's output and the next person's input.
 
@@ -103,7 +103,7 @@ Northwind runs two sets of books that have to agree.
 
 Proving those two agree is called **reconciliation**. Where they disagree, you have a **break** — a position that doesn't match, a missing trade, a fee charged but not accrued. Breaks cost real money.
 
-Here's the part that makes it a project: **the reconciliation logic already works fine.** The bottleneck is that before it can run, a human being — an operations analyst named Priya Raman — has to open each PDF and type the numbers into a spreadsheet. Several hours a day. Every day. Worse at month-end.
+Here's the part that makes it a project: **the reconciliation logic already works fine.** The bottleneck is that before it can run, a human being — an operations analyst named Preeti Singh — has to open each PDF and type the numbers into a spreadsheet. Several hours a day. Every day. Worse at month-end.
 
 That manual step is why breaks are found on **T+2** (two business days after the trade) instead of **T+1**.
 
@@ -115,7 +115,7 @@ flowchart LR
     B["Counterparty PDFs<br/>blob landing zone"] --> C["Azure AI<br/>classify · translate · extract"]
     C --> R["Rules engine<br/>confidence gate<br/>validate · normalise"]
     R -->|passes| T["Transform to<br/>canonical schema"]
-    R -->|fails| Q["Exception queue<br/>Priya reviews it"]
+    R -->|fails| Q["Exception queue<br/>Preeti reviews it"]
     Q -->|corrected| T
     T --> S["Azure SQL<br/>silver"]
     S --> W["Snowflake<br/>gold"]
@@ -126,7 +126,7 @@ flowchart LR
     style W fill:#122B22,stroke:#3DDC97,color:#E8EEF4
 ```
 
-**The one idea to hold on to:** a wrong number is worse than no number. Every field the AI pulls off a PDF comes with a score saying how sure it was. The rules engine compares that score to a limit. Below the limit, nothing goes into the warehouse — it goes to Priya. That single design choice is what makes the whole thing safe to build, and half the arguments in this book are about it.
+**The one idea to hold on to:** a wrong number is worse than no number. Every field the AI pulls off a PDF comes with a score saying how sure it was. The rules engine compares that score to a limit. Below the limit, nothing goes into the warehouse — it goes to Preeti. That single design choice is what makes the whole thing safe to build, and half the arguments in this book are about it.
 
 ---
 
@@ -164,7 +164,7 @@ This book is deliberately less tidy than the first three.
 
 Those three each taught one clean idea — a skill is this, a workflow is that, an agent is the other. You could read them and feel like you understood something completely.
 
-This one is about seven people disagreeing about a system that reads PDFs badly, and about the specific ways an AI makes that disagreement faster and more confident rather than slower. The middle of it — Sprint 3, where Ananya finds the bug — is the messiest part, and it's the part worth reading twice.
+This one is about seven people disagreeing about a system that reads PDFs badly, and about the specific ways an AI makes that disagreement faster and more confident rather than slower. The middle of it — Sprint 3, where Pankaj finds the bug — is the messiest part, and it's the part worth reading twice.
 
 If a section makes you think "that would never happen on my team," it's probably the section you need.
 

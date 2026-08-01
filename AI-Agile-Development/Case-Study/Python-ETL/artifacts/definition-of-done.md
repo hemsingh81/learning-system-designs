@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Produced by** | Rahul Nair, Team Lead · Ananya Iyer, QA Engineer |
+| **Produced by** | Gautam , Team Lead · Pankaj , QA Engineer |
 | **Using** | [P17 — Definition of Done](../../../AI-Prompts-Library/phase-3-planning/P17-definition-of-done.md) |
 | **Date** | 2026-06-08 (v1.0) · 2026-06-30 (v1.1, after [NWD-142](bug-NWD-142.md)) |
 | **Status** | Agreed by the whole team, 2026-06-09 · v1.1 agreed 2026-06-30 |
@@ -17,7 +17,7 @@ A story is Done when the team would be comfortable being asked about it six mont
 
 This is one list, applied identically to an eight-point story and a one-line fix. Sections are not optional depending on who is busy. Where an item genuinely does not apply — a config-only change has no UI — the pull request says so in one line and says why. "N/A" without a reason is not an answer.
 
-Amara owns whether a story met its acceptance criteria. Rahul owns whether it met this list. Those are different questions and they are asked separately.
+Preetinka owns whether a story met its acceptance criteria. Gautam owns whether it met this list. Those are different questions and they are asked separately.
 
 ---
 
@@ -51,7 +51,7 @@ Amara owns whether a story met its acceptance criteria. Rahul owns whether it me
 
 | # | Condition |
 |---|---|
-| 3.1 | Reviewed by someone who did not write it. Rahul reviews backend; Ji-woo and Rahul cross-review frontend. |
+| 3.1 | Reviewed by someone who did not write it. Gautam reviews backend; Dzmitry and Gautam cross-review frontend. |
 | 3.2 | Every review finding is answered: fixed, or declined with a reason recorded in the thread. Silence is not an answer. |
 | 3.3 | Findings are labelled **defect** or **preference**. A preference never blocks a merge; a defect always does. |
 | 3.4 | A clarity question — "why does this return `None` here?" — is resolved. Often the resolution is a comment rather than a code change, and that is a legitimate outcome. See [`code-review-NWD-103.md`](code-review-NWD-103.md). |
@@ -110,7 +110,7 @@ Applies to any story that reads a paged, chunked, or tabular source. If the answ
 | 7.2 | Alerts exist for the new failure modes, and each alert has a runbook entry it links to. |
 | 7.3 | Rollback is a documented single step, and it has been performed at least once in `dev`. |
 | 7.4 | Application Insights shows the change: a dashboard tile, a new custom event, or a query saved in the runbook. |
-| 7.5 | Amara has accepted it. Not "seen a demo" — accepted, against the criteria file. |
+| 7.5 | Preetinka has accepted it. Not "seen a demo" — accepted, against the criteria file. |
 | 7.6 | Nothing goes to production without the parallel run in [`release-readiness-v1.0.md`](release-readiness-v1.0.md). That gate is not part of a story and no story can satisfy it. |
 
 ---
@@ -119,21 +119,21 @@ Applies to any story that reads a paged, chunked, or tabular source. If the answ
 
 | Version | Date | Change | By |
 |---|---|---|---|
-| 1.0 | 2026-06-08 | Initial. Sections 1–3, 4, 6, 7, and the first three AI clauses. | Rahul, Ananya |
-| 1.1 | 2026-06-30 | §5.4 added after NWD-142. §2.8 (fixture shape) and §6.1 (row-count reconciliation) added with it — the same gap seen from the test side and the data side. | Rahul, Ananya |
+| 1.0 | 2026-06-08 | Initial. Sections 1–3, 4, 6, 7, and the first three AI clauses. | Gautam, Pankaj |
+| 1.1 | 2026-06-30 | §5.4 added after NWD-142. §2.8 (fixture shape) and §6.1 (row-count reconciliation) added with it — the same gap seen from the test side and the data side. | Gautam, Pankaj |
 
 ---
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/definition-of-done.md`**
 >
-> Produced by: Team Lead (Rahul Nair) and QA Engineer (Ananya Iyer) using P17 — Definition of Done
-> Agreed by: the whole team, 2026-06-09 · v1.1 agreed 2026-06-30 · Amara Osei countersigned §6
+> Produced by: Team Lead (Gautam ) and QA Engineer (Pankaj ) using P17 — Definition of Done
+> Agreed by: the whole team, 2026-06-09 · v1.1 agreed 2026-06-30 · Preetinka Sharma countersigned §6
 >
 > Anyone consuming this file can rely on finding:
 > - Completion conditions across code, tests, review, documentation, data quality and release
 > - The four AI-specific clauses stated as conditions, not aspirations, with the reasoning for the fourth
 > - A rule for what to do when a condition does not apply, so "N/A" is never a silent skip
-> - A named owner for the two different questions: criteria met (Amara) and standard met (Rahul)
+> - A named owner for the two different questions: criteria met (Preetinka) and standard met (Gautam)
 > - A dated changelog, so a change to the standard can be traced to the event that caused it
 >
 > This file does **not** contain: story-level acceptance criteria, the release gate itself, or the test strategy.
@@ -142,4 +142,4 @@ Applies to any story that reads a paged, chunked, or tabular source. If the answ
 > **If any guarantee above is missing, this artifact is not done.**
 > Do not build on it — send it back.
 >
-> Changing this file: Rahul Nair and Ananya Iyer jointly, and only at a retrospective. A DoD amended mid-sprint by the person it is inconvenient for is not a standard.
+> Changing this file: Gautam  and Pankaj  jointly, and only at a retrospective. A DoD amended mid-sprint by the person it is inconvenient for is not a standard.

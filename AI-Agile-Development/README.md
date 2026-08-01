@@ -118,7 +118,7 @@ That's [P29](AI-Prompts-Library/phase-6-rework/P29-the-spec-was-wrong.md), and h
 | [P11](AI-Prompts-Library/phase-2-design/P11-write-the-technical-spec.md) | Write the Technical Spec | The behaviour contract, not the business document |
 | [P12](AI-Prompts-Library/phase-2-design/P12-record-an-architecture-decision.md) | Record an Architecture Decision | So the reason survives the person |
 | [P13](AI-Prompts-Library/phase-2-design/P13-design-the-data-contract.md) | Design the Data Contract | The most important artifact on an ETL project |
-| [P14](AI-Prompts-Library/phase-2-design/P14-ui-ux-design-brief.md) | UI/UX Design Brief | Priya's working day, not a component inventory |
+| [P14](AI-Prompts-Library/phase-2-design/P14-ui-ux-design-brief.md) | UI/UX Design Brief | Preeti's working day, not a component inventory |
 
 ### Phase 3 — Planning · *Team Lead + PM*
 | | | |

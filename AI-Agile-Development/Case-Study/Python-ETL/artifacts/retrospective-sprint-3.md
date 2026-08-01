@@ -2,13 +2,13 @@
 
 | | |
 |---|---|
-| **Produced by** | Farhan Qureshi, Project Manager |
+| **Produced by** | Atul, Project Manager |
 | **Using** | [P35 — Run the Retrospective](../../../AI-Prompts-Library/phase-8-improve/P35-run-the-retrospective.md) |
 | **Date** | 2026-06-30 |
 | **Status** | Complete · action items tracked to closure |
 | **Version** | 1.0 |
 | **Sprint** | Sprint 3, 2026-06-15 → 2026-06-30 |
-| **Present** | Farhan Qureshi, Amara Osei, Sofia Marchetti, Rahul Nair, Tomas Vargas, Ji-woo Park, Ananya Iyer |
+| **Present** | Atul, Preetinka Sharma, Hem Singh, Gautam , Ravi Mullick, Dzmitry , Pankaj  |
 
 ---
 
@@ -31,23 +31,23 @@ I want to be precise about what that one-day estimate was. It was not a guess at
 
 ## 2. What went well
 
-**The bug reports were good enough to prompt with.** Ananya's reports carry numbers rather than adjectives, a reproduction that runs, a ruled-out table, and a statement of business impact. Tomas fixed four of the five without asking her a single question. NWD-141 took ten minutes from report to root cause because the report contained the stack trace and the `grep` that finds it in three places. That is not luck; it is the format.
+**The bug reports were good enough to prompt with.** Pankaj's reports carry numbers rather than adjectives, a reproduction that runs, a ruled-out table, and a statement of business impact. Ravi fixed four of the five without asking her a single question. NWD-141 took ten minutes from report to root cause because the report contained the stack trace and the `grep` that finds it in three places. That is not luck; it is the format.
 
 **The rework loop held.** Every fix went test-first: the failing test committed before the fix, in its own commit. Nobody edited a test to make it pass. That clause in the [Definition of Done](definition-of-done.md) got exercised under real time pressure in week two, and it held.
 
 **Bronze paid for itself.** Every reprocess during the sprint was free. NWD-138's identifier corruption was recovered from stored responses without re-extracting a single page. [ADR-0002](adr/0002-persist-bronze-before-parsing.md) was argued about for an hour in Sprint 1 and it repaid that hour many times over in this one.
 
-**Rahul's code review found the boundary defect before QA did.** `>` where the spec says the comparison must let a field sitting exactly on the threshold pass — [`code-review-NWD-103.md`](code-review-NWD-103.md) F1. That defect would have quietly cost straight-through rate in the direction nobody investigates, because it looks like the system being careful.
+**Gautam's code review found the boundary defect before QA did.** `>` where the spec says the comparison must let a field sitting exactly on the threshold pass — [`code-review-NWD-103.md`](code-review-NWD-103.md) F1. That defect would have quietly cost straight-through rate in the direction nobody investigates, because it looks like the system being careful.
 
-**Priya was in the room.** She reviewed the exception queue on day 8 and found two things Ji-woo would not have found from the brief. Having the actual user available cost her an hour and saved a release.
+**Preeti was in the room.** She reviewed the exception queue on day 8 and found two things Dzmitry would not have found from the brief. Having the actual user available cost her an hour and saved a release.
 
 ---
 
 ## 3. The honest finding
 
-Everyone came into this retrospective ready to talk about NWD-142 as Tomas's bug. I want to close that off before we start, because it is wrong and it is the comfortable kind of wrong.
+Everyone came into this retrospective ready to talk about NWD-142 as Ravi's bug. I want to close that off before we start, because it is wrong and it is the comfortable kind of wrong.
 
-Tomas wrote code that took the first document from a list and mapped its fields. That code satisfied [`spec-confidence-gate.md`](spec-confidence-gate.md) Revision 1 completely. It satisfied every acceptance criterion in [`acceptance-criteria-NWD-103.md`](acceptance-criteria-NWD-103.md). It passed code review, including a careful one. It passed 60 unit tests. Sofia has read the implementation against her own spec and confirmed it does exactly what the spec says.
+Ravi wrote code that took the first document from a list and mapped its fields. That code satisfied [`spec-confidence-gate.md`](spec-confidence-gate.md) Revision 1 completely. It satisfied every acceptance criterion in [`acceptance-criteria-NWD-103.md`](acceptance-criteria-NWD-103.md). It passed code review, including a careful one. It passed 60 unit tests. Hem has read the implementation against her own spec and confirmed it does exactly what the spec says.
 
 **A defect that passes the spec, the criteria, the review and the tests is not a defect in the engineer. It is a defect in the process, and we all built the process.**
 
@@ -71,7 +71,7 @@ We had a control. We built it carefully, we swept its thresholds against a label
 
 **It gave us false confidence that a whole class of error was covered when it wasn't.**
 
-Ananya put it better than I can, in [NWD-142](bug-NWD-142.md) §4.3:
+Pankaj put it better than I can, in [NWD-142](bug-NWD-142.md) §4.3:
 
 > The gate answers **"can I trust this number?"**
 > The failure here is **"is this number even here?"**
@@ -87,7 +87,7 @@ And it went further than the code. The story, the acceptance criteria and the sp
 
 Every extraction fixture in the suite was a single-page document. Not one multi-page fixture existed anywhere.
 
-Ananya's line, which I am quoting because it generalises: **a fixture built to prove a feature works is not a fixture that can find out where it does harm.** We had fixtures for the content of a document and none for its shape.
+Pankaj's line, which I am quoting because it generalises: **a fixture built to prove a feature works is not a fixture that can find out where it does harm.** We had fixtures for the content of a document and none for its shape.
 
 NWD-138 has the same shape. Every EM fixture had descriptive security names that translate harmlessly, because they were written to prove translation happened. None had a real Brazilian ticker with a share-class suffix, which is where translation does damage.
 
@@ -103,15 +103,15 @@ Three action items. Each has one name against it, and one date. Not "the team", 
 
 | | |
 |---|---|
-| **Owner** | **Ananya Iyer** |
+| **Owner** | **Pankaj ** |
 | **Due** | **2026-07-10** |
 | **Done when** | The data-quality suite asserts, for every processed document, that rows landed in gold equals line items extracted equals the document's declared count where one exists — and that a shortfall fails the suite, not merely logs |
 
-The completeness rules Tomas added in `core/rules.py` stop a bad document at ingest. This is the check that runs afterwards and would have caught it even if those rules were wrong, missing, or misconfigured for a counterparty.
+The completeness rules Ravi added in `core/rules.py` stop a bad document at ingest. This is the check that runs afterwards and would have caught it even if those rules were wrong, missing, or misconfigured for a counterparty.
 
 Two independent mechanisms, because the failure we are guarding against is precisely the one where a mechanism silently does nothing and everyone believes it is running.
 
-Ananya's scope note: it must report per counterparty, so a source with no declared count field is visibly *not covered* rather than invisibly *passing*.
+Pankaj's scope note: it must report per counterparty, so a source with no declared count field is visibly *not covered* rather than invisibly *passing*.
 
 **Closed 2026-07-10.** Shipped and running daily. [`release-readiness-v1.0.md`](release-readiness-v1.0.md) §3.5.
 
@@ -119,7 +119,7 @@ Ananya's scope note: it must report per counterparty, so a source with no declar
 
 | | |
 |---|---|
-| **Owner** | **Sofia Marchetti** |
+| **Owner** | **Hem Singh** |
 | **Due** | **2026-07-07** |
 | **Done when** | The spec template carries a mandatory section, the artifact contract for specs guarantees an answer to it, and every existing spec in the project has been swept and answered |
 
@@ -127,13 +127,13 @@ The question, in these words:
 
 > **What does silently-missing data look like here, and how would the system detect it?**
 
-Sofia's reasoning at the retro, recorded because the wording was argued over for twenty minutes:
+Hem's reasoning at the retro, recorded because the wording was argued over for twenty minutes:
 
 > My standing question has always been "what does this look like when it's wrong?" It was not enough, and NWD-142 is why. That question assumes something *looks* like something. This one had no appearance at all — no exception, no failed test, no log line, a document marked `loaded`, a confidence of 0.9412, and a complete audit trail for data that was incomplete. It looked exactly like success.
 >
 > So the question has to name the specific case. Not "what if this is wrong" but "what if some of it is simply not here, and nothing tells us". If the honest answer is "this input cannot be partial", write that sentence and say why. Thirty seconds. That sentence is what would have caught this.
 
-The corresponding clause in the [Definition of Done](definition-of-done.md) is §5.4: every story that produces rows states what "complete" means for its input and how incompleteness is detected. Rahul and Ananya added it on 2026-06-30.
+The corresponding clause in the [Definition of Done](definition-of-done.md) is §5.4: every story that produces rows states what "complete" means for its input and how incompleteness is detected. Gautam and Pankaj added it on 2026-06-30.
 
 **Closed 2026-07-07.** Template updated; five existing specs swept, one further gap found in the Aladdin pull and ticketed. [`spec-confidence-gate.md`](spec-confidence-gate.md) Revision 2 was drafted 2026-07-31 and formally approved 2026-07-31.
 
@@ -141,7 +141,7 @@ The corresponding clause in the [Definition of Done](definition-of-done.md) is �
 
 | | |
 |---|---|
-| **Owner** | **Farhan Qureshi** |
+| **Owner** | **Atul** |
 | **Due** | **2026-07-03**, in time for Sprint 4 planning |
 | **Done when** | Every sprint plan from Sprint 4 onward shows rework as its own line item, sized from actuals, and the sprint is not committed if build plus test plus rework exceeds capacity |
 
@@ -152,7 +152,7 @@ What changes:
 1. **Rework is a line item**, sized and visible, never absorbed into a build estimate.
 2. **It is sized from actuals.** Sprint 3 ran 6 rework days against 6 build-and-test days — a ratio of 1.0. I will not carry 1.0 forward as a rule, because Sprint 3 was the first sprint QA had a full system to attack and I expect it to fall. Sprint 4 carries **0.4**, and the ratio is re-derived from actuals every sprint.
 3. **Rework capacity is not a buffer to be raided.** If it is unused, the sprint finishes early. It does not become room for another story on day 9.
-4. **The plan states the assumption out loud**: "this assumes N days of rework; if defects run heavier, scope moves, not the date." Amara and Northwind see that sentence before the sprint starts, not after.
+4. **The plan states the assumption out loud**: "this assumes N days of rework; if defects run heavier, scope moves, not the date." Preetinka and Northwind see that sentence before the sprint starts, not after.
 
 The honest version of this: a plan with no rework line is not an optimistic plan, it is an incomplete one. Rework is not an accident that happens to bad teams. It is where the design gets correct, and Sprint 3 is the proof — the spec is better, the criteria are better, the fixture set is better, and none of that would exist without the six days.
 
@@ -164,24 +164,24 @@ I would rather commit to less and hit it.
 
 | Proposal | Decision |
 |---|---|
-| Add a QA gate before code review | No. Ananya found four of five defects in E2E, which is where they should be found. The one review would not have caught was NWD-142, and no review catches a defect the spec permits |
+| Add a QA gate before code review | No. Pankaj found four of five defects in E2E, which is where they should be found. The one review would not have caught was NWD-142, and no review catches a defect the spec permits |
 | Slow the build to write more tests up front | No. Test coverage was not the problem. 60 passing tests could not catch NWD-142 because they all tested the same idea. More of the same tests is more of the same blind spot |
-| Have Sofia review every implementation against her specs | No — it does not scale and it puts the same mental model on both sides of the check. The template question in Action 2 achieves the goal without the bottleneck |
+| Have Hem review every implementation against her specs | No — it does not scale and it puts the same mental model on both sides of the check. The template question in Action 2 achieves the goal without the bottleneck |
 | Treat NWD-142 as an individual performance matter | **No.** See §3. The process permitted the defect. Two of us reviewed the code and neither of us caught it either |
 
 ---
 
 ## 6. Carried into Sprint 4
 
-- Fixture coverage is now a first-class concern: multi-page, multi-table, translated, zero-line-item, and oversized variants for every source. Ananya, ongoing.
-- Rahul's sweep of every spec written under the old contract. Action 2, and the Aladdin gap it found.
+- Fixture coverage is now a first-class concern: multi-page, multi-table, translated, zero-line-item, and oversized variants for every source. Pankaj, ongoing.
+- Gautam's sweep of every spec written under the old contract. Action 2, and the Aladdin gap it found.
 - The parallel run is non-negotiable and Sprint 4 planning is built around it. [`release-readiness-v1.0.md`](release-readiness-v1.0.md) §6.
 
 ---
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/retrospective-sprint-3.md`**
 >
-> Produced by: Project Manager (Farhan Qureshi) using P35 — Run the Retrospective
+> Produced by: Project Manager (Atul) using P35 — Run the Retrospective
 > Attended by: all seven team members, 2026-06-30
 >
 > Anyone consuming this file can rely on finding:
@@ -198,4 +198,4 @@ I would rather commit to less and hit it.
 > **If any guarantee above is missing, this retrospective is not done.**
 > A retrospective without owned, dated actions is a conversation — send it back.
 >
-> Changing this file: Farhan Qureshi, to record closure of an action item. Findings are never softened after the fact.
+> Changing this file: Atul, to record closure of an action item. Findings are never softened after the fact.

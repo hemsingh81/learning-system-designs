@@ -7,24 +7,24 @@
 | | |
 |---|---|
 | **Phase** | 6 — Rework |
-| **Who runs it** | Backend or Frontend Engineer (Tomas Vargas; Ji-woo Park on the UI) |
+| **Who runs it** | Backend or Frontend Engineer (Ravi Mullick; Dzmitry  on the UI) |
 | **When** | Review comments have landed on your pull request and you are about to start "addressing" them |
 | **Takes in** | The review (`Case-Study/Python-ETL/artifacts/code-review-NWD-103.md`), the code under review, the spec it implements |
 | **Produces** | A classified response to every comment, a diff for the ones that need one, and written replies for the ones that do not |
-| **Hands off to** | Rahul Nair for re-review; Ananya Iyer if a comment turned out to be a defect |
+| **Hands off to** | Gautam  for re-review; Pankaj  if a comment turned out to be a defect |
 | **Time to run** | 45 minutes for a normal review. Longer if a comment turns into a bug. |
 
 ---
 
 ## 1. The scene
 
-Tomas has just fixed NWD-142. The pull request went up on Thursday afternoon with the evidence table from [P27](P27-fix-from-a-qa-bug-report.md) as its description, and Rahul reviewed it on Friday morning using the review prompt from [P23](../phase-5-verify/P23-review-someone-elses-code.md).
+Ravi has just fixed NWD-142. The pull request went up on Thursday afternoon with the evidence table from [P27](P27-fix-from-a-qa-bug-report.md) as its description, and Gautam reviewed it on Friday morning using the review prompt from [P23](../phase-5-verify/P23-review-someone-elses-code.md).
 
-But that is not the review sitting in front of Tomas right now. The one in front of him is older and larger, and it has been open for four days. It is Rahul's review of **NWD-103 — Gate every extracted field on its confidence score**, the flagship story of the whole build, the code that everything else in the pipeline depends on. Eleven comments. Tomas has been avoiding it because he does not agree with most of them.
+But that is not the review sitting in front of Ravi right now. The one in front of him is older and larger, and it has been open for four days. It is Gautam's review of **NWD-103 — Gate every extracted field on its confidence score**, the flagship story of the whole build, the code that everything else in the pipeline depends on. Eleven comments. Ravi has been avoiding it because he does not agree with most of them.
 
 He opens his AI tool, pastes the eleven comments, pastes `core/confidence.py`, and types: **"address this review feedback."**
 
-Ninety seconds later he has a diff that touches four files. Every comment has been actioned. The dictionary became a dataclass. The three helper functions became a class. The function that returns `None` now returns an empty string instead. The unknown-field-type fallback is unchanged, because Rahul phrased that one as a question and the AI answered the question in prose instead of changing the code.
+Ninety seconds later he has a diff that touches four files. Every comment has been actioned. The dictionary became a dataclass. The three helper functions became a class. The function that returns `None` now returns an empty string instead. The unknown-field-type fallback is unchanged, because Gautam phrased that one as a question and the AI answered the question in prose instead of changing the code.
 
 Read that last sentence again, because it is the whole problem in one line. **The only comment that identified a real defect is the only comment the AI did not act on.** Everything else — the stylistic preferences, the naming — got a code change. The one that mattered got a paragraph.
 
@@ -279,7 +279,7 @@ Save the classification table and the replies as a comment on the pull request f
 
 ## 5. The filled-in example
 
-Tomas runs this on Monday morning, four days after Rahul's review landed, having deleted his first "address this review" attempt.
+Ravi runs this on Monday morning, four days after Gautam's review landed, having deleted his first "address this review" attempt.
 
 ```text
 You are a senior Python 3.11 / Azure Functions engineer responding to a code review
@@ -291,7 +291,7 @@ the work. The diff is a consequence of it.
 
 ## The review
 
---- from artifacts/code-review-NWD-103.md, reviewer: Rahul Nair ---
+--- from artifacts/code-review-NWD-103.md, reviewer: Gautam  ---
 
 R1. core/confidence.py:34
     `THRESHOLDS.get(field_type, 0.0)` — what happens when field_type is something we
@@ -338,7 +338,7 @@ Save the classification table and the replies as a comment on the pull request f
 NWD-103.
 ```
 
-Five comments, not eleven — the other six were on `core/rules.py` and Tomas ran them as a second pass. **Splitting a large review by file is legitimate and it makes the classification table readable.** Splitting it by "the ones I agree with" is not.
+Five comments, not eleven — the other six were on `core/rules.py` and Ravi ran them as a second pass. **Splitting a large review by file is legitimate and it makes the classification table readable.** Splitting it by "the ones I agree with" is not.
 
 ---
 
@@ -382,7 +382,7 @@ I recommend a bug ticket so it is visible outside this pull request.
 **STOPPING HERE.** Waiting for "classified".
 ````
 
-Tomas reads R5 twice, checks the spec himself, and swears. He replies:
+Ravi reads R5 twice, checks the spec himself, and swears. He replies:
 
 `classified — decline R2, accept R3? no, decline R3 too. raise a ticket for R5.`
 
@@ -542,8 +542,8 @@ already imports it across a module boundary, so the private marker was a lie.
 > Intelligence returns two-decimal scores, so fields land exactly on 0.92 regularly
 > and every one of them has been going to the exception queue unnecessarily since we
 > shipped. That is depressing the straight-through rate and adding manual work for
-> Priya. Fixed to `>=` with tests on both sides of the boundary. Raised as **NWD-146**
-> so it is visible outside this PR and so Ananya can quantify how many documents it
+> Preeti. Fixed to `>=` with tests on both sides of the boundary. Raised as **NWD-146**
+> so it is visible outside this PR and so Pankaj can quantify how many documents it
 > affected.
 
 ## Other things I noticed (not changed)
@@ -557,7 +557,7 @@ already imports it across a module boundary, so the private marker was a lie.
 
 **R5 is the entire justification for this prompt.** It arrived as a politely hedged question — *"I genuinely don't know what we decided"* — the kind of comment that gets a one-line reply and no code change in nine reviews out of ten. It was a live defect that had been silently pushing work onto a human analyst for eleven days. The only reason it was found is that the prompt refused to let it be classified without checking the spec, and refused to let it sit as UNCLASSIFIED once the spec had been read.
 
-**The two declined preferences have costs attached, not tastes.** "Declining, because it creates a second place where field names must match `sql/schema.sql`" is an argument Rahul can engage with, agree with, or defeat. "I prefer dicts" is not. Notice too that R2's reply offers a larger version of the change as tech debt — that is how you decline without dismissing.
+**The two declined preferences have costs attached, not tastes.** "Declining, because it creates a second place where field names must match `sql/schema.sql`" is an argument Gautam can engage with, agree with, or defeat. "I prefer dicts" is not. Notice too that R2's reply offers a larger version of the change as tech debt — that is how you decline without dismissing.
 
 **R4's clarity fix is four things and none of them change behaviour:** a rename, a docstring, a test, and dropping a misleading underscore. The test is the interesting one. **A comment explains intent to whoever reads that line; a test enforces it on whoever changes that line.** If someone later "simplifies" `is None` into a truthiness check, the comment will not stop them and the test will.
 
@@ -588,7 +588,7 @@ Not "all comments resolved". Resolving a comment by making a code change you did
 
 Two failure modes, and they are opposites.
 
-**Over-accommodation.** You keep asking "is Rahul right about this one?" and eventually the AI says yes, because agreeing with the most recent authoritative statement in the context is its default gravity. Ask a preference question three different ways and you will get three different answers, weighted toward whoever spoke last. **Decide preferences yourself, once, and move on.** The AI's job on a preference is to give you both sides, not to break the tie.
+**Over-accommodation.** You keep asking "is Gautam right about this one?" and eventually the AI says yes, because agreeing with the most recent authoritative statement in the context is its default gravity. Ask a preference question three different ways and you will get three different answers, weighted toward whoever spoke last. **Decide preferences yourself, once, and move on.** The AI's job on a preference is to give you both sides, not to break the tie.
 
 **Rabbit-holing a preference into a redesign.** You accept R3, the AI writes `ThresholdResolver`, and then observes that the resolver would be cleaner with the overrides injected, and then that injection would be cleaner with a config protocol. Forty minutes later you have a dependency-injection layer in a module that has three functions. The review said "consider a class". It did not say "redesign the module".
 
@@ -766,7 +766,7 @@ The fix: if a preference is worth accepting, accept it as a decision and write i
 
 **The reviewer found a bug.** If a comment turns out to be a genuine defect with real user impact — R5 was — it deserves a ticket, a reproduction, and the full treatment in [P27](P27-fix-from-a-qa-bug-report.md). Fixing it quietly inside a review response means it never gets counted, never gets a regression test at the right layer, and QA never gets to check how many documents it affected.
 
-**The reviewer is right and the spec is wrong.** Sometimes a comment is "the spec says X but X is wrong". That is not yours to fix in a pull request. It is [P29](P29-the-spec-was-wrong.md), with Sofia, and it has an approval path.
+**The reviewer is right and the spec is wrong.** Sometimes a comment is "the spec says X but X is wrong". That is not yours to fix in a pull request. It is [P29](P29-the-spec-was-wrong.md), with Hem, and it has an approval path.
 
 **The review is really a design disagreement.** Eleven comments all circling the same structural choice is not a review, it is an architecture conversation that got filed as line comments. Stop responding line by line, book twenty minutes, and settle the shape. Then the comments answer themselves.
 
@@ -774,9 +774,9 @@ The fix: if a preference is worth accepting, accept it as a decision and write i
 
 ## 10. The handoff
 
-The immediate handoff is back to Rahul. What he is guaranteed to find is a reply on every single comment — including the ones you declined — and a diff he can read against his own numbering. That second property is why the prompt insists on keeping defect fixes and accepted-preference changes in separate diffs. **A second review that has to re-read the whole file is a second full review. A second review that can read "here are the two defects you found, fixed" is five minutes.**
+The immediate handoff is back to Gautam. What he is guaranteed to find is a reply on every single comment — including the ones you declined — and a diff he can read against his own numbering. That second property is why the prompt insists on keeping defect fixes and accepted-preference changes in separate diffs. **A second review that has to re-read the whole file is a second full review. A second review that can read "here are the two defects you found, fixed" is five minutes.**
 
-The second handoff is to Ananya, and it only exists because R5 turned into a real bug. `NWD-146` gets a ticket, and Ananya's job is the part that the pull request cannot answer: how many documents went to the exception queue since the build shipped because of a strictly-greater-than? That number is what tells Amara and Farhan whether the straight-through rate they have been reporting was wrong, and by how much. Fixing the code closes the defect. Quantifying the impact closes the incident.
+The second handoff is to Pankaj, and it only exists because R5 turned into a real bug. `NWD-146` gets a ticket, and Pankaj's job is the part that the pull request cannot answer: how many documents went to the exception queue since the build shipped because of a strictly-greater-than? That number is what tells Preetinka and Atul whether the straight-through rate they have been reporting was wrong, and by how much. Fixing the code closes the defect. Quantifying the impact closes the incident.
 
 The third handoff is to `CLAUDE.md`. Every preference argument that was genuinely hard should leave something behind. On NWD-103 the dataclass argument added two lines to the conventions file: *"Structures that are serialised directly into a persisted payload stay as dicts, defined once alongside their schema. Structures crossing a module boundary within the app use dataclasses."* That sentence prevents the same review comment on the next four pull requests, which is a better outcome than winning the argument.
 
@@ -796,13 +796,13 @@ The third handoff is to `CLAUDE.md`. Every preference argument that was genuinel
 
 ## 11. In the case study
 
-This runs in [`08-sprint-3-rework.md`](../../Case-Study/Python-ETL/08-sprint-3-rework.md), and the review itself is checked in at [`artifacts/code-review-NWD-103.md`](../../Case-Study/Python-ETL/artifacts/code-review-NWD-103.md) so you can read Rahul's original wording next to Tomas's classification.
+This runs in [`08-sprint-3-rework.md`](../../Case-Study/Python-ETL/08-sprint-3-rework.md), and the review itself is checked in at [`artifacts/code-review-NWD-103.md`](../../Case-Study/Python-ETL/artifacts/code-review-NWD-103.md) so you can read Gautam's original wording next to Ravi's classification.
 
-What happened is the reason this file exists. Tomas's first attempt was the "address this review" run described in §1, and he nearly shipped it. Rahul caught it in the second review with a comment that has become the team's shorthand: *"You've changed five things and fixed none of them."* Four of the five changes were preferences the AI had accepted on Tomas's behalf, and the fifth was a rename that made R4's confusing `None` return into a confusing `""` return — same confusion, new value, plus a subtle bug waiting for the first broker who configures an override of zero.
+What happened is the reason this file exists. Ravi's first attempt was the "address this review" run described in §1, and he nearly shipped it. Gautam caught it in the second review with a comment that has become the team's shorthand: *"You've changed five things and fixed none of them."* Four of the five changes were preferences the AI had accepted on Ravi's behalf, and the fifth was a rename that made R4's confusing `None` return into a confusing `""` return — same confusion, new value, plus a subtle bug waiting for the first broker who configures an override of zero.
 
-The comment that mattered was **R5**, and it was the last one in the review, phrased as the most tentative thing Rahul wrote all week: *"I genuinely don't know what we decided."* Tomas had read it four days earlier, thought "it's fine, `>` is obviously right", and moved on. It was not right. Spec §3 says the boundary is inclusive, Broker Alpha's currency threshold is 0.92, and Document Intelligence returns two-decimal scores — so every currency field that landed exactly on 0.92 had been going to the exception queue since the build shipped. Ananya later counted it: **eighty-one documents in eleven days**, every one of which Priya opened, looked at, and approved unchanged. Eighty-one pieces of pointless human work caused by one character, found by a question that almost got a shrug.
+The comment that mattered was **R5**, and it was the last one in the review, phrased as the most tentative thing Gautam wrote all week: *"I genuinely don't know what we decided."* Ravi had read it four days earlier, thought "it's fine, `>` is obviously right", and moved on. It was not right. Spec §3 says the boundary is inclusive, Broker Alpha's currency threshold is 0.92, and Document Intelligence returns two-decimal scores — so every currency field that landed exactly on 0.92 had been going to the exception queue since the build shipped. Pankaj later counted it: **eighty-one documents in eleven days**, every one of which Preeti opened, looked at, and approved unchanged. Eighty-one pieces of pointless human work caused by one character, found by a question that almost got a shrug.
 
-Farhan's reaction at the next standup is the line that ended up in [`10-retrospective.md`](../../Case-Study/Python-ETL/10-retrospective.md), and it is worth remembering the next time you are tempted to skim a hedged comment: **"The bug wasn't hiding. It was in a review, in writing, for four days, phrased as a question. We just didn't have a way of taking questions seriously."**
+Atul's reaction at the next standup is the line that ended up in [`10-retrospective.md`](../../Case-Study/Python-ETL/10-retrospective.md), and it is worth remembering the next time you are tempted to skim a hedged comment: **"The bug wasn't hiding. It was in a review, in writing, for four days, phrased as a question. We just didn't have a way of taking questions seriously."**
 
 ---
 

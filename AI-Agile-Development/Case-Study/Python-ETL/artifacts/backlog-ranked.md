@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Produced by** | Farhan Qureshi (Project Manager) with Rahul Nair (Team Lead) |
+| **Produced by** | Atul(Project Manager) with Gautam  (Team Lead) |
 | **Using** | [P09 — Estimate and Rank the Backlog](../../../AI-Prompts-Library/phase-1-discovery/P09-estimate-and-rank-the-backlog.md) |
 | **Date** | 2026-04-28 · **Revised** 2026-08-13 after Sprint 3 |
 | **Status** | Active |
@@ -55,7 +55,7 @@ Ranked by value ÷ effort, then adjusted for dependency order and risk.
 
 **NWD-103 is ranked third despite being the largest and riskiest**, because it is the story everything else attaches to. The transform has nothing to transform, the sinks have nothing to load, and the exception queue has nothing to display until the gate exists and emits its failure shape. Doing the risky, central thing early is deliberate — if the approach is wrong, we want to know in week two, not week six.
 
-**NWD-108 outranks NWD-105 and NWD-104 despite being 8 points**, because without it the system does 80% of Priya's job and hands her the other 20% in a worse format than she had before. Amara's position, and she is right: a rejection with nowhere to go is not a feature, it is a regression.
+**NWD-108 outranks NWD-105 and NWD-104 despite being 8 points**, because without it the system does 80% of Preeti's job and hands her the other 20% in a worse format than she had before. Preetinka's position, and she is right: a rejection with nowhere to go is not a feature, it is a regression.
 
 **NWD-104 is last** because it only affects the EM book, and the EM book is roughly 18% of volume. It is the one story we could ship v1 without.
 
@@ -68,7 +68,7 @@ Ranked by value ÷ effort, then adjusted for dependency order and risk.
 | NWD-102 | Classifier accuracy on unseen layouts is unknown until we have labelled data | Discovery produced a labelled ground-truth set before this was estimated. Unknown layouts route to review rather than being guessed |
 | NWD-103 | **The thresholds are a judgement call with real money behind them** | Threshold sweep against ground truth, per field type. Not "it felt about right" |
 | NWD-107 | A re-run must be idempotent at row level as well as document level | Stage then MERGE, never INSERT |
-| NWD-108 | Design depends on NWD-103's failure output shape, which does not exist yet | Farhan flagged this at sprint planning. Ji-woo builds against a frozen contract, not the live code |
+| NWD-108 | Design depends on NWD-103's failure output shape, which does not exist yet | Atul flagged this at sprint planning. Dzmitry builds against a frozen contract, not the live code |
 
 ---
 
@@ -94,8 +94,8 @@ Under that rule NWD-103 would have been estimated at 12, not 8. It took roughly 
 
 > **Artifact contract — `artifacts/backlog-ranked.md`**
 >
-> Produced by: Farhan Qureshi (PM) with Rahul Nair (Team Lead), using [P09](../../../AI-Prompts-Library/phase-1-discovery/P09-estimate-and-rank-the-backlog.md)
-> Approved by: Amara Osei (Product Owner), 2026-04-29
+> Produced by: Atul(PM) with Gautam  (Team Lead), using [P09](../../../AI-Prompts-Library/phase-1-discovery/P09-estimate-and-rank-the-backlog.md)
+> Approved by: Preetinka Sharma (Product Owner), 2026-04-29
 >
 > Anyone planning a sprint from this can rely on finding:
 > - A stated reference story and scale, so the numbers mean something

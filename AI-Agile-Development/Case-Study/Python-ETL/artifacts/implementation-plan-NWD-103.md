@@ -2,14 +2,14 @@
 
 | | |
 |---|---|
-| **Produced by** | Rahul Nair, Team Lead |
+| **Produced by** | Gautam , Team Lead |
 | **Using** | [P15 — Implementation Plan](../../../AI-Prompts-Library/phase-3-planning/P15-implementation-plan.md) |
 | **Date** | 2026-06-19 |
 | **Status** | Approved · steps 1–9 complete 2026-07-02 · step 10 added 2026-07-31 after [NWD-142](bug-NWD-142.md) |
 | **Version** | 1.1 |
 | **Story** | [NWD-103](stories/NWD-103.md) · size L, 8 points |
 | **Builds from** | [`spec-confidence-gate.md`](spec-confidence-gate.md), [`acceptance-criteria-NWD-103.md`](acceptance-criteria-NWD-103.md) |
-| **Assigned** | Tomas Vargas |
+| **Assigned** | Ravi Mullick |
 
 ---
 
@@ -51,7 +51,7 @@ Then write down, in the pull request description, the answer to three questions:
 **How to verify**
 Both fixtures load with `json.load` and the three questions are answered with quotes from the response, not from documentation.
 
-**Stop condition.** If question 1 or 2 answers "no", stop and bring it to me and Sofia the same day. The spec changes before the code does.
+**Stop condition.** If question 1 or 2 answers "no", stop and bring it to me and Hem the same day. The spec changes before the code does.
 
 > **Note added 2026-07-31.** Question 3 was asked here and answered "we will find out". Nobody came back to it. That omission is [NWD-142](bug-NWD-142.md) in its entirety, and it was visible on day one of the build in this document. See step 10.
 
@@ -115,7 +115,7 @@ Tests assert: `broker_alpha` currency is 0.92 **and** its number is still 0.90; 
 **What changes**
 Three failure conditions in this exact order, per [spec §4.2](spec-confidence-gate.md#42-per-field-evaluation): `value is None` → `missing`; `confidence is None` → `no_confidence`; confidence below threshold → `below_threshold`. Returns `None` on pass.
 
-The failure record is the flat shape from [spec §5](spec-confidence-gate.md#5-failure-output-shape): `field`, `row`, `value`, `confidence`, `threshold`, `why`. Flat because it round-trips through the exception queue's JSON column and Ji-woo renders it directly. `threshold` is the threshold **actually applied**, post-alias and post-override, so an audit does not have to re-derive it from configuration as it stands today.
+The failure record is the flat shape from [spec §5](spec-confidence-gate.md#5-failure-output-shape): `field`, `row`, `value`, `confidence`, `threshold`, `why`. Flat because it round-trips through the exception queue's JSON column and Dzmitry renders it directly. `threshold` is the threshold **actually applied**, post-alias and post-override, so an audit does not have to re-derive it from configuration as it stands today.
 
 **Read the boundary sentence in spec §4.2 before you write the comparison.** Confidence exactly equal to the threshold **passes**. The comparison is `confidence < threshold`. Write the test for `confidence == threshold` first.
 
@@ -135,7 +135,7 @@ Six tests minimum: below threshold fails; exactly at threshold passes; one step 
 - `tests/test_confidence.py`
 
 **What changes**
-Walk `doc.header`, then `doc.line_items` in row order, collecting every failure. **Do not short-circuit** — [spec §4.3](spec-confidence-gate.md#43-failures-are-collected-never-short-circuited). Priya needs everything wrong with the document in one pass, not four round trips.
+Walk `doc.header`, then `doc.line_items` in row order, collecting every failure. **Do not short-circuit** — [spec §4.3](spec-confidence-gate.md#43-failures-are-collected-never-short-circuited). Preeti needs everything wrong with the document in one pass, not four round trips.
 
 `GateResult` carries `passed`, `failures`, `straight_through`, and a `reason` property producing `low_confidence: currency, quantity` — distinct failing field names, sorted. `passed` is true if and only if `failures` is empty.
 
@@ -258,23 +258,23 @@ The load-bearing test is `test_the_gate_alone_would_have_missed_nwd_142`: the tw
 | Translation of EM documents | NWD-104 |
 | Redaction | NWD-105 |
 | The MERGE into silver and gold | NWD-107 |
-| The analyst UI that renders the failure shape | NWD-108, Ji-woo |
+| The analyst UI that renders the failure shape | NWD-108, Dzmitry |
 
-Step 4 produces the failure shape that NWD-108 consumes. Ji-woo cannot start rendering it before step 4 lands, and he should not be asked to guess it. Tell him the day it merges.
+Step 4 produces the failure shape that NWD-108 consumes. Dzmitry cannot start rendering it before step 4 lands, and he should not be asked to guess it. Tell him the day it merges.
 
 ## 4. Changelog
 
 | Version | Date | Change | By |
 |---|---|---|---|
-| 1.0 | 2026-06-19 | Initial, steps 1–9 | Rahul |
-| 1.1 | 2026-07-31 | Step 10 added after NWD-142. Step 1's unanswered question 3 annotated rather than deleted — it is the evidence of how the defect got in. | Rahul |
+| 1.0 | 2026-06-19 | Initial, steps 1–9 | Gautam |
+| 1.1 | 2026-07-31 | Step 10 added after NWD-142. Step 1's unanswered question 3 annotated rather than deleted — it is the evidence of how the defect got in. | Gautam |
 
 ---
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/implementation-plan-NWD-103.md`**
 >
-> Produced by: Team Lead (Rahul Nair) using P15 — Implementation Plan
-> Approved by: Sofia Marchetti (Architect) 2026-06-19 · accepted by Tomas Vargas 2026-06-19
+> Produced by: Team Lead (Gautam ) using P15 — Implementation Plan
+> Approved by: Hem Singh (Architect) 2026-06-19 · accepted by Ravi Mullick 2026-06-19
 >
 > Anyone consuming this file can rely on finding:
 > - A numbered build sequence with the riskiest unknowns first and a stated stop condition on each risk step
@@ -289,4 +289,4 @@ Step 4 produces the failure shape that NWD-108 consumes. Ji-woo cannot start ren
 > **If any guarantee above is missing, this artifact is not done.**
 > Do not build on it — send it back.
 >
-> Changing this file: Rahul Nair. A step added or resized mid-build is recorded in the changelog with the reason, never edited in silently — the shape of the plan is evidence at the retrospective.
+> Changing this file: Gautam . A step added or resized mid-build is recorded in the changelog with the reason, never edited in silently — the shape of the plan is evidence at the retrospective.

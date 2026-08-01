@@ -14,11 +14,11 @@ Week six at Northwind. Nothing is obviously on fire. Everyone is producing good 
 
 Here's the exact sequence.
 
-**Monday, week two.** Amara — the product owner — writes the PRD for counterparty document ingestion. It's a good PRD. Six pages. She's careful about one section in particular, because it comes from her years on an operations floor: *what happens when the machine isn't sure.* She writes about half a page on it, including the line **"a document the system cannot read confidently must reach a human, in a form they can act on, the same day."**
+**Monday, week two.** Preetinka — the product owner — writes the PRD for counterparty document ingestion. It's a good PRD. Six pages. She's careful about one section in particular, because it comes from her years on an operations floor: *what happens when the machine isn't sure.* She writes about half a page on it, including the line **"a document the system cannot read confidently must reach a human, in a form they can act on, the same day."**
 
 She saves it to `docs/prd-counterparty-ingestion.md` and tells the team it's ready.
 
-**Thursday, week two.** Sofia — the architect — starts design. She's read the PRD. She opens a session with her AI and types, from memory:
+**Thursday, week two.** Hem — the architect — starts design. She's read the PRD. She opens a session with her AI and types, from memory:
 
 > *"We're building a pipeline that reads broker statement PDFs and extracts positions into our warehouse. It needs to handle multiple layouts per counterparty and it can't put bad data in the warehouse. Design me the ingestion architecture."*
 
@@ -26,13 +26,13 @@ Everything in that sentence is true. It's an accurate summary. It is roughly 90%
 
 The missing 10% is *"in a form they can act on."*
 
-**What the AI produces** is genuinely excellent: blob landing zone, classifier, custom extraction models per layout, confidence gate, bronze layer for audit, and — because Sofia said "can't put bad data in the warehouse" — documents below threshold are **rejected and logged**.
+**What the AI produces** is genuinely excellent: blob landing zone, classifier, custom extraction models per layout, confidence gate, bronze layer for audit, and — because Hem said "can't put bad data in the warehouse" — documents below threshold are **rejected and logged**.
 
 Rejected and logged. Not routed to a human with the failing field highlighted. Rejected. Logged.
 
-**Week four.** Tomas has built it. It works. The tests pass.
+**Week four.** Ravi has built it. It works. The tests pass.
 
-**Week six.** Amara sees a demo and asks where the exception queue is.
+**Week six.** Preetinka sees a demo and asks where the exception queue is.
 
 There isn't one. There was never a story for it. It wasn't in the design, so it wasn't in the plan, so it wasn't in the sprint. Two people, two AI sessions, both excellent, and the thing the PRD was most careful about **evaporated in the gap between them.**
 
@@ -58,9 +58,9 @@ Faster, in the wrong direction, with no confusion to slow you down.
 
 | How | What it looks like | Why it happens |
 |---|---|---|
-| **Summarising from memory** | Sofia types a paragraph instead of pasting six pages | It's faster, and the summary feels complete because *she* remembers the rest |
+| **Summarising from memory** | Hem types a paragraph instead of pasting six pages | It's faster, and the summary feels complete because *she* remembers the rest |
 | **Paraphrasing into your own frame** | "It can't put bad data in the warehouse" instead of "must reach a human, same day" | Each role re-frames the problem in their own vocabulary. The re-framing drops what doesn't fit the frame |
-| **Assuming the artifact says something it doesn't** | Tomas assumes the spec covers page boundaries | Nobody ever verified what the spec *guarantees* to cover |
+| **Assuming the artifact says something it doesn't** | Ravi assumes the spec covers page boundaries | Nobody ever verified what the spec *guarantees* to cover |
 
 All three are invisible at the moment they happen. All three are expensive weeks later.
 
@@ -88,15 +88,15 @@ Here's the one that would have saved Northwind six weeks:
 >
 > **If any bullet above is missing or empty, this PRD is not done.** Do not design against it.
 
-Now read Sofia's paraphrase again against that contract. `must reach a human, in what form, by when` is a **named guarantee**. Her one-line summary drops it visibly. She'd have caught it — or her AI would have, if she'd pasted the contract along with the summary and asked it to check.
+Now read Hem's paraphrase again against that contract. `must reach a human, in what form, by when` is a **named guarantee**. Her one-line summary drops it visibly. She'd have caught it — or her AI would have, if she'd pasted the contract along with the summary and asked it to check.
 
 ### The contract is a checklist in both directions
 
 That's the part people miss. It works two ways:
 
-**For the producer:** it's your definition of done. Amara can't call the PRD finished while a guaranteed bullet is empty.
+**For the producer:** it's your definition of done. Preetinka can't call the PRD finished while a guaranteed bullet is empty.
 
-**For the consumer:** it's your input validation. Sofia's first move should be to check the artifact against its own contract before she designs anything. Ten seconds. Catches a six-week problem.
+**For the consumer:** it's your input validation. Hem's first move should be to check the artifact against its own contract before she designs anything. Ten seconds. Catches a six-week problem.
 
 ---
 
@@ -115,13 +115,13 @@ Chain those together and you get something you can actually look at:
 
 ```mermaid
 flowchart LR
-    A["P06 PRD<br/>Amara"] -->|prd-counterparty-ingestion.md| B["P07 Stories<br/>Amara"]
-    B -->|stories/NWD-1xx.md| C["P08 Acceptance criteria<br/>Amara + Ananya"]
-    C -->|acceptance-criteria-NWD-103.md| D["P10 Plan mode<br/>Sofia"]
-    D -->|ADR-0001| E["P11 Spec<br/>Sofia"]
-    E -->|spec-confidence-gate.md| F["P15 Impl plan<br/>Rahul"]
-    F -->|implementation-plan-NWD-103.md| G["P18 Implement<br/>Tomas"]
-    G -->|core/confidence.py| H["P22 P25 Test<br/>Ananya"]
+    A["P06 PRD<br/>Preetinka"] -->|prd-counterparty-ingestion.md| B["P07 Stories<br/>Preetinka"]
+    B -->|stories/NWD-1xx.md| C["P08 Acceptance criteria<br/>Preetinka + Pankaj"]
+    C -->|acceptance-criteria-NWD-103.md| D["P10 Plan mode<br/>Hem"]
+    D -->|ADR-0001| E["P11 Spec<br/>Hem"]
+    E -->|spec-confidence-gate.md| F["P15 Impl plan<br/>Gautam"]
+    F -->|implementation-plan-NWD-103.md| G["P18 Implement<br/>Ravi"]
+    G -->|core/confidence.py| H["P22 P25 Test<br/>Pankaj"]
 
     style A fill:#1B2A4A,stroke:#6C8EF5,color:#E8EEF4
     style E fill:#2E1F17,stroke:#FF7A45,color:#E8EEF4
@@ -140,7 +140,7 @@ One rule. It's almost too simple to write down, and it's the highest-value habit
 
 When you start a session that depends on someone else's work, **give the AI the file** — the actual file, whole — and the contract block that goes with it. Do not summarise it. Do not paraphrase it into your own framing. Do not tell the AI what's in it.
 
-Sofia's session should have opened:
+Hem's session should have opened:
 
 ```text
 Here is the approved PRD. Read it completely before responding.

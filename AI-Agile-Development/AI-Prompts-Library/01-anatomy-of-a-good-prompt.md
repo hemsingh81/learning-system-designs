@@ -250,7 +250,7 @@ An AI summarising is an AI paraphrasing, and paraphrasing is where things quietl
 
 ### Ask for the failure mode
 
-Sofia's habit, applied to prompts:
+Hem's habit, applied to prompts:
 
 ```text
 Before you recommend this, describe what it looks like when it goes wrong in production,

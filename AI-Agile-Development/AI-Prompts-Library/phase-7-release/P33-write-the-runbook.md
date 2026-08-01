@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | **Phase** | 7 — Release |
-| **Who runs it** | Backend Engineer (Tomas Vargas) |
+| **Who runs it** | Backend Engineer (Ravi Mullick) |
 | **When** | Sprint 4, immediately after the readiness review turns operability red |
 | **Takes in** | `artifacts/release-readiness-v1.0.md`, the code in `code/doc_ingestion/`, the closed defects NWD-138…NWD-142 |
 | **Produces** | `Case-Study/Python-ETL/artifacts/runbook-doc-ingestion.md` |
@@ -18,15 +18,15 @@
 
 ## 1. The scene
 
-Tomas has the readiness review open on one screen and it is not comfortable reading. Area 6, Operability, is red. Under it, six lines, and every one of them is something he could have done in an afternoon at any point in the last two sprints:
+Ravi has the readiness review open on one screen and it is not comfortable reading. Area 6, Operability, is red. Under it, six lines, and every one of them is something he could have done in an afternoon at any point in the last two sprints:
 
 No runbook. No alert rules. No on-call rota. Nothing watching the straight-through rate. Nothing watching the exception queue depth. A poison queue that nobody reads.
 
 None of that was in a story. NWD-101 through NWD-108 covered landing, classifying, translating, extracting, redacting, transforming, loading, and the exception queue screen. Every one of those is a thing the pipeline *does*. Not one of them is about what happens when it stops doing it.
 
-Farhan's note in the document is blunt: on 3 December this becomes the only path counterparty positions take into the warehouse, and if it stops at 2am the first person to find out is Priya at 8am, looking at an empty exception queue with no way to tell whether that means "no exceptions today" or "nothing ran at all."
+Atul's note in the document is blunt: on 3 December this becomes the only path counterparty positions take into the warehouse, and if it stops at 2am the first person to find out is Preeti at 8am, looking at an empty exception queue with no way to tell whether that means "no exceptions today" or "nothing ran at all."
 
-Tomas starts writing and gets four paragraphs in before he notices what he is producing. He has written a description of the architecture. Blob lands, trigger enqueues, worker classifies, extraction runs, rules engine gates, sinks write. All true. All useless at 2am.
+Ravi starts writing and gets four paragraphs in before he notices what he is producing. He has written a description of the architecture. Blob lands, trigger enqueues, worker classifies, extraction runs, rules engine gates, sinks write. All true. All useless at 2am.
 
 **A runbook is not a description of how the system works. It is a set of instructions for a person who does not care how it works and needs it working again.** He deletes the four paragraphs and starts over with a different question: what will actually go wrong, and what does someone type when it does?
 
@@ -103,7 +103,7 @@ This is the most important entry in the runbook because **it is invisible to eve
 
 **Poison blob.** A file lands in `raw/` that the pipeline cannot process — a corrupt PDF, a password-protected file, a zero-byte upload from a failed SFTP transfer, a `.xlsx` someone dropped in the wrong folder. The queue worker picks it up, fails, the message returns to the queue, and it tries again. Azure Storage queues move a message to a poison queue after five failed dequeues, which stops the loop but silently — the document is now stuck and nobody knows.
 
-**429 throttling at month-end.** This is NWD-141, which Ananya found and Tomas fixed with exponential back-off. A `429 Too Many Requests` from Document Intelligence means you exceeded the request rate. At month-end volume spikes and it fires. The fix exists but the readiness review flagged it as unit-tested only, never exercised against the real endpoint at real concurrency. That makes it exactly the sort of thing that needs a runbook entry, because "it should retry" and "it does retry, at this scale, for this long" are different claims.
+**429 throttling at month-end.** This is NWD-141, which Pankaj found and Ravi fixed with exponential back-off. A `429 Too Many Requests` from Document Intelligence means you exceeded the request rate. At month-end volume spikes and it fires. The fix exists but the readiness review flagged it as unit-tested only, never exercised against the real endpoint at real concurrency. That makes it exactly the sort of thing that needs a runbook entry, because "it should retry" and "it does retry, at this scale, for this long" are different claims.
 
 **Redaction API failure.** Azure AI Language finds and masks personal data before anything is persisted downstream, and by design it **fails closed** — if the call errors, the raw text is not persisted, a marker is instead. That is correct and it is not obvious under pressure. The on-call reader's instinct will be to make the pipeline continue. The runbook has to state plainly that there is no bypass, that documents queue up safely and reprocess when the service recovers, and that anyone proposing to skip redaction to clear a backlog is proposing to persist unredacted personal data.
 
@@ -115,7 +115,7 @@ The **straight-through rate** is the percentage of documents that go from arriva
 
 It deserves its own section in the runbook and its own alert, because it is simultaneously three different things, and no other metric in the system does more than one job.
 
-**It is the business metric.** The entire business case is "stop Priya keying PDFs." Straight-through rate *is* that, measured. At 85% she touches 30 documents a day; at 50% she touches 100, and the project has not delivered what it promised. Nobody needs it translated into business value because it already is business value.
+**It is the business metric.** The entire business case is "stop Preeti keying PDFs." Straight-through rate *is* that, measured. At 85% she touches 30 documents a day; at 50% she touches 100, and the project has not delivered what it promised. Nobody needs it translated into business value because it already is business value.
 
 **It is the model-health metric.** The rate falls when extraction confidence falls. Confidence falls when documents stop looking like the training data. So the rate is a continuous, free, production measurement of whether your models are still fit for the documents actually arriving — without labelling anything, without a validation set, without any ML monitoring infrastructure at all.
 
@@ -243,7 +243,7 @@ Write the runbook to [OUTPUT PATH].
 | `[RESOURCE NAMES]` | Actual cloud resource names: storage account, queues, Function app, databases | `stnwdingestprod`, container `raw`, queue `doc-ingestion`, poison queue `doc-ingestion-poison`, Function app `func-nwd-ingest-prod`, `sql-nwd-prod`, Snowflake `NWD_PROD.POSITIONS` | Every command needs a lookup before it can be run, at 3am, by someone who does not know where to look |
 | `[BUG IDS AND ONE LINE EACH]` | Defects already hit. These become failure modes with proven remediation | `NWD-141 — 429 from Document Intelligence at month-end killed the run`, `NWD-142 — table spanning a page boundary dropped page 2 line items` | You get generic imagined failures instead of the ones that have actually happened to you |
 | `[PATHS / ITEMS]` | What the readiness review flagged as untested | `429 back-off never load-tested against the real endpoint at month-end concurrency` | The runbook is confident about things nobody has verified, which is the most dangerous kind of runbook |
-| `[NAMES AND ROLES]` | Real humans, with how to reach them | `Tomas Vargas (backend, pipeline), Sofia Marchetti (architecture, data decisions), Priya Raman (Northwind ops, exception queue), Farhan Qureshi (PM, client comms)` | "Escalate to the team" — which at 3am means nobody gets called |
+| `[NAMES AND ROLES]` | Real humans, with how to reach them | `Ravi Mullick (backend, pipeline), Hem Singh (architecture, data decisions), Preeti Singh (Northwind ops, exception queue), Atul(PM, client comms)` | "Escalate to the team" — which at 3am means nobody gets called |
 | `[LIST THE FAILURE MODES]` | The specific things that go wrong here | template change, poison blob, 429 throttling, redaction failure, Function timeout | Generic infrastructure failures that are already covered by your cloud provider's own docs |
 | `[LIST THE OPERATIONS]` | Routine tasks that are not failures | reprocess a document, drain the exception queue, add a counterparty, replay a date range from bronze | The reader improvises a reprocess, and improvised reprocessing is how you get duplicate rows |
 | `[ARCHITECTURE DOCS]` | Where the design rationale actually lives | `artifacts/adr/`, `artifacts/spec-confidence-gate.md` | The AI restates architecture in the runbook to be helpful, doubling its length and halving its usefulness |
@@ -253,7 +253,7 @@ Write the runbook to [OUTPUT PATH].
 
 ## 5. The filled-in example
 
-Tomas runs this on the Tuesday of Sprint 4, the day after the readiness review turned operability red.
+Ravi runs this on the Tuesday of Sprint 4, the day after the readiness review turned operability red.
 
 ```text
 You are a site reliability engineer writing an operational runbook. **Write the
@@ -295,11 +295,11 @@ CONTEXT
   unit test with a mocked 429 only. It has never run against the real endpoint at
   month-end concurrency.
 - Escalation contacts:
-  - Tomas Vargas — backend engineer, owns the pipeline
-  - Sofia Marchetti — architect, owns data decisions and anything touching the
+  - Ravi Mullick — backend engineer, owns the pipeline
+  - Hem Singh — architect, owns data decisions and anything touching the
     confidence gate or the canonical schema
-  - Priya Raman — Northwind operations analyst, owns the exception queue
-  - Farhan Qureshi — project manager, owns client communication
+  - Preeti Singh — Northwind operations analyst, owns the exception queue
+  - Atul— project manager, owns client communication
 
 **Read** the code at Case-Study/Python-ETL/code/doc_ingestion before writing. Use
 the REAL module names, config keys, queue names, table names and error types from
@@ -379,7 +379,7 @@ Abridged — the real file also covers translation failures, SQL connectivity an
 ````markdown
 # Runbook — doc-ingestion
 
-**Last verified:** 26 November by Tomas Vargas
+**Last verified:** 26 November by Ravi Mullick
 **Escalation:** see §6. **Architecture:** `artifacts/adr/`, `artifacts/spec-confidence-gate.md`
 
 > Commands marked `[UNVERIFIED]` have not been run by a human. Do not trust them.
@@ -464,7 +464,7 @@ GROUP BY reason
 ORDER BY n DESC;
 ```
 
-Normally 20–40 open. Above 50 means Priya cannot keep up. Look at the `reason`
+Normally 20–40 open. Above 50 means Preeti cannot keep up. Look at the `reason`
 breakdown — a single reason dominating points at a specific cause, and
 `ROW_COUNT_MISMATCH` specifically means the NWD-142 completeness check is firing.
 
@@ -479,7 +479,7 @@ breakdown — a single reason dominating points at a specific cause, and
 | `nwd-no-documents` | Zero `DocumentProcessed` events in 4h, 07:00–19:00 UK | Pipeline stopped | **Fix now** | §4.5, then §4.2 |
 | `nwd-poison-queue` | Depth > 0 | A document is stuck. No other signal exists | Fix today | §4.2 |
 | `nwd-function-failures` | Failure rate > 5% over 15 min | Ordinary breakage | **Fix now** | §4.3, §4.4 |
-| `nwd-exception-depth` | Open exceptions > 50 | Priya is behind, or a quality problem upstream | Fix this week | §5.3 |
+| `nwd-exception-depth` | Open exceptions > 50 | Preeti is behind, or a quality problem upstream | Fix this week | §5.3 |
 | `nwd-latency-p95` | p95 end-to-end > 15 min | Backing up. Usually throttling | Fix today | §4.3 |
 | `nwd-redaction-marker` | Any `REDACTION_FAILED` marker written | PII service failed; text deliberately not persisted | **Fix now** | §4.4 |
 
@@ -493,7 +493,7 @@ breakdown — a single reason dominating points at a specific cause, and
 just all going to a human, and that human is one person.
 
 **Symptom.** `nwd-stp-rate-drop-broker` fires. The exception queue fills with one
-broker. No errors anywhere. Function health is green. Priya says the documents
+broker. No errors anywhere. Function health is green. Preeti says the documents
 "look normal" to her.
 
 **Confirm it.**
@@ -533,7 +533,7 @@ block.
 
 **Fix it.** A judgement call, not a command. Three options:
 
-1. **Ride it out.** If Priya can absorb the volume via the exception queue, do
+1. **Ride it out.** If Preeti can absorb the volume via the exception queue, do
    nothing operationally and raise a story to retrain. Correct for a broker
    sending 5 documents a day.
 2. **Retrain the extraction model.** The real fix. Needs ~50 labelled documents
@@ -545,13 +545,13 @@ block.
 
 **Do NOT lower the confidence thresholds to push the rate back up.** That is
 trading a correctness guarantee for a dashboard number, and it is how wrong
-values reach the warehouse. Escalate to Sofia before anyone touches a threshold.
+values reach the warehouse. Escalate to Hem before anyone touches a threshold.
 
 **Verify.** Straight-through rate for that broker returns to its prior level over
 the following two days. Sample five documents by hand and check the extracted
 values against the PDF.
 
-**If that did not work.** Escalate to Tomas, then Sofia. Take with you: the
+**If that did not work.** Escalate to Ravi, then Hem. Take with you: the
 broker, the date the drop started, whether classifier or field confidence moved,
 and one before-and-after PDF pair.
 
@@ -560,7 +560,7 @@ and one before-and-after PDF pair.
 **Urgency: fix today.** One document is stuck. The rest of the pipeline is fine.
 
 **Symptom.** `nwd-poison-queue` fires. Or the main queue is draining but a
-document Priya expected never appears.
+document Preeti expected never appears.
 
 **Confirm it.**
 
@@ -587,7 +587,7 @@ az monitor app-insights query --app appi-nwd-ingest-prod \
 | Cause | Action |
 |---|---|
 | Zero-byte file (failed SFTP) | Delete the poison message, ask for a resend. Idempotency is by SHA-256 of content, so a resend under any filename is safe |
-| Password-protected PDF | Cannot process. Delete the message, raise an exception queue row manually, tell Priya, ask for an unprotected copy |
+| Password-protected PDF | Cannot process. Delete the message, raise an exception queue row manually, tell Preeti, ask for an unprotected copy |
 | Not a PDF (`.xlsx`, `.zip`) | Wrong folder. Move it out of `raw/`, notify the sender |
 | Corrupt PDF | Ask for a resend. Recurring from one counterparty is a transfer problem, not a pipeline problem |
 | Genuine code bug | Leave the message in the poison queue as evidence. Raise a defect, fix, deploy, then requeue |
@@ -601,7 +601,7 @@ To requeue after a fix, `az storage message get` from `doc-ingestion-poison` the
 
 **If that did not work.** If the same document poisons twice after a fix, stop
 requeuing — you are burning Azure AI spend on a document that will not process.
-Escalate to Tomas with the blob path and the exception detail.
+Escalate to Ravi with the blob path and the exception detail.
 
 ### 4.3 429 throttling from Document Intelligence
 
@@ -664,7 +664,7 @@ returns under 15 minutes.
 
 **If that did not work.** If the queue is still growing after an hour at reduced
 concurrency, the back-off is not behaving as designed under real load — that is
-exactly the untested case. Escalate to Tomas immediately and capture the
+exactly the untested case. Escalate to Ravi immediately and capture the
 dependency query output before anything is changed.
 
 ### 4.4 Redaction unavailable — Azure AI Language failing
@@ -714,7 +714,7 @@ Also check Azure Service Health for a regional incident on Azure AI Language.
 **Verify.** Dependency calls to `lang-nwd-prod` return 200. New documents persist
 text rather than markers. Then replay the affected range per §5.2.
 
-**If that did not work.** Escalate to Sofia, not Tomas. Anything touching
+**If that did not work.** Escalate to Hem, not Ravi. Anything touching
 redaction is a data protection decision and she owns it. Do not make a judgement
 call on this one alone at 3am.
 
@@ -754,7 +754,7 @@ and the page count of the offending blob.
 
 **Verify.** The document appears in `DOCUMENT_LOG`. Poison queue depth is zero.
 
-**If that did not work.** Escalate to Tomas with the blob path, page count, run
+**If that did not work.** Escalate to Ravi with the blob path, page count, run
 duration, and current `functionTimeout`.
 
 ---
@@ -791,7 +791,7 @@ change. Remove the flag to execute.
 
 ### 5.3 Drain the exception queue
 
-The exception queue is Priya's work, not on-call work. Escalate rather than
+The exception queue is Preeti's work, not on-call work. Escalate rather than
 resolve rows yourself — an on-call engineer guessing at a position value is
 exactly the failure this system exists to prevent.
 
@@ -808,7 +808,7 @@ ORDER BY n DESC;
 
 - One `reason` dominating → a systemic cause. Go to the matching §4 section.
 - One broker dominating → §4.1, template change.
-- Evenly spread, growing slowly → a staffing problem. Tell Farhan, not Tomas.
+- Evenly spread, growing slowly → a staffing problem. Tell Atul, not Ravi.
 
 ### 5.4 Add a new counterparty
 
@@ -817,7 +817,7 @@ documents (15 to prove the approach), train a custom extraction model in Documen
 Intelligence Studio (training is free), add the layout to the classifier and
 retrain, then add an entry to `config/sources.yaml` with model name, language,
 field map and threshold overrides. **No code change.** If a code change appears
-necessary, that is a design conversation with Sofia, not a deployment.
+necessary, that is a design conversation with Hem, not a deployment.
 
 ---
 
@@ -825,10 +825,10 @@ necessary, that is a design conversation with Sofia, not a deployment.
 
 | When | Who | Reach via | Bring |
 |---|---|---|---|
-| Pipeline stopped, §4 did not fix it | **Tomas Vargas** — backend, owns the pipeline | Phone, then Teams | Alert name, App Insights query output, blob path if one document |
-| Anything touching redaction, the confidence gate, or thresholds | **Sofia Marchetti** — architect | Phone | What you were about to change and why. **Do not change a threshold before speaking to her** |
-| Exception queue backlog, or Priya cannot work | **Priya Raman** — Northwind operations | Northwind ops line, business hours only | Queue depth by reason and broker |
-| Anything Northwind will notice, or a missed T+1 | **Farhan Qureshi** — PM | Phone | Impact in business terms: which book, which day, how many positions |
+| Pipeline stopped, §4 did not fix it | **Ravi Mullick** — backend, owns the pipeline | Phone, then Teams | Alert name, App Insights query output, blob path if one document |
+| Anything touching redaction, the confidence gate, or thresholds | **Hem Singh** — architect | Phone | What you were about to change and why. **Do not change a threshold before speaking to her** |
+| Exception queue backlog, or Preeti cannot work | **Preeti Singh** — Northwind operations | Northwind ops line, business hours only | Queue depth by reason and broker |
+| Anything Northwind will notice, or a missed T+1 | **Atul** — PM | Phone | Impact in business terms: which book, which day, how many positions |
 
 **Rule of thumb.** If you have been working the problem for 30 minutes with no
 progress, escalate. If the straight-through rate is below 50%, escalate
@@ -852,7 +852,7 @@ immediately regardless of how long you have been at it.
 Currency **0.90** (`broker_alpha` overridden to **0.92** — poor scan quality).
 Number/quantity **0.90**. Date **0.85**. String/descriptive **0.75**.
 Classifier minimum **0.75**. Defined in `config/sources.yaml`.
-**Changing any of these requires Sofia's sign-off.**
+**Changing any of these requires Hem's sign-off.**
 
 ### Deeper documentation
 
@@ -864,13 +864,13 @@ Classifier minimum **0.75**. Defined in `config/sources.yaml`.
 
 ### How to read this
 
-**Section 2.1 is the section that earns the document.** Everything else is a response to something already going wrong. The straight-through rate query, sliced per broker, is the thing that tells you a counterparty changed their template on the day it happens rather than the week Priya finally complains. Read it, run it, and put it on a dashboard.
+**Section 2.1 is the section that earns the document.** Everything else is a response to something already going wrong. The straight-through rate query, sliced per broker, is the thing that tells you a counterparty changed their template on the day it happens rather than the week Preeti finally complains. Read it, run it, and put it on a dashboard.
 
 **Section 4.1 is the failure mode with no technical signal.** Notice that it has no error, no exception, no failed run — and notice that the "confirm it" step distinguishes two shapes that look identical from the outside and need completely different responses. Classifier confidence dropping is safe. Classifier confidence holding while field confidence drops is the dangerous one, because the model is confidently reading fields from positions that have moved.
 
-**Section 4.4 contains the sentence that is the reason this section exists at all:** there is no bypass for redaction. At 3am, with a backlog growing, a reasonable engineer under pressure will look for a flag to skip the failing step and get things moving. The runbook has to close that door explicitly and route the decision to Sofia. If it does not say so, someone will eventually find the door.
+**Section 4.4 contains the sentence that is the reason this section exists at all:** there is no bypass for redaction. At 3am, with a backlog growing, a reasonable engineer under pressure will look for a flag to skip the failing step and get things moving. The runbook has to close that door explicitly and route the decision to Hem. If it does not say so, someone will eventually find the door.
 
-**The part that is commonly wrong:** the `[UNVERIFIED]` markers. It is very tempting to strip them because they make the document look unfinished. They are the most honest thing in it. The `az monitor app-insights query` syntax in particular is a common place for a confidently-wrong flag, and the only way a marker comes off is that a human ran that exact command and saw output. Tomas spent three hours doing exactly this and found four commands that did not work as written.
+**The part that is commonly wrong:** the `[UNVERIFIED]` markers. It is very tempting to strip them because they make the document look unfinished. They are the most honest thing in it. The `az monitor app-insights query` syntax in particular is a common place for a confidently-wrong flag, and the only way a marker comes off is that a human ran that exact command and saw output. Ravi spent three hours doing exactly this and found four commands that did not work as written.
 
 ---
 
@@ -1065,7 +1065,7 @@ flowchart TD
 
 ### You write architecture because architecture is more interesting
 
-The most common outcome of asking an engineer for a runbook, and Tomas did it in the first four paragraphs before catching himself.
+The most common outcome of asking an engineer for a runbook, and Ravi did it in the first four paragraphs before catching himself.
 
 It happens because architecture is what you have in your head and it is genuinely satisfying to write down. Explaining why bronze is immutable and written before parsing, why idempotency hashes content rather than filename, why the confidence gate sits upstream of reconciliation — these are good paragraphs. They belong in an ADR.
 
@@ -1077,7 +1077,7 @@ At 3am, none of them shorten the outage. The person reading needs `az storage me
 
 This one costs real time during a real incident, which is the worst moment to discover it.
 
-The AI produces plausible commands. `az monitor app-insights query --analytics-query "..."` is close to right, and the exact flag names, the exact KQL table names, and whether your App Insights workspace uses classic or workspace-based schema are all things it will guess at confidently. Four of the commands in Tomas's first draft did not work as written.
+The AI produces plausible commands. `az monitor app-insights query --analytics-query "..."` is close to right, and the exact flag names, the exact KQL table names, and whether your App Insights workspace uses classic or workspace-based schema are all things it will guess at confidently. Four of the commands in Ravi's first draft did not work as written.
 
 A wrong command at 3am does more damage than a missing one. A missing step makes someone think. A wrong step makes them type it, get an error, wonder if they made a typo, type it again, and start doubting every other command in the document.
 
@@ -1103,7 +1103,7 @@ The runbook lists eight alerts with names and thresholds. It is a good list. Nob
 
 If your system has no on-call rota, writing a runbook is premature. Not wrong exactly, but you are writing instructions for a role that does not exist, which means nobody will read it, which means it will drift out of date and then be actively misleading the first time someone does read it.
 
-Northwind's readiness review flagged this correctly: no runbook *and* no on-call rota, both under the same red, both owned. Farhan agreeing the rota with Northwind is the same piece of work as Tomas writing the document, and doing one without the other leaves you with the appearance of operability rather than the thing.
+Northwind's readiness review flagged this correctly: no runbook *and* no on-call rota, both under the same red, both owned. Atul agreeing the rota with Northwind is the same piece of work as Ravi writing the document, and doing one without the other leaves you with the appearance of operability rather than the thing.
 
 **The rule:** the runbook and the rota ship together, or neither has any effect.
 
@@ -1111,11 +1111,11 @@ Northwind's readiness review flagged this correctly: no runbook *and* no on-call
 
 ## 10. The handoff
 
-Rahul picks this up, and the handoff is less direct than most in this library.
+Gautam picks this up, and the handoff is less direct than most in this library.
 
-What he gets immediately is a closed red. Operability moves from red to amber in `artifacts/release-readiness-v1.0.md` once the runbook exists, the eight alert rules are configured with real IDs, and Farhan has an on-call rota agreed with Northwind. That unblocks the parallel run starting on 2 December, which unblocks everything downstream.
+What he gets immediately is a closed red. Operability moves from red to amber in `artifacts/release-readiness-v1.0.md` once the runbook exists, the eight alert rules are configured with real IDs, and Atul has an on-call rota agreed with Northwind. That unblocks the parallel run starting on 2 December, which unblocks everything downstream.
 
-What he gets less obviously is a map of the system's real surface area, and that feeds straight into [P34](../phase-8-improve/P34-clean-up-dead-code.md). Writing the runbook forced Tomas to walk every code path that can fail, and walking every path is how you notice which paths cannot be reached at all. Two extraction helpers left over from the rejected OCR-plus-regex approach appear in no failure mode, no operation, and no alert — because nothing calls them. A feature flag in `config/settings.py` is on in every environment and has been since Sprint 2, so no runbook section can meaningfully describe the off case. Neither of those was visible while writing features. Both are obvious once you try to document the operational reality.
+What he gets less obviously is a map of the system's real surface area, and that feeds straight into [P34](../phase-8-improve/P34-clean-up-dead-code.md). Writing the runbook forced Ravi to walk every code path that can fail, and walking every path is how you notice which paths cannot be reached at all. Two extraction helpers left over from the rejected OCR-plus-regex approach appear in no failure mode, no operation, and no alert — because nothing calls them. A feature flag in `config/settings.py` is on in every environment and has been since Sprint 2, so no runbook section can meaningfully describe the off case. Neither of those was visible while writing features. Both are obvious once you try to document the operational reality.
 
 The runbook also becomes the reference during the parallel run itself. When the daily comparison in [P32](P32-release-readiness-check.md)'s cutover plan turns up a divergence, the first question is always "which failure mode is this?" — and §4 is the list of answers. Divergences that match a known mode are handled. Divergences that match nothing are the interesting ones, and each becomes a new §4 subsection, which is how a runbook is supposed to grow.
 
@@ -1137,13 +1137,13 @@ The runbook also becomes the reference during the parallel run itself. When the 
 
 This is the middle of [09-sprint-4-release.md](../../Case-Study/Python-ETL/09-sprint-4-release.md), the Tuesday and Wednesday of Sprint 4.
 
-The moment worth keeping is the four deleted paragraphs. Tomas started writing what he knew, which was the architecture, and he was some way in before he asked himself who would read it. That is not a failure of care. It is what happens when you ask the person who built a thing to document operating it, and it is why the prompt states the reader's situation in its second line rather than assuming anyone will infer it.
+The moment worth keeping is the four deleted paragraphs. Ravi started writing what he knew, which was the architecture, and he was some way in before he asked himself who would read it. That is not a failure of care. It is what happens when you ask the person who built a thing to document operating it, and it is why the prompt states the reader's situation in its second line rather than assuming anyone will infer it.
 
 The three hours of command verification found four broken commands, and one of them mattered more than the others. His first draft of the poison queue peek used `az storage queue peek`, which is not a command — it is `az storage message peek --queue-name`. A small thing. But it sat in section 4.2, the response to the alert most likely to fire in the first month, and someone would have typed it at 3am and got `az storage queue: 'peek' is not in the 'az storage queue' command group`. That is four minutes of doubt at the exact moment when doubt is expensive.
 
-The section that took longest to write was 4.1, the counterparty template change, and it took longest because it has no error to anchor on. Every other failure mode starts from something the system tells you. This one starts from a number moving, and Tomas had to work out from first principles what an on-call engineer would actually see — the exception queue filling with one broker, everything green, Priya saying the documents look normal — before he could write a symptom worth leading with. Sofia reviewed that section specifically, and the sentence she added is the one forbidding anyone to lower a threshold to push the rate back up. Her note in the margin was her usual question: what does this look like when it's wrong?
+The section that took longest to write was 4.1, the counterparty template change, and it took longest because it has no error to anchor on. Every other failure mode starts from something the system tells you. This one starts from a number moving, and Ravi had to work out from first principles what an on-call engineer would actually see — the exception queue filling with one broker, everything green, Preeti saying the documents look normal — before he could write a symptom worth leading with. Hem reviewed that section specifically, and the sentence she added is the one forbidding anyone to lower a threshold to push the rate back up. Her note in the margin was her usual question: what does this look like when it's wrong?
 
-The document is [`artifacts/runbook-doc-ingestion.md`](../../Case-Study/Python-ETL/artifacts/runbook-doc-ingestion.md). Ji-woo read it cold on the Thursday, given nothing but "the poison queue has three messages," and asked six questions. All six became appendix entries.
+The document is [`artifacts/runbook-doc-ingestion.md`](../../Case-Study/Python-ETL/artifacts/runbook-doc-ingestion.md). Dzmitry read it cold on the Thursday, given nothing but "the poison queue has three messages," and asked six questions. All six became appendix entries.
 
 ---
 

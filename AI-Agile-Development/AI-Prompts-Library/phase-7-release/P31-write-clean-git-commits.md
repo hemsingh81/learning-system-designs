@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | **Phase** | 7 — Release |
-| **Who runs it** | Everyone. Worked example: Backend Engineer (Tomas Vargas) |
+| **Who runs it** | Everyone. Worked example: Backend Engineer (Ravi Mullick) |
 | **When** | End of a working session, after the tests pass, before you push |
 | **Takes in** | An uncommitted working tree, plus the story or bug ID it belongs to (e.g. `artifacts/bug-NWD-142.md`) |
 | **Produces** | A written commit plan, then the commits themselves in git history |
@@ -18,15 +18,15 @@
 
 ## 1. The scene
 
-It is Thursday afternoon in Sprint 4. Tomas has just closed out NWD-142 — the bug Ananya found where a Broker Alpha statement whose positions table runs across a page boundary silently drops every line item on page two. The document sailed through the confidence gate because every field it *did* extract was high confidence, loaded into Snowflake with half the positions, and then reconciliation reported `MISSING_EXTERNAL` breaks that looked exactly like real settlement failures.
+It is Thursday afternoon in Sprint 4. Ravi has just closed out NWD-142 — the bug Pankaj found where a Broker Alpha statement whose positions table runs across a page boundary silently drops every line item on page two. The document sailed through the confidence gate because every field it *did* extract was high confidence, loaded into Snowflake with half the positions, and then reconciliation reported `MISSING_EXTERNAL` breaks that looked exactly like real settlement failures.
 
-Getting there took most of two days and it ran through half the rework library. Ananya's bug report went into [P27](../phase-6-rework/P27-fix-from-a-qa-bug-report.md). The reproduction went sideways so he ran [P26](../phase-6-rework/P26-debug-an-error-fast.md). The fix turned out to need a spec change, which meant [P29](../phase-6-rework/P29-the-spec-was-wrong.md), then Rahul's review comments meant [P28](../phase-6-rework/P28-respond-to-code-review-feedback.md). Somewhere in the middle the AI got wedged on a broken test fixture and he had to run [P30](../phase-6-rework/P30-when-the-ai-is-stuck.md) to unstick it.
+Getting there took most of two days and it ran through half the rework library. Pankaj's bug report went into [P27](../phase-6-rework/P27-fix-from-a-qa-bug-report.md). The reproduction went sideways so he ran [P26](../phase-6-rework/P26-debug-an-error-fast.md). The fix turned out to need a spec change, which meant [P29](../phase-6-rework/P29-the-spec-was-wrong.md), then Gautam's review comments meant [P28](../phase-6-rework/P28-respond-to-code-review-feedback.md). Somewhere in the middle the AI got wedged on a broken test fixture and he had to run [P30](../phase-6-rework/P30-when-the-ai-is-stuck.md) to unstick it.
 
 Now he types `git status` and gets eleven modified files.
 
 Some of them are the fix. Some of them are the new test. One is `artifacts/spec-confidence-gate.md`, which is documentation, not code. One is a `requirements.txt` line he bumped while chasing a red herring and never reverted. One is a `print()` he added to `core/logging_config.py` at 11pm on Tuesday. And one is `config/sources.yaml`, where he temporarily lowered `broker_alpha`'s currency threshold from 0.92 to 0.50 to force the failure — a change that must absolutely not reach `main`.
 
-**Tomas's instinct is to type `git commit -am "fix NWD-142"` and go home, and that single command would destroy about six hours of future debugging value for whoever comes after him.** This prompt is the thing that stops him.
+**Ravi's instinct is to type `git commit -am "fix NWD-142"` and go home, and that single command would destroy about six hours of future debugging value for whoever comes after him.** This prompt is the thing that stops him.
 
 ---
 
@@ -123,7 +123,7 @@ That has two consequences.
 
 First, **the splitting step is now the expensive, valuable part of this prompt** — not the message wording. Wording is a convention anyone can learn in ten minutes. Splitting requires someone to look at eleven changed files and work out that they represent three intentions, and that one of them should not be committed at all. That is real analysis, and it is exactly the thing you are asking the AI to do first.
 
-Second, **the risk profile changed.** A human rarely accidentally commits a threshold they lowered to force a test failure, because they remember lowering it. In an AI session that edit might have been made by the assistant, forty minutes ago, in a file you have not looked at since. This is not hypothetical for Northwind — it is precisely the `config/sources.yaml` change sitting in Tomas's working tree right now, and it would have shipped `broker_alpha` with a currency confidence threshold of 0.50 instead of 0.92, which is to say it would have shipped a pipeline that quietly accepts garbage from the counterparty with the worst scan quality.
+Second, **the risk profile changed.** A human rarely accidentally commits a threshold they lowered to force a test failure, because they remember lowering it. In an AI session that edit might have been made by the assistant, forty minutes ago, in a file you have not looked at since. This is not hypothetical for Northwind — it is precisely the `config/sources.yaml` change sitting in Ravi's working tree right now, and it would have shipped `broker_alpha` with a currency confidence threshold of 0.50 instead of 0.92, which is to say it would have shipped a pipeline that quietly accepts garbage from the counterparty with the worst scan quality.
 
 So the shape of this prompt is: **inventory everything, group by intention, flag what should not be committed, show me the plan, and only then commit.**
 
@@ -135,7 +135,7 @@ A refactor is a change where the code moves but the behaviour does not. Renaming
 
 A behaviour change is one where the output differs for some input.
 
-When you mix them, the diff shows sixty changed lines, of which four matter. The reviewer has to read all sixty to find the four, and reviewers under time pressure do not do that — they skim, and the four lines slide past. Rahul's review discipline in this team is explicitly built around this: he will send back a mixed commit without reading it, and he is right to.
+When you mix them, the diff shows sixty changed lines, of which four matter. The reviewer has to read all sixty to find the four, and reviewers under time pressure do not do that — they skim, and the four lines slide past. Gautam's review discipline in this team is explicitly built around this: he will send back a mixed commit without reading it, and he is right to.
 
 Keep them separate and both commits become trivial. The refactor commit gets reviewed as "does the behaviour still match?" — the test suite answers that. The behaviour commit is four lines and the reviewer's full attention is on them.
 
@@ -263,13 +263,13 @@ commit, pausing after each one to show me `git log --oneline -1`.
 | `[ARTIFACT PATH]` | Path to the bug report, story, or spec this work traces to. The AI reads it for the WHY | `artifacts/bug-NWD-142.md` | Bodies become vague. You get "fixes a bug in extraction" instead of the actual mechanism and its consequence |
 | `[SCOPE LIST]` | The allowed scope words for `type(scope):`, so the vocabulary stays consistent across the team | `land, classify, translate, extract, redact, rules, confidence, transform, sql, snowflake, recon, ui, infra` | The AI invents scopes. Six months later you have `extraction`, `extract`, `doc-extract` and `parser` all meaning the same module, and grep stops working |
 
-> **On `[SCOPE LIST]`.** Keep this list in your project context file (see [P01](../phase-0-foundation/P01-generate-the-project-context-file.md)) so every engineer pastes the same one. Rahul added it to Northwind's `CLAUDE.md` in Sprint 0 for exactly this reason.
+> **On `[SCOPE LIST]`.** Keep this list in your project context file (see [P01](../phase-0-foundation/P01-generate-the-project-context-file.md)) so every engineer pastes the same one. Gautam added it to Northwind's `CLAUDE.md` in Sprint 0 for exactly this reason.
 
 ---
 
 ## 5. The filled-in example
 
-Tomas runs this on Thursday afternoon of Sprint 4, with the NWD-142 fix finished and eleven files modified.
+Ravi runs this on Thursday afternoon of Sprint 4, with the NWD-142 fix finished and eleven files modified.
 
 ```text
 You are a senior engineer preparing my working tree for review. **Split this
@@ -354,7 +354,7 @@ commit, pausing after each one to show me `git log --oneline -1`.
 
 ## 6. What comes back
 
-This is the plan Tomas gets. It is long because the session was long, and that is the point — this is what two days of AI-assisted work actually looks like before anyone tidies it.
+This is the plan Ravi gets. It is long because the session was long, and that is the point — this is what two days of AI-assisted work actually looks like before anyone tidies it.
 
 ````markdown
 # Commit plan — fix/NWD-142-table-continuation
@@ -530,11 +530,11 @@ remove the marker in commit 2.
 
 Three things in there matter more than the rest.
 
-**The `config/sources.yaml` line in Step 3.** That is the whole reason the stop gate exists. Tomas lowered `broker_alpha`'s currency threshold to 0.50 on Tuesday night to force the extractor to accept a bad scan so he could get to the table-continuation code path. He forgot. A `git commit -am` would have shipped it, and the next Broker Alpha statement with smudged scan quality would have loaded a currency value nobody had any reason to trust — into the warehouse, past the gate, into the reconciliation. That single flagged row justifies the prompt.
+**The `config/sources.yaml` line in Step 3.** That is the whole reason the stop gate exists. Ravi lowered `broker_alpha`'s currency threshold to 0.50 on Tuesday night to force the extractor to accept a bad scan so he could get to the table-continuation code path. He forgot. A `git commit -am` would have shipped it, and the next Broker Alpha statement with smudged scan quality would have loaded a currency value nobody had any reason to trust — into the warehouse, past the gate, into the reconciliation. That single flagged row justifies the prompt.
 
 **The body of commit 2.** Read it again and notice what it does *not* say. It does not say "added a function to join tables." It says what Document Intelligence actually returns, why the old code was reasonable, what the consequence was downstream, and why there are two changes rather than one. That is what someone running `git blame` in March needs.
 
-**The `NEEDS EXPLANATION FROM AUTHOR` on `requirements.txt`.** This is the AI correctly refusing to guess. It cannot tell from the diff whether the SDK bump was deliberate or a leftover from a dead end, and inventing a plausible reason would put a lie in permanent history. Tomas remembers: it was a dead end. He reverts it.
+**The `NEEDS EXPLANATION FROM AUTHOR` on `requirements.txt`.** This is the AI correctly refusing to guess. It cannot tell from the diff whether the SDK bump was deliberate or a leftover from a dead end, and inventing a plausible reason would put a lie in permanent history. Ravi remembers: it was a dead end. He reverts it.
 
 **The part that is commonly wrong:** the ordering note. A lot of teams have continuous integration that rejects any commit where tests fail, which makes "commit the failing test first" impossible as written. The plan flags this rather than silently producing something your pipeline will reject. Read that note before you type GO.
 
@@ -720,7 +720,7 @@ flowchart TD
 
 The single most expensive mistake available here, and it happens because the flag list sits in the middle of a long document and the commit messages at the bottom are more interesting to read.
 
-The flag list is the part that catches things you cannot see any other way. Tomas's `sources.yaml` threshold is the example this chapter is built around, but the general shape recurs constantly: a test date pinned to last Tuesday, a feature flag flipped on to skip redaction while debugging, a retry count set to 1 to make a failure reproduce faster. Every one of those is a change that looks harmless in a diff and is a production incident in a deployment.
+The flag list is the part that catches things you cannot see any other way. Ravi's `sources.yaml` threshold is the example this chapter is built around, but the general shape recurs constantly: a test date pinned to last Tuesday, a feature flag flipped on to skip redaction while debugging, a retry count set to 1 to make a failure reproduce faster. Every one of those is a change that looks harmless in a diff and is a production incident in a deployment.
 
 **The fix:** read Step 3 first, deal with every item in it, re-run `git status`, and only then read the commit messages. Make it a habit in that order.
 
@@ -734,9 +734,9 @@ It works right up until it stages the `.env` file you created twenty minutes ago
 
 ### You commit the fix and the spec together because they feel like one thing
 
-They genuinely do feel like one thing. Tomas fixed the extractor and updated `artifacts/spec-confidence-gate.md` in the same session, for the same reason, tracing to the same bug. Why two commits?
+They genuinely do feel like one thing. Ravi fixed the extractor and updated `artifacts/spec-confidence-gate.md` in the same session, for the same reason, tracing to the same bug. Why two commits?
 
-Because they have different audiences and different lifespans. The code change is reviewed by Rahul against the test suite. The spec change is reviewed by Sofia against every *other* counterparty — and her question is going to be "does `broker_beta_em` even have a declared-total field?" That is a different conversation, on a different timescale, and it may well conclude that the spec rule needs a per-source opt-out while the code fix is perfectly fine as it stands.
+Because they have different audiences and different lifespans. The code change is reviewed by Gautam against the test suite. The spec change is reviewed by Hem against every *other* counterparty — and her question is going to be "does `broker_beta_em` even have a declared-total field?" That is a different conversation, on a different timescale, and it may well conclude that the spec rule needs a per-source opt-out while the code fix is perfectly fine as it stands.
 
 If they are one commit, "the spec rule needs more thought" blocks the bug fix. If they are two, the fix ships today and the spec conversation continues.
 
@@ -760,13 +760,13 @@ The prompt costs about ten minutes including the reading. That is excellent valu
 
 ## 10. The handoff
 
-Farhan picks this up, though not in the way most handoffs work. He does not read your commits one by one. He reads the *history*, in aggregate, when he runs the release readiness review in [P32](P32-release-readiness-check.md).
+Atul picks this up, though not in the way most handoffs work. He does not read your commits one by one. He reads the *history*, in aggregate, when he runs the release readiness review in [P32](P32-release-readiness-check.md).
 
-That review asks a question that only clean history can answer: **what actually changed between the last release and this one?** With Conventional Commits, that is `git log v0.9..HEAD --oneline` filtered by type — every `fix` is a defect closed, every `feat` is scope delivered, every `docs` is an artefact that moved. Farhan builds the change inventory in the readiness document straight off that output. If the history is forty commits called "wip" and "more fixes", he has to interview the whole team instead, and the readiness review slips a day.
+That review asks a question that only clean history can answer: **what actually changed between the last release and this one?** With Conventional Commits, that is `git log v0.9..HEAD --oneline` filtered by type — every `fix` is a defect closed, every `feat` is scope delivered, every `docs` is an artefact that moved. Atul builds the change inventory in the readiness document straight off that output. If the history is forty commits called "wip" and "more fixes", he has to interview the whole team instead, and the readiness review slips a day.
 
-Rahul picks it up sooner and more directly. He reviews commit by commit, and his review speed is a direct function of your splitting. A four-hunk behaviour change gets his full attention in three minutes. The same four hunks buried inside a sixty-line diff with a rename get skimmed, and skimmed reviews are how bugs like NWD-142 reach QA in the first place.
+Gautam picks it up sooner and more directly. He reviews commit by commit, and his review speed is a direct function of your splitting. A four-hunk behaviour change gets his full attention in three minutes. The same four hunks buried inside a sixty-line diff with a rename get skimmed, and skimmed reviews are how bugs like NWD-142 reach QA in the first place.
 
-And Ananya picks it up in the least visible way. When she retests NWD-142 and it still fails on some new edge, the first thing she does is find the commit that claimed to fix it and read the body. If that body explains the continuation heuristic and its assumption, she knows immediately whether her new case is a regression or a case the fix never claimed to cover. That distinction changes whether she files a new bug or reopens the old one.
+And Pankaj picks it up in the least visible way. When she retests NWD-142 and it still fails on some new edge, the first thing she does is find the commit that claimed to fix it and read the body. If that body explains the continuation heuristic and its assumption, she knows immediately whether her new case is a regression or a case the fix never claimed to cover. That distinction changes whether she files a new bug or reopens the old one.
 
 > **Artifact contract — git history on `fix/NWD-142-table-continuation`**
 > Anyone reading this branch's history can rely on finding:
@@ -786,13 +786,13 @@ And Ananya picks it up in the least visible way. When she retests NWD-142 and it
 
 This runs in [09-sprint-4-release.md](../../Case-Study/Python-ETL/09-sprint-4-release.md), on the Thursday afternoon of Sprint 4, and it is the first thing that happens in that chapter.
 
-The moment worth remembering is the `sources.yaml` line. Tomas genuinely did not know it was there. He had lowered `broker_alpha`'s currency threshold from 0.92 to 0.50 on Tuesday night, in a session that also touched five other files, specifically so a badly-scanned test statement would get past the gate and reach the table-continuation code he was trying to reproduce. It worked. He fixed the bug. He never went back.
+The moment worth remembering is the `sources.yaml` line. Ravi genuinely did not know it was there. He had lowered `broker_alpha`'s currency threshold from 0.92 to 0.50 on Tuesday night, in a session that also touched five other files, specifically so a badly-scanned test statement would get past the gate and reach the table-continuation code he was trying to reproduce. It worked. He fixed the bug. He never went back.
 
-That threshold is not decorative. `broker_alpha` sits at 0.92 rather than the standard 0.90 *because* their scan quality is poor — Sofia raised it deliberately during Sprint 1 design after seeing how often their currency fields came back marginal. Setting it to 0.50 does not just weaken one counterparty's gate; it inverts the design decision, applying the loosest threshold in the entire system to the source that needed the tightest.
+That threshold is not decorative. `broker_alpha` sits at 0.92 rather than the standard 0.90 *because* their scan quality is poor — Hem raised it deliberately during Sprint 1 design after seeing how often their currency fields came back marginal. Setting it to 0.50 does not just weaken one counterparty's gate; it inverts the design decision, applying the loosest threshold in the entire system to the source that needed the tightest.
 
-Nobody would have caught it in review, either. Rahul reviews diffs against their stated purpose, and the stated purpose was "fix NWD-142." A one-line YAML change in a fifteen-file diff is invisible. The prompt caught it because the prompt was explicitly asked to look for exactly that class of edit — a config value changed to force a failure and never reverted — and it was asked to look *before* anything was committed.
+Nobody would have caught it in review, either. Gautam reviews diffs against their stated purpose, and the stated purpose was "fix NWD-142." A one-line YAML change in a fifteen-file diff is invisible. The prompt caught it because the prompt was explicitly asked to look for exactly that class of edit — a config value changed to force a failure and never reverted — and it was asked to look *before* anything was committed.
 
-The commit plan itself survives as the worked example above, and the four commits it produced are the ones Farhan counts in [`artifacts/release-readiness-v1.0.md`](../../Case-Study/Python-ETL/artifacts/release-readiness-v1.0.md) the following Monday.
+The commit plan itself survives as the worked example above, and the four commits it produced are the ones Atul counts in [`artifacts/release-readiness-v1.0.md`](../../Case-Study/Python-ETL/artifacts/release-readiness-v1.0.md) the following Monday.
 
 ---
 

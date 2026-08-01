@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | **Phase** | 8 — Improve |
-| **Who runs it** | Project Manager (Farhan Qureshi), with the whole team in the room |
+| **Who runs it** | Project Manager (Atul), with the whole team in the room |
 | **When** | End of a sprint. For Northwind, the Sprint 3 retro, run late — in Sprint 4 |
 | **Takes in** | `artifacts/bug-NWD-142.md`, the Sprint 3 story and defect list, `artifacts/spec-confidence-gate.md`, `artifacts/definition-of-done.md` |
 | **Produces** | `Case-Study/Python-ETL/artifacts/retrospective-sprint-3.md` |
@@ -18,17 +18,17 @@
 
 ## 1. The scene
 
-Farhan is running the Sprint 3 retrospective two weeks late, and he knows exactly why it slipped. Sprint 3 was the verify-and-rework sprint. Ananya found five defects, NWD-142 turned out to be a two-day fix that changed the spec, and by the time the last one closed everyone was already in Sprint 4 doing release work. The retro got moved twice and then quietly dropped.
+Atul is running the Sprint 3 retrospective two weeks late, and he knows exactly why it slipped. Sprint 3 was the verify-and-rework sprint. Pankaj found five defects, NWD-142 turned out to be a two-day fix that changed the spec, and by the time the last one closed everyone was already in Sprint 4 doing release work. The retro got moved twice and then quietly dropped.
 
 That is itself worth noticing, and he writes it at the top of his notes before anything else. **The ceremony that exists to fix your process is the first ceremony to get cut when your process is under strain**, which is precisely backwards.
 
 Now he has to run it, and he is worried about how it will go. NWD-142 is going to dominate the room. It is the biggest thing that happened in Sprint 3: a Broker Alpha statement whose positions table ran across a page boundary, page two silently dropped, straight through the confidence gate because every field that *was* extracted had high confidence, into Snowflake with fourteen of twenty-three positions, and out the other side as `MISSING_EXTERNAL` reconciliation breaks that looked exactly like real settlement failures.
 
-Tomas wrote that code. Tomas is going to be in the room. And Farhan can already see the version of this meeting where everyone is very polite about it, Tomas says he should have tested the multi-page case, everyone agrees, and the action item is "be more careful with page boundaries."
+Ravi wrote that code. Ravi is going to be in the room. And Atul can already see the version of this meeting where everyone is very polite about it, Ravi says he should have tested the multi-page case, everyone agrees, and the action item is "be more careful with page boundaries."
 
-That meeting would be a waste of ninety minutes, and worse, it would be wrong. Tomas did test. He tested against three real Broker Alpha statements. All three were single-page position tables, because that is what Broker Alpha usually sends. **The failure was not that one engineer missed a case. It was that nowhere in the entire process — not the spec, not the acceptance criteria, not the confidence gate, not the test suite, not the review — did anyone ask whether all the data had arrived.**
+That meeting would be a waste of ninety minutes, and worse, it would be wrong. Ravi did test. He tested against three real Broker Alpha statements. All three were single-page position tables, because that is what Broker Alpha usually sends. **The failure was not that one engineer missed a case. It was that nowhere in the entire process — not the spec, not the acceptance criteria, not the confidence gate, not the test suite, not the review — did anyone ask whether all the data had arrived.**
 
-That is the finding. Farhan's job for the next ninety minutes is to get the room there without letting it stop at the easier, more personal, completely useless version.
+That is the finding. Atul's job for the next ninety minutes is to get the room there without letting it stop at the easier, more personal, completely useless version.
 
 ---
 
@@ -67,7 +67,7 @@ A retrospective examines a system: the sequence of steps, checks, handoffs and h
 
 Two reasons this matters, and the first is moral while the second is purely practical.
 
-**The moral reason:** in a sprint where things went wrong, the person who wrote the code is already thinking about it more than anyone else in the room. Tomas did not need a meeting to tell him NWD-142 was his code. Making that public adds nothing and costs a lot.
+**The moral reason:** in a sprint where things went wrong, the person who wrote the code is already thinking about it more than anyone else in the room. Ravi did not need a meeting to tell him NWD-142 was his code. Making that public adds nothing and costs a lot.
 
 **The practical reason, which is the one that persuades sceptics:** blame produces bad information. If the retro is a place where mistakes get attributed to individuals, people stop volunteering things. Not dramatically — nobody refuses to speak. They just describe things a little more favourably. "The spec was a bit unclear" instead of "I did not read the spec, I read the story title and started coding." The second sentence is where the real finding is. You only get it in a room where saying it is safe.
 
@@ -75,7 +75,7 @@ Two reasons this matters, and the first is moral while the second is purely prac
 
 The practical mechanics that keep it honest:
 
-- **Talk about the system, not the person.** "The spec did not cover multi-page tables" rather than "Tomas did not handle multi-page tables." Both true. Only one leads anywhere.
+- **Talk about the system, not the person.** "The spec did not cover multi-page tables" rather than "Ravi did not handle multi-page tables." Both true. Only one leads anywhere.
 - **Assume everyone did their best with what they had.** Then ask what they had. That question is where findings live.
 - **Findings must be about a step, a check, a document, or a habit** — something that can be changed. If a finding cannot be changed by anything except someone trying harder, it is not a finding.
 
@@ -97,10 +97,10 @@ The test is mechanical: **an action item must name a thing that will exist, or a
 
 | Not an action item | Actual action item |
 |---|---|
-| Be more careful with multi-page documents | Add a row-count reconciliation check comparing extracted line items against the statement's declared total. Owner Tomas, by 28 Nov |
-| Test edge cases better | Add "what does silently-missing data look like here?" to the spec template. Owner Sofia, by 28 Nov |
-| Communicate earlier about spec gaps | When a fix requires a spec change, raise it in the next standup. Add it to the definition of done. Owner Rahul, by 28 Nov |
-| Improve our QA process | Ananya adds a completeness check to the E2E suite: every test document asserts extracted row count equals expected. Owner Ananya, by 5 Dec |
+| Be more careful with multi-page documents | Add a row-count reconciliation check comparing extracted line items against the statement's declared total. Owner Ravi, by 28 Nov |
+| Test edge cases better | Add "what does silently-missing data look like here?" to the spec template. Owner Hem, by 28 Nov |
+| Communicate earlier about spec gaps | When a fix requires a spec change, raise it in the next standup. Add it to the definition of done. Owner Gautam, by 28 Nov |
+| Improve our QA process | Pankaj adds a completeness check to the E2E suite: every test document asserts extracted row count equals expected. Owner Pankaj, by 5 Dec |
 
 Notice what the right-hand column shares: each names a specific artefact that will be different afterwards, one person, and a date.
 
@@ -108,19 +108,19 @@ Notice what the right-hand column shares: each names a specific artefact that wi
 
 This is worth walking slowly because it is the pattern the whole ceremony exists to produce.
 
-**The surface story.** Tomas wrote extraction code. It dropped page-two line items. Ananya found it. Tomas fixed it.
+**The surface story.** Ravi wrote extraction code. It dropped page-two line items. Pankaj found it. Ravi fixed it.
 
 **The first "why".** Why did the code drop them? Because Azure AI Document Intelligence returns a table continuing onto the next page as a *separate* table object with no relationship marker back to the first one, and the extractor mapped each table independently. Reasonable code, written against a reasonable assumption.
 
-**The second "why".** Why did nobody notice? Because there was no test for it. Why no test? Because Tomas tested against three real Broker Alpha statements and all three were single-page. He was not being lazy; he was using real data, which is normally the right instinct.
+**The second "why".** Why did nobody notice? Because there was no test for it. Why no test? Because Ravi tested against three real Broker Alpha statements and all three were single-page. He was not being lazy; he was using real data, which is normally the right instinct.
 
 **The third "why", and here it gets interesting.** Why did the confidence gate not catch it? Because the confidence gate checks confidence, and confidence was high on everything present. **The gate has nothing to say about data that never arrived.** A field extracted at 0.97 confidence and a field that does not exist look identical to a threshold check, because one of them is not there to check.
 
-**The fourth "why", which is the actual finding.** Why did nobody realise the gate had that blind spot? Because everyone believed the gate covered correctness. It is the centrepiece of the design, it has its own spec, its own story, its own ADR, and the design invariant "a wrong number is worse than no number" is repeated throughout the project. Everyone — Sofia who designed it, Rahul who reviewed it, Ananya who tested against it, Amara who wrote acceptance criteria around it — carried a mental model in which the confidence gate was the thing that stopped bad data.
+**The fourth "why", which is the actual finding.** Why did nobody realise the gate had that blind spot? Because everyone believed the gate covered correctness. It is the centrepiece of the design, it has its own spec, its own story, its own ADR, and the design invariant "a wrong number is worse than no number" is repeated throughout the project. Everyone — Hem who designed it, Gautam who reviewed it, Pankaj who tested against it, Preetinka who wrote acceptance criteria around it — carried a mental model in which the confidence gate was the thing that stopped bad data.
 
 It stops bad *values*. It has never stopped *missing* data and was never designed to.
 
-**So the finding is not "Tomas made a mistake." It is two things:**
+**So the finding is not "Ravi made a mistake." It is two things:**
 
 1. **There was no data-completeness check anywhere in the process.** Not in the spec, not in the acceptance criteria, not in the code, not in the tests, not in the review. The entire pipeline verified that the values present were trustworthy and never asked whether all the values were present.
 
@@ -260,8 +260,8 @@ Write the retrospective to [OUTPUT PATH].
 | Placeholder | What to put in it | Northwind example | What happens if you get it wrong |
 |---|---|---|---|
 | `[SPRINT NAME]` | Which sprint, and its dates | `Sprint 3 — Verify and Rework, 4–15 November` | Findings drift across sprint boundaries and you end up re-litigating decisions from Sprint 1 |
-| `[WHAT IT WAS FOR]` | The sprint's goal in one line | `Ananya tests the pipeline end to end; the team fixes what she finds` | The AI cannot judge whether the sprint succeeded, so "what went well" becomes generic |
-| `[NAMES AND ROLES]` | Everyone who did the work | `Farhan (PM), Amara (PO), Sofia (architect), Rahul (lead), Tomas (backend), Ji-woo (frontend), Ananya (QA)` | Handoff findings get missed, because a handoff is between two named roles |
+| `[WHAT IT WAS FOR]` | The sprint's goal in one line | `Pankaj tests the pipeline end to end; the team fixes what she finds` | The AI cannot judge whether the sprint succeeded, so "what went well" becomes generic |
+| `[NAMES AND ROLES]` | Everyone who did the work | `Atul (PM), Preetinka (PO), Hem (architect), Gautam (lead), Ravi (backend), Dzmitry (frontend), Pankaj (QA)` | Handoff findings get missed, because a handoff is between two named roles |
 | `[STORY IDS AND OUTCOMES]` | What was delivered, honestly | `NWD-103 done then reopened, NWD-106 done, NWD-107 done` | "What went well" has nothing concrete to point at |
 | `[BUG IDS + ONE LINE EACH]` | Every defect, with a real description | `NWD-142 — page-2 line items dropped silently, passed the confidence gate, loaded half a statement` | Findings stay shallow. The one-line description is what the why-chain works from |
 | `[THE ONE THING WORTH DIGGING INTO]` | The event that deserves the thirty minutes | `NWD-142 — a missing-data bug that every test and the confidence gate passed` | **The most important placeholder.** Without a focus you get five shallow findings instead of one real one |
@@ -273,7 +273,7 @@ Write the retrospective to [OUTPUT PATH].
 
 ## 5. The filled-in example
 
-Farhan runs Pass 1 on the Monday morning, an hour before the retro.
+Atul runs Pass 1 on the Monday morning, an hour before the retro.
 
 ```text
 You are facilitating a sprint retrospective. **Prepare the retrospective for
@@ -291,9 +291,9 @@ first; I will come back with what they said.
 
 CONTEXT
 - Sprint: Sprint 3 — Verify and Rework, 4 to 15 November
-- Team: Farhan Qureshi (PM), Amara Osei (PO), Sofia Marchetti (architect),
-  Rahul Nair (team lead), Tomas Vargas (backend), Ji-woo Park (frontend),
-  Ananya Iyer (QA)
+- Team: Atul(PM), Preetinka Sharma (PO), Hem Singh (architect),
+  Gautam  (team lead), Ravi Mullick (backend), Dzmitry  (frontend),
+  Pankaj  (QA)
 - Delivered: NWD-103 marked done, then reopened after NWD-142 and re-closed.
   NWD-104, NWD-105, NWD-106, NWD-107, NWD-108 all closed. Straight-through rate
   moved from 61% to 84%.
@@ -317,9 +317,9 @@ CONTEXT
   artifacts/spec-confidence-gate.md, artifacts/definition-of-done.md,
   artifacts/code-review-NWD-103.md, artifacts/acceptance-criteria-NWD-103.md
 - Previous retro's action items (Sprint 2):
-  1. "Every story gets acceptance criteria written by Amara and Ananya before
+  1. "Every story gets acceptance criteria written by Preetinka and Pankaj before
      build starts" — DONE, held for the whole sprint
-  2. "Rahul reviews within one working day of a PR opening" — PARTIALLY DONE,
+  2. "Gautam reviews within one working day of a PR opening" — PARTIALLY DONE,
      slipped twice during the NWD-142 rework week
 
 PASS 1 — BEFORE THE MEETING
@@ -389,14 +389,14 @@ Case-Study/Python-ETL/artifacts/retrospective-sprint-3.md.
 
 ## 6. What comes back
 
-This is the finished artefact, after Pass 2 — Farhan pasted the room's discussion back in and asked for the write-up.
+This is the finished artefact, after Pass 2 — Atul pasted the room's discussion back in and asked for the write-up.
 
 ````markdown
 # Retrospective — Sprint 3, Verify and Rework
 
 **Dates:** 4–15 November. **Held:** 25 November (two weeks late — see Finding 3).
-**Present:** Farhan, Amara, Sofia, Rahul, Tomas, Ji-woo, Ananya.
-**Facilitator:** Farhan Qureshi.
+**Present:** Atul, Preetinka, Hem, Gautam, Ravi, Dzmitry, Pankaj.
+**Facilitator:** Atul.
 
 > This retrospective examines our process. It does not assign fault to
 > individuals, and no finding below should be read that way.
@@ -407,23 +407,23 @@ This is the finished artefact, after Pass 2 — Farhan pasted the room's discuss
 
 | From Sprint 2 | Owner | Status |
 |---|---|---|
-| Every story gets acceptance criteria from Amara and Ananya before build starts | Amara | **Done.** Held all sprint. NWD-104 through NWD-108 all had criteria before a line was written |
-| Rahul reviews within one working day of a PR opening | Rahul | **Partial.** Slipped twice, both during the NWD-142 rework week. Not a discipline problem — the rework consumed the review budget. Carried forward with the constraint acknowledged |
+| Every story gets acceptance criteria from Preetinka and Pankaj before build starts | Preetinka | **Done.** Held all sprint. NWD-104 through NWD-108 all had criteria before a line was written |
+| Gautam reviews within one working day of a PR opening | Gautam | **Partial.** Slipped twice, both during the NWD-142 rework week. Not a discipline problem — the rework consumed the review budget. Carried forward with the constraint acknowledged |
 
 ---
 
 ## What went well
 
-1. **Ananya's bug reports were good enough to prompt with directly.** `bug-NWD-142.md`
+1. **Pankaj's bug reports were good enough to prompt with directly.** `bug-NWD-142.md`
    carried the exact statement, the page count, the expected and actual row
-   counts, and the resulting break IDs. Tomas pasted it straight into a session
+   counts, and the resulting break IDs. Ravi pasted it straight into a session
    and got a working reproduction on the first attempt. This is now the standard.
 2. **Straight-through rate moved 61% → 84% in one sprint**, mostly from NWD-138
    and NWD-104 landing together.
 3. **NWD-139 took eleven minutes** from report to fix to verification. A cosmetic
    defect getting a proportionate response is worth noting, because the opposite
    is also common.
-4. **The NWD-142 fix changed the spec, not just the code.** Tomas raised it as a
+4. **The NWD-142 fix changed the spec, not just the code.** Ravi raised it as a
    spec problem rather than patching around it. That is the behaviour we want and
    it was not obvious.
 5. **NWD-140 was caught before go-live.** A duplicate-row bug in production would
@@ -436,16 +436,16 @@ This is the finished artefact, after Pass 2 — Farhan pasted the room's discuss
 | Date | Event |
 |---|---|
 | 4 Nov | NWD-103 (confidence gate) marked done. Reviewed and merged |
-| 6 Nov | Ananya begins E2E testing against 40 real counterparty documents |
-| 11 Nov | Ananya notices `MISSING_EXTERNAL` breaks on a Broker Alpha statement she can see is complete in the PDF |
+| 6 Nov | Pankaj begins E2E testing against 40 real counterparty documents |
+| 11 Nov | Pankaj notices `MISSING_EXTERNAL` breaks on a Broker Alpha statement she can see is complete in the PDF |
 | 11 Nov | Opens the PDF: 23 positions, table continues onto page 2. Snowflake has 14 |
 | 11 Nov | Files NWD-142 with the document, page count, expected and actual row counts, and the break IDs |
-| 12 Nov | Tomas reproduces on the first attempt from the bug report |
+| 12 Nov | Ravi reproduces on the first attempt from the bug report |
 | 12 Nov | Root cause: Document Intelligence returns a continued table as a SEPARATE table object with no relationship marker. The extractor mapped each independently |
-| 13 Nov | Tomas raises that this needs a spec change, not just a fix. Sofia agrees |
+| 13 Nov | Ravi raises that this needs a spec change, not just a fix. Hem agrees |
 | 13–14 Nov | `spec-confidence-gate.md` gains a table-continuation rule and a completeness rule |
-| 14 Nov | Fix plus row-count check plus four new tests. Reviewed by Rahul |
-| 15 Nov | Ananya re-verifies against the original statement and 12 others |
+| 14 Nov | Fix plus row-count check plus four new tests. Reviewed by Gautam |
+| 15 Nov | Pankaj re-verifies against the original statement and 12 others |
 
 ---
 
@@ -488,26 +488,26 @@ The confidence gate is well designed, well specified, has its own ADR, and its
 principle — "a wrong number is worse than no number" — is repeated throughout the
 project.
 
-That is exactly why nobody looked in that direction. Sofia designed it, Rahul
-reviewed against it, Ananya tested against it, Amara wrote acceptance criteria
+That is exactly why nobody looked in that direction. Hem designed it, Gautam
+reviewed against it, Pankaj tested against it, Preetinka wrote acceptance criteria
 around it. All five of us carried a mental model in which the confidence gate was
 "the thing that stops bad data reaching the warehouse."
 
 It stops bad values. The gap between those two statements is where NWD-142 lived
 for eleven days.
 
-**In the room, Sofia's framing:** we never asked what class of error the gate
+**In the room, Hem's framing:** we never asked what class of error the gate
 specifically does NOT see. We asked whether it worked, and it does.
 
 **What would have had to exist.** A question in the spec template that forces the
-author to name what the design does not cover. Sofia's standing question is
+author to name what the design does not cover. Hem's standing question is
 "what does this look like when it's wrong?" — which NWD-142 shows is not quite
 enough, because a wrong value is visible and missing data is not.
 
 ### Finding 3 — This retro is two weeks late, and that is a finding
 
 Sprint 3's retro was scheduled twice and dropped twice, because the rework
-consumed the time. The same pressure delayed two of Rahul's code reviews.
+consumed the time. The same pressure delayed two of Gautam's code reviews.
 
 The ceremony whose job is to improve the process is the first thing cut when the
 process is under strain. That is backwards, and it is worth stating plainly
@@ -515,7 +515,7 @@ rather than apologising for.
 
 **Discussed but not actioned.** We considered a rule that the retro cannot be
 moved. The room's view was that a rule nobody can keep is worse than an honest
-acknowledgement, and Farhan will simply schedule it on the last day of the sprint
+acknowledgement, and Atul will simply schedule it on the last day of the sprint
 rather than the first day of the next. Noted, not an action item.
 
 ---
@@ -523,23 +523,23 @@ rather than the first day of the next. Noted, not an action item.
 ## Questions the room answered
 
 **Q: Did anyone read the spec before building the extraction?**
-Tomas: yes, and it says nothing about multi-page documents. Not a gap in reading.
+Ravi: yes, and it says nothing about multi-page documents. Not a gap in reading.
 A gap in the spec.
 
 **Q: Would a code review have caught this?**
-Rahul: no, and he is clear about it. The diff was correct code doing what the
+Gautam: no, and he is clear about it. The diff was correct code doing what the
 spec described. Review compares a change against its stated purpose, and the
 stated purpose did not mention completeness.
 
-**Q: What made Ananya look at the PDF at all?**
-Ananya: the break pattern looked wrong. Genuine settlement failures cluster around
+**Q: What made Pankaj look at the PDF at all?**
+Pankaj: the break pattern looked wrong. Genuine settlement failures cluster around
 specific securities or dates. These were a contiguous block of positions from one
 statement, which is not a shape settlement failures make. **That is domain
 judgement and no automated check we have would have flagged it.**
 
 **Q: Has this happened before and gone unnoticed?**
-Open. Tomas is checking the 40 E2E documents for any other row-count mismatch.
-Result to Farhan by 28 Nov.
+Open. Ravi is checking the 40 E2E documents for any other row-count mismatch.
+Result to Atul by 28 Nov.
 
 ---
 
@@ -547,9 +547,9 @@ Result to Farhan by 28 Nov.
 
 | # | Action | Owner | Date | Done when |
 |---|---|---|---|---|
-| 1 | Add a **row-count reconciliation check** to `core/confidence.py`: compare extracted line-item count against the statement's declared total; on mismatch send the whole document to the exception queue with reason `ROW_COUNT_MISMATCH` | **Tomas Vargas** | 28 Nov | `check_row_count()` exists, is called by the rules engine, has tests for match / mismatch / declared-total-absent, and re-running the NWD-142 statement produces an exception rather than a load |
-| 2 | Add the question **"what does silently-missing data look like here, and what would detect it?"** to the spec template. Backfill an answer into `spec-confidence-gate.md` and `data-contract-counterparty-position.md` | **Sofia Marchetti** | 28 Nov | The question is in the template; both existing specs carry an answered section; the next spec written cannot pass review without one |
-| 3 | Extend the E2E suite so **every test document asserts an expected row count**, not just field values | **Ananya Iyer** | 5 Dec | All 40 E2E documents carry an expected row count; the suite fails if extracted count differs |
+| 1 | Add a **row-count reconciliation check** to `core/confidence.py`: compare extracted line-item count against the statement's declared total; on mismatch send the whole document to the exception queue with reason `ROW_COUNT_MISMATCH` | **Ravi Mullick** | 28 Nov | `check_row_count()` exists, is called by the rules engine, has tests for match / mismatch / declared-total-absent, and re-running the NWD-142 statement produces an exception rather than a load |
+| 2 | Add the question **"what does silently-missing data look like here, and what would detect it?"** to the spec template. Backfill an answer into `spec-confidence-gate.md` and `data-contract-counterparty-position.md` | **Hem Singh** | 28 Nov | The question is in the template; both existing specs carry an answered section; the next spec written cannot pass review without one |
+| 3 | Extend the E2E suite so **every test document asserts an expected row count**, not just field values | **Pankaj ** | 5 Dec | All 40 E2E documents carry an expected row count; the suite fails if extracted count differs |
 
 ### Rejected as action items
 
@@ -557,16 +557,16 @@ Result to Farhan by 28 Nov.
 |---|---|---|
 | "Be more careful with multi-page documents" | Not checkable, relies on memory, asks a human to do a machine's job | Action 1 |
 | "Add more edge case tests" | No artefact, no owner, no way to know when it is done | Action 3, which names the artefact and the assertion |
-| "Sofia should review all extraction code" | Creates a bottleneck and puts the fix in a person rather than a process | Action 2, which puts it in the template |
+| "Hem should review all extraction code" | Creates a bottleneck and puts the fix in a person rather than a process | Action 2, which puts it in the template |
 | "Communicate spec gaps earlier" | Nothing would exist afterwards that does not exist now | Not carried. Raised again at the next retro if it recurs |
 
 ### Backlog, not actioned this sprint
 
 - Investigate whether Document Intelligence exposes a page-continuation hint we
-  are not reading. Raised by Tomas. Would make Action 1's check a backstop rather
+  are not reading. Raised by Ravi. Would make Action 1's check a backstop rather
   than the primary defence.
 - Consider a canary document per counterparty, of known content, processed
-  weekly. Raised by Ananya. Good idea, no capacity.
+  weekly. Raised by Pankaj. Good idea, no capacity.
 ````
 
 ### How to read this
@@ -577,9 +577,9 @@ Result to Farhan by 28 Nov.
 
 **The "rejected as action items" table is doing more work than it appears to.** It records that "be more careful" was proposed, by a real person, in a real room — and what it had to become. That is how the standard gets taught. Next retro, someone will propose something vague, someone else will point at this table, and the conversation is thirty seconds instead of ten minutes.
 
-**Ananya's answer about the break pattern is the uncomfortable part of the document.** She caught this because contiguous blocks of positions from one statement is not a shape settlement failures make. That is four years of domain knowledge and no check the team builds will replicate it. Writing it down is honest. It also quietly justifies the parallel run in [P32](../phase-7-release/P32-release-readiness-check.md) — human judgement caught the thing the system could not, which is exactly the argument for keeping a human in the loop while you prove the system.
+**Pankaj's answer about the break pattern is the uncomfortable part of the document.** She caught this because contiguous blocks of positions from one statement is not a shape settlement failures make. That is four years of domain knowledge and no check the team builds will replicate it. Writing it down is honest. It also quietly justifies the parallel run in [P32](../phase-7-release/P32-release-readiness-check.md) — human judgement caught the thing the system could not, which is exactly the argument for keeping a human in the loop while you prove the system.
 
-**The part that is commonly wrong:** action item dates. Three items dated 28 Nov and 5 Dec, in a sprint that is already committed. Nobody checked whether Tomas has capacity that week, and he is also closing the operability red from the readiness review. This is the single most common way retro actions quietly die — they are real, owned, checkable, and slotted into a week with no room. Farhan needs to put them into the sprint plan, not just the retro document.
+**The part that is commonly wrong:** action item dates. Three items dated 28 Nov and 5 Dec, in a sprint that is already committed. Nobody checked whether Ravi has capacity that week, and he is also closing the operability red from the readiness review. This is the single most common way retro actions quietly die — they are real, owned, checkable, and slotted into a week with no room. Atul needs to put them into the sprint plan, not just the retro document.
 
 ---
 
@@ -657,8 +657,8 @@ The other essential follow-up. Use it when owners are roles, teams, or absent.
 The action items have no real owners. "[QUOTE ONE]" is owned by [ROLE / "the
 team" / nobody], which means nobody.
 
-**Assign exactly one named person to each item**, from: Farhan Qureshi,
-Amara Osei, Sofia Marchetti, Rahul Nair, Tomas Vargas, Ji-woo Park, Ananya Iyer.
+**Assign exactly one named person to each item**, from: Atul,
+Preetinka Sharma, Hem Singh, Gautam , Ravi Mullick, Dzmitry , Pankaj .
 
 Rules:
 - **One person, not two.** Shared ownership is the most reliable way to guarantee
@@ -729,11 +729,11 @@ answers:
 standing where the step should have been.
 
 **Then scan the whole document** for the same pattern, including the timeline —
-"Tomas failed to handle X" belongs there as "the extractor mapped each table
+"Ravi failed to handle X" belongs there as "the extractor mapped each table
 independently". Report every instance you changed.
 ```
 
-*What changes:* the finding gets stronger, not softer. "The spec did not describe multi-page documents" is a more actionable statement than "Tomas missed the multi-page case," because you can fix a spec.
+*What changes:* the finding gets stronger, not softer. "The spec did not describe multi-page documents" is a more actionable statement than "Ravi missed the multi-page case," because you can fix a spec.
 
 ### 8.5 "There are nine action items"
 
@@ -797,7 +797,7 @@ flowchart TD
 
 Level 2 of the why-chain — "there was no test for it" — feels like a conclusion. It names something concrete, it suggests an obvious fix, and crucially it lets everyone stop digging. Rooms reach it and relax.
 
-It is the wrong place to stop, and you can tell because the action item it produces is "write more tests," which nobody will be able to check and which would not have prevented this bug anyway. Tomas was testing. He was testing against real production documents, which is the *good* practice. More of that would not have found a page-boundary case, because Broker Alpha mostly sends single-page tables.
+It is the wrong place to stop, and you can tell because the action item it produces is "write more tests," which nobody will be able to check and which would not have prevented this bug anyway. Ravi was testing. He was testing against real production documents, which is the *good* practice. More of that would not have found a page-boundary case, because Broker Alpha mostly sends single-page tables.
 
 The useful answer was three levels further down: the confidence gate covers wrong values and not missing ones, and everyone believed otherwise.
 
@@ -807,7 +807,7 @@ The useful answer was three levels further down: the confidence gate covers wron
 
 This one kills more retro programmes than blame does, and it is much less visible.
 
-The items are specific. They have owners. They have dates. Everyone means them. Then Tomas's week contains the row-count check, the runbook from [P33](../phase-7-release/P33-write-the-runbook.md), the alerting configuration to close the readiness review's operability red, and his actual sprint commitments. Something gives, and it is the retro item, because it is the only one with no ticket and no standup slot.
+The items are specific. They have owners. They have dates. Everyone means them. Then Ravi's week contains the row-count check, the runbook from [P33](../phase-7-release/P33-write-the-runbook.md), the alerting configuration to close the readiness review's operability red, and his actual sprint commitments. Something gives, and it is the retro item, because it is the only one with no ticket and no standup slot.
 
 Six weeks later the same finding resurfaces, and now the team has learned that retro items do not happen — which means next time they will not bother writing good ones.
 
@@ -815,9 +815,9 @@ Six weeks later the same finding resurfaces, and now the team has learned that r
 
 ### Someone treats it as performance feedback
 
-A manager attends, hears "the extraction dropped page-two rows," and raises it in Tomas's next one-to-one.
+A manager attends, hears "the extraction dropped page-two rows," and raises it in Ravi's next one-to-one.
 
-The retro is dead from that moment. Not loudly. Tomas will still attend, still contribute, still be professional. He will just never again say the sentence that starts "honestly, what happened was..." And that sentence is where every real finding in this document came from.
+The retro is dead from that moment. Not loudly. Ravi will still attend, still contribute, still be professional. He will just never again say the sentence that starts "honestly, what happened was..." And that sentence is where every real finding in this document came from.
 
 **The fix:** the ground rule is stated at the top of the document and out loud at the start of every retro, and it is enforced. What is discussed in the retro is process. If there is a genuine individual performance issue, it is handled separately, privately, by the right person — and it is almost never what a retro turns up anyway.
 
@@ -835,21 +835,21 @@ That is a technical debt item. It has a cost, an interest rate, and needs rankin
 
 The distinction: **the retro asks how we work. Debt triage asks what we built.** "Our spec template never asks about missing data" is a retro finding. "The reconciliation runs as a single-threaded pandas job that will not survive 10x volume" is debt.
 
-They feed each other — a retro finding often explains *why* a piece of debt exists — but mixing them in one meeting means the technical items win, because they are more concrete and easier to talk about. Farhan parks technical items explicitly and routes them to triage.
+They feed each other — a retro finding often explains *why* a piece of debt exists — but mixing them in one meeting means the technical items win, because they are more concrete and easier to talk about. Atul s technical items explicitly and routes them to triage.
 
 ---
 
 ## 10. The handoff
 
-Sofia and Rahul pick this up, and they pick up two different things from it.
+Hem and Gautam pick this up, and they pick up two different things from it.
 
-Sofia gets action item 2 directly: the spec template question. That is a small edit with a long tail — every spec written from now on has to answer "what does silently-missing data look like here, and what would detect it?", and the two existing specs get backfilled. It is the item most likely to still be paying off in two years, and it is also the one most likely to be quietly dropped, because unlike a code check nothing fails if it does not happen. Farhan tracking it in the sprint plan is the only thing that makes it real.
+Hem gets action item 2 directly: the spec template question. That is a small edit with a long tail — every spec written from now on has to answer "what does silently-missing data look like here, and what would detect it?", and the two existing specs get backfilled. It is the item most likely to still be paying off in two years, and it is also the one most likely to be quietly dropped, because unlike a code check nothing fails if it does not happen. Atul tracking it in the sprint plan is the only thing that makes it real.
 
-Rahul gets something less direct. Finding 2 — a good control creating a blind spot by being good — is a debt-shaped observation wearing retro clothes. It says the team's mental model of the system diverged from the system, and divergences like that are exactly what [P36](P36-tech-debt-triage.md) inventories. When he and Sofia run the debt triage, several items on the list turn out to have the same shape: a deliberate shortcut whose consequences nobody has revisited since taking it. The blob trigger processing inline instead of enqueuing is one. The classifier knowing only two layouts is another.
+Gautam gets something less direct. Finding 2 — a good control creating a blind spot by being good — is a debt-shaped observation wearing retro clothes. It says the team's mental model of the system diverged from the system, and divergences like that are exactly what [P36](P36-tech-debt-triage.md) inventories. When he and Hem run the debt triage, several items on the list turn out to have the same shape: a deliberate shortcut whose consequences nobody has revisited since taking it. The blob trigger processing inline instead of enqueuing is one. The classifier knowing only two layouts is another.
 
-Tomas gets action item 1, and it goes further than a sprint. The row-count reconciliation check becomes the headline check in [P25](../phase-5-verify/P25-data-quality-validation.md) — not a Northwind-specific patch but the first thing that prompt now asks of any pipeline, because "did all the data arrive?" turns out to be the question nobody asks by default. A single retro finding propagating into a library prompt is the best outcome this ceremony produces.
+Ravi gets action item 1, and it goes further than a sprint. The row-count reconciliation check becomes the headline check in [P25](../phase-5-verify/P25-data-quality-validation.md) — not a Northwind-specific patch but the first thing that prompt now asks of any pipeline, because "did all the data arrive?" turns out to be the question nobody asks by default. A single retro finding propagating into a library prompt is the best outcome this ceremony produces.
 
-Ananya gets action item 3, and she also gets the sentence in the questions section about break patterns, which she raises again during the parallel run. Her observation that contiguous blocks of positions from one statement is not a shape settlement failures make is domain judgement no check replicates, and it is a quiet argument for the parallel run's whole design.
+Pankaj gets action item 3, and she also gets the sentence in the questions section about break patterns, which she raises again during the parallel run. Her observation that contiguous blocks of positions from one statement is not a shape settlement failures make is domain judgement no check replicates, and it is a quiet argument for the parallel run's whole design.
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/retrospective-sprint-3.md`**
 > Anyone reading this file can rely on finding:
@@ -869,15 +869,15 @@ Ananya gets action item 3, and she also gets the sentence in the questions secti
 
 This is [10-retrospective.md](../../Case-Study/Python-ETL/10-retrospective.md), held on 25 November, two weeks after Sprint 3 ended.
 
-The moment the chapter turns on is fifteen minutes in. Tomas says, unprompted, "I should have tested a multi-page statement." It is offered honestly and it is the natural place for the room to settle — everyone can agree, it costs nothing, and the meeting can move on.
+The moment the chapter turns on is fifteen minutes in. Ravi says, unprompted, "I should have tested a multi-page statement." It is offered honestly and it is the natural place for the room to settle — everyone can agree, it costs nothing, and the meeting can move on.
 
-Farhan does not let it. His question is the one that makes the whole ceremony work: "You tested against three real statements. What would have made you pick a fourth?" And the honest answer is nothing. Broker Alpha mostly sends single-page tables. Testing against real production documents is the right instinct, and it produced a test set that could not find this bug. There was no decision anyone made badly.
+Atul does not let it. His question is the one that makes the whole ceremony work: "You tested against three real statements. What would have made you pick a fourth?" And the honest answer is nothing. Broker Alpha mostly sends single-page tables. Testing against real production documents is the right instinct, and it produced a test set that could not find this bug. There was no decision anyone made badly.
 
-That is the point at which the room stops looking at Tomas and starts looking at the process, and Sofia's contribution ninety seconds later is the finding: nobody ever asked what class of error the confidence gate does not see. She designed it. She had not asked either.
+That is the point at which the room stops looking at Ravi and starts looking at the process, and Hem's contribution ninety seconds later is the finding: nobody ever asked what class of error the confidence gate does not see. She designed it. She had not asked either.
 
-The action item that travelled furthest is the row-count check. It went into `core/confidence.py` as `check_row_count()`, it became the `ROW_COUNT_MISMATCH` exception reason Priya now sees in Ji-woo's queue, it got a section in the runbook, and it ended up as the headline check in [P25](../phase-5-verify/P25-data-quality-validation.md). One retro finding, four artefacts.
+The action item that travelled furthest is the row-count check. It went into `core/confidence.py` as `check_row_count()`, it became the `ROW_COUNT_MISMATCH` exception reason Preeti now sees in Dzmitry's queue, it got a section in the runbook, and it ended up as the headline check in [P25](../phase-5-verify/P25-data-quality-validation.md). One retro finding, four artefacts.
 
-The item that nearly did not happen is Sofia's template question. It is one line in a markdown file. Nothing fails if it is missing. It survived because Farhan put it in the Sprint 4 plan with a date, alongside the code work, and because Sofia backfilled answers into the two existing specs the same afternoon — which meant that by the time anyone could forget about it, it was already load-bearing. Rahul's note in the margin of the retro document reads: "The cheap actions are the ones that need the most protection."
+The item that nearly did not happen is Hem's template question. It is one line in a markdown file. Nothing fails if it is missing. It survived because Atul put it in the Sprint 4 plan with a date, alongside the code work, and because Hem backfilled answers into the two existing specs the same afternoon — which meant that by the time anyone could forget about it, it was already load-bearing. Gautam's note in the margin of the retro document reads: "The cheap actions are the ones that need the most protection."
 
 ---
 

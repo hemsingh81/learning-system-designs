@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | **Phase** | 6 — Rework |
-| **Who runs it** | Anyone. Tomas, Ji-woo, Ananya, Rahul, Sofia — this is not a role-specific prompt |
+| **Who runs it** | Anyone. Ravi, Dzmitry, Pankaj, Gautam, Hem — this is not a role-specific prompt |
 | **When** | Two or more attempts have failed and the third looks like the first |
 | **Takes in** | The stuck session, the actual files, and an honest account of what has already been tried |
 | **Produces** | Either a diagnosis of why it is stuck, or a clean restart with a better-framed prompt |
@@ -18,21 +18,21 @@
 
 ## 1. The scene
 
-Tuesday, Sprint 3. Tomas is on **NWD-140** — the third of Ananya's five defects, and on paper the easiest of them. A counterparty resends a statement under a new filename and the pipeline creates a duplicate row. Idempotency was supposed to prevent exactly this. It is not preventing it.
+Tuesday, Sprint 3. Ravi is on **NWD-140** — the third of Pankaj's five defects, and on paper the easiest of them. A counterparty resends a statement under a new filename and the pipeline creates a duplicate row. Idempotency was supposed to prevent exactly this. It is not preventing it.
 
 *Idempotency*, since it matters here: the property that doing something twice has the same effect as doing it once. Ingest the same statement twice and you should end up with one set of rows, not two. Northwind's rule is invariant 4 in the project's foundations — **idempotency is by SHA-256 of the file's content, never its filename** — because counterparties resend the same statement under new names constantly, and a name-based key would treat every resend as new data.
 
-Attempt one. Tomas describes the bug, the AI reads `core/idempotency.py`, finds nothing wrong, and suggests the hash might not be canonicalising whitespace. It adds normalisation. The duplicate still appears.
+Attempt one. Ravi describes the bug, the AI reads `core/idempotency.py`, finds nothing wrong, and suggests the hash might not be canonicalising whitespace. It adds normalisation. The duplicate still appears.
 
 Attempt two. The AI now suspects the hash is computed before the blob is fully written. It adds a size check. The duplicate still appears.
 
-Attempt three. It goes back to canonicalisation, with a different implementation. Tomas notices that the diff is roughly the diff from attempt one with the arguments in a different order.
+Attempt three. It goes back to canonicalisation, with a different implementation. Ravi notices that the diff is roughly the diff from attempt one with the arguments in a different order.
 
 Attempt four. He types "that didn't work either" and gets a fourth theory involving blob metadata, delivered with the same confidence as the first three. He accepts it. It does not work.
 
 Attempt five is where he stops, because he reads the message properly and finds this sentence in it: *"As we established, `core/idempotency.py` is the only place the deduplication key is computed."*
 
-Nobody established that. The AI said it in attempt one, Tomas did not challenge it, and it has been load-bearing ever since. Four attempts, ninety minutes, and every one of them was a fix to a file that was working correctly, because the search space was closed in the first three minutes by an assertion nobody checked.
+Nobody established that. The AI said it in attempt one, Ravi did not challenge it, and it has been load-bearing ever since. Four attempts, ninety minutes, and every one of them was a fix to a file that was working correctly, because the search space was closed in the first three minutes by an assertion nobody checked.
 
 **The AI was not stuck because the problem was hard. It was stuck because it was standing in the wrong place and had no way of finding that out.**
 
@@ -147,7 +147,7 @@ A rule of thumb that holds up in practice:
 | 3 fail | Move 3 or 4. Stop asking for fixes entirely. |
 | 4 fail | Move 5. Restart. There is nothing left in the session worth keeping. |
 
-And one thing that is worth saying because it is often true: **sometimes the AI is not stuck — you are.** If you cannot state what "working" looks like in a checkable sentence, no prompt will help, because there is nothing for the model to aim at. That is not a tooling problem. That is a problem specification problem, and the fix is [P08](../phase-1-discovery/P08-write-acceptance-criteria.md) or a conversation with Ananya.
+And one thing that is worth saying because it is often true: **sometimes the AI is not stuck — you are.** If you cannot state what "working" looks like in a checkable sentence, no prompt will help, because there is nothing for the model to aim at. That is not a tooling problem. That is a problem specification problem, and the fix is [P08](../phase-1-discovery/P08-write-acceptance-criteria.md) or a conversation with Pankaj.
 
 ### The one idea to remember
 
@@ -302,7 +302,7 @@ Then **state what you would check next and why**, and stop.
 
 ## 5. The filled-in example
 
-Tomas, ninety minutes into NWD-140, tries move 2 first because move 1 needs him to know which file to paste and he does not.
+Ravi, ninety minutes into NWD-140, tries move 2 first because move 1 needs him to know which file to paste and he does not.
 
 ```text
 **MOVE 2 — ASSUMPTIONS**
@@ -319,7 +319,7 @@ Include the ones that feel too obvious to state. Especially those. State at leas
 8 assumptions. Do not propose a fix in this message.
 ```
 
-Eight is not an arbitrary number. Tomas picked it because asking for "your assumptions" had already produced three, all of them true, none of them the problem.
+Eight is not an arbitrary number. Ravi picked it because asking for "your assumptions" had already produced three, all of them true, none of them the problem.
 
 ---
 
@@ -375,7 +375,7 @@ was unverified. Assumption 5 in particular is one I did not realise I was making
 I collapsed "the key is computed correctly" and "the key is used" into one idea.
 ````
 
-Tomas runs the command under assumption 2. It takes four seconds.
+Ravi runs the command under assumption 2. It takes four seconds.
 
 ```text
 $ rg -n "sha256|md5|dedup|idempot|_key\s*=" --type py
@@ -391,7 +391,7 @@ sinks/snowflake_sink.py:44:    merge_key = row["CONTENT_KEY"]
 
 ### Move 1, immediately after
 
-Now Tomas knows which file to paste. He runs move 1 with the real `sinks/sql_sink.py`, and gets:
+Now Ravi knows which file to paste. He runs move 1 with the real `sinks/sql_sink.py`, and gets:
 
 ````markdown
 Reading the actual file changes my diagnosis completely.
@@ -605,7 +605,7 @@ The test that works: **can you state, in one sentence, the mechanism by which th
 
 Sometimes the session is stuck because the prompt never contained the file with the bug in it. That is not a model failure. That is you having decided, before you started, which parts of the system were relevant.
 
-On NWD-140 this is precisely what happened. Tomas never pasted `sinks/sql_sink.py`, because idempotency obviously lives in `idempotency.py`. His own assumption was the one the AI inherited, and then he spent ninety minutes watching it fail to escape a box he had built.
+On NWD-140 this is precisely what happened. Ravi never pasted `sinks/sql_sink.py`, because idempotency obviously lives in `idempotency.py`. His own assumption was the one the AI inherited, and then he spent ninety minutes watching it fail to escape a box he had built.
 
 The fix is a habit and it is cheap: **when you are stuck, paste the file you think is irrelevant.** It costs a few thousand tokens. Ninety minutes costs more.
 
@@ -621,11 +621,11 @@ Attempt five produces something that makes the test pass. You do not understand 
 
 Two weeks later it breaks in a way nobody can diagnose, because nobody ever knew why it worked. And you have spent your evidence — the reproduction is gone, the symptom is gone, and the only thing you have is a change of unknown mechanism sitting in the codebase.
 
-The rule Rahul put in the team's [definition of done](../../Case-Study/Python-ETL/artifacts/definition-of-done.md) after this sprint: **"If you cannot explain in one sentence why the fix works, it is not a fix. It is a coincidence you have committed."**
+The rule Gautam put in the team's [definition of done](../../Case-Study/Python-ETL/artifacts/definition-of-done.md) after this sprint: **"If you cannot explain in one sentence why the fix works, it is not a fix. It is a coincidence you have committed."**
 
 ### This is the wrong prompt entirely
 
-**You are the one who is stuck.** If you cannot state what correct behaviour is in a checkable sentence, no recovery move helps — there is nothing for the model to aim at. Go and write it down, with Ananya or Amara, using [P08](../phase-1-discovery/P08-write-acceptance-criteria.md). It is remarkable how often "I don't know what it should do" is the actual blocker wearing a technical disguise.
+**You are the one who is stuck.** If you cannot state what correct behaviour is in a checkable sentence, no recovery move helps — there is nothing for the model to aim at. Go and write it down, with Pankaj or Preetinka, using [P08](../phase-1-discovery/P08-write-acceptance-criteria.md). It is remarkable how often "I don't know what it should do" is the actual blocker wearing a technical disguise.
 
 **The problem needs information nobody has.** Sometimes the answer lives in Broker Alpha's operations team, or in an Azure service's undocumented behaviour, or in a log nobody enabled. No amount of restarting produces information that does not exist. Stop, name what you need, and go and get it. On NWD-141 that meant enabling a diagnostic setting and waiting for the next month-end — annoying, correct.
 
@@ -637,7 +637,7 @@ The rule Rahul put in the team's [definition of done](../../Case-Study/Python-ET
 
 P30 hands back, not forward. Once you are unstuck you return to whatever you were doing — [P26](P26-debug-an-error-fast.md) if there was a stack trace, [P27](P27-fix-from-a-qa-bug-report.md) if QA filed it, [P18](../phase-4-build/P18-implement-a-story.md) if you were building. And you return **at the start of that prompt, not in the middle of it.**
 
-That matters more than it sounds. The temptation after a rescue is to take the diagnosis and go straight to the fix, because you have already spent ninety minutes and the answer is finally visible. Resist it. On NWD-140, Tomas restarted P27 from step 1 with the new understanding, wrote a failing test that resent a file under a new name and asserted one row rather than two, watched it fail, and only then changed `sinks/sql_sink.py`. That test is what caught the follow-on problem — that `snowflake_sink.py` was already using the content key, so silver and gold had been disagreeing on row counts for an unknown period. **The session that has just been wrong four times has not earned a shortcut.**
+That matters more than it sounds. The temptation after a rescue is to take the diagnosis and go straight to the fix, because you have already spent ninety minutes and the answer is finally visible. Resist it. On NWD-140, Ravi restarted P27 from step 1 with the new understanding, wrote a failing test that resent a file under a new name and asserted one row rather than two, watched it fail, and only then changed `sinks/sql_sink.py`. That test is what caught the follow-on problem — that `snowflake_sink.py` was already using the content key, so silver and gold had been disagreeing on row counts for an unknown period. **The session that has just been wrong four times has not earned a shortcut.**
 
 The forward handoff, once the fix is real, is [P31 — Write Clean Git Commits](../phase-7-release/P31-write-clean-git-commits.md). It is worth naming because of a specific trap: after a long stuck session your working directory is full of the debris of four failed attempts. Debug prints, a commented-out block, a dependency added and never removed, a test file with an experiment in it. Committing that mess alongside the real fix is how a two-line change becomes an unreviewable one, and it undoes everything the recovery bought you.
 
@@ -659,9 +659,9 @@ There is one more handoff, and it is to the team rather than to a prompt. **If a
 
 NWD-140 sits in the middle of [`08-sprint-3-rework.md`](../../Case-Study/Python-ETL/08-sprint-3-rework.md), between the two big ones, and it is the chapter's quiet lesson. NWD-142 teaches you what a good process looks like. NWD-140 teaches you what happens without one.
 
-The detail that readers remember is the timing. **Ninety minutes of prompting, four seconds of `rg`.** Tomas kept the terminal output and pinned it above his desk, which Farhan found funny and Rahul found instructive enough to bring to the retrospective. The point is not that grep is better than an AI. The point is that he had spent ninety minutes asking a *reasoning* question — "what is wrong with this code" — when a *searching* question would have closed it immediately. Move 2 is valuable precisely because it converts the first kind of question into the second.
+The detail that readers remember is the timing. **Ninety minutes of prompting, four seconds of `rg`.** Ravi kept the terminal output and pinned it above his desk, which Atul found funny and Gautam found instructive enough to bring to the retrospective. The point is not that grep is better than an AI. The point is that he had spent ninety minutes asking a *reasoning* question — "what is wrong with this code" — when a *searching* question would have closed it immediately. Move 2 is valuable precisely because it converts the first kind of question into the second.
 
-The second detail is the one Rahul pushed at in [`10-retrospective.md`](../../Case-Study/Python-ETL/10-retrospective.md), and it is less comfortable. The false premise did not originate with the AI. Tomas believed idempotency lived in `idempotency.py` — reasonably, since that is what the file is called — and never pasted `sinks/sql_sink.py` into the session at all. The AI inherited his blind spot and then reflected it back at him with enough confidence that he stopped questioning it. **The model did not mislead him. It agreed with him, fluently, four times.** That is a different and harder failure to guard against, and it is why move 2 asks for assumptions rather than for hypotheses: hypotheses are about the bug, and assumptions are about you.
+The second detail is the one Gautam pushed at in [`10-retrospective.md`](../../Case-Study/Python-ETL/10-retrospective.md), and it is less comfortable. The false premise did not originate with the AI. Ravi believed idempotency lived in `idempotency.py` — reasonably, since that is what the file is called — and never pasted `sinks/sql_sink.py` into the session at all. The AI inherited his blind spot and then reflected it back at him with enough confidence that he stopped questioning it. **The model did not mislead him. It agreed with him, fluently, four times.** That is a different and harder failure to guard against, and it is why move 2 asks for assumptions rather than for hypotheses: hypotheses are about the bug, and assumptions are about you.
 
 The lasting artifact is the smallest thing in the chapter. One line in [`artifacts/CLAUDE.md`](../../Case-Study/Python-ETL/artifacts/CLAUDE.md): *"Deduplication keys are computed in exactly one place, `core/idempotency.py`. Any sink that computes its own is a bug."* It is now in the context of every session the team runs, which means that particular false premise is not available to be held any more — not by the AI, and not by the next engineer who joins and reads the filename and assumes.
 

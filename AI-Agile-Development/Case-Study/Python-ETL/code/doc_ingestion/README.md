@@ -1,8 +1,8 @@
 # `doc_ingestion` — Northwind counterparty document ingestion
 
 This is the working code behind the *Python ETL* case study. It is the pipeline
-Tomas Vargas builds across Sprints 2 and 3, including the fixes that come out of
-Ananya Iyer's bug reports in the rework chapter.
+Ravi Mullick builds across Sprints 2 and 3, including the fixes that come out of
+Pankaj 's bug reports in the rework chapter.
 
 **What it does in one paragraph.** Northwind Asset Management runs two sets of
 books that must agree. Internal records come out of BlackRock Aladdin over REST —
@@ -137,7 +137,7 @@ and **0.005** — 50 basis points — on market value (pricing source difference
 
 ## The four bug fixes made visible
 
-Ananya files five defects in Sprint 3. Four of them live in this code, and each
+Pankaj files five defects in Sprint 3. Four of them live in this code, and each
 fix is commented at the site so the reason survives the sprint.
 
 | Bug | What happened | Where the fix lives |
@@ -148,7 +148,7 @@ fix is commented at the site so the reason survives the sprint.
 | **NWD-141** | A 429 from Document Intelligence at month-end killed the run instead of backing off. | `core/clients.py` — the shared `_RETRY` policy plus `retry_on_transport_error`. |
 
 NWD-139 (the exception queue showing `0.8234567` instead of `82%`) is a
-one-line formatting fix in Ji-woo's React screen, which is not in this package.
+one-line formatting fix in Dzmitry's React screen, which is not in this package.
 
 **Why NWD-142 is the one that teaches.** The code worked. The tests passed. The
 confidence gate did not catch it, because confidence is a statement about the
@@ -249,7 +249,7 @@ reading about them.
   and the poison-queue routing described in `function_app.py` would be configured
   there.
 
-**Deliberately absent:** the React exception queue screen (Ji-woo's story,
+**Deliberately absent:** the React exception queue screen (Dzmitry's story,
 NWD-108), the model training and labelling workflow (that happens in Document
 Intelligence Studio, and training is free — you pay only for analysis), and any
 path that sends an order anywhere. Nothing in this package writes to a broker.

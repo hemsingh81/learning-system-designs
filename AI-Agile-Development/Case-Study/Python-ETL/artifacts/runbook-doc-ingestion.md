@@ -2,10 +2,10 @@
 
 | | |
 |---|---|
-| **Produced by** | Tomas Vargas, Backend Engineer |
+| **Produced by** | Ravi Mullick, Backend Engineer |
 | **Using** | [P33 — Write the Runbook](../../../AI-Prompts-Library/phase-7-release/P33-write-the-runbook.md) |
 | **Date** | 2026-07-19 |
-| **Status** | Live · walked through end to end by Ji-woo Park, who did not build this system, 2026-07-19 |
+| **Status** | Live · walked through end to end by Dzmitry , who did not build this system, 2026-07-19 |
 | **Version** | 1.0 |
 | **Audience** | Whoever is on call. Assumes you have never seen this code. |
 
@@ -199,7 +199,7 @@ ORDER  BY n DESC;
 
 Group by reason first. Thirty exceptions with the same reason are one problem, not thirty.
 
-- **Genuinely low confidence** — Priya's job, in the UI. Not yours.
+- **Genuinely low confidence** — Preeti's job, in the UI. Not yours.
 - **All the same reason, all one counterparty** — §5.1. Do not ask an analyst to hand-key thirty documents that a config change fixes.
 - **A bug we have now fixed** — reprocess in bulk after the deploy:
   ```bash
@@ -249,7 +249,7 @@ git commit -am "config(broker_alpha): map renamed PositionQty field" && ./deploy
 python -m tools.reprocess --source broker_alpha --since 2026-07-19 --from bronze
 ```
 
-*The layout changed enough that the model must be retrained.* Not a 3am job. Raise it, tell Amara and Priya the exceptions will be hand-worked meanwhile, and note that training is free — you pay only for analysis, and reprocessing from bronze after a retrain re-runs mapping without re-extracting.
+*The layout changed enough that the model must be retrained.* Not a 3am job. Raise it, tell Preetinka and Preeti the exceptions will be hand-worked meanwhile, and note that training is free — you pay only for analysis, and reprocessing from bronze after a retrain re-runs mapping without re-extracting.
 
 *It is one bad batch, not a change.* Reprocess and watch tomorrow.
 
@@ -386,7 +386,7 @@ az role assignment create --assignee <object-id> --role "Cognitive Services User
 
 *Throttling.* §5.3 applies; same shared retry policy.
 
-**Escalate** to Sofia if anyone suggests bypassing redaction to clear a backlog. The answer is no, and it is not a 3am decision.
+**Escalate** to Hem if anyone suggests bypassing redaction to clear a backlog. The answer is no, and it is not a 3am decision.
 
 ---
 
@@ -424,7 +424,7 @@ az functionapp config appsettings set --name func-northwind-ingest-prod \
 ```
 Ten minutes is the Premium-plan maximum. Past that the answer is architectural — split extraction from post-processing — and it is a ticket, not a fix.
 
-*A document over `max_pages`.* It is rejected as oversized, not timed out, and appears in the exception queue. That is correct behaviour. Raise the cap deliberately or hand the document to Priya.
+*A document over `max_pages`.* It is rejected as oversized, not timed out, and appears in the exception queue. That is correct behaviour. Raise the cap deliberately or hand the document to Preeti.
 
 **Do not** retry a timing-out document repeatedly. You pay per page each time it re-extracts from raw.
 
@@ -501,20 +501,20 @@ Try §5 first. If the alert is Sev 1, or you have been on it for 30 minutes with
 | Order | Who | For | Contact |
 |---|---|---|---|
 | 1 | On-call engineer (rota) | Everything, first | PagerDuty `northwind-recon` |
-| 2 | Tomas Vargas — Backend | Pipeline, extraction, rules engine, sinks | Teams · mobile in PagerDuty |
-| 3 | Rahul Nair — Team Lead | Anything unresolved after 30 minutes; any deploy to prod out of hours | Teams · mobile in PagerDuty |
-| 4 | Sofia Marchetti — Architect | Anything touching redaction, audit trail, or a proposal to bypass a control | Teams |
-| 5 | Ji-woo Park — Frontend | Exception queue UI only | Teams |
-| 6 | Ananya Iyer — QA | Suspected data correctness issue, before anyone touches the warehouse | Teams |
-| 7 | Amara Osei — Product Owner | Anything a business decision depends on; any backlog Priya will feel | Teams |
-| 8 | Farhan Qureshi — PM | Client communication. **Northwind hears from Farhan, not from you.** | Teams · mobile |
-| — | Priya Raman — Northwind ops | The person who works the exception queue. Tell her before she finds out. | Northwind Teams |
+| 2 | Ravi Mullick — Backend | Pipeline, extraction, rules engine, sinks | Teams · mobile in PagerDuty |
+| 3 | Gautam  — Team Lead | Anything unresolved after 30 minutes; any deploy to prod out of hours | Teams · mobile in PagerDuty |
+| 4 | Hem Singh — Architect | Anything touching redaction, audit trail, or a proposal to bypass a control | Teams |
+| 5 | Dzmitry  — Frontend | Exception queue UI only | Teams |
+| 6 | Pankaj  — QA | Suspected data correctness issue, before anyone touches the warehouse | Teams |
+| 7 | Preetinka Sharma — Product Owner | Anything a business decision depends on; any backlog Preeti will feel | Teams |
+| 8 | Atul— PM | Client communication. **Northwind hears from Atul, not from you.** | Teams · mobile |
+| — | Preeti Singh — Northwind ops | The person who works the exception queue. Tell her before she finds out. | Northwind Teams |
 
 **Two standing rules.**
 
-Ananya is consulted before anyone modifies data in silver or gold. Always. Even when it is obviously fine.
+Pankaj is consulted before anyone modifies data in silver or gold. Always. Even when it is obviously fine.
 
-Any proposal to disable a control — redaction, the confidence gate, a completeness rule — goes to Sofia, in daylight, with a written reason. There is no 3am version of that conversation.
+Any proposal to disable a control — redaction, the confidence gate, a completeness rule — goes to Hem, in daylight, with a written reason. There is no 3am version of that conversation.
 
 ---
 
@@ -533,8 +533,8 @@ Any proposal to disable a control — redaction, the confidence gate, a complete
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/runbook-doc-ingestion.md`**
 >
-> Produced by: Backend Engineer (Tomas Vargas) using P33 — Write the Runbook
-> Validated by: Ji-woo Park, 2026-07-19 — walked every section without help from the author, which is the only test of a runbook that counts
+> Produced by: Backend Engineer (Ravi Mullick) using P33 — Write the Runbook
+> Validated by: Dzmitry , 2026-07-19 — walked every section without help from the author, which is the only test of a runbook that counts
 >
 > Anyone consuming this file can rely on finding:
 > - What the system does, in two lines, before any procedure
@@ -550,4 +550,4 @@ Any proposal to disable a control — redaction, the confidence gate, a complete
 >
 > **If any guarantee above is missing, this runbook is not ready to be on call with.** Send it back.
 >
-> Changing this file: whoever is on call may add a failure mode they hit, immediately and without approval — a runbook that is hard to update stops being true. Removing a section needs Tomas Vargas or Rahul Nair.
+> Changing this file: whoever is on call may add a failure mode they hit, immediately and without approval — a runbook that is hard to update stops being true. Removing a section needs Ravi Mullick or Gautam .

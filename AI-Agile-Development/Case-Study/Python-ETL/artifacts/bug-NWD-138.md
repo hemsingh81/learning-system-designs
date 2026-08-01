@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Raised by** | Ananya Iyer, QA Engineer |
+| **Raised by** | Pankaj , QA Engineer |
 | **Date raised** | 2026-06-22 |
 | **Severity** | **High** |
 | **Priority** | P2 — blocks the EM book, not the EQ book |
@@ -107,7 +107,7 @@ Four breaks from two positions. The same holding appears twice — once as absen
 ## 5. Business impact
 
 1. **The entire EM book is affected**, not one document. Every Spanish and Portuguese confirmation carries share-class suffixes and side vocabulary. On last month's volume that is roughly 40% of `broker_beta_em` line items with a translated identifier component.
-2. **Breaks come in pairs and look worse than they are.** Four fabricated breaks per two positions. Priya works them individually.
+2. **Breaks come in pairs and look worse than they are.** Four fabricated breaks per two positions. Preeti works them individually.
 3. **The data is wrong in the warehouse, not merely rejected.** These rows loaded. They carry a high `min_confidence` and a valid `bronze_path`, and the identifier in the row is a value that was never on the document.
 4. **`side` arrives outside the permitted vocabulary**, which the data contract says cannot happen. Nothing rejected it, so either the contract is not enforced at this point or the rule ran before translation. Both are worth someone's attention.
 
@@ -142,15 +142,15 @@ The test that should have caught this does not exist, and its absence is a patte
 
 A fixture built to prove a feature works is not a fixture that can find out where it does harm.
 
-I would also check the reverse direction. If translation can corrupt a value on the way in, the exception queue may be showing Priya a translated value while the underlying record holds a different one. Worth a look at what NWD-108 renders.
+I would also check the reverse direction. If translation can corrupt a value on the way in, the exception queue may be showing Preeti a translated value while the underlying record holds a different one. Worth a look at what NWD-108 renders.
 
-— Ananya
+— Pankaj
 
 ---
 
 ## 9. Resolution
 
-**Fixed** 2026-07-24 by Tomas Vargas. Two commits:
+**Fixed** 2026-07-24 by Ravi Mullick. Two commits:
 
 1. `test: reproduce NWD-138 identifier corruption on EM confirmations`
 2. `fix(translate): restrict translation to descriptive fields by config`
@@ -164,16 +164,16 @@ I would also check the reverse direction. If translation can corrupt a value on 
 
 **Regression tests added:** 5, including one asserting `BBAS3 ON` survives the pipeline byte-identical, and one asserting a new counterparty with an unlisted identifier field is caught by the type gate.
 
-**Fixture set extended:** `tests/fixtures/broker_beta_em_tickers.json` carries four real share-class suffixes. Ananya's point in §8 stands as a general lesson — [`retrospective-sprint-3.md`](retrospective-sprint-3.md).
+**Fixture set extended:** `tests/fixtures/broker_beta_em_tickers.json` carries four real share-class suffixes. Pankaj's point in §8 stands as a general lesson — [`retrospective-sprint-3.md`](retrospective-sprint-3.md).
 
-**Verified** 2026-06-25 by Ananya Iyer. Six trades in, six matched, zero breaks.
+**Verified** 2026-06-25 by Pankaj . Six trades in, six matched, zero breaks.
 
 ---
 
 > **Artifact contract — `artifacts/bug-NWD-138.md`**
 >
-> Produced by: Ananya Iyer (QA Engineer), using the bug-report standard in [P22](../../../AI-Prompts-Library/phase-5-verify/P22-e2e-test-the-application.md)
-> Approved by: Rahul Nair, 2026-06-22
+> Produced by: Pankaj  (QA Engineer), using the bug-report standard in [P22](../../../AI-Prompts-Library/phase-5-verify/P22-e2e-test-the-application.md)
+> Approved by: Gautam , 2026-06-22
 >
 > Anyone fixing from this report can rely on finding:
 > - Exact reproduction steps, including the fixture and the commands to run it

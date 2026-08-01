@@ -8,13 +8,13 @@
 
 ## 1. 07:50, London
 
-Priya Raman gets in before eight because the Los Angeles overnight files land at 07:20 and there is no point arriving after them.
+Preeti Singh gets in before eight because the Los Angeles overnight files land at 07:20 and there is no point arriving after them.
 
 She has three windows open. On the left, an Outlook folder called **INBOX/Counterparty** that filled overnight — forty-one messages, most with an attachment, a few with three. In the middle, Adobe Reader. On the right, an Excel workbook with one tab per counterparty and a fixed column order that she did not choose and cannot change, because the reconciliation macro that reads it was written in 2016 by somebody who has left.
 
 The first PDF is from a prime broker. It is called `NW_DAILY_0311.pdf`, which tells her nothing, because the same broker also sends `NW_DAILY_0311_v2.pdf` about twice a week when they notice a mistake, and she has to work out which one is current by opening both.
 
-The statement is three pages. Page one is a header and a summary. Pages two and three are a table of positions: fourteen rows this morning, each with an instrument name, an identifier, a quantity, a price, a market value and a currency. Priya reads a row, moves her eyes to Excel, types six values, moves back. Fourteen times. Then the next document.
+The statement is three pages. Page one is a header and a summary. Pages two and three are a table of positions: fourteen rows this morning, each with an instrument name, an identifier, a quantity, a price, a market value and a currency. Preeti reads a row, moves her eyes to Excel, types six values, moves back. Fourteen times. Then the next document.
 
 She is very good at this. She has been doing it for four years and she does not lose her place. She still makes a transcription error roughly once a week, because she is a human being reading a scanned fax at 08:40, and one week in three that error becomes somebody's afternoon.
 
@@ -69,7 +69,7 @@ There are eleven counterparties in scope. There is no realistic world in which N
 ```mermaid
 flowchart LR
     A["BlackRock Aladdin<br/>REST API<br/>structured, reliable"] --> R["Reconciliation<br/>do these two agree?"]
-    B["Eleven counterparties<br/>PDFs, eleven layouts<br/>some scanned, some Spanish"] --> P["Priya<br/>types it into Excel"]
+    B["Eleven counterparties<br/>PDFs, eleven layouts<br/>some scanned, some Spanish"] --> P["Preeti<br/>types it into Excel"]
     P --> R
     R --> X["Breaks<br/>the ones that don't agree"]
 
@@ -145,7 +145,7 @@ Settlement — the actual exchange of cash for securities — happens on a sched
 
 Northwind currently finds out on **T+2**.
 
-Not because the reconciliation is slow. Because the reconciliation can't start until Priya has finished typing, and Priya finishes typing at lunchtime, and by the time the break report is produced and read it is the next morning.
+Not because the reconciliation is slow. Because the reconciliation can't start until Preeti has finished typing, and Preeti finishes typing at lunchtime, and by the time the break report is produced and read it is the next morning.
 
 **Moving break detection from T+2 to T+1 is the entire business goal of this project, and it is achieved by deleting a manual step, not by making anything cleverer.**
 
@@ -186,7 +186,7 @@ One note on straight-through rate, because it comes up constantly and people mis
 
 ## 8. What Kestrel was actually asked for
 
-The written brief is a two-page email from Northwind's head of operations, sent three weeks late with an apology at the top. Amara Osei pastes it verbatim into her first prompt in [Chapter 2](02-sprint-1-discovery.md), so you'll see the whole thing there. The load-bearing paragraphs are these:
+The written brief is a two-page email from Northwind's head of operations, sent three weeks late with an apology at the top. Preetinka Sharma pastes it verbatim into her first prompt in [Chapter 2](02-sprint-1-discovery.md), so you'll see the whole thing there. The load-bearing paragraphs are these:
 
 > Short version: we need to stop manually keying broker statements — it's killing our T+1 targets. Every morning the ops team downloads statements from the prime brokers and the custodians, opens each PDF, and types the positions into a spreadsheet so recon can run. Two analysts, most of the morning, every day. Month-end is worse.
 
@@ -206,7 +206,7 @@ This matters enough to argue properly, because the instinct on reading "eleven P
 
 ### It is a control process with a human step in it
 
-Look at what Priya actually does. She is not making judgements. She is not exercising skill that took four years to acquire. She is **transcribing** — reading a number off one surface and typing it onto another — inside a process whose actual purpose is control.
+Look at what Preeti actually does. She is not making judgements. She is not exercising skill that took four years to acquire. She is **transcribing** — reading a number off one surface and typing it onto another — inside a process whose actual purpose is control.
 
 > **A control process** is a process whose job is to catch errors, not to produce output. Reconciliation produces nothing anyone sells. It exists to detect discrepancies before they become losses. Every part of it is designed around a single question: how do we know this is right?
 
@@ -218,12 +218,12 @@ That framing has a direct consequence, and it's the one that decides the archite
 
 Call this an AI project and you start optimising the model. Accuracy goes up, the demo looks better, everybody is pleased.
 
-Call it a control process and you start asking Sofia's question — *what does this look like when it's wrong?* — and you get a completely different system, because the answer to that question determines everything about the design.
+Call it a control process and you start asking Hem's question — *what does this look like when it's wrong?* — and you get a completely different system, because the answer to that question determines everything about the design.
 
 Here is the concrete difference. Suppose an extraction gets 97% of fields right. Sounds excellent.
 
 - **In an "AI project" framing:** 97% is the result, and the remaining 3% is a tuning problem you chase next quarter.
-- **In a control-process framing:** the question is what happened to the 3%. If they went into the warehouse as confident wrong numbers, you have made things worse than Priya, whose error rate is lower and who at least knows when she's guessing. If they were withheld and flagged, you have made things dramatically better, and the 97% is almost incidental.
+- **In a control-process framing:** the question is what happened to the 3%. If they went into the warehouse as confident wrong numbers, you have made things worse than Preeti, whose error rate is lower and who at least knows when she's guessing. If they were withheld and flagged, you have made things dramatically better, and the 97% is almost incidental.
 
 **Same accuracy, opposite outcome, and the difference is entirely in what the system does when it doesn't know.**
 
@@ -239,7 +239,7 @@ But it is a component, and it was chosen for one property that has nothing to do
 >
 > **The property that decided it.** Every field comes back with a **confidence score** — a number between 0 and 1 saying how sure the model is that it read that field correctly. `0.97` means very sure. `0.61` means it is guessing and knows it.
 
-That score is the whole reason the design works, and Sofia rejects a large language model in [Chapter 3](03-sprint-1-design.md) largely because it cannot produce one you can trust. Hold that thought; it's the argument the book turns on.
+That score is the whole reason the design works, and Hem rejects a large language model in [Chapter 3](03-sprint-1-design.md) largely because it cannot produce one you can trust. Hold that thought; it's the argument the book turns on.
 
 ---
 
@@ -251,7 +251,7 @@ Everything the team decides from here is shaped by five constraints. Four of the
 
 The one from the email. It is not a preference and it is not a quality bar. It is a statement about **asymmetry**: the two failure modes cost different amounts, in different places, to different people.
 
-- A **missing** number produces an explicit flag. Priya sees it, opens the PDF, reads the value, types it in. Two minutes, in her own team, with the source document in front of her.
+- A **missing** number produces an explicit flag. Preeti sees it, opens the PDF, reads the value, types it in. Two minutes, in her own team, with the source document in front of her.
 - A **wrong** number produces a break. Somebody in a different team, two systems downstream, spends a morning proving it isn't real. And the next time the break report shows something, they trust it slightly less.
 
 This constraint is what makes every extracted field carry a score, and what makes low confidence stop at a gate rather than flow through. It becomes design invariant one, and it is quoted in three ADRs.
@@ -262,7 +262,7 @@ Nobody tells Northwind when a broker adds a column.
 
 This rules out anything whose correctness depends on a fixed position on the page, which is what kills the cheapest approach in the design chapter. It also means the system must **notice** that something changed rather than silently produce wrong output. A trained model handles this well, and the way it handles it is worth naming: when a layout shifts materially, confidence drops across the affected fields, so the documents route to a human on the day it happens instead of loading incorrectly for three weeks.
 
-> **This is what "failing loudly" means in practice.** Not an alert. A pile of documents in Priya's queue on Tuesday morning that wasn't there on Monday.
+> **This is what "failing loudly" means in practice.** Not an alert. A pile of documents in Preeti's queue on Tuesday morning that wasn't there on Monday.
 
 There is a second half to this constraint, and it is the one that shapes the code: **adding or fixing a counterparty must be a configuration change plus a trained model, never a code change.** The previous vendor built one Python module per counterparty, and onboarding a broker took three weeks. Nobody wants that again.
 
@@ -274,7 +274,7 @@ Counterparty statements contain names, account numbers and sometimes addresses. 
 
 The pipeline therefore has a redaction step, and it has one property that matters more than the redaction itself: **it fails closed.** If the redaction service errors, the raw text is not persisted. A marker is persisted instead, saying "there was text here and we couldn't check it."
 
-Failing closed is the opposite of the usual instinct, which is to keep the pipeline running. Sofia's position is that a redaction step which fails open is not a redaction step; it's a redaction step with an outage-shaped hole in it, and the hole will be used at month-end when everything is under pressure.
+Failing closed is the opposite of the usual instinct, which is to keep the pipeline running. Hem's position is that a redaction step which fails open is not a redaction step; it's a redaction step with an outage-shaped hole in it, and the hole will be used at month-end when everything is under pressure.
 
 ### C4 — It must fit the existing pipeline
 
@@ -294,7 +294,7 @@ Northwind is not rebuilding their platform. What exists already:
 
 The consequence for the team is that they do not get to choose the shape of the output. There is a schema on the other side of them and it belongs to somebody else. This is why the data contract in [Chapter 3](03-sprint-1-design.md) is a real artifact and not a formality.
 
-There's one more piece of C4 that costs the team a design change in Sprint 0. `sql/schema.sql` in production is owned by Northwind's DBA team, and they will not accept an automated migration from a vendor. That single answer changes the deployment design, adds a manual approval step to the runbook, and is the direct reason one of Rahul's hooks blocks edits to a file.
+There's one more piece of C4 that costs the team a design change in Sprint 0. `sql/schema.sql` in production is owned by Northwind's DBA team, and they will not accept an automated migration from a vendor. That single answer changes the deployment design, adds a manual approval step to the runbook, and is the direct reason one of Gautam's hooks blocks edits to a file.
 
 ### C5 — Cost must be predictable
 
@@ -335,7 +335,7 @@ flowchart TD
     F --> G["Redact PII<br/>fails closed"]
     G --> H["Rules engine<br/>confidence gate · validate · normalise"]
     H -->|passes| I["Silver — Azure SQL"]
-    H -->|fails| Q["Exception queue<br/>Priya reviews it"]
+    H -->|fails| Q["Exception queue<br/>Preeti reviews it"]
     Q -->|corrected| I
     I --> J["Gold — Snowflake<br/>carries MIN_CONFIDENCE + BRONZE_PATH"]
     K["Aladdin REST API"] --> L["Reconcile<br/>full outer join"]
@@ -359,7 +359,7 @@ Stage by stage, with the service that does it:
 | **Redact** | PII found and masked before anything is persisted downstream. Fails closed | Azure AI Language |
 | **Rules engine** | Config-driven: confidence gate, field validation, normalisation, transform to canonical | [`core/rules.py`](code/doc_ingestion/core/rules.py) — our own code |
 | **Silver** | Typed rows land in staging | Azure SQL |
-| **Exception queue** | Anything rejected goes to a human, with the reason | Azure SQL + Ji-woo's React screen |
+| **Exception queue** | Anything rejected goes to a human, with the reason | Azure SQL + Dzmitry's React screen |
 | **Gold** | MERGE into the warehouse, carrying `MIN_CONFIDENCE` and `BRONZE_PATH` for audit | Snowflake |
 | **Reconcile** | Full outer join against the Aladdin feed, classify the breaks | [`recon/reconcile.py`](code/doc_ingestion/recon/reconcile.py) |
 
@@ -369,7 +369,7 @@ Three things in that diagram are worth flagging now, because each one is an argu
 
 **The confidence gate sits upstream of reconciliation.** Not downstream, not alongside. If low-confidence rows reached the reconciliation, the break report would fill with false positives, and a break report with false positives stops being read.
 
-**The exception queue is a destination, not an error log.** This is the part that nearly doesn't exist. The first cut of the design simply rejects low-confidence documents and writes a log line, which is a perfectly normal thing for a pipeline to do and is also useless to Priya. [Chapter 2](02-sprint-1-discovery.md) is where that gets caught, and [Chapter 3](03-sprint-1-design.md) is where it nearly gets lost again.
+**The exception queue is a destination, not an error log.** This is the part that nearly doesn't exist. The first cut of the design simply rejects low-confidence documents and writes a log line, which is a perfectly normal thing for a pipeline to do and is also useless to Preeti. [Chapter 2](02-sprint-1-discovery.md) is where that gets caught, and [Chapter 3](03-sprint-1-design.md) is where it nearly gets lost again.
 
 ---
 
@@ -417,7 +417,7 @@ You'll see these numbers everywhere from here on, so here they are once, in a ta
 
 Two things about that table.
 
-**The thresholds are different per field type on purpose.** A single global threshold either under-protects money or over-rejects text. Getting this agreed with Amara takes one conversation and it is the single most business-relevant technical decision in the project.
+**The thresholds are different per field type on purpose.** A single global threshold either under-protects money or over-rejects text. Getting this agreed with Preetinka takes one conversation and it is the single most business-relevant technical decision in the project.
 
 **They live in configuration, not in code.** Changing `broker_alpha`'s currency threshold from 0.90 to 0.92 is a YAML edit and a deploy, not a Python change and a code review. That's constraint C2 made real.
 
@@ -425,7 +425,7 @@ Two things about that table.
 
 ## 14. What "done" looks like for Northwind
 
-Four goals, with baselines, from the PRD Amara writes in [Chapter 2](02-sprint-1-discovery.md).
+Four goals, with baselines, from the PRD Preetinka writes in [Chapter 2](02-sprint-1-discovery.md).
 
 | # | Goal | Baseline | Target |
 |---|---|---|---|
@@ -436,15 +436,15 @@ Four goals, with baselines, from the PRD Amara writes in [Chapter 2](02-sprint-1
 
 G4 is stated as an absolute rather than a percentage, and that's unusual for a goal. It is correct here, and it comes directly from one paragraph of the client's email about a failed pilot two years ago.
 
-**When a client tells you about a previous failure, that story is usually the real requirement.** Amara says a version of this out loud in Sprint 1 and it is the most useful thing anyone says that week.
+**When a client tells you about a previous failure, that story is usually the real requirement.** Preetinka says a version of this out loud in Sprint 1 and it is the most useful thing anyone says that week.
 
 ---
 
-## 15. What happens to Priya
+## 15. What happens to Preeti
 
 Worth being explicit about, because it is a design constraint rather than a nice sentiment, and because it shows up in the PRD, the UI brief and the runbook.
 
-Priya's job does not disappear. It changes shape.
+Preeti's job does not disappear. It changes shape.
 
 **Before:** transcribe every document. Several hours a day, every day, worse at month-end. Skill involved: accuracy under time pressure. Value added: none, structurally — she is a very reliable pipe.
 
@@ -452,7 +452,7 @@ Priya's job does not disappear. It changes shape.
 
 She ends up owning the accuracy of the system rather than being the mechanism of it.
 
-That framing has a hard consequence for the build, and Ji-woo enforces it: **Priya clears around forty exceptions in a morning, so every extra click in the design is not one click, it is forty.** Every time the PDF viewer loses its scroll position, that's forty times she has to find her place again. It's why the exception queue ends up keyboard-first, and why one of the five bugs in this book is that the screen showed a confidence as `0.8234567` instead of `82%`.
+That framing has a hard consequence for the build, and Dzmitry enforces it: **Preeti clears around forty exceptions in a morning, so every extra click in the design is not one click, it is forty.** Every time the PDF viewer loses its scroll position, that's forty times she has to find her place again. It's why the exception queue ends up keyboard-first, and why one of the five bugs in this book is that the screen showed a confidence as `0.8234567` instead of `82%`.
 
 ---
 
@@ -462,7 +462,7 @@ Eleven chapters, sprint by sprint. Each one follows one or two people through th
 
 Three conventions, so you know what you're looking at:
 
-**Prompts are linked, not reproduced.** When Amara runs [P06](../../AI-Prompts-Library/phase-1-discovery/P06-write-a-full-prd.md), you get the scene, the decision, the excerpt of what came back, and a link. The full prompt with every placeholder explained lives in the library file. Reproducing it here would double the length and halve the readability.
+**Prompts are linked, not reproduced.** When Preetinka runs [P06](../../AI-Prompts-Library/phase-1-discovery/P06-write-a-full-prd.md), you get the scene, the decision, the excerpt of what came back, and a link. The full prompt with every placeholder explained lives in the library file. Reproducing it here would double the length and halve the readability.
 
 **Artifacts are real files.** Every document the team produces is in [`artifacts/`](artifacts/) and every link resolves. When a chapter shows you six lines of an ADR, the whole ADR is one click away.
 
@@ -472,21 +472,21 @@ Three conventions, so you know what you're looking at:
 
 ## 17. What this cost, honestly
 
-The brief you've just read took Amara three days to assemble, and about a third of what's in it was never written down by anybody at Northwind.
+The brief you've just read took Preetinka three days to assemble, and about a third of what's in it was never written down by anybody at Northwind.
 
 The tolerances, the break classifications, the fact that `sql/schema.sql` is owned by a DBA team who won't accept vendor migrations, the two-page limit on the free tier, and the entire existence of the `broker_alpha` currency override — none of that was in the two-page email. It came out of four conversations, two of which happened after design had already started.
 
-**The thing that nearly went wrong is the F0 tier.** Tomas ran his first extraction spike on the free tier because it was free and available and he wanted to see something work by lunchtime. It worked. It returned clean fields with good confidence scores on a Broker Alpha statement, and he was pleased, and he showed Sofia.
+**The thing that nearly went wrong is the F0 tier.** Ravi ran his first extraction spike on the free tier because it was free and available and he wanted to see something work by lunchtime. It worked. It returned clean fields with good confidence scores on a Broker Alpha statement, and he was pleased, and he showed Hem.
 
 What he had actually done was analyse pages one and two of a three-page document. The free tier does not tell you it has stopped. It returns what it found, with no flag, no warning and no page count in the response that anybody thought to check.
 
-Sofia caught it in about ninety seconds, because her first question about any result is what it looks like when it's wrong, and "it silently ignored a third of the document" is a very good answer to that question. It cost an afternoon. Had it not been caught, the confidence numbers the whole design rests on would have been measured against a document the service had never fully read.
+Hem caught it in about ninety seconds, because her first question about any result is what it looks like when it's wrong, and "it silently ignored a third of the document" is a very good answer to that question. It cost an afternoon. Had it not been caught, the confidence numbers the whole design rests on would have been measured against a document the service had never fully read.
 
 Keep that one in mind. This book has a bug in it, later, that is exactly the same shape.
 
 ---
 
-**Next:** [Chapter 1 — Sprint 0: Foundations](01-sprint-0-foundations.md). Rahul spends two weeks shipping nothing, Farhan asks twice whether it can be cut to three days, and a hook blocks an edit that everybody agrees would otherwise have shipped.
+**Next:** [Chapter 1 — Sprint 0: Foundations](01-sprint-0-foundations.md). Gautam spends two weeks shipping nothing, Atul asks twice whether it can be cut to three days, and a hook blocks an edit that everybody agrees would otherwise have shipped.
 
 ---
 

@@ -7,32 +7,32 @@
 | | |
 |---|---|
 | **Phase** | 6 — Rework |
-| **Who runs it** | Architect (Sofia Marchetti) with the Team Lead (Rahul Nair); Product Owner (Amara Osei) approves |
+| **Who runs it** | Architect (Hem Singh) with the Team Lead (Gautam ); Product Owner (Preetinka Sharma) approves |
 | **When** | A bug fix has stopped, because the root cause is that the specification asked for the wrong thing |
 | **Takes in** | The step 9 verdict from [P27](P27-fix-from-a-qa-bug-report.md), the spec (`artifacts/spec-confidence-gate.md`), the stories built from it |
 | **Produces** | A spec amendment with replacement text, an impact assessment across every dependent story, a business-cost statement, and a signed approval |
-| **Hands off to** | Rahul for re-planning ([P15](../phase-3-planning/P15-implementation-plan.md)), Tomas to implement, Ji-woo for the UI change |
+| **Hands off to** | Gautam for re-planning ([P15](../phase-3-planning/P15-implementation-plan.md)), Ravi to implement, Dzmitry for the UI change |
 | **Time to run** | Two hours to draft. A day to get it agreed. Do not compress the second part. |
 
 ---
 
 ## 1. The scene
 
-It is Thursday, late afternoon. Tomas has finished the NWD-142 investigation, the fix is written, the tests are green, and step 9 of his write-up says one letter: **(b)**.
+It is Thursday, late afternoon. Ravi has finished the NWD-142 investigation, the fix is written, the tests are green, and step 9 of his write-up says one letter: **(b)**.
 
 The spec was silent.
 
-He walks over to Sofia's desk with a laptop and reads her the quote he pulled from `spec-confidence-gate.md` §3:
+He walks over to Hem's desk with a laptop and reads her the quote he pulled from `spec-confidence-gate.md` §3:
 
 > *"Every extracted field carries a confidence score returned by the extraction model. The gate compares each score against the threshold for that field's type. If ANY field falls below its threshold, the entire document is routed to the exception queue. Partial ingestion is never permitted."*
 
-Sofia reads it twice, which is what she does when something is about to be expensive. Then she says: **"That last sentence is a promise we never built anything to keep."**
+Hem reads it twice, which is what she does when something is about to be expensive. Then she says: **"That last sentence is a promise we never built anything to keep."**
 
 She is right, and the way she is right is worth being precise about. *"Partial ingestion is never permitted"* is a real invariant, written down deliberately, in the document that four stories were built from. But everything around it defines partial ingestion in terms of **fields that scored badly**. There is no mechanism anywhere in the specification for a field, a row, or a page that simply is not there. The spec asks "how sure are we about what we found" and never once asks "did we find everything".
 
-Tomas's fix — reading all the document regions instead of only the first — closes the specific hole NWD-142 fell through. It does not close the class. And he cannot close the class, because closing it means inventing a rule, and inventing rules is not what an engineer does mid-bug-fix at 4pm on a Thursday.
+Ravi's fix — reading all the document regions instead of only the first — closes the specific hole NWD-142 fell through. It does not close the class. And he cannot close the class, because closing it means inventing a rule, and inventing rules is not what an engineer does mid-bug-fix at 4pm on a Thursday.
 
-So this is the moment. The code is not wrong against the spec. The spec has a hole in it. And the tempting thing — the thing that happens in most teams, most of the time — is for Tomas to write a sensible completeness check into `core/rules.py`, close NWD-142, and get on with the sprint.
+So this is the moment. The code is not wrong against the spec. The spec has a hole in it. And the tempting thing — the thing that happens in most teams, most of the time — is for Ravi to write a sensible completeness check into `core/rules.py`, close NWD-142, and get on with the sprint.
 
 **That is the decision this prompt exists to prevent.** Not because the check would be wrong. Because of what it does to the document.
 
@@ -44,9 +44,9 @@ So this is the moment. The code is not wrong against the spec. The spec has a ho
 
 A **specification** — spec — is a written description of what a piece of the system must do, precise enough that someone can build it and someone else can check it. It is not a design document (that is how you will build it) and it is not a requirement (that is what the business wants). It sits between them: *given this input, the system must produce this output, and here is what happens in every case where it cannot.*
 
-At Northwind, `spec-confidence-gate.md` was written by Sofia in Sprint 1 using [P11](../phase-2-design/P11-write-the-technical-spec.md). It defines the confidence gate — the checkpoint where every number the AI pulled off a PDF is compared to a threshold, and below-threshold documents go to a human instead of the warehouse. Four stories were built directly from it: NWD-103, NWD-106, NWD-107 and NWD-108.
+At Northwind, `spec-confidence-gate.md` was written by Hem in Sprint 1 using [P11](../phase-2-design/P11-write-the-technical-spec.md). It defines the confidence gate — the checkpoint where every number the AI pulled off a PDF is compared to a threshold, and below-threshold documents go to a human instead of the warehouse. Four stories were built directly from it: NWD-103, NWD-106, NWD-107 and NWD-108.
 
-Its job is to be the **single place the answer lives**. When Tomas asks "what happens if the date field scores 0.84", he reads the spec. When Ananya writes an acceptance test, she reads the spec. When Ji-woo decides what text the exception queue shows an analyst, he reads the spec. When Amara decides whether a change is acceptable to the business, she reads the spec.
+Its job is to be the **single place the answer lives**. When Ravi asks "what happens if the date field scores 0.84", he reads the spec. When Pankaj writes an acceptance test, she reads the spec. When Dzmitry decides what text the exception queue shows an analyst, he reads the spec. When Preetinka decides whether a change is acceptable to the business, she reads the spec.
 
 And — this is the part that is new in a project like this one — **when the AI writes code, the spec is in its context window.** It is grounding. Every implementation the team generates is downstream of that document being true.
 
@@ -82,7 +82,7 @@ You arrive here from exactly one place — a step 9 verdict of (b) or (c) — an
 
 This is the argument, and it has four parts. Each one on its own is a reason. Together they are the reason this file exists.
 
-**One: the spec and the system diverge, and nobody records the moment.** Tomas adds a completeness check to `core/rules.py`. It is a good check. `spec-confidence-gate.md` still describes a system that gates on confidence alone. From that afternoon onward, the document and the code are two different descriptions of the same thing, and there is no note anywhere saying which one is current.
+**One: the spec and the system diverge, and nobody records the moment.** Ravi adds a completeness check to `core/rules.py`. It is a good check. `spec-confidence-gate.md` still describes a system that gates on confidence alone. From that afternoon onward, the document and the code are two different descriptions of the same thing, and there is no note anywhere saying which one is current.
 
 **Two: the next person reads the document and believes it.** Six weeks later, a new engineer joins to onboard the third counterparty. They are handed the spec. They implement the confidence gate faithfully and do not implement a completeness check, because the document they were given does not mention one. They have done everything right. The bug is back, in new code, and it is nobody's fault — which makes it very hard to prevent from happening again.
 
@@ -90,7 +90,7 @@ This is the argument, and it has four parts. Each one on its own is a reason. To
 
 This is the genuinely new failure mode in AI-assisted delivery, and it is worth stating plainly: **stale documentation used to be a nuisance. When your documents are model context, stale documentation is a defect generator.**
 
-**Four: the tests get written against the old rule.** Ananya writes acceptance tests from the spec. If the spec is wrong, her tests certify the wrong behaviour, and now you have a green suite defending a defect. Undoing that is much harder than the original fix, because "the tests pass" is the sentence everybody trusts.
+**Four: the tests get written against the old rule.** Pankaj writes acceptance tests from the spec. If the spec is wrong, her tests certify the wrong behaviour, and now you have a green suite defending a defect. Undoing that is much harder than the original fix, because "the tests pass" is the sentence everybody trusts.
 
 > **The rule.** The document is the system's memory. Changing the system without changing the memory is how a team ends up unable to say what its own software does.
 
@@ -105,7 +105,7 @@ This is the genuinely new failure mode in AI-assisted delivery, and it is worth 
 7. **Then** change the code.
 8. **Then** re-check everything the blast radius named.
 
-Step 4 is the one engineers skip and it is the one that gets the change approved or rejected. For NWD-142 the cost is concrete and unwelcome: a completeness check sends more documents to a human. The **straight-through rate** — the percentage of documents needing zero human touch, which started at 61% against a target of 85% and which Farhan reports to the client every Friday — will go *down*. Somebody has to agree to that in advance, or it becomes an argument in week two when the number moves.
+Step 4 is the one engineers skip and it is the one that gets the change approved or rejected. For NWD-142 the cost is concrete and unwelcome: a completeness check sends more documents to a human. The **straight-through rate** — the percentage of documents needing zero human touch, which started at 61% against a target of 85% and which Atul reports to the client every Friday — will go *down*. Somebody has to agree to that in advance, or it becomes an argument in week two when the number moves.
 
 Step 6 is the one that feels like bureaucracy and is not. **An approval is not permission. It is a record of who agreed, to what, and knowing what cost.** In six months, when the straight-through rate is being questioned, the answer is a line in a document with two names on it.
 
@@ -271,9 +271,9 @@ Save as [PATH FOR THE PROPOSAL]. Do not touch the spec until it is approved.
 
 | Placeholder | What to put in it | Northwind example | What happens if you get it wrong |
 |---|---|---|---|
-| `[PROJECT NAME]` | The system in a phrase | `the Northwind counterparty document ingestion pipeline` | The amendment reads as generic policy and the PO cannot tell what actually changes for Priya |
+| `[PROJECT NAME]` | The system in a phrase | `the Northwind counterparty document ingestion pipeline` | The amendment reads as generic policy and the PO cannot tell what actually changes for Preeti |
 | `[BUG ID AND ONE-LINE SUMMARY]` | The defect that forced this | `NWD-142 — positions on page 2 of a Broker Alpha statement are silently dropped` | The proposal has no evidence attached and reads as an opinion about how things ought to be |
-| `[PATH OR PASTE OF THE P27 OUTPUT]` | The full investigation, including the "why the system was silent" enumeration | Tomas's step 5 walkthrough of all four safety mechanisms | Without it the amendment cannot justify itself. "Four existing mechanisms all passed and the data was still wrong" is the argument |
+| `[PATH OR PASTE OF THE P27 OUTPUT]` | The full investigation, including the "why the system was silent" enumeration | Ravi's step 5 walkthrough of all four safety mechanisms | Without it the amendment cannot justify itself. "Four existing mechanisms all passed and the data was still wrong" is the argument |
 | `[(b) SILENT or (c) WRONG]` | The step 9 letter | `(b) — silent` | SILENT and WRONG need different amendments. WRONG also needs everything built on the old text re-validated, not just re-checked |
 | `[PATH TO SPEC FILE]` | The spec | `artifacts/spec-confidence-gate.md` | The AI drafts in a different voice and structure, and the document becomes two documents stapled together |
 | `[PASTE THE RELEVANT SECTION IN FULL]` | The whole implicated section, not a summary | §3 of the spec, all of it | Summarising loses the sentence that turns out to matter. Here that is *"partial ingestion is never permitted"*, which is the hook the whole amendment hangs on |
@@ -288,7 +288,7 @@ Save as [PATH FOR THE PROPOSAL]. Do not touch the spec until it is approved.
 
 ## 5. The filled-in example
 
-Sofia runs this on Thursday evening with Rahul beside her. Tomas has gone home.
+Hem runs this on Thursday evening with Gautam beside her. Ravi has gone home.
 
 ```text
 You are an architect assessing a specification defect on the Northwind counterparty
@@ -322,10 +322,10 @@ The section implicated: §3 — The gate
 ## What was built from it
 
 Stories:
-  NWD-103 Gate every extracted field on its confidence score (Tomas)
-  NWD-106 Transform extracted fields into the canonical position schema (Tomas)
-  NWD-107 Load positions into Azure SQL and Snowflake idempotently (Tomas)
-  NWD-108 Exception queue screen for analyst review (Ji-woo)
+  NWD-103 Gate every extracted field on its confidence score (Ravi)
+  NWD-106 Transform extracted fields into the canonical position schema (Ravi)
+  NWD-107 Load positions into Azure SQL and Snowflake idempotently (Ravi)
+  NWD-108 Exception queue screen for analyst review (Dzmitry)
 Other artifacts:
   artifacts/acceptance-criteria-NWD-103.md
   artifacts/data-contract-counterparty-position.md
@@ -362,7 +362,7 @@ Save as artifacts/spec-amendment-completeness-v1.md. Do not touch the spec until
 is approved.
 ```
 
-Note the invariants block. Sofia pasted all seven even though only two are obviously relevant. That is deliberate — invariant 7 is what turns a hard-coded row-count check into a per-counterparty YAML rule, and nobody would have thought to mention it.
+Note the invariants block. Hem pasted all seven even though only two are obviously relevant. That is deliberate — invariant 7 is what turns a hard-coded row-count check into a per-counterparty YAML rule, and nobody would have thought to mention it.
 
 ---
 
@@ -374,7 +374,7 @@ Note the invariants block. Sofia pasted all seven even though only two are obvio
 **Status:** PROPOSED — not yet approved. Do not implement.
 **Trigger:** NWD-142
 **Target document:** `artifacts/spec-confidence-gate.md`
-**Author:** drafted for Sofia Marchetti / Rahul Nair, 2026-07-30
+**Author:** drafted for Hem Singh / Gautam , 2026-07-30
 
 ## 1. The divergence
 
@@ -507,7 +507,7 @@ These are genuinely different concepts and the spec needs both.
 
 ## 4. What this costs
 
-**For Priya (operations analyst):** more documents in her queue. Every document
+**For Preeti (operations analyst):** more documents in her queue. Every document
 whose extracted totals do not match the statement's own totals now arrives for
 manual review instead of loading silently. Each carries a specific message — "found
 31 positions, statement declares 47" — so the review is a fast confirm rather than a
@@ -539,41 +539,41 @@ open.
 
 | Item | Depends on the old text how? | Impact | Action needed | Owner |
 |---|---|---|---|---|
-| `NWD-103` gate the confidence score | Implements §3 only | **CODE CHANGE** | Gate call site must evaluate §5 alongside §3 | Tomas |
-| `NWD-106` transform to canonical schema | Consumes gate output | **CODE CHANGE** | Must carry declared totals through from extraction so §5.3 can compare | Tomas |
-| `NWD-107` load to SQL + Snowflake | Writes `MIN_CONFIDENCE`, `BRONZE_PATH` | **CODE CHANGE** | New `COMPLETENESS_BASIS` column; schema migration in both sinks | Tomas |
-| `NWD-108` exception queue screen | Renders reason codes from §3 | **CODE CHANGE** | Four new reason codes with new message shapes; two carry page numbers, two carry a pair of totals. Not a cosmetic change | Ji-woo |
-| `acceptance-criteria-NWD-103.md` | AC-4: *"a document with all fields above threshold is ingested without human review"* | **RE-TEST** | **This criterion now certifies the defect.** It is true and insufficient. Must be qualified with "and passing §5" | Ananya + Amara |
-| `data-contract-counterparty-position.md` | Defines the gold row shape | **CODE CHANGE** | Add `COMPLETENESS_BASIS`; version the contract | Sofia |
-| `adr/0002-confidence-thresholds.md` | Records why the thresholds are what they are | **CLARIFY ONLY** | Add a note that ADR 0002 governs §3 only; §5 is a separate decision | Sofia |
-| `ui-brief-exception-queue.md` | Lists reason codes to display | **CODE CHANGE** | Add the four codes and their message templates | Ji-woo |
-| `sql/schema.sql` | Silver + gold DDL | **CODE CHANGE** | New nullable column, backfilled as NULL for existing rows | Tomas |
-| `config/sources.yaml` | Per-counterparty layout config | **CODE CHANGE** | New `completeness:` block per layout: content pages, declared-total field names | Tomas |
-| `tests/test_rules.py::test_all_fields_above_threshold_passes` | Asserts a full-confidence document loads | **RE-TEST** | **Currently asserts the defect.** Passes today on a document with missing rows | Tomas |
-| `tests/test_extract.py` | Every fixture has one region | **RE-TEST** | No fixture in the suite has more than one region. Multi-region fixtures needed | Tomas |
+| `NWD-103` gate the confidence score | Implements §3 only | **CODE CHANGE** | Gate call site must evaluate §5 alongside §3 | Ravi |
+| `NWD-106` transform to canonical schema | Consumes gate output | **CODE CHANGE** | Must carry declared totals through from extraction so §5.3 can compare | Ravi |
+| `NWD-107` load to SQL + Snowflake | Writes `MIN_CONFIDENCE`, `BRONZE_PATH` | **CODE CHANGE** | New `COMPLETENESS_BASIS` column; schema migration in both sinks | Ravi |
+| `NWD-108` exception queue screen | Renders reason codes from §3 | **CODE CHANGE** | Four new reason codes with new message shapes; two carry page numbers, two carry a pair of totals. Not a cosmetic change | Dzmitry |
+| `acceptance-criteria-NWD-103.md` | AC-4: *"a document with all fields above threshold is ingested without human review"* | **RE-TEST** | **This criterion now certifies the defect.** It is true and insufficient. Must be qualified with "and passing §5" | Pankaj + Preetinka |
+| `data-contract-counterparty-position.md` | Defines the gold row shape | **CODE CHANGE** | Add `COMPLETENESS_BASIS`; version the contract | Hem |
+| `adr/0002-confidence-thresholds.md` | Records why the thresholds are what they are | **CLARIFY ONLY** | Add a note that ADR 0002 governs §3 only; §5 is a separate decision | Hem |
+| `ui-brief-exception-queue.md` | Lists reason codes to display | **CODE CHANGE** | Add the four codes and their message templates | Dzmitry |
+| `sql/schema.sql` | Silver + gold DDL | **CODE CHANGE** | New nullable column, backfilled as NULL for existing rows | Ravi |
+| `config/sources.yaml` | Per-counterparty layout config | **CODE CHANGE** | New `completeness:` block per layout: content pages, declared-total field names | Ravi |
+| `tests/test_rules.py::test_all_fields_above_threshold_passes` | Asserts a full-confidence document loads | **RE-TEST** | **Currently asserts the defect.** Passes today on a document with missing rows | Ravi |
+| `tests/test_extract.py` | Every fixture has one region | **RE-TEST** | No fixture in the suite has more than one region. Multi-region fixtures needed | Ravi |
 | `recon/reconcile.py` | Reports MISSING_EXTERNAL | **NO CHANGE** | Behaviour is correct. It reported a real difference; the cause was upstream | — |
-| Already-loaded data, 19–30 Jul | Loaded under the old rule | **RE-TEST** | Every Broker Alpha document in the window must be re-checked against §5. **Reprocessing is free from bronze — invariant 3 pays for itself here.** Scope: ~230 documents | Tomas + Ananya |
+| Already-loaded data, 19–30 Jul | Loaded under the old rule | **RE-TEST** | Every Broker Alpha document in the window must be re-checked against §5. **Reprocessing is free from bronze — invariant 3 pays for itself here.** Scope: ~230 documents | Ravi + Pankaj |
 
 ## 6. Approvals
 
 | Who | The question they are answering | Status |
 |---|---|---|
-| **Sofia Marchetti**, Architect | Is completeness the right concept, is it correctly separated from confidence, and does §5 stay inside the seven invariants — particularly invariant 7, that adding a counterparty stays a YAML change? | ☐ |
-| **Amara Osei**, Product Owner | Do you accept that more documents reach Priya for manual review, and that the straight-through rate will fall by an estimated 3–6 points before it recovers — in exchange for never again loading a silently truncated statement? | ☐ |
-| **Rahul Nair**, Team Lead | Four stories need code changes and roughly 230 documents need reprocessing. Does this fit Sprint 3, or does it become Sprint 4's first item? | ☐ |
-| **Ananya Iyer**, QA | AC-4 of NWD-103 currently certifies the defect. Do you agree it must be rewritten, and can you quantify how many documents since 19 Jul were affected? | ☐ |
-| **Ji-woo Park**, Frontend | Four new reason codes with two new message shapes. Is that a change to the brief or a change to the screen? | ☐ |
+| **Hem Singh**, Architect | Is completeness the right concept, is it correctly separated from confidence, and does §5 stay inside the seven invariants — particularly invariant 7, that adding a counterparty stays a YAML change? | ☐ |
+| **Preetinka Sharma**, Product Owner | Do you accept that more documents reach Preeti for manual review, and that the straight-through rate will fall by an estimated 3–6 points before it recovers — in exchange for never again loading a silently truncated statement? | ☐ |
+| **Gautam **, Team Lead | Four stories need code changes and roughly 230 documents need reprocessing. Does this fit Sprint 3, or does it become Sprint 4's first item? | ☐ |
+| **Pankaj **, QA | AC-4 of NWD-103 currently certifies the defect. Do you agree it must be rewritten, and can you quantify how many documents since 19 Jul were affected? | ☐ |
+| **Dzmitry **, Frontend | Four new reason codes with two new message shapes. Is that a change to the brief or a change to the screen? | ☐ |
 
 **Numbers marked for decision:**
-- Estimated straight-through drop of 3–6 points is an engineering guess. [TBD — measured by Ananya against the 19–30 Jul reprocessing run.]
-- §5.3's value tolerance reuses reconciliation's 0.005. [TBD — confirmed by Sofia; reuse proposed rather than a new number invented.]
+- Estimated straight-through drop of 3–6 points is an engineering guess. [TBD — measured by Pankaj against the 19–30 Jul reprocessing run.]
+- §5.3's value tolerance reuses reconciliation's 0.005. [TBD — confirmed by Hem; reuse proposed rather than a new number invented.]
 ````
 
 ### How to read this
 
 **Section 2 is what makes this a spec change rather than a bug fix.** Naming the missing concept — completeness, as distinct from confidence — is what turns "we should check the row count" into a rule that generalises to counterparties nobody has met yet. A proposal that skips this step produces a check for the bug it saw. A proposal that does it produces a section of a specification.
 
-**Section 4's third paragraph is the one to steal.** *"Part of the drop is not a regression — it is the number becoming true."* That sentence is what got the amendment approved. Amara's objection was going to be the metric; the answer is that the metric was already wrong and the change makes it honest. **When a fix makes a number look worse, find out whether the number was lying.**
+**Section 4's third paragraph is the one to steal.** *"Part of the drop is not a regression — it is the number becoming true."* That sentence is what got the amendment approved. Preetinka's objection was going to be the metric; the answer is that the metric was already wrong and the change makes it honest. **When a fix makes a number look worse, find out whether the number was lying.**
 
 **Two rows in the blast radius table say a test currently asserts the defect.** `test_all_fields_above_threshold_passes` and AC-4 of the acceptance criteria both certify behaviour that is now known to be insufficient. Finding those is the highest-value output of step 5, because they are the things that will silently defend the old behaviour against the new one. A green test is very hard to argue with.
 
@@ -598,7 +598,7 @@ The specification file itself is *still unchanged* at this point. It changes whe
 - [ ] The amendment is replacement text you could paste in, not a description of what to write.
 - [ ] Every rule in the amendment is testable. No "should generally", no "where appropriate".
 - [ ] Every rule says what happens when it fails, by reason code and destination.
-- [ ] The business cost is a sentence Amara can act on without asking a follow-up.
+- [ ] The business cost is a sentence Preetinka can act on without asking a follow-up.
 - [ ] Every dependent item has a row with a definite Impact. No "possibly affected".
 - [ ] Any test or acceptance criterion that currently certifies the defect is identified explicitly.
 - [ ] Every invented number is marked `[TBD — decided by X]` rather than guessed.
@@ -630,13 +630,13 @@ The second failure mode: **polishing the prose instead of the rules.** After thr
 | The blast radius is bigger than the fix | You may be amending the wrong section, or the spec has a structural problem | §8.2 |
 | The amendment now contradicts another document | The specs were never reconciled and you have found the seam | §8.3 |
 | The amendment has grown three new rules since the first draft | Scope creep | §8.4 |
-| The team is arguing about the *number*, not the rule | Rule and threshold are separable. Ship the rule, park the number | §8.5 |
+| The team is arguing about the *number*, not the rule | Rule and threshold are separable. Ship the rule,  the number | §8.5 |
 | This is a new capability, not a correction | Not a spec defect | **[P07](../phase-1-discovery/P07-slice-the-prd-into-stories.md)** |
 | Approved — now it needs building | Re-plan | **[P15](../phase-3-planning/P15-implementation-plan.md)** |
 
 ### 8.1 "The Product Owner won't approve the cost"
 
-Use this when Amara says no, or says "not this sprint", and you believe the change is necessary.
+Use this when Preetinka says no, or says "not this sprint", and you believe the change is necessary.
 
 ```text
 The Product Owner has not approved the amendment. Their objection:
@@ -777,15 +777,15 @@ flowchart TD
 
 The default outcome, and the one this whole file argues against. It is not laziness — it is that the code fix is obviously within your authority and the spec change obviously is not, so the path of least resistance is the one that does not require a meeting.
 
-The cost arrives later and lands on someone else. A new engineer builds counterparty three from a spec that no longer describes the system. Ananya writes acceptance tests from a document that is wrong. And in this project specifically, the AI generates code grounded in a stale rule and generates it confidently, at volume, all the way down.
+The cost arrives later and lands on someone else. A new engineer builds counterparty three from a spec that no longer describes the system. Pankaj writes acceptance tests from a document that is wrong. And in this project specifically, the AI generates code grounded in a stale rule and generates it confidently, at volume, all the way down.
 
-The fix is cultural and it is one sentence, which Rahul added to the team's [definition of done](../../Case-Study/Python-ETL/artifacts/definition-of-done.md) after this sprint: **"If the fix required understanding something the spec does not say, the spec is part of the fix."**
+The fix is cultural and it is one sentence, which Gautam added to the team's [definition of done](../../Case-Study/Python-ETL/artifacts/definition-of-done.md) after this sprint: **"If the fix required understanding something the spec does not say, the spec is part of the fix."**
 
 ### The amendment is written as a description instead of as text
 
 The proposal says "we should add a completeness check that validates the extracted row count against the declared total". Everybody nods. Nobody disagrees, because there is nothing specific enough to disagree with.
 
-Then Tomas implements it, and has to decide: exactly? Within a tolerance? What if the total is missing? What if it is unreadable? What reason code? Does it block or warn? Every one of those is a decision he now makes alone, at implementation time, which is precisely the situation the spec exists to prevent.
+Then Ravi implements it, and has to decide: exactly? Within a tolerance? What if the total is missing? What if it is unreadable? What reason code? Does it block or warn? Every one of those is a decision he now makes alone, at implementation time, which is precisely the situation the spec exists to prevent.
 
 The fix is the prompt's instruction to produce **replacement text, ready to paste**. Prose that a reviewer can disagree with word by word. If nobody has a comment on your amendment, it is probably too vague to argue with.
 
@@ -799,15 +799,15 @@ At Northwind it did not cost much, and the reason is invariant 3. Bronze is immu
 
 ### Approval becomes a rubber stamp
 
-Sofia sends the proposal to Amara, Amara replies "fine", and it is marked approved. Three weeks later the straight-through rate is at 56% and Farhan is being asked about it by the client, and Amara does not remember agreeing that it would fall.
+Hem sends the proposal to Preetinka, Preetinka replies "fine", and it is marked approved. Three weeks later the straight-through rate is at 56% and Atul is being asked about it by the client, and Preetinka does not remember agreeing that it would fall.
 
-She did agree. But "approve this amendment" is not a question anybody can answer, so what she actually agreed to was that Sofia had thought about it.
+She did agree. But "approve this amendment" is not a question anybody can answer, so what she actually agreed to was that Hem had thought about it.
 
-The fix is in the prompt's step 6: **each approver gets a specific question in their own language.** Amara's was not "approve the amendment". It was: *"Do you accept that more documents reach Priya, and that the straight-through rate falls by an estimated 3–6 points before recovering, in exchange for never again loading a silently truncated statement?"* That is answerable, and answering it is a real decision.
+The fix is in the prompt's step 6: **each approver gets a specific question in their own language.** Preetinka's was not "approve the amendment". It was: *"Do you accept that more documents reach Preeti, and that the straight-through rate falls by an estimated 3–6 points before recovering, in exchange for never again loading a silently truncated statement?"* That is answerable, and answering it is a real decision.
 
 ### This is the wrong prompt entirely
 
-**It is a new requirement, not a defect.** "The exception queue should let Priya bulk-approve" is not a spec that was wrong. It is a thing the business now wants. Running it through P29 skips estimation, skips prioritisation, and skips Amara's judgement about whether it beats the other things in the backlog. Send it to [P07](../phase-1-discovery/P07-slice-the-prd-into-stories.md).
+**It is a new requirement, not a defect.** "The exception queue should let Preeti bulk-approve" is not a spec that was wrong. It is a thing the business now wants. Running it through P29 skips estimation, skips prioritisation, and skips Preetinka's judgement about whether it beats the other things in the backlog. Send it to [P07](../phase-1-discovery/P07-slice-the-prd-into-stories.md).
 
 **The spec is right and the code diverged.** Step 9 verdict (a). Fix the code, and if the divergence was easy to make, consider whether the spec sentence needs a clearer wording — but that is a clarification, not an amendment, and it does not need an approval block.
 
@@ -817,13 +817,13 @@ The fix is in the prompt's step 6: **each approver gets a specific question in t
 
 ## 10. The handoff
 
-The first handoff is to the approvers, and it is not a formality — it is the work. Sofia answers whether completeness is the right concept and whether §5 stays inside the seven invariants, particularly the seventh, that adding a counterparty stays a YAML change. Amara answers whether the operational cost is acceptable. Rahul answers whether it fits the sprint. **Until all three have answered their own question, the specification file is untouched.**
+The first handoff is to the approvers, and it is not a formality — it is the work. Hem answers whether completeness is the right concept and whether §5 stays inside the seven invariants, particularly the seventh, that adding a counterparty stays a YAML change. Preetinka answers whether the operational cost is acceptable. Gautam answers whether it fits the sprint. **Until all three have answered their own question, the specification file is untouched.**
 
 Once approved, the amendment goes into `spec-confidence-gate.md` as a single commit referencing both the proposal and NWD-142, and the proposal file stays in `artifacts/` as the record of why. Not because anyone will read it often, but because in six months when somebody asks why the straight-through rate dropped in August, the answer is a document with five names on it and a stated tradeoff.
 
-The second handoff is to Rahul for re-planning. The blast radius table is a work breakdown that has already been done — fourteen rows, each with an owner and an action — and it goes straight into [P15 — Implementation Plan](../phase-3-planning/P15-implementation-plan.md). Four stories need code changes, one acceptance criterion needs rewriting, and roughly 230 documents need reprocessing from bronze. Farhan will ask what happens if the reprocessing takes twice as long, because that is what Farhan does, and the honest answer is that it is bounded by compute rather than by anybody's time.
+The second handoff is to Gautam for re-planning. The blast radius table is a work breakdown that has already been done — fourteen rows, each with an owner and an action — and it goes straight into [P15 — Implementation Plan](../phase-3-planning/P15-implementation-plan.md). Four stories need code changes, one acceptance criterion needs rewriting, and roughly 230 documents need reprocessing from bronze. Atul will ask what happens if the reprocessing takes twice as long, because that is what Atul does, and the honest answer is that it is bounded by compute rather than by anybody's time.
 
-The third handoff goes back to Tomas, who is where this started. He now implements the completeness check under a *new story*, not under NWD-142. NWD-142 closes with the region-coverage fix he already wrote, because that fix is complete against the defect as reported. The rest is new work with new acceptance criteria, and Ananya writes those from the amended spec — which is the loop closing properly.
+The third handoff goes back to Ravi, who is where this started. He now implements the completeness check under a *new story*, not under NWD-142. NWD-142 closes with the region-coverage fix he already wrote, because that fix is complete against the defect as reported. The rest is new work with new acceptance criteria, and Pankaj writes those from the amended spec — which is the loop closing properly.
 
 > **Artifact contract — `artifacts/spec-amendment-completeness-v1.md`**
 > Anyone reading this file can rely on finding:
@@ -844,11 +844,11 @@ The third handoff goes back to Tomas, who is where this started. He now implemen
 
 This is the hinge of [`08-sprint-3-rework.md`](../../Case-Study/Python-ETL/08-sprint-3-rework.md), and the amended specification is at [`artifacts/spec-confidence-gate.md`](../../Case-Study/Python-ETL/artifacts/spec-confidence-gate.md) with §5 in place. Reading §3 and §5 next to each other is the fastest way to understand the confidence-versus-completeness distinction, because you can see the two questions sitting side by side in the same voice.
 
-What actually happened is that Sofia nearly did not run it. Her first instinct on Thursday evening was that Tomas's region-coverage fix was sufficient — it closed the bug, it was three lines, and the sprint was already short. What changed her mind was her own recurring question, the one she asks in every design review and which appears in the ADRs she wrote in Sprint 1: **"What does this look like when it's wrong?"** Applied to the region fix, the answer was uncomfortable. It looks exactly like it did on 29 July: high confidence, clean logs, a successful invocation, and wrong data in the warehouse. The fix removes one cause of that picture and leaves the picture available.
+What actually happened is that Hem nearly did not run it. Her first instinct on Thursday evening was that Ravi's region-coverage fix was sufficient — it closed the bug, it was three lines, and the sprint was already short. What changed her mind was her own recurring question, the one she asks in every design review and which appears in the ADRs she wrote in Sprint 1: **"What does this look like when it's wrong?"** Applied to the region fix, the answer was uncomfortable. It looks exactly like it did on 29 July: high confidence, clean logs, a successful invocation, and wrong data in the warehouse. The fix removes one cause of that picture and leaves the picture available.
 
-The argument that mattered happened on Friday morning and it was with Amara, not with the engineers. Amara's objection was the straight-through rate — 61% against a target of 85%, reported to the client every Friday by Farhan, and now going down as a direct result of a change the team was proposing. Sofia's answer is the sentence that got it approved and that Farhan repeated in [`10-retrospective.md`](../../Case-Study/Python-ETL/10-retrospective.md): **"The 61% includes documents like the twenty-ninth. We are not lowering the number. We are finding out what it is."**
+The argument that mattered happened on Friday morning and it was with Preetinka, not with the engineers. Preetinka's objection was the straight-through rate — 61% against a target of 85%, reported to the client every Friday by Atul, and now going down as a direct result of a change the team was proposing. Hem's answer is the sentence that got it approved and that Atul repeated in [`10-retrospective.md`](../../Case-Study/Python-ETL/10-retrospective.md): **"The 61% includes documents like the twenty-ninth. We are not lowering the number. We are finding out what it is."**
 
-Amara approved it, and then did the thing that makes her good at her job. She asked for the reprocessing of 19–30 July to run *before* the new rule went live, so the team would know how many documents had been affected before anyone had to explain a moving metric. Ananya ran it against the bronze layer — free, no re-payment for analysis, exactly as [ADR 0001](../../Case-Study/Python-ETL/artifacts/adr/) had predicted eight weeks earlier. The answer was **nine documents out of 230**, four of which had already generated breaks that Priya had chased manually and written off as counterparty error.
+Preetinka approved it, and then did the thing that makes her good at her job. She asked for the reprocessing of 19–30 July to run *before* the new rule went live, so the team would know how many documents had been affected before anyone had to explain a moving metric. Pankaj ran it against the bronze layer — free, no re-payment for analysis, exactly as [ADR 0001](../../Case-Study/Python-ETL/artifacts/adr/) had predicted eight weeks earlier. The answer was **nine documents out of 230**, four of which had already generated breaks that Preeti had chased manually and written off as counterparty error.
 
 That number is the whole case study in miniature. Nine silently wrong documents in eleven days, in a system where every component was working as specified, found because one person asked what it looks like when it is wrong.
 

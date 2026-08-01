@@ -7,30 +7,30 @@
 | | |
 |---|---|
 | **Phase** | 0 — Foundation (Sprint 0) |
-| **Who runs it** | Backend Engineer (Tomas Vargas) |
+| **Who runs it** | Backend Engineer (Ravi Mullick) |
 | **When** | Day one or two of Sprint 0, immediately after `CLAUDE.md` exists |
 | **Takes in** | `CLAUDE.md` from [P01](P01-generate-the-project-context-file.md); the target database names and the deployment story |
 | **Produces** | `sql/schema.sql`, `sql/migrations/`, `config/settings.py`, `core/clients.py`, `sinks/sql_sink.py`, `sinks/snowflake_sink.py`, `tests/test_sinks_contract.py` |
-| **Hands off to** | Team Lead (Rahul Nair), who runs [P03 — Wire Up an MCP Server](P03-wire-up-an-mcp-server.md) |
+| **Hands off to** | Team Lead (Gautam ), who runs [P03 — Wire Up an MCP Server](P03-wire-up-an-mcp-server.md) |
 | **Time to run** | Half a day, including the review argument about migrations |
 
 ---
 
 ## 1. The scene
 
-Tomas got told off on Monday morning. By Monday afternoon he has a project context file, and he is doing the same task again properly.
+Ravi got told off on Monday morning. By Monday afternoon he has a project context file, and he is doing the same task again properly.
 
-The task itself is unglamorous and nothing about it ships. Sprint 0 does not produce a demo of working software, which Farhan has already explained twice and will explain again at the demo on Friday. What Sprint 0 produces is the difference between Sprint 2 taking two weeks and Sprint 2 taking three. Nobody claps for a connection layer. Everybody notices when it is wrong.
+The task itself is unglamorous and nothing about it ships. Sprint 0 does not produce a demo of working software, which Atul has already explained twice and will explain again at the demo on Friday. What Sprint 0 produces is the difference between Sprint 2 taking two weeks and Sprint 2 taking three. Nobody claps for a connection layer. Everybody notices when it is wrong.
 
 The shape of the problem: this pipeline writes to two completely different databases, for two completely different reasons, using two completely different authentication mechanisms, from inside a runtime that shuts your process down when it feels like it.
 
-**Azure SQL** holds the silver layer — typed rows that passed the confidence gate — plus two operational tables the pipeline cannot function without: a ledger of every document it has ever processed, and the exception queue that Priya works from every morning. **Snowflake** holds gold, the modelled warehouse layer that Northwind's analysts and the reconciliation report read from. Azure SQL is reached with managed identity. Snowflake is reached with a key pair. And all of it runs inside Azure Functions, where your code might be started cold, run for four hundred milliseconds, and be killed.
+**Azure SQL** holds the silver layer — typed rows that passed the confidence gate — plus two operational tables the pipeline cannot function without: a ledger of every document it has ever processed, and the exception queue that Preeti works from every morning. **Snowflake** holds gold, the modelled warehouse layer that Northwind's analysts and the reconciliation report read from. Azure SQL is reached with managed identity. Snowflake is reached with a key pair. And all of it runs inside Azure Functions, where your code might be started cold, run for four hundred milliseconds, and be killed.
 
-Sofia stops by his desk while he is staring at this and asks her question. She asks it about everything, and she asked it about the connection layer on three previous projects: *what does this look like when it's wrong?*
+Hem stops by his desk while he is staring at this and asks her question. She asks it about everything, and she asked it about the connection layer on three previous projects: *what does this look like when it's wrong?*
 
-Tomas thinks about it and says: a document loads half its rows into silver, the run dies, and nobody knows it happened.
+Ravi thinks about it and says: a document loads half its rows into silver, the run dies, and nobody knows it happened.
 
-Sofia says good, that is the one, build for that.
+Hem says good, that is the one, build for that.
 
 ---
 
@@ -86,9 +86,9 @@ This is the part people skip, and it is the part that determines whether the sys
 
 > **SHA-256** is a hash function. Feed it any file and it returns a 64-character string. The same bytes always produce the same string; different bytes essentially never do. That is the whole idea.
 
-Why a hash and not a filename? Because counterparties resend. Broker Alpha sends `positions_20260304.pdf`, then resends the identical file as `positions_20260304_RESEND.pdf`, then their ops team sends it again as `positions_20260304 (1).pdf`. Same document, three names. Key on the name and you get three sets of positions in the warehouse and a reconciliation report full of doubled quantities. Key on the content and the second and third arrivals are recognised instantly and skipped. This is invariant 4 in the context file, and it is also bug **NWD-140**, which Ananya files in Sprint 3 because one code path did the wrong thing.
+Why a hash and not a filename? Because counterparties resend. Broker Alpha sends `positions_20260304.pdf`, then resends the identical file as `positions_20260304_RESEND.pdf`, then their ops team sends it again as `positions_20260304 (1).pdf`. Same document, three names. Key on the name and you get three sets of positions in the warehouse and a reconciliation report full of doubled quantities. Key on the content and the second and third arrivals are recognised instantly and skipped. This is invariant 4 in the context file, and it is also bug **NWD-140**, which Pankaj files in Sprint 3 because one code path did the wrong thing.
 
-**`etl.extraction_exception`** — the queue. Every document the rules engine rejected, with the reason, the field that failed, its confidence score, and a pointer to the bronze blob. This is not a log table. It is a work queue with a state machine, and it is the data behind Ji-woo's review screen. Priya opens it at 08:30 every morning and it is her actual job.
+**`etl.extraction_exception`** — the queue. Every document the rules engine rejected, with the reason, the field that failed, its confidence score, and a pointer to the bronze blob. This is not a log table. It is a work queue with a state machine, and it is the data behind Dzmitry's review screen. Preeti opens it at 08:30 every morning and it is her actual job.
 
 The distinction matters and it is worth being explicit: **logs are for engineers debugging the system; the exception queue is for an analyst doing their job.** They have different retention, different access, different shapes, and putting one in the other ruins both.
 
@@ -192,9 +192,9 @@ Three functions. Every query in the codebase goes through them. That buys two th
 
 **One place to add cross-cutting behaviour.** Retry on transient errors, timing metrics, structured logging of which query ran against which document — all of it goes in three functions instead of ninety call sites.
 
-### Atomicity, and Sofia's question
+### Atomicity, and Hem's question
 
-Back to what Tomas said at his desk: a document loads half its rows, the run dies, nobody knows.
+Back to what Ravi said at his desk: a document loads half its rows, the run dies, nobody knows.
 
 The defence is a **transaction** — a group of statements that either all take effect or none do. Wrap the position inserts and the ledger row in one transaction and commit once. If anything throws, the database rolls back and it is as though nothing happened. The next run finds no ledger row, sees the document as unprocessed, and does it again cleanly.
 
@@ -306,7 +306,7 @@ Save to the paths given above.
 
 ## 5. The filled-in example
 
-Tomas ran this on Monday afternoon of Sprint 0, after `CLAUDE.md` was committed.
+Ravi ran this on Monday afternoon of Sprint 0, after `CLAUDE.md` was committed.
 
 ```text
 You are the **Backend Engineer** setting up the database layer for this project. Your goal is
@@ -507,7 +507,7 @@ CREATE TABLE etl.extraction_exception (
     CONSTRAINT CK_ee_state CHECK (state IN ('OPEN','IN_REVIEW','RESOLVED','REJECTED'))
 );
 
--- Reason: Priya's screen opens on "everything OPEN, oldest first". This is that query.
+-- Reason: Preeti's screen opens on "everything OPEN, oldest first". This is that query.
 CREATE INDEX IX_ee_open_queue
     ON etl.extraction_exception (state, raised_at_utc)
     INCLUDE (counterparty_code, reason_code, failing_field, field_confidence);
@@ -596,7 +596,7 @@ def write_document(
 
 ### How to read this
 
-**Look at the plan's "Open question" first.** The AI found a real ambiguity — whether a resolved exception can be reopened — that nobody on the team had thought about. Tomas took it to Amara. Her answer, from her custodian-bank days, was immediate: yes, of course it can, an analyst fixes a break and then finds out they fixed it wrong, that happens weekly. That answer turned into a separate history table and it would have been much more expensive to discover in Sprint 3.
+**Look at the plan's "Open question" first.** The AI found a real ambiguity — whether a resolved exception can be reopened — that nobody on the team had thought about. Ravi took it to Preetinka. Her answer, from her custodian-bank days, was immediate: yes, of course it can, an analyst fixes a break and then finds out they fixed it wrong, that happens weekly. That answer turned into a separate history table and it would have been much more expensive to discover in Sprint 3.
 
 **Look at the flagged conflict in the plan.** The prompt said "never write the ledger before the data." The foreign keys force ledger-first inside the transaction. The AI did not silently pick one; it named the tension, explained the reading it took, and asked. That behaviour comes directly from the stop gate, and it is the single most valuable thing the stop gate buys you.
 
@@ -632,7 +632,7 @@ Two specific over-prompting traps here.
 
 **The second is premature abstraction of the sinks.** The AI will offer to extract a `BaseSink` class so that SQL and Snowflake share an interface. Do not take it yet. They are genuinely different — one is per-document and transactional, the other is batch and set-based — and the shared abstraction that looks elegant on day two becomes the thing you fight in Sprint 2 when the Snowflake `MERGE` needs a staging table the SQL path has no concept of.
 
-The right time to abstract is when you have three, not two, and you have seen them all work. Sofia has an ADR about exactly this in Sprint 1.
+The right time to abstract is when you have three, not two, and you have seen them all work. Hem has an ADR about exactly this in Sprint 1.
 
 ### The signal that you are NOT done
 
@@ -789,7 +789,7 @@ row, not a tuple.
 **Do not** build a dashboard, an endpoint, or a CLI. Just the queries.
 ```
 
-What changes: query 4 is the straight-through rate, which is the headline metric for this whole project and which Farhan will ask for in the Sprint 2 demo. Better to have it early.
+What changes: query 4 is the straight-through rate, which is the headline metric for this whole project and which Atul will ask for in the Sprint 2 demo. Better to have it early.
 
 ### The loop
 
@@ -825,7 +825,7 @@ The fix is the `[TABLE LIST]` placeholder, filled in with real intent for every 
 
 `DefaultAzureCredential` on your machine falls back to your Azure CLI login, which is probably an account with far more permission than the Function's identity will have. So everything works locally, and the first deployment fails with a permissions error that reads like a connection error.
 
-Tomas lost most of a Tuesday to this exact thing. The managed identity had `Storage Blob Data Contributor` on the storage account and looked correctly configured in the portal, but nobody had run `CREATE USER [nwd-doc-ingestion] FROM EXTERNAL PROVIDER` inside the database itself. Azure-level role assignment and in-database user creation are two separate steps, and the second one is easy to miss because the portal gives you no hint that it exists.
+Ravi lost most of a Tuesday to this exact thing. The managed identity had `Storage Blob Data Contributor` on the storage account and looked correctly configured in the portal, but nobody had run `CREATE USER [nwd-doc-ingestion] FROM EXTERNAL PROVIDER` inside the database itself. Azure-level role assignment and in-database user creation are two separate steps, and the second one is easy to miss because the portal gives you no hint that it exists.
 
 The fix is procedural: deploy the connection layer to a real environment on day two of Sprint 0, with nothing else in it, and prove it connects. Do not discover this in Sprint 2 with a deadline attached.
 
@@ -833,7 +833,7 @@ The fix is procedural: deploy the connection layer to a real environment on day 
 
 The tempting version of `write_document` takes raw extracted fields, applies the confidence thresholds, decides what is an exception, and writes the result. It is fewer files and it reads nicely.
 
-It is also wrong, and the reason is invariant 7 from the context file: the confidence gate sits upstream. If the gate lives inside the sink, then anything that writes without going through that sink bypasses it — the reprocessing job, the manual correction path from Ji-woo's UI, the backfill script somebody writes in Sprint 4. Each of those is a hole, and each hole puts a low-confidence number into the warehouse.
+It is also wrong, and the reason is invariant 7 from the context file: the confidence gate sits upstream. If the gate lives inside the sink, then anything that writes without going through that sink bypasses it — the reprocessing job, the manual correction path from Dzmitry's UI, the backfill script somebody writes in Sprint 4. Each of those is a hole, and each hole puts a low-confidence number into the warehouse.
 
 The fix: the sink takes rows that have *already* been decided. It has no opinion about confidence. `core/rules.py` decides; `sinks/` writes. If a sink function has an `if confidence <` in it, that is the smell.
 
@@ -857,13 +857,13 @@ Two cases.
 
 ## 10. The handoff
 
-The connection layer lands late on the Monday of Sprint 0, and Rahul reviews it on Tuesday morning. His review is short, because the plan was reviewed before the code existed and that is where the design questions got settled. This is the whole argument for the stop gate: reviewing a plan takes ten minutes, and reviewing three hundred lines of generated code that implements the wrong plan takes an afternoon and produces a worse outcome.
+The connection layer lands late on the Monday of Sprint 0, and Gautam reviews it on Tuesday morning. His review is short, because the plan was reviewed before the code existed and that is where the design questions got settled. This is the whole argument for the stop gate: reviewing a plan takes ten minutes, and reviewing three hundred lines of generated code that implements the wrong plan takes an afternoon and produces a worse outcome.
 
-Rahul picks up next with [P03 — Wire Up an MCP Server](P03-wire-up-an-mcp-server.md), and the reason follows directly from what Tomas just built. The AI now knows what the schema *should* be, because it wrote `sql/schema.sql`. It has no way to know what the schema actually *is* in a running database. Those two things diverge — after the first manual DBA change, after the first hotfix column — and every divergence produces confidently wrong SQL. P03 closes that gap by letting the assistant query the real catalog instead of reading a file that claims to describe it.
+Gautam picks up next with [P03 — Wire Up an MCP Server](P03-wire-up-an-mcp-server.md), and the reason follows directly from what Ravi just built. The AI now knows what the schema *should* be, because it wrote `sql/schema.sql`. It has no way to know what the schema actually *is* in a running database. Those two things diverge — after the first manual DBA change, after the first hotfix column — and every divergence produces confidently wrong SQL. P03 closes that gap by letting the assistant query the real catalog instead of reading a file that claims to describe it.
 
-Tomas himself picks this back up much later, in Sprint 2, when he implements **NWD-107** — load positions into Azure SQL and Snowflake idempotently. That story is comparatively easy, because the hard parts are already done and reviewed. The sink signature is stable, the transaction boundary is decided, the idempotency guard is written and tested. What NWD-107 adds is the mapping from extracted fields to rows, and the Snowflake batch path. That is the return on Sprint 0.
+Ravi himself picks this back up much later, in Sprint 2, when he implements **NWD-107** — load positions into Azure SQL and Snowflake idempotently. That story is comparatively easy, because the hard parts are already done and reviewed. The sink signature is stable, the transaction boundary is decided, the idempotency guard is written and tested. What NWD-107 adds is the mapping from extracted fields to rows, and the Snowflake batch path. That is the return on Sprint 0.
 
-Sofia reads the plan, not the code, and takes two things from it into Sprint 1: the exception-queue state machine question becomes part of the data contract in [P13](../phase-2-design/P13-design-the-data-contract.md), and the two-sources-of-truth problem in §9.4 becomes ADR-0002.
+Hem reads the plan, not the code, and takes two things from it into Sprint 1: the exception-queue state machine question becomes part of the data contract in [P13](../phase-2-design/P13-design-the-data-contract.md), and the two-sources-of-truth problem in §9.4 becomes ADR-0002.
 
 > **Artifact contract — `sql/schema.sql`, `core/clients.py`, `sinks/*.py`**
 >
@@ -887,13 +887,13 @@ This runs on day one and two of
 The generated schema is the ancestor of everything in
 [`Case-Study/Python-ETL/artifacts/data-contract-counterparty-position.md`](../../Case-Study/Python-ETL/artifacts/data-contract-counterparty-position.md).
 
-The thing that went slightly wrong is instructive because it is not a code problem. Tomas approved the plan himself. He read it, it looked right, he typed "approved," and he generated the code. Rahul found out on Tuesday and was less annoyed about the process violation than about what it cost: the plan's open question — whether a resolved exception can be reopened — went unanswered for four days, because Tomas did not know the answer and quietly picked one. He picked "RESOLVED is terminal," which is the simpler design and the wrong one.
+The thing that went slightly wrong is instructive because it is not a code problem. Ravi approved the plan himself. He read it, it looked right, he typed "approved," and he generated the code. Gautam found out on Tuesday and was less annoyed about the process violation than about what it cost: the plan's open question — whether a resolved exception can be reopened — went unanswered for four days, because Ravi did not know the answer and quietly picked one. He picked "RESOLVED is terminal," which is the simpler design and the wrong one.
 
-Amara corrected it in the Friday review in about eleven seconds. Analysts resolve a break, the correction turns out to be wrong, they reopen it. This happens constantly. The redesign cost half a day in Sprint 0, which is fine. Discovered in Sprint 3, with Ji-woo's UI already built against a terminal state, it would have cost a week and a conversation with the client.
+Preetinka corrected it in the Friday review in about eleven seconds. Analysts resolve a break, the correction turns out to be wrong, they reopen it. This happens constantly. The redesign cost half a day in Sprint 0, which is fine. Discovered in Sprint 3, with Dzmitry's UI already built against a terminal state, it would have cost a week and a conversation with the client.
 
-The rule Rahul wrote into the team's definition of done that afternoon: **a stop gate you approve yourself is not a stop gate.** Somebody else reads the plan. It is in [P17](../phase-3-planning/P17-definition-of-done.md) and it stayed there for the whole engagement.
+The rule Gautam wrote into the team's definition of done that afternoon: **a stop gate you approve yourself is not a stop gate.** Somebody else reads the plan. It is in [P17](../phase-3-planning/P17-definition-of-done.md) and it stayed there for the whole engagement.
 
-The second thing worth knowing: the `WITH (UPDLOCK, HOLDLOCK)` hint in the idempotency guard was in the generated code from the first run, and nobody on the team would have written it by hand. Tomas admitted as much in the retro. It is a good reminder that the failure mode of these tools is not "the code is bad" — it is "the code is good and solves a problem you did not state."
+The second thing worth knowing: the `WITH (UPDLOCK, HOLDLOCK)` hint in the idempotency guard was in the generated code from the first run, and nobody on the team would have written it by hand. Ravi admitted as much in the retro. It is a good reminder that the failure mode of these tools is not "the code is bad" — it is "the code is good and solves a problem you did not state."
 
 ---
 

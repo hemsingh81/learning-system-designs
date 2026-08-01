@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | **Phase** | 4 — Build |
-| **Who runs it** | Backend and Frontend Engineer (Tomas Vargas, Ji-woo Park) |
+| **Who runs it** | Backend and Frontend Engineer (Ravi Mullick, Dzmitry ) |
 | **When** | Immediately after each implementation step, before the commit |
 | **Takes in** | `artifacts/acceptance-criteria-NWD-103.md`, `artifacts/spec-confidence-gate.md`, `artifacts/definition-of-done.md`, the code from [P18](P18-implement-a-story.md) or [P19](P19-build-the-ui-from-the-brief.md) |
 | **Produces** | `code/doc_ingestion/tests/test_confidence.py` and its frontend equivalents |
@@ -18,19 +18,19 @@
 
 ## 1. The scene
 
-Tuesday afternoon. `core/confidence.py` exists. It compiles, it imports cleanly, and Tomas has read every line of it, including the check order in `evaluate_field` that he had to think about twice.
+Tuesday afternoon. `core/confidence.py` exists. It compiles, it imports cleanly, and Ravi has read every line of it, including the check order in `evaluate_field` that he had to think about twice.
 
 Now the tests. Step 1 of the implementation plan names `tests/test_confidence.py`, and the Definition of Done clause D4 says every acceptance criterion needs at least one automated test, named so a reader can match it to the criterion.
 
 His instinct — everyone's instinct — is to keep the same chat session going and type "now write the tests for this." The model has all the context. It knows the module. It'll take thirty seconds.
 
-Rahul, walking past, says no. And the reason he gives takes ten seconds and changes how Tomas tests for the rest of his career:
+Gautam, walking past, says no. And the reason he gives takes ten seconds and changes how Ravi tests for the rest of his career:
 
 **"Those tests will be written by the same thing that wrote the code, from the same reading of the spec. If it misread the spec, the code and the tests agree with each other and they're both wrong. Green means nothing."**
 
 That's the whole argument. A test's value comes entirely from being an *independent* statement of what the code should do. Generate it from the code and you haven't tested anything — you've written the code twice, in two dialects, and checked that both copies say the same thing.
 
-So Tomas opens Amara's acceptance criteria in a fresh session, and doesn't paste the module in at all.
+So Ravi opens Preetinka's acceptance criteria in a fresh session, and doesn't paste the module in at all.
 
 ---
 
@@ -47,7 +47,7 @@ def test_money_is_gated_harder_than_a_description():
     """A field at 0.88 confidence: currency fails, descriptive string passes."""
 ```
 
-Read that name aloud to Amara and she'd nod. It's a business rule. It would still be true if the module were rewritten in Rust.
+Read that name aloud to Preetinka and she'd nod. It's a business rule. It would still be true if the module were rewritten in Rust.
 
 **An implementation test says what the code currently does, in terms of the code.**
 
@@ -56,7 +56,7 @@ def test_evaluate_field_returns_none_when_confidence_gte_threshold():
     """evaluate_field returns None when confidence >= thresholds[field_type]."""
 ```
 
-Read that to Amara and she'd have nothing to say, because it isn't about anything she cares about. It's a restatement of a line of code in a different font.
+Read that to Preetinka and she'd have nothing to say, because it isn't about anything she cares about. It's a restatement of a line of code in a different font.
 
 The difference isn't style. It's what happens when things change, and there are three cases:
 
@@ -98,7 +98,7 @@ Clause D8 says: **no test was modified in order to make it pass**, unless the pu
 
 This prompt is the other half of that clause. D8 stops you weakening a test after the fact. This stops you writing a test that was never strong to begin with.
 
-Rahul's phrasing, from the DoD session: *the test is the requirement written in code, and you don't get to edit the requirement to pass the exam.* For that to mean anything, the test has to actually be the requirement — derived from the acceptance criteria, not from the source file.
+Gautam's phrasing, from the DoD session: *the test is the requirement written in code, and you don't get to edit the requirement to pass the exam.* For that to mean anything, the test has to actually be the requirement — derived from the acceptance criteria, not from the source file.
 
 ### Every term, defined
 
@@ -161,7 +161,7 @@ It's tempting to say the team wasn't thorough enough. That's wrong, and it lets 
 
 Three real reasons, all structural:
 
-**The fixture and the code came from the same mental model.** Tomas built the extractor and the test fixture in the same week, from the same understanding of what a Broker Alpha statement looks like — a single page with a table on it. Every real document he'd looked at was one page. So the fixture had one page's worth of rows, and the extractor handled one page's worth of rows, and they agreed perfectly. **A fixture built from the same assumption as the code inherits the same blind spot, and the test that uses it is then testing the assumption against itself.**
+**The fixture and the code came from the same mental model.** Ravi built the extractor and the test fixture in the same week, from the same understanding of what a Broker Alpha statement looks like — a single page with a table on it. Every real document he'd looked at was one page. So the fixture had one page's worth of rows, and the extractor handled one page's worth of rows, and they agreed perfectly. **A fixture built from the same assumption as the code inherits the same blind spot, and the test that uses it is then testing the assumption against itself.**
 
 **The tests were scoped to the module, and the bug lives between modules.** Every test in `test_confidence.py` correctly tests the gate. The bug is in the handoff: what `core/extract.py` gives to `core/rules.py` to give to the gate. Nobody's tests covered a seam, because everybody's tests covered a module. This is the standard failure mode of good unit testing and it's why integration and E2E tests exist — and why [P25](../phase-5-verify/P25-data-quality-validation.md) is a separate discipline from unit testing.
 
@@ -169,7 +169,7 @@ Three real reasons, all structural:
 
 **The general lesson, and the thing to actually take away:** your tests assert on the data you hand them. They say nothing at all about whether that data is complete. Any time a step in your pipeline produces a *collection*, ask one question: **what would tell me this collection is missing items, and do I check it?** Row counts, control totals, checksums, sequence numbers, page counts. The document usually tells you. Nobody usually looks.
 
-Ananya's rule after the retro is one line, and it's in the case study: *for every list the system produces, there is a test that the list is complete, or a written note saying why we can't know.*
+Pankaj's rule after the retro is one line, and it's in the case study: *for every list the system produces, there is a test that the list is complete, or a written note saying why we can't know.*
 
 ### Why the prompt is shaped the way it is
 
@@ -286,7 +286,7 @@ test or a stated reason it cannot have one, and no test name mentions a function
 
 ## 5. The filled-in example
 
-Tomas runs this in a **new session**, on Tuesday afternoon, with `core/confidence.py` deliberately not open.
+Ravi runs this in a **new session**, on Tuesday afternoon, with `core/confidence.py` deliberately not open.
 
 ```text
 You are a test engineer writing tests for one piece of behaviour, from its
@@ -574,7 +574,7 @@ def test_one_bad_line_item_fails_the_whole_document(header):
 def test_the_failing_row_is_identified_by_its_position(header):
     """A failure points the analyst at a row number, not just at the document.
 
-    Priya reviews these by eye against the PDF. "Somewhere in the table" costs
+    Preeti reviews these by eye against the PDF. "Somewhere in the table" costs
     her the time this screen exists to save.
     """
     # Arrange
@@ -713,18 +713,18 @@ No criterion is unmapped.
 
 2. Failures are reported in document order — header fields, then line items in
    index order. The criteria do not say, but the exception queue renders them as
-   a list and an unstable order would move rows around under Priya as she works.
+   a list and an unstable order would move rows around under Preeti as she works.
 ```
 
 ### How to read this
 
-**Read the test names, alone, in order, and nothing else.** They read as a specification: money is gated harder than a description; a field exactly on its threshold is accepted; a missing value is a failure even at high confidence; a field with no confidence score never auto-accepts; one bad line item fails the whole document. That list is the requirement. Hand it to Amara and she can check it. That is what a behaviour test suite looks like.
+**Read the test names, alone, in order, and nothing else.** They read as a specification: money is gated harder than a description; a field exactly on its threshold is accepted; a missing value is a failure even at high confidence; a field with no confidence score never auto-accepts; one bad line item fails the whole document. That list is the requirement. Hand it to Preetinka and she can check it. That is what a behaviour test suite looks like.
 
 **Then read what's absent from every name.** No `evaluate_document`. No `evaluate_field`. No `resolve_thresholds`. Rewrite the module completely tomorrow and, if the behaviour is the same, this file doesn't change.
 
-**Then read "Tests I could not write", item 1.** That paragraph is NWD-142, described accurately, nineteen days before Ananya found it. It came out of the prompt's instruction to ask what proves a collection is complete. It correctly says the information doesn't exist at this layer and recommends raising it with the architect.
+**Then read "Tests I could not write", item 1.** That paragraph is NWD-142, described accurately, nineteen days before Pankaj found it. It came out of the prompt's instruction to ask what proves a collection is complete. It correctly says the information doesn't exist at this layer and recommends raising it with the architect.
 
-Nobody raised it. Not through negligence — it reads as a limitation of the module rather than as a risk to the system, and everyone who read it agreed with it and moved on. **Which is exactly why the "Tests I could not write" section has to go somewhere with a name on it, not just be read and nodded at.** After the retrospective, every entry goes onto the story as a comment and Ananya reads them before writing E2E cases.
+Nobody raised it. Not through negligence — it reads as a limitation of the module rather than as a risk to the system, and everyone who read it agreed with it and moved on. **Which is exactly why the "Tests I could not write" section has to go somewhere with a name on it, not just be read and nodded at.** After the retrospective, every entry goes onto the story as a comment and Pankaj reads them before writing E2E cases.
 
 **The part that is commonly wrong:** the boundary test's direction. "Exactly on the threshold" passing rather than failing is a real decision with real consequences — it's the difference between 0.90 accepting and rejecting on the most common confidence value the model emits. The criteria imply it and don't state it. The model got it right here; it gets it wrong about a third of the time, and it never flags it as uncertain. Check that one yourself, every time.
 
@@ -820,7 +820,7 @@ If the criteria do not say what should happen for one of these, do not guess.
 List it under "Tests I could not write" and say what you would need.
 ```
 
-What changes: the file roughly doubles and its value more than doubles. Asserting the *reason* as well as the verdict is what catches a gate that rejects the right documents for the wrong reasons — which matters here because the reason code is what Priya reads in the exception queue.
+What changes: the file roughly doubles and its value more than doubles. Asserting the *reason* as well as the verdict is what catches a gate that rejects the right documents for the wrong reasons — which matters here because the reason code is what Preeti reads in the exception queue.
 
 ### 8.3 "A criterion has no test"
 
@@ -946,7 +946,7 @@ What you get looks like a test suite and functions as a mirror. If the model mis
 
 The fix is mechanical: **new session, criteria only, signatures not bodies.** It costs a minute of setup.
 
-And when a test written this way fails against the code — celebrate it. That's the mechanism working. Two independent readings disagreed, and you're about to find out which is right, before Ananya does.
+And when a test written this way fails against the code — celebrate it. That's the mechanism working. Two independent readings disagreed, and you're about to find out which is right, before Pankaj does.
 
 ### Coverage becomes the goal
 
@@ -986,9 +986,9 @@ And if you're testing something genuinely hard to pin down — a rendering pipel
 
 The tests commit alongside the code, in the same commit, always. Separating them means there is a commit in your history where the behaviour exists unprotected, and if anyone bisects through it they get a confusing result.
 
-**Rahul** picks it up at review with [P23](../phase-5-verify/P23-review-someone-elses-code.md), and he reads the test diff *before* the code diff. That ordering is in the Definition of Done for a reason: once you've read and approved the code, a weakened assertion reads as consistent rather than suspicious. Cold, the tests tell you what the author believed the requirement was, and you can compare that against the criteria without the code's influence.
+**Gautam** picks it up at review with [P23](../phase-5-verify/P23-review-someone-elses-code.md), and he reads the test diff *before* the code diff. That ordering is in the Definition of Done for a reason: once you've read and approved the code, a weakened assertion reads as consistent rather than suspicious. Cold, the tests tell you what the author believed the requirement was, and you can compare that against the criteria without the code's influence.
 
-**Ananya** picks up "Tests I could not write" before she writes a single E2E case. It's the fastest available map of where the requirement is thin, and thin requirement is where bugs live. Item 1 in the sample above — completeness of the line item list — is the one that mattered, and the change the team made after the retrospective is that entries like it now go onto the story as comments rather than living in a chat transcript.
+**Pankaj** picks up "Tests I could not write" before she writes a single E2E case. It's the fastest available map of where the requirement is thin, and thin requirement is where bugs live. Item 1 in the sample above — completeness of the line item list — is the one that mattered, and the change the team made after the retrospective is that entries like it now go onto the story as comments rather than living in a chat transcript.
 
 **Everyone** reports it at standup, and this is where [P21](P21-daily-standup-summary.md) picks up. "Twelve tests green" is not a standup line. "The gate is tested against all nine criteria, and there's one thing I couldn't test — whether we got all the rows" is, and it's the kind of line that gets a two-minute conversation rather than a nod.
 
@@ -1013,21 +1013,21 @@ This runs throughout [Chapter 5](../../Case-Study/Python-ETL/05-sprint-2-build-b
 
 The disagreement worth recording happened on the first run. The tests, written from the criteria in a clean session, asserted that a field exactly on its threshold **passes**. The code, written the day before, used `<=` and rejected it. Red.
 
-Neither was obviously wrong. The criteria say "below the threshold is a failure", which makes equality a pass. The spec's prose says "at least 0.90 confidence is required", which also makes equality a pass. But Sofia's ADR, written a fortnight earlier, has a sentence about being conservative at boundaries.
+Neither was obviously wrong. The criteria say "below the threshold is a failure", which makes equality a pass. The spec's prose says "at least 0.90 confidence is required", which also makes equality a pass. But Hem's ADR, written a fortnight earlier, has a sentence about being conservative at boundaries.
 
-It went to Amara. Her answer took thirty seconds: 0.90 is the most common confidence value the extraction model emits for a clean currency field, and rejecting every one of them would send hundreds of perfectly good documents a month to Priya. Equality passes. Tomas changed one character in the source and the spec gained one sentence under Definition of Done clause D9.
+It went to Preetinka. Her answer took thirty seconds: 0.90 is the most common confidence value the extraction model emits for a clean currency field, and rejecting every one of them would send hundreds of perfectly good documents a month to Preeti. Equality passes. Ravi changed one character in the source and the spec gained one sentence under Definition of Done clause D9.
 
-**That entire exchange only happened because the test was written independently.** Same session, and the test would have agreed with the `<=`, the suite would have been green, and Priya would have found out in production by receiving three hundred documents a month she didn't need.
+**That entire exchange only happened because the test was written independently.** Same session, and the test would have agreed with the `<=`, the suite would have been green, and Preeti would have found out in production by receiving three hundred documents a month she didn't need.
 
 And then the other thing. "Tests I could not write", item 1, in the very first run:
 
 > I cannot write a test proving the gate received every line item the document contained.
 
-Nineteen days later Ananya filed NWD-142. Between those two dates that sentence was read by Tomas, by Rahul at review, and by Ananya when she scanned the file — three competent people, all of whom read it and agreed with it, and none of whom converted it into an action. It reads as a fact about how functions work, not as a warning about a specific document.
+Nineteen days later Pankaj filed NWD-142. Between those two dates that sentence was read by Ravi, by Gautam at review, and by Pankaj when she scanned the file — three competent people, all of whom read it and agreed with it, and none of whom converted it into an action. It reads as a fact about how functions work, not as a warning about a specific document.
 
 Turning it into a warning required one piece of knowledge nobody had: that Broker Alpha's positions table sometimes runs onto a second page, and that the extraction model, trained on fifteen single-page samples, stops at the page break. That's not in any document. It's in the PDFs, and nobody had looked at forty of them.
 
-The retrospective ([Chapter 10](../../Case-Study/Python-ETL/10-retrospective.md)) produced two changes. Ananya's rule: *for every list the system produces, there is a test that the list is complete, or a written note saying why we can't know.* And Sofia's, which is cheaper and probably caught more: **the training sample set must include the ugliest real document anyone can find, not fifteen clean ones.**
+The retrospective ([Chapter 10](../../Case-Study/Python-ETL/10-retrospective.md)) produced two changes. Pankaj's rule: *for every list the system produces, there is a test that the list is complete, or a written note saying why we can't know.* And Hem's, which is cheaper and probably caught more: **the training sample set must include the ugliest real document anyone can find, not fifteen clean ones.**
 
 ---
 

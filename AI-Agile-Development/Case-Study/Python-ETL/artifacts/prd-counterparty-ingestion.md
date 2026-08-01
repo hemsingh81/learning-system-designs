@@ -2,13 +2,13 @@
 
 | | |
 |---|---|
-| **Produced by** | Amara Osei, Product Owner, Kestrel Software |
+| **Produced by** | Preetinka Sharma, Product Owner, Kestrel Software |
 | **Using** | [P06 — Write a Full PRD](../../../AI-Prompts-Library/phase-1-discovery/P06-write-a-full-prd.md) |
 | **Date** | 2026-06-09 (v1.0) · 2026-07-20 (v1.1) |
 | **Status** | Approved |
 | **Version** | 1.1 |
 | **Client** | Northwind Asset Management |
-| **Approvers** | Farhan Qureshi (PM, 2026-06-10) · Sofia Marchetti (Architect, 2026-06-10) · H. Okonkwo (Northwind, Head of Investment Operations, 2026-06-11) |
+| **Approvers** | Atul(PM, 2026-06-10) · Hem Singh (Architect, 2026-06-10) · H. Okonkwo (Northwind, Head of Investment Operations, 2026-06-11) |
 
 ---
 
@@ -22,7 +22,7 @@ Northwind runs two sets of books that have to agree.
 
 Proving the two sides agree is **reconciliation**. Where they disagree, you have a **break**, and a break has to be investigated and cleared before the position is trusted for reporting.
 
-Today, before reconciliation can run at all, an operations analyst opens each PDF and types the numbers into a spreadsheet. Three analysts do this, every morning, across roughly 200 documents a day. Priya Raman is one of them.
+Today, before reconciliation can run at all, an operations analyst opens each PDF and types the numbers into a spreadsheet. Three analysts do this, every morning, across roughly 200 documents a day. Preeti Singh is one of them.
 
 That manual keying step is the reason breaks surface on **T+2** — two business days after the trade — instead of **T+1**. A break found on T+2 is a break that has already been reported to the client on a stale position.
 
@@ -40,16 +40,16 @@ Three things converged.
 
 | User | Role | What changes for them |
 |---|---|---|
-| **Priya Raman** | Operations analyst, Northwind (London) | Stops keying documents. Starts reviewing only the ones the system could not read confidently. Her morning goes from three and a half hours of typing to a review queue. |
+| **Preeti Singh** | Operations analyst, Northwind (London) | Stops keying documents. Starts reviewing only the ones the system could not read confidently. Her morning goes from three and a half hours of typing to a review queue. |
 | Two further operations analysts | Northwind (London, Los Angeles) | Same. The LA analyst covers the overnight EM arrivals. |
 | Recs team lead | Northwind | Gets a break report at T+1 that does not contain artefacts of typing errors. |
 | EM and EQ reporting | Northwind | Read positions out of Snowflake. Their queries do not change; the data arrives earlier and carries an audit trail. |
 
-The person this PRD is written around is Priya. If a decision in this document makes the pipeline more elegant and Priya's morning worse, the decision is wrong.
+The person this PRD is written around is Preeti. If a decision in this document makes the pipeline more elegant and Preeti's morning worse, the decision is wrong.
 
 ## 4. Success metrics
 
-These are operational metrics. **None of them is a model metric.** We do not report extraction accuracy, F1, precision, recall, or confidence distributions as success measures for this project. Those numbers are useful to Tomas when tuning a model and are meaningless to Northwind's operating committee.
+These are operational metrics. **None of them is a model metric.** We do not report extraction accuracy, F1, precision, recall, or confidence distributions as success measures for this project. Those numbers are useful to Ravi when tuning a model and are meaningless to Northwind's operating committee.
 
 | # | Metric | Baseline | v1.0 target | How it is measured |
 |---|---|---|---|---|
@@ -60,7 +60,7 @@ These are operational metrics. **None of them is a model metric.** We do not rep
 | M5 | **False breaks caused by data entry** | 14 in the last full month, by the recs team lead's count | **0** | Break report entries later closed with reason code `KEYING_ERROR`. |
 | M6 | **Monthly Azure AI spend** | n/a | **≤$500/month at 12,600 pages** | Azure cost analysis, filtered to the resource group. Current modelled figure is ~$420/month. |
 
-**M2 is the headline.** It is the number Farhan reads out at the client steering call, it is the number the runbook tells the on-call engineer to check first, and it is the number that decides whether the analyst headcount question has an answer. Everything else in this document is in service of it.
+**M2 is the headline.** It is the number Atul reads out at the client steering call, it is the number the runbook tells the on-call engineer to check first, and it is the number that decides whether the analyst headcount question has an answer. Everything else in this document is in service of it.
 
 > **On M2's baseline.** v1.0 of this PRD carried no baseline for M2, because the manual process has no straight-through rate — it is 0% by definition. The 61% recorded above is the first measurement taken from the running system during the parallel run, added in v1.1 on 2026-07-20. That is the number we improve from, not the number we launched against.
 
@@ -70,14 +70,14 @@ These are the stories as they were sliced. Full narratives and acceptance criter
 
 | ID | Title | Owner | Size |
 |---|---|---|---|
-| [NWD-101](stories/NWD-101.md) | Land counterparty PDFs immutably in the raw zone | Tomas | M |
-| [NWD-102](stories/NWD-102.md) | Classify an incoming PDF to its counterparty layout | Tomas | M |
-| [NWD-103](stories/NWD-103.md) | **Gate every extracted field on its confidence score** | Tomas | L |
-| [NWD-104](stories/NWD-104.md) | Translate EM documents to English before matching | Tomas | M |
-| [NWD-105](stories/NWD-105.md) | Redact PII before anything is persisted | Tomas | M |
-| [NWD-106](stories/NWD-106.md) | Transform extracted fields into the canonical position schema | Tomas | M |
-| [NWD-107](stories/NWD-107.md) | Load positions into Azure SQL and Snowflake idempotently | Tomas | L |
-| [NWD-108](stories/NWD-108.md) | Exception queue screen for analyst review | Ji-woo | L |
+| [NWD-101](stories/NWD-101.md) | Land counterparty PDFs immutably in the raw zone | Ravi | M |
+| [NWD-102](stories/NWD-102.md) | Classify an incoming PDF to its counterparty layout | Ravi | M |
+| [NWD-103](stories/NWD-103.md) | **Gate every extracted field on its confidence score** | Ravi | L |
+| [NWD-104](stories/NWD-104.md) | Translate EM documents to English before matching | Ravi | M |
+| [NWD-105](stories/NWD-105.md) | Redact PII before anything is persisted | Ravi | M |
+| [NWD-106](stories/NWD-106.md) | Transform extracted fields into the canonical position schema | Ravi | M |
+| [NWD-107](stories/NWD-107.md) | Load positions into Azure SQL and Snowflake idempotently | Ravi | L |
+| [NWD-108](stories/NWD-108.md) | Exception queue screen for analyst review | Dzmitry | L |
 
 NWD-103 and NWD-108 are the same requirement seen from two ends. NWD-103 decides that a document cannot be trusted. NWD-108 is what a human does about it. Neither is worth building without the other, and they must ship in the same release.
 
@@ -107,7 +107,7 @@ NWD-103 and NWD-108 are the same requirement seen from two ends. NWD-103 decides
 | Automatic correction of a low-confidence field | A machine guessing at a number a machine already said it was unsure about is the exact failure mode this project exists to prevent | Never |
 | Writing anything back to Aladdin | Northwind's change control on Aladdin is a separate programme | Not scoped |
 | Email ingestion directly from an inbox | Documents arrive via the existing SFTP drop and mail-rule landing folder. Building an inbox reader is a distraction | v2 |
-| A mobile view of the exception queue | Priya works at a desk with two monitors and a PDF open. That's a nice-to-have | Not scoped |
+| A mobile view of the exception queue | Preeti works at a desk with two monitors and a PDF open. That's a nice-to-have | Not scoped |
 | Real-time processing | Documents arrive overnight and in the morning. Minutes are fine; seconds buy nothing | Not scoped |
 
 ## 7. What happens when the system is not confident
@@ -120,7 +120,7 @@ Everything the extraction model returns comes with a **confidence score** — a 
 
 ### 7.1 Who sees it
 
-The document appears in the **exception queue**, a screen owned by the Northwind operations analyst team. In v1 that is three named people: Priya Raman and two colleagues, one of whom works Los Angeles hours to cover overnight EM arrivals.
+The document appears in the **exception queue**, a screen owned by the Northwind operations analyst team. In v1 that is three named people: Preeti Singh and two colleagues, one of whom works Los Angeles hours to cover overnight EM arrivals.
 
 Nobody else is notified. No email goes to a distribution list. An analyst opens one screen at the start of the morning and sees everything that needs them. If a document needs a human and a human never opens that screen, we have failed — so the queue depth is monitored and alerts at the thresholds in the runbook.
 
@@ -135,7 +135,7 @@ The analyst must be able to fix the document without opening anything else. Spec
 5. **The confidence, as a percentage**, so the analyst can tell "the model nearly had it" from "the model was guessing".
 6. **Which counterparty and which document date**, so the analyst can prioritise a month-end statement over a routine one.
 
-The measure of success here is one pass. Priya opens the document, sees what is wrong, fixes it, releases it, and does not come back to it.
+The measure of success here is one pass. Preeti opens the document, sees what is wrong, fixes it, releases it, and does not come back to it.
 
 ### 7.3 By when
 
@@ -211,27 +211,27 @@ Written from the operations floor, not from the code.
 
 | # | Question | Owner | Needed by | Status |
 |---|---|---|---|---|
-| Q1 | Who signs off a corrected document — the analyst who fixed it, or a second pair of eyes? | Amara → Northwind ops | Before NWD-108 build | **Resolved 2026-06-16.** Single analyst for v1. Second-approval is a v2 control and Northwind's audit function agreed. |
-| Q2 | What is the retention period on `raw/` and `bronze/`? | Sofia → Northwind compliance | Before v1.0 release | **Resolved 2026-07-06.** Seven years, lifecycle to cool at 90 days, archive at 365. |
-| Q3 | Does the LA analyst need a separate queue view, or is one shared queue enough? | Ji-woo → Priya | Before NWD-108 build | **Resolved 2026-06-18.** One queue, filterable by counterparty. Priya's words: "I'd rather see everything and choose." |
-| Q4 | Should a document that fails only on a descriptive field (security name) still go to full review? | Amara → Sofia | Before NWD-103 build | **Resolved 2026-06-17.** Yes. See [ADR-0003](adr/0003-one-failing-field-rejects-the-document.md). Tomas objected; the objection is recorded there. |
-| Q5 | What happens to the exception queue if straight-through rate stalls below 70%? | Farhan | Before parallel-run exit | **Open.** Parallel run is at 81% as of 2026-07-29. Revisit at the release gate if it has not reached 85%. |
-| Q6 | Does the third counterparty onboarding count as v1 acceptance or v1.1? | Farhan → Northwind | Before release readiness | **Open.** Farhan's position is that "config change, no code change" is only proven when someone other than Tomas does it. |
+| Q1 | Who signs off a corrected document — the analyst who fixed it, or a second pair of eyes? | Preetinka → Northwind ops | Before NWD-108 build | **Resolved 2026-06-16.** Single analyst for v1. Second-approval is a v2 control and Northwind's audit function agreed. |
+| Q2 | What is the retention period on `raw/` and `bronze/`? | Hem → Northwind compliance | Before v1.0 release | **Resolved 2026-07-06.** Seven years, lifecycle to cool at 90 days, archive at 365. |
+| Q3 | Does the LA analyst need a separate queue view, or is one shared queue enough? | Dzmitry → Preeti | Before NWD-108 build | **Resolved 2026-06-18.** One queue, filterable by counterparty. Preeti's words: "I'd rather see everything and choose." |
+| Q4 | Should a document that fails only on a descriptive field (security name) still go to full review? | Preetinka → Hem | Before NWD-103 build | **Resolved 2026-06-17.** Yes. See [ADR-0003](adr/0003-one-failing-field-rejects-the-document.md). Ravi objected; the objection is recorded there. |
+| Q5 | What happens to the exception queue if straight-through rate stalls below 70%? | Atul | Before parallel-run exit | **Open.** Parallel run is at 81% as of 2026-07-29. Revisit at the release gate if it has not reached 85%. |
+| Q6 | Does the third counterparty onboarding count as v1 acceptance or v1.1? | Atul → Northwind | Before release readiness | **Open.** Atul's position is that "config change, no code change" is only proven when someone other than Ravi does it. |
 
 ## 12. Change log
 
 | Version | Date | Change | By |
 |---|---|---|---|
-| 1.0 | 2026-06-09 | Initial | Amara |
-| 1.0 | 2026-06-11 | Approved by Northwind | Amara |
-| 1.1 | 2026-07-20 | M2 baseline recorded at 61% from the first parallel-run measurement. Q1–Q4 marked resolved. E3 wording strengthened after [NWD-142](bug-NWD-142.md) — it previously said "should be captured", which was not a requirement anybody could test. | Amara |
+| 1.0 | 2026-06-09 | Initial | Preetinka |
+| 1.0 | 2026-06-11 | Approved by Northwind | Preetinka |
+| 1.1 | 2026-07-20 | M2 baseline recorded at 61% from the first parallel-run measurement. Q1–Q4 marked resolved. E3 wording strengthened after [NWD-142](bug-NWD-142.md) — it previously said "should be captured", which was not a requirement anybody could test. | Preetinka |
 
 ---
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/prd-counterparty-ingestion.md`**
 >
-> Produced by: Product Owner (Amara Osei) using P06 — Write a Full PRD
-> Approved by: Farhan Qureshi (PM) 2026-06-10 · Sofia Marchetti (Architect) 2026-06-10 · Northwind Head of Investment Operations 2026-06-11
+> Produced by: Product Owner (Preetinka Sharma) using P06 — Write a Full PRD
+> Approved by: Atul(PM) 2026-06-10 · Hem Singh (Architect) 2026-06-10 · Northwind Head of Investment Operations 2026-06-11
 >
 > Anyone consuming this file can rely on finding:
 > - The business problem, who has it, and why it needs solving now
@@ -248,4 +248,4 @@ Written from the operations floor, not from the code.
 > **If any guarantee above is missing, this artifact is not done.**
 > Do not build on it — send it back.
 >
-> Changing this file: Amara Osei approves, countersigned by Farhan Qureshi if the change touches scope or a date. Any change to §4 or §7 requires re-checking `stories/NWD-103.md`, `acceptance-criteria-NWD-103.md`, `spec-confidence-gate.md`, and `ui-brief-exception-queue.md`, because all four are derived from those two sections.
+> Changing this file: Preetinka Sharma approves, countersigned by Atulif the change touches scope or a date. Any change to §4 or §7 requires re-checking `stories/NWD-103.md`, `acceptance-criteria-NWD-103.md`, `spec-confidence-gate.md`, and `ui-brief-exception-queue.md`, because all four are derived from those two sections.

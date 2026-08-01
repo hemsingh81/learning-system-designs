@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Raised by** | Ananya Iyer, QA Engineer |
+| **Raised by** | Pankaj , QA Engineer |
 | **Date raised** | 2026-07-24 |
 | **Severity** | **High** |
 | **Priority** | P1 — blocks release |
@@ -172,13 +172,13 @@ Two things beyond the fix.
 
 A regression test needs to upload the **same bytes twice under different names** and assert a row count. Every existing idempotency test uploads the same path twice, which the ledger already handles and which could never have caught this.
 
-— Ananya
+— Pankaj
 
 ---
 
 ## 9. Resolution
 
-**Fixed** 2026-06-25 by Tomas Vargas. Three commits:
+**Fixed** 2026-06-25 by Ravi Mullick. Three commits:
 
 1. `test: reproduce NWD-140 duplicate rows on filename resend`
 2. `fix(sinks): hash document content, never the blob path`
@@ -195,14 +195,14 @@ A regression test needs to upload the **same bytes twice under different names**
 
 **Regression tests added:** 4, including `test_same_bytes_different_filename_loads_once`, which is the report reproduced.
 
-**Verified** 2026-07-31 by Ananya Iyer. Uploaded under three filenames; 14 rows, one `content_hash`, zero breaks. Duplicate rows from the `dev` run cleaned out by hand.
+**Verified** 2026-07-31 by Pankaj . Uploaded under three filenames; 14 rows, one `content_hash`, zero breaks. Duplicate rows from the `dev` run cleaned out by hand.
 
 ---
 
 > **Artifact contract — `artifacts/bug-NWD-140.md`**
 >
-> Produced by: Ananya Iyer (QA Engineer), using the bug-report standard in [P22](../../../AI-Prompts-Library/phase-5-verify/P22-e2e-test-the-application.md)
-> Approved by: Rahul Nair, 2026-07-24
+> Produced by: Pankaj  (QA Engineer), using the bug-report standard in [P22](../../../AI-Prompts-Library/phase-5-verify/P22-e2e-test-the-application.md)
+> Approved by: Gautam , 2026-07-24
 >
 > Anyone fixing from this report can rely on finding:
 > - Exact reproduction steps, including both uploads and the commands to run them

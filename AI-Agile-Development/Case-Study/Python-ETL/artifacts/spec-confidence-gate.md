@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Produced by** | Sofia Marchetti, Architect |
+| **Produced by** | Hem Singh, Architect |
 | **Using** | [P11 — Write the Technical Spec](../../../AI-Prompts-Library/phase-2-design/P11-write-the-technical-spec.md) |
 | **Date** | 2026-06-18 (Revision 1) · 2026-07-31 (Revision 2) |
 | **Status** | Approved · Revision 2 approved |
@@ -48,7 +48,7 @@ Thresholds are per **field type**, not global. A misread security *name* does no
 | `string` | **0.75** | Security name, notes, descriptive text | The loosest gate, deliberately. Under [ADR-0003](adr/0003-one-failing-field-rejects-the-document.md) a descriptive failure rejects the whole document, so this threshold is the mitigation for that rule's main cost. |
 | *anything else* | **0.80** | The configured default | Applies to field types not in the table and not covered by an alias. |
 
-**Where these numbers came from.** For each field type, the threshold was swept from 0.50 to 0.99 in steps of 0.01 against a labelled ground-truth set of 60 documents (40 `broker_alpha`, 20 `broker_beta_em`). The chosen point is where auto-accepted errors on monetary fields reach zero, then one step up for margin. Sweep run 2026-06-16 by Sofia Marchetti and Tomas Vargas. This is the justification if a threshold is ever questioned; it is not intuition.
+**Where these numbers came from.** For each field type, the threshold was swept from 0.50 to 0.99 in steps of 0.01 against a labelled ground-truth set of 60 documents (40 `broker_alpha`, 20 `broker_beta_em`). The chosen point is where auto-accepted errors on monetary fields reach zero, then one step up for margin. Sweep run 2026-06-16 by Hem Singh and Ravi Mullick. This is the justification if a threshold is ever questioned; it is not intuition.
 
 ### 3.2 Per-counterparty overrides
 
@@ -109,7 +109,7 @@ Confidence exactly equal to the threshold **passes**. The comparison is `confide
 > **When** the gate evaluates it
 > **Then** every failure appears in the result, header failures first, then line-item failures in row order.
 
-The analyst working the exception queue needs to see everything wrong with the document at once. Short-circuiting on the first failure would make Priya fix one field, resubmit, and discover the next — four round trips on a document that should take one.
+The analyst working the exception queue needs to see everything wrong with the document at once. Short-circuiting on the first failure would make Preeti fix one field, resubmit, and discover the next — four round trips on a document that should take one.
 
 ### 4.4 Minimum confidence
 
@@ -147,7 +147,7 @@ One failure is a flat record. Flat, not nested, because it round-trips through t
 
 `why` values are string literals rather than an enum so the value survives the round trip through JSON storage and back into the UI unchanged.
 
-The gate also produces a short human-readable reason for the queue row: `low_confidence: currency, quantity` — the distinct failing field names, sorted. The UI does not parse it; it displays it in the list view so Priya can triage without opening every document.
+The gate also produces a short human-readable reason for the queue row: `low_confidence: currency, quantity` — the distinct failing field names, sorted. The UI does not parse it; it displays it in the list view so Preeti can triage without opening every document.
 
 ## 6. The three nulls
 
@@ -214,23 +214,23 @@ The exception row carries:
 
 | Version | Date | Change | By |
 |---|---|---|---|
-| 1.0 | 2026-06-18 | Initial | Sofia |
-| 1.1 | 2026-06-20 | §3.1 gained the "where these numbers came from" note after Rahul pointed out the spec asserted five numbers with no provenance | Sofia |
-| **2.0** | **2026-07-31** | **Revision 2 — completeness. See below.** | Sofia |
+| 1.0 | 2026-06-18 | Initial | Hem |
+| 1.1 | 2026-06-20 | §3.1 gained the "where these numbers came from" note after Gautam pointed out the spec asserted five numbers with no provenance | Hem |
+| **2.0** | **2026-07-31** | **Revision 2 — completeness. See below.** | Hem |
 
 ---
 
 # Revision 2 — completeness
 
-**Added 2026-07-31, after [NWD-142](bug-NWD-142.md).** Sofia Marchetti, countersigned Rahul Nair and Amara Osei.
+**Added 2026-07-31, after [NWD-142](bug-NWD-142.md).** Hem Singh, countersigned Gautam  and Preetinka Sharma.
 
 ## R2.1 Why this revision exists
 
 Revision 1 of this spec is correct. Every threshold in it is right, every failure path in it works, and the gate implemented from it passed every acceptance criterion written against it.
 
-On 2026-07-24 Ananya loaded a Broker Alpha statement carrying fourteen positions across two pages. Nine positions reached Snowflake. Five did not. The gate returned `passed = true` with an empty failure list, and it was correct to: every field it was given was above threshold. The five missing positions were never in the extraction result the gate was handed, so there was nothing for it to fail.
+On 2026-07-24 Pankaj loaded a Broker Alpha statement carrying fourteen positions across two pages. Nine positions reached Snowflake. Five did not. The gate returned `passed = true` with an empty failure list, and it was correct to: every field it was given was above threshold. The five missing positions were never in the extraction result the gate was handed, so there was nothing for it to fail.
 
-Reconciliation then raised five `MISSING_EXTERNAL` breaks. Those are the breaks that mean a settlement may have failed. Priya spent an afternoon on them.
+Reconciliation then raised five `MISSING_EXTERNAL` breaks. Those are the breaks that mean a settlement may have failed. Preeti spent an afternoon on them.
 
 **The spec asked whether every number present was trustworthy. It never asked whether every number was present.** The contract on Revision 1 guaranteed thresholds, per-field-type rules, the failure output shape, and exception routing. All four were delivered. Completeness was not on the list, so nobody checked for it, so nobody noticed it was absent — in the story, the acceptance criteria, and this spec, simultaneously, because all three were written from the same mental model.
 
@@ -263,7 +263,7 @@ Both come from the raw extraction response, which was already being persisted to
 > **Then** this rule does not fail the document
 > **And** the run log records `line_item_count_not_declared` for that document.
 
-That second clause matters as much as the first. A completeness rule that silently does nothing on half the counterparties is worse than no rule, because everybody believes it is running. Rahul asked for it in review; it is the reason the log line exists.
+That second clause matters as much as the first. A completeness rule that silently does nothing on half the counterparties is worse than no rule, because everybody believes it is running. Gautam asked for it in review; it is the reason the log line exists.
 
 ## R2.4 Rule — table continuation across a page boundary
 
@@ -309,17 +309,17 @@ Both carry `row: null` — they are document-level, not row-level, findings.
 
 ## R2.7 Consequences
 
-- **The straight-through rate falls.** Documents that previously loaded incorrectly now go to review. That is a correct fall, not a regression, and it is why M2 moved down before it moved up during the parallel run. Farhan told Northwind before the number changed, not after.
+- **The straight-through rate falls.** Documents that previously loaded incorrectly now go to review. That is a correct fall, not a regression, and it is why M2 moved down before it moved up during the parallel run. Atul told Northwind before the number changed, not after.
 - **Two counterparty configurations gained `line_item_count_field`.** `broker_alpha` uses `PositionCount`, `broker_beta_em` uses `TradeCount`. Any new counterparty must be checked for whether one exists at onboarding.
-- **A new test class exists.** `tests/test_rules.py::test_completeness_*`, built on multi-page fixtures. Ananya's position, which is correct: single-page fixtures cannot catch a page-boundary bug, and the fixture set was the real gap.
-- **The spec contract itself changed**, gaining a guaranteed line about completeness. Every spec written under the old contract needs the same question asked of it. Rahul owns that sweep — [`retrospective-sprint-3.md`](retrospective-sprint-3.md), action item 1.
+- **A new test class exists.** `tests/test_rules.py::test_completeness_*`, built on multi-page fixtures. Pankaj's position, which is correct: single-page fixtures cannot catch a page-boundary bug, and the fixture set was the real gap.
+- **The spec contract itself changed**, gaining a guaranteed line about completeness. Every spec written under the old contract needs the same question asked of it. Gautam owns that sweep — [`retrospective-sprint-3.md`](retrospective-sprint-3.md), action item 1.
 
 ---
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/spec-confidence-gate.md`**
 >
-> Produced by: Architect (Sofia Marchetti) using P11 — Write the Technical Spec
-> Approved by: Rahul Nair (Team Lead) 2026-06-19 · Amara Osei (PO) 2026-06-19 · Revision 2 countersigned by Rahul Nair and Amara Osei 2026-07-31
+> Produced by: Architect (Hem Singh) using P11 — Write the Technical Spec
+> Approved by: Gautam  (Team Lead) 2026-06-19 · Preetinka Sharma (PO) 2026-06-19 · Revision 2 countersigned by Gautam  and Preetinka Sharma 2026-07-31
 >
 > Anyone consuming this file can rely on finding:
 > - The per-field-type threshold table with every number stated, plus where those numbers were measured
@@ -336,4 +336,4 @@ Both carry `row: null` — they are document-level, not row-level, findings.
 > **If any guarantee above is missing, this artifact is not done.**
 > Do not build on it — send it back.
 >
-> Changing this file: Sofia Marchetti approves; Amara Osei countersigns any threshold change. A change here requires re-checking `acceptance-criteria-NWD-103.md`, `config/sources.yaml`, `core/confidence.py`, `core/rules.py`, `tests/test_confidence.py`, `tests/test_rules.py`, and `ui-brief-exception-queue.md` — the failure shape in §5 is the UI's input contract.
+> Changing this file: Hem Singh approves; Preetinka Sharma countersigns any threshold change. A change here requires re-checking `acceptance-criteria-NWD-103.md`, `config/sources.yaml`, `core/confidence.py`, `core/rules.py`, `tests/test_confidence.py`, `tests/test_rules.py`, and `ui-brief-exception-queue.md` — the failure shape in §5 is the UI's input contract.

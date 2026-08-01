@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Produced by** | Sofia Marchetti, Architect |
+| **Produced by** | Hem Singh, Architect |
 | **Using** | [P12 — Record an Architecture Decision](../../../../AI-Prompts-Library/phase-2-design/P12-record-an-architecture-decision.md) |
 | **Date** | 2026-06-15 |
 | **Status** | Active |
@@ -40,8 +40,8 @@ An ADR is not a design document. It records one choice, the options that were ge
 
 > **Artifact contract — `Case-Study/Python-ETL/artifacts/adr/README.md`**
 >
-> Produced by: Architect (Sofia Marchetti) using P12 — Record an Architecture Decision
-> Approved by: Rahul Nair (Team Lead) 2026-06-15
+> Produced by: Architect (Hem Singh) using P12 — Record an Architecture Decision
+> Approved by: Gautam  (Team Lead) 2026-06-15
 >
 > Anyone consuming this file can rely on finding:
 > - The test for what belongs in an ADR and what does not
@@ -55,4 +55,4 @@ An ADR is not a design document. It records one choice, the options that were ge
 > **If any guarantee above is missing, this artifact is not done.**
 > Do not build on it — send it back.
 >
-> Changing this file: Sofia Marchetti approves. Adding an ADR requires adding a row to the index in the same commit.
+> Changing this file: Hem Singh approves. Adding an ADR requires adding a row to the index in the same commit.

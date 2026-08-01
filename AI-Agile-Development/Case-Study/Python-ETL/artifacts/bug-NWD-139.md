@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Raised by** | Ananya Iyer, QA Engineer |
+| **Raised by** | Pankaj , QA Engineer |
 | **Date raised** | 2026-06-22 |
 | **Severity** | **Low** |
 | **Priority** | P4 — cosmetic, does not block release |
@@ -15,7 +15,7 @@
 
 ## 1. Summary
 
-The confidence column renders the raw float. Priya sees `0.8234567` where the design says `82%`.
+The confidence column renders the raw float. Preeti sees `0.8234567` where the design says `82%`.
 
 ---
 
@@ -36,7 +36,7 @@ The confidence column renders the raw float. Priya sees `0.8234567` where the de
 
 ## 4. Impact
 
-Priya reads about forty of these a day and has to compare each one against a threshold rendered in the same unhelpful form. Seven decimal places of a number that is meaningful to two.
+Preeti reads about forty of these a day and has to compare each one against a threshold rendered in the same unhelpful form. Seven decimal places of a number that is meaningful to two.
 
 No data is wrong. Nothing is at risk. Filed because it is in the brief and it is not in the build, and a small thing that stays broken teaches everyone that the brief is optional.
 
@@ -48,17 +48,17 @@ The value arrives from `failures_json` as a float and reaches the cell unformatt
 
 ## 6. Resolution
 
-**Fixed** 2026-07-24 by Ji-woo Park. One commit, one line: `ExceptionRow.tsx:41` now calls the existing `formatPercent(value)` for both the confidence and threshold cells, and the column class becomes `text-right`.
+**Fixed** 2026-07-24 by Dzmitry . One commit, one line: `ExceptionRow.tsx:41` now calls the existing `formatPercent(value)` for both the confidence and threshold cells, and the column class becomes `text-right`.
 
 Rounding is to the nearest whole percent. `0.8234567` → `82%`. No test added; the existing `formatPercent` unit tests cover the behaviour and this is a call site, not new logic.
 
-**Verified** 2026-07-24 by Ananya Iyer.
+**Verified** 2026-07-24 by Pankaj .
 
 ---
 
 > **Artifact contract — `artifacts/bug-NWD-139.md`**
 >
-> Produced by: Ananya Iyer (QA Engineer), using the bug-report standard in [P22](../../../AI-Prompts-Library/phase-5-verify/P22-e2e-test-the-application.md)
+> Produced by: Pankaj  (QA Engineer), using the bug-report standard in [P22](../../../AI-Prompts-Library/phase-5-verify/P22-e2e-test-the-application.md)
 >
 > Anyone fixing from this report can rely on finding:
 > - Exact reproduction steps

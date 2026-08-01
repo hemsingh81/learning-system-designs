@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Raised by** | Ananya Iyer, QA Engineer |
+| **Raised by** | Pankaj , QA Engineer |
 | **Date raised** | 2026-07-24 |
 | **Severity** | **Medium** |
 | **Priority** | P2 — does not corrupt data, but takes the pipeline down on the day it is needed most |
@@ -170,13 +170,13 @@ Loud failures are the cheap ones. Debug from the trace when you have it — [P26
 
 A regression test needs to assert **behaviour under 429**, not the value of a constructor argument. Mock the transport to return two 429s then a 200, and assert the call succeeds and took the backoff. A test asserting `retry_total == 5` passes forever and proves nothing about what happens when the service throttles.
 
-— Ananya
+— Pankaj
 
 ---
 
 ## 9. Resolution
 
-**Fixed** 2026-06-25 by Tomas Vargas. Three commits:
+**Fixed** 2026-06-25 by Ravi Mullick. Three commits:
 
 1. `test: reproduce NWD-141 throttling failure under simulated 429`
 2. `fix(clients): one shared retry policy across every Azure client`
@@ -186,7 +186,7 @@ A regression test needs to assert **behaviour under 429**, not the value of a co
 
 **Fix:**
 - One retry configuration, defined once and applied identically to every client: `retry_total=5`, `retry_backoff_factor=2.0`, `retry_backoff_max=60`. Clients are built through a single cached factory; a caller cannot construct one with its own retry settings.
-- `retry_on_transport_error` wraps the call sites for connection resets and DNS failures, which the HTTP policy never sees. Ananya's §7 point.
+- `retry_on_transport_error` wraps the call sites for connection resets and DNS failures, which the HTTP policy never sees. Pankaj's §7 point.
 - Each retry emits a structured `azure_transport_retry` log event, so throttling is visible before it is fatal.
 - Module docstring states the policy and why it is shared.
 
@@ -194,14 +194,14 @@ A regression test needs to assert **behaviour under 429**, not the value of a co
 
 **Regression tests added:** 6. `test_429_then_success_is_retried` mocks two 429s and a 200 and asserts the call succeeds. `test_retry_after_header_is_honoured` asserts the wait. No test asserts a constructor argument.
 
-**Verified** 2026-07-31 by Ananya Iyer. 200 documents in four minutes: 200 processed, 0 failed, 74 × 429 received and all retried, run completed in 16m 40s. Dead-letter queue empty.
+**Verified** 2026-07-31 by Pankaj . 200 documents in four minutes: 200 processed, 0 failed, 74 × 429 received and all retried, run completed in 16m 40s. Dead-letter queue empty.
 
 ---
 
 > **Artifact contract — `artifacts/bug-NWD-141.md`**
 >
-> Produced by: Ananya Iyer (QA Engineer), using the bug-report standard in [P22](../../../AI-Prompts-Library/phase-5-verify/P22-e2e-test-the-application.md)
-> Approved by: Rahul Nair, 2026-07-24
+> Produced by: Pankaj  (QA Engineer), using the bug-report standard in [P22](../../../AI-Prompts-Library/phase-5-verify/P22-e2e-test-the-application.md)
+> Approved by: Gautam , 2026-07-24
 >
 > Anyone fixing from this report can rely on finding:
 > - Exact reproduction steps, including the load-test command and the Application Insights query
