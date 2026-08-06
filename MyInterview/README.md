@@ -37,6 +37,9 @@ Under pressure, jump straight to the round you are in:
 | **Performance / optimisation** | [19 Performance Deep Dive](19-performance-deep-dive.md) |
 | **AI / ways-of-working leadership** | [20 AI-Assisted Development](20-ai-assisted-development.md) |
 | **Tough / challenge questions** | [21 Objections & Tough Questions](21-objections-and-tough-questions.md) |
+| **Salary / offer negotiation** | [23 Offer & Salary Negotiation](23-offer-negotiation.md) |
+| **Tailoring to a specific job** | [24 Role-Tailoring Guide](24-role-tailoring-guide.md) |
+| **Last 2 minutes before** | [22 Panic Sheet](22-panic-sheet.md) |
 | **Last 20 minutes before** | [08 Cheat Sheets](08-cheatsheets.md) · [09 Study Plan → night before](09-study-plan.md) |
 
 ---
@@ -66,8 +69,11 @@ Under pressure, jump straight to the round you are in:
 | 19 | [Performance Deep Dive](19-performance-deep-dive.md) | Front-end, backend & database performance with project stories, metrics and tools | 12 |
 | 20 | [AI-Assisted Development](20-ai-assisted-development.md) | End-to-end team playbook: pilot, roles, guardrails, QA, security, metrics, PRDs, rollout | 4 |
 | 21 | [Objections & Tough Questions](21-objections-and-tough-questions.md) | Crisp rebuttals to the hardest challenges about being a hands-on architect | 10 |
+| 22 | [Panic Sheet](22-panic-sheet.md) | One page for the last 2 minutes: opening line, projects, numbers, phrases, reset routine | — |
+| 23 | [Offer & Salary Negotiation](23-offer-negotiation.md) | Calm, evidence-based answers to the compensation conversation | 8 |
+| 24 | [Role-Tailoring Guide](24-role-tailoring-guide.md) | 20-minute routine to adapt the kit to any job description | — |
 
-**Total: 131 questions with full answers and follow-ups.**
+**Total: 139 questions with full answers and follow-ups.**
 
 ---
 

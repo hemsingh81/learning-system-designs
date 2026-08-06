@@ -88,14 +88,24 @@ the candidate's TCW AI/LLM reference architecture and first production RAG app);
 follow-ups — still hands-on enough, only 7 years as architect, jack-of-all-trades, only Microsoft, rusty coder,
 big-picture vs details, built vs just managed, will AI replace architects, overqualified, biggest weakness —
 each following 'agree with the fair part, correct the wrong part, give one piece of evidence' and grounded in
-projects A/B/C with real metrics). Also add to README a 'Quick index by interview round' jump table mapping
+projects A/B/C with real metrics); 22-panic-sheet.md (a single one-page 'last 2 minutes' recall sheet — the
+opening line, the four anchor projects, the must-land numbers, five phrases, the two frameworks, a 'reset' routine
+for when a question floors you, and three things to do in the room — no new content, pure recall linking back to
+the fuller files); 23-offer-negotiation.md (8 first-person Q&As on the compensation conversation — handling
+'what's your current salary', giving a researched expectation range, countering a low offer, justifying the number
+with measured impact, trading beyond base (sign-on, bonus/equity, early review, leave, flex, title), competing
+offers, decide-today pressure, and accepting/declining gracefully — calm, evidence-based, never adversarial);
+24-role-tailoring-guide.md (a 20-minute routine to adapt the kit to a specific job description — how to read a
+JD for its centre of gravity, a table mapping JD emphasis to the right anchor projects and files, choosing the
+right pitch version and one lead story, four ready role profiles (data-platform, AI, hands-on, consulting), and a
+gaps/red-flag check with questions to ask back). Also add to README a 'Quick index by interview round' jump table mapping
 each round type to the right file(s), and wire files 19/20/21 into the study plan (a performance+AI day, a new
 'Mock E — AI-in-team leadership round', and objections drilling) and into the cheat sheets (a 'Performance
 recall' and an 'AI-in-team recall' section). Also weave the hands-on angle into README (title,
 positioning line), 01-overview-positioning.md (a hands-on 'who I am' and a deep-technical/coding positioning
 statement), 08-cheatsheets.md (a 'hands-on code recall' table and code one-liners), 09-study-plan.md (a
 hands-on coding mock), and 10-pitch-and-resume.md (a hands-on pitch version and hands-on resume/LinkedIn
-wording). Aim for roughly 130+ total interview questions across the Q&A sections;
+wording). Aim for roughly 140+ total interview questions across the Q&A sections;
 each question must have a concise interviewer-style prompt, a model answer of 2–6 short paragraphs following
 Story → Approach → Trade-off → Outcome-with-a-number → Lesson, and 2–4 follow-up prompts each with a short
 reply. Enforce these conventions in every file: a top H1 header stating the section number, title and

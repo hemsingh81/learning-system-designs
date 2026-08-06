@@ -1,6 +1,6 @@
 # 21 · Objections & Tough Questions (10 rebuttals)
 
-[← AI-Assisted Development](20-ai-assisted-development.md) · [Home](README.md) · [Next → Overview](01-overview-positioning.md)
+[← AI-Assisted Development](20-ai-assisted-development.md) · [Home](README.md) · [Next → Panic Sheet](22-panic-sheet.md)
 
 These are the hard, sometimes uncomfortable challenges an interviewer throws to test how I hold up. The goal is not to be defensive — it is to answer calmly, honestly, and turn each one into proof of a strength. Every rebuttal here is short on purpose: say it, land one example with a number, stop.
 
@@ -148,4 +148,4 @@ So I actively counter it: I write the reusable pattern rather than the one-off, 
 
 ---
 
-[← AI-Assisted Development](20-ai-assisted-development.md) · [Home](README.md) · [Next → Overview](01-overview-positioning.md)
+[← AI-Assisted Development](20-ai-assisted-development.md) · [Home](README.md) · [Next → Panic Sheet](22-panic-sheet.md)
