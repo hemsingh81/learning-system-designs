@@ -37,6 +37,9 @@ Under pressure, jump straight to the round you are in:
 | **Performance / optimisation** | [19 Performance Deep Dive](19-performance-deep-dive.md) |
 | **AI / ways-of-working leadership** | [20 AI-Assisted Development](20-ai-assisted-development.md) |
 | **Tough / challenge questions** | [21 Objections & Tough Questions](21-objections-and-tough-questions.md) |
+| **Behavioural / "tell me about a time"** | [25 STAR Story Bank](25-star-story-bank.md) |
+| **Questions to ask them** | [26 Reverse-Interview Questions](26-reverse-interview-questions.md) |
+| **"First 90 days?" question** | [27 My First 90 Days](27-first-90-days.md) |
 | **Salary / offer negotiation** | [23 Offer & Salary Negotiation](23-offer-negotiation.md) |
 | **Tailoring to a specific job** | [24 Role-Tailoring Guide](24-role-tailoring-guide.md) |
 | **Last 2 minutes before** | [22 Panic Sheet](22-panic-sheet.md) |
@@ -72,8 +75,11 @@ Under pressure, jump straight to the round you are in:
 | 22 | [Panic Sheet](22-panic-sheet.md) | One page for the last 2 minutes: opening line, projects, numbers, phrases, reset routine | — |
 | 23 | [Offer & Salary Negotiation](23-offer-negotiation.md) | Calm, evidence-based answers to the compensation conversation | 8 |
 | 24 | [Role-Tailoring Guide](24-role-tailoring-guide.md) | 20-minute routine to adapt the kit to any job description | — |
+| 25 | [STAR Story Bank](25-star-story-bank.md) | 10 fully-written behavioural stories in STAR-D form (failure, conflict, influence, deadline, crisis…) | 10 |
+| 26 | [Reverse-Interview Questions](26-reverse-interview-questions.md) | Sharp questions to ask them, grouped by interviewer, with a signal-reading table | — |
+| 27 | [My First 90 Days](27-first-90-days.md) | Ready answer to "what would you do in your first 90 days?" — Listen → Plan → Deliver | — |
 
-**Total: 139 questions with full answers and follow-ups.**
+**Total: 149 questions with full answers and follow-ups.**
 
 ---
 

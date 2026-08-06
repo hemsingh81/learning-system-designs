@@ -1,6 +1,6 @@
 # 24 · Role-Tailoring Guide (adapt the kit to any job description)
 
-[← Offer & Salary Negotiation](23-offer-negotiation.md) · [Home](README.md) · [Next → Overview](01-overview-positioning.md)
+[← Offer & Salary Negotiation](23-offer-negotiation.md) · [Home](README.md) · [Next → STAR Story Bank](25-star-story-bank.md)
 
 No two roles are the same, so I never walk in with a generic pitch. Twenty minutes tailoring the kit to *this* job description is the highest-value prep I do. This page is the checklist for that: how to read a JD, which files and stories to emphasise, and how to lead with the version of me the role actually wants.
 
@@ -104,4 +104,4 @@ Four common shapes and exactly how I'd tune the same experience for each.
 
 ---
 
-[← Offer & Salary Negotiation](23-offer-negotiation.md) · [Home](README.md) · [Next → Overview](01-overview-positioning.md)
+[← Offer & Salary Negotiation](23-offer-negotiation.md) · [Home](README.md) · [Next → STAR Story Bank](25-star-story-bank.md)

@@ -98,14 +98,25 @@ offers, decide-today pressure, and accepting/declining gracefully — calm, evid
 24-role-tailoring-guide.md (a 20-minute routine to adapt the kit to a specific job description — how to read a
 JD for its centre of gravity, a table mapping JD emphasis to the right anchor projects and files, choosing the
 right pitch version and one lead story, four ready role profiles (data-platform, AI, hands-on, consulting), and a
-gaps/red-flag check with questions to ask back). Also add to README a 'Quick index by interview round' jump table mapping
+gaps/red-flag check with questions to ask back); 25-star-story-bank.md (10 fully-written behavioural stories in
+STAR-D form — failure, conflict, influence without authority, tight deadline, difficult stakeholder, disagreeing
+with a decision, mentoring, ambiguity, a production crisis, and proudest achievement — each anchored to a real
+project A–E with a number and a one-line lesson, plus follow-ups and a section index); 26-reverse-interview-questions.md
+(the sharp questions the candidate asks the panel, grouped by audience — hiring manager, peer architect/engineer,
+CTO/senior leader, HR/recruiter — a 'top 5 if short on time', a 'what their answers tell me' signal table, and a
+'questions I never ask' list); 27-first-90-days.md (a ready first-person answer to 'what would you do in your
+first 90 days?' — three phases: Days 0–30 Listen & Learn (meet people, trace a request end to end, learn how it
+ships, find the real pain, change nothing big), Days 30–60 Plan & Small Wins (agreed plan socialised not imposed,
+a few low-risk visible wins, gentle standards), Days 60–90 Deliver (ship one measurable improvement end to end,
+prove it with a number, set a team-owned direction), with a Mermaid three-phase diagram, a 90-second spoken
+version, follow-ups and a section index). Also add to README a 'Quick index by interview round' jump table mapping
 each round type to the right file(s), and wire files 19/20/21 into the study plan (a performance+AI day, a new
 'Mock E — AI-in-team leadership round', and objections drilling) and into the cheat sheets (a 'Performance
 recall' and an 'AI-in-team recall' section). Also weave the hands-on angle into README (title,
 positioning line), 01-overview-positioning.md (a hands-on 'who I am' and a deep-technical/coding positioning
 statement), 08-cheatsheets.md (a 'hands-on code recall' table and code one-liners), 09-study-plan.md (a
 hands-on coding mock), and 10-pitch-and-resume.md (a hands-on pitch version and hands-on resume/LinkedIn
-wording). Aim for roughly 140+ total interview questions across the Q&A sections;
+wording). Aim for roughly 150+ total interview questions across the Q&A sections;
 each question must have a concise interviewer-style prompt, a model answer of 2–6 short paragraphs following
 Story → Approach → Trade-off → Outcome-with-a-number → Lesson, and 2–4 follow-up prompts each with a short
 reply. Enforce these conventions in every file: a top H1 header stating the section number, title and
