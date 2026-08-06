@@ -36,8 +36,9 @@ About 45–60 minutes a day. Weekends lighter.
 | **10** | Team & leadership | [04 Team Management](04-team-management.md). Prepare one real conflict story and one mentoring story. |
 | **11** | Client & pre-sales | [05 Client Engagement](05-client-engagement.md) + [06 RFP & Pre-Sales](06-rfp-presales.md). |
 | **12** | Support & post-delivery | [07 Support & Post-Delivery](07-support-post-delivery.md). Rehearse the incident story (S2) and the discrepancy story (S5). |
-| **13** | Full mock | Run the [mock scripts](#mock-interview-scripts) end to end, timed, out loud. Score myself. |
-| **14** | Polish | [08 Cheat Sheets](08-cheatsheets.md) only. Re-drill the numbers and the [phrases](08-cheatsheets.md#phrases-that-land). Rest. |
+| **13** | Performance & AI leadership | [19 Performance Deep Dive](19-performance-deep-dive.md) — front-end/back-end/DB stories with numbers — and [20 AI-Assisted Development](20-ai-assisted-development.md). Say how I'd set AI up in a team. |
+| **14** | Full mock + objections | Run the [mock scripts](#mock-interview-scripts) end to end, timed, out loud. Score myself. Then drill [21 Objections & Tough Questions](21-objections-and-tough-questions.md). |
+| **15** | Polish | [08 Cheat Sheets](08-cheatsheets.md) only. Re-drill the numbers and the [phrases](08-cheatsheets.md#phrases-that-land). Rest. |
 
 ---
 
@@ -52,7 +53,7 @@ When there is less runway. About 60 minutes a day, ruthless prioritisation.
 | **3** | System design | [03 System Design](03-system-design.md) — pick the 3 scenarios closest to the role. Draw and narrate each. |
 | **4** | People & clients | [04 Team](04-team-management.md) + [05 Client](05-client-engagement.md). One conflict story, one negotiation story. |
 | **5** | Pre-sales & support | [06 RFP](06-rfp-presales.md) + [07 Support](07-support-post-delivery.md). Estimation answer (R3) + incident answer (S2). |
-| **6** | Full mock | Timed mock from the [scripts](#mock-interview-scripts). Score. Fix the two worst answers. |
+| **6** | Full mock + objections | Timed mock from the [scripts](#mock-interview-scripts). Score. Fix the two worst answers. Skim [21 Objections & Tough Questions](21-objections-and-tough-questions.md). |
 | **7** | Polish | [08 Cheat Sheets](08-cheatsheets.md) + [10 Pitches](10-pitch-and-resume.md). Numbers and phrases only. Rest. |
 
 ---
@@ -107,6 +108,16 @@ This is the round that proves I still build. Have an editor open; be ready to wr
 4. "Build a React component that loads and shows this data." → [F5](14-fullstack-hands-on.md#f5--build-a-react-data-screen) — the four states + AbortController.
 5. "This query is slow — rewrite it." → [F8](14-fullstack-hands-on.md#f8--write-the-sql-not-just-design-it) — sargable predicate, window function.
 6. "Walk me through debugging this bug." → [F12](14-fullstack-hands-on.md#f12--walk-me-through-debugging-a-production-issue-in-code) — reproduce, split the stack, fix the class.
+
+### Mock E — the AI-in-team leadership round (30 min)
+
+Increasingly common for senior/architect roles — they want to know I can bring AI into delivery safely. All from [20 AI-Assisted Development](20-ai-assisted-development.md).
+
+1. "How would you introduce AI-assisted development to a team?" → [AI1](20-ai-assisted-development.md#ai1--how-would-you-introduce-ai-assisted-development-to-a-team-that-has-never-used-it) — small measured pilot, guardrails + baseline first.
+2. "How do you stop AI writing bad or inconsistent code?" → [AI2](20-ai-assisted-development.md#ai2--how-do-you-stop-ai-from-writing-bad-or-inconsistent-code) — repo rules + human owns every line + same gates.
+3. "How do you keep AI use secure in a regulated firm?" → [AI3](20-ai-assisted-development.md#ai3--how-do-you-keep-ai-use-secure-in-a-regulated-firm) — nothing sensitive in, nothing insecure out.
+4. "How do you prove AI is actually helping?" → [AI4](20-ai-assisted-development.md#ai4--how-do-you-measure-whether-ai-is-actually-helping) — speed and quality together vs baseline.
+5. "Handle a tough challenge about your seniority or hands-on depth." → [21 Objections & Tough Questions](21-objections-and-tough-questions.md).
 
 ---
 

@@ -22,6 +22,25 @@
 
 ---
 
+## Quick index by interview round
+
+Under pressure, jump straight to the round you are in:
+
+| If the round is… | Go to |
+|---|---|
+| **Intro / "tell me about yourself"** | [01 Overview](01-overview-positioning.md) · [10 Pitches](10-pitch-and-resume.md) |
+| **Behavioural / leadership** | [04 Team](04-team-management.md) · [05 Client](05-client-engagement.md) · [06 RFP](06-rfp-presales.md) · [07 Support](07-support-post-delivery.md) |
+| **Technical breadth** | [02 Technical Q&A](02-technical-qa.md) |
+| **System design** | [03 System Design](03-system-design.md) |
+| **Deep-technical (per stack)** | [15 .NET](15-deepdive-dotnet.md) · [16 React/TS](16-deepdive-react-typescript.md) · [17 Python/Data](17-deepdive-python-data.md) |
+| **Hands-on coding** | [14 Full-Stack Hands-On](14-fullstack-hands-on.md) · [18 Coding-Round Prep](18-coding-round-prep.md) |
+| **Performance / optimisation** | [19 Performance Deep Dive](19-performance-deep-dive.md) |
+| **AI / ways-of-working leadership** | [20 AI-Assisted Development](20-ai-assisted-development.md) |
+| **Tough / challenge questions** | [21 Objections & Tough Questions](21-objections-and-tough-questions.md) |
+| **Last 20 minutes before** | [08 Cheat Sheets](08-cheatsheets.md) · [09 Study Plan → night before](09-study-plan.md) |
+
+---
+
 ## Contents
 
 | # | Section | What is inside | Questions |
@@ -44,8 +63,11 @@
 | 16 | [Deep Dive: React & TypeScript](16-deepdive-react-typescript.md) | Generics, typed components, hooks internals, effects, performance, forms, error boundaries, testing, a11y | 10 |
 | 17 | [Deep Dive: Python & Data](17-deepdive-python-data.md) | Async, Pydantic, Pandas, idempotent ETL, SQL tuning, Snowflake, orchestration, RAG code, quality, testing | 10 |
 | 18 | [Coding-Round Prep](18-coding-round-prep.md) | Both formats: DSA patterns + worked examples (C#/TS/Python) and a feature-building playbook | — |
+| 19 | [Performance Deep Dive](19-performance-deep-dive.md) | Front-end, backend & database performance with project stories, metrics and tools | 12 |
+| 20 | [AI-Assisted Development](20-ai-assisted-development.md) | End-to-end team playbook: pilot, roles, guardrails, QA, security, metrics, PRDs, rollout | 4 |
+| 21 | [Objections & Tough Questions](21-objections-and-tough-questions.md) | Crisp rebuttals to the hardest challenges about being a hands-on architect | 10 |
 
-**Total: 105 questions with full answers and follow-ups.**
+**Total: 131 questions with full answers and follow-ups.**
 
 ---
 

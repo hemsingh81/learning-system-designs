@@ -1,6 +1,6 @@
 # 18 · Coding-Round Prep — both formats
 
-[← Deep Dive: Python & Data](17-deepdive-python-data.md) · [Home](README.md) · [Next → Cheat Sheets](08-cheatsheets.md)
+[← Deep Dive: Python & Data](17-deepdive-python-data.md) · [Home](README.md) · [Next → Performance Deep Dive](19-performance-deep-dive.md)
 
 Interviews use two coding formats and I prepare for **both**: the **DSA / algorithm round** (LeetCode-style) and the **feature-building round** (build a small working thing). This page is my playbook and drill list for each — in C#, TypeScript and Python, the three languages I actually ship.
 
@@ -131,7 +131,7 @@ The "build a small working thing in 45–90 minutes" round — an API endpoint, 
 | **Edge cases** | Empty, error, invalid input, not-found handled deliberately — the four states |
 | **Validation** | At the boundary (Pydantic / DTO / Zod), and re-validated server-side |
 | **Error handling** | One place per layer, safe message out, detail logged ([F10](14-fullstack-hands-on.md#f10--how-do-you-handle-errors-across-the-stack)) |
-| **Tests** | At least the happy path + one edge, in the real framework ([F11](14-fullstack-hands-on.md#f11--how-do-you-test-your-code)) |
+| **Tests** | At least the happy path + one edge, in the real framework ([F11](14-fullstack-hands-on.md#f11--how-do-you-test-what-you-build)) |
 | **Naming & clarity** | Small functions, honest names, no dead code |
 | **Communication** | Narrate decisions and trade-offs as I build |
 
@@ -150,7 +150,7 @@ The "build a small working thing in 45–90 minutes" round — an API endpoint, 
 
 Time-boxed reps — each maps to code I already have:
 
-- **Web API CRUD endpoint** with validation + error handling + a test → [F1](14-fullstack-hands-on.md#f1--build-a-clean-aspnet-core-web-api-endpoint), [F10](14-fullstack-hands-on.md#f10--how-do-you-handle-errors-across-the-stack), [F11](14-fullstack-hands-on.md#f11--how-do-you-test-your-code)
+- **Web API CRUD endpoint** with validation + error handling + a test → [F1](14-fullstack-hands-on.md#f1--build-a-clean-aspnet-core-web-api-endpoint), [F10](14-fullstack-hands-on.md#f10--how-do-you-handle-errors-across-the-stack), [F11](14-fullstack-hands-on.md#f11--how-do-you-test-what-you-build)
 - **React screen** that fetches and renders the four states → [F5](14-fullstack-hands-on.md#f5--build-a-react-data-screen), [R4](16-deepdive-react-typescript.md#r4--useeffect-done-right)
 - **Small FastAPI ingest** with Pydantic validation + idempotent load → [F4](14-fullstack-hands-on.md#f4--write-a-fastapi-etl-ingestion-endpoint), [P4](17-deepdive-python-data.md#p4--idempotent-loads-and-reconciliation)
 - **Fix an N+1** on a given screen → [F3](14-fullstack-hands-on.md#f3--entity-framework-or-dapper-show-me), [D3](15-deepdive-dotnet.md#d3--linq-deferred-execution-and-the-traps)
@@ -175,4 +175,4 @@ In both formats, the avoidable losses:
 
 ---
 
-[← Deep Dive: Python & Data](17-deepdive-python-data.md) · [Home](README.md) · [Next → Cheat Sheets](08-cheatsheets.md)
+[← Deep Dive: Python & Data](17-deepdive-python-data.md) · [Home](README.md) · [Next → Performance Deep Dive](19-performance-deep-dive.md)

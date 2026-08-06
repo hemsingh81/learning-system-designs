@@ -72,11 +72,30 @@ Airflow/ADF/Tidal, RAG code behind the four pillars, packaging/typing/quality (m
 testing data pipelines); 18-coding-round-prep.md (a playbook for BOTH coding-interview formats — a DSA/
 algorithms section with a pattern table, complexity guidance and worked examples in C#, TypeScript and
 Python, and a feature-building section with a 6-step method, a scoring table and a drill list cross-linked to
-files 14–17). Also weave the hands-on angle into README (title,
+files 14–17); 19-performance-deep-dive.md (12 in-depth performance questions split into Front-end,
+Backend and Database — each with a real project story from the TCW reporting platform, measurable before/after
+results, the exact tools that help and how (Lighthouse, DevTools, React Profiler, bundle analyzer, web-vitals
++ App Insights, React Query, react-window; Application Insights/OpenTelemetry, k6/Azure Load Testing,
+dotnet-trace/counters, memray; SQL execution plan, Query Store, Profiler/Extended Events, DMVs, Tuning
+Advisor), and follow-up Q&As, plus a tools summary table); 20-ai-assisted-development.md (a complete
+start-to-end playbook for setting up AI-assisted development in a team — an end-to-end flow diagram, how to
+start with a small measured pilot, roles and who does what, controlling AI behaviour while writing code via
+repo rules + human ownership + automated gates, QA/testing with AI, security both into and out of the AI,
+performance metrics balancing speed and quality, an automatic honest daily report, the order of work in a
+sprint, writing the PRD with AI, a 90-day rollout plan, and four interview Q&As with follow-ups — grounded in
+the candidate's TCW AI/LLM reference architecture and first production RAG app);
+21-objections-and-tough-questions.md (10 tough interviewer challenges with calm first-person rebuttals and
+follow-ups — still hands-on enough, only 7 years as architect, jack-of-all-trades, only Microsoft, rusty coder,
+big-picture vs details, built vs just managed, will AI replace architects, overqualified, biggest weakness —
+each following 'agree with the fair part, correct the wrong part, give one piece of evidence' and grounded in
+projects A/B/C with real metrics). Also add to README a 'Quick index by interview round' jump table mapping
+each round type to the right file(s), and wire files 19/20/21 into the study plan (a performance+AI day, a new
+'Mock E — AI-in-team leadership round', and objections drilling) and into the cheat sheets (a 'Performance
+recall' and an 'AI-in-team recall' section). Also weave the hands-on angle into README (title,
 positioning line), 01-overview-positioning.md (a hands-on 'who I am' and a deep-technical/coding positioning
 statement), 08-cheatsheets.md (a 'hands-on code recall' table and code one-liners), 09-study-plan.md (a
 hands-on coding mock), and 10-pitch-and-resume.md (a hands-on pitch version and hands-on resume/LinkedIn
-wording). Aim for roughly 100–120 total interview questions across the Q&A sections;
+wording). Aim for roughly 130+ total interview questions across the Q&A sections;
 each question must have a concise interviewer-style prompt, a model answer of 2–6 short paragraphs following
 Story → Approach → Trade-off → Outcome-with-a-number → Lesson, and 2–4 follow-up prompts each with a short
 reply. Enforce these conventions in every file: a top H1 header stating the section number, title and

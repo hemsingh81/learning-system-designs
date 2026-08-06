@@ -4,7 +4,7 @@
 
 This is the page I read in the 20 minutes before an interview. No stories here — just fast recall. Everything below is real: my stack, my numbers, my projects.
 
-**Jump to:** [Numbers](#numbers-i-never-forget) · [Anchor projects](#anchor-projects-in-one-line-each) · [My stack](#my-stack-at-a-glance) · [Azure services](#azure-services-what-and-when) · [Patterns](#patterns-i-actually-used) · [AI / RAG](#ai--rag-recall) · [Data & orchestration](#data--orchestration-recall) · [Hands-on code recall](#hands-on-code-recall) · [NFR checklist](#the-nfr-checklist) · [Phrases](#phrases-that-land) · [Frameworks](#answer-frameworks)
+**Jump to:** [Numbers](#numbers-i-never-forget) · [Anchor projects](#anchor-projects-in-one-line-each) · [My stack](#my-stack-at-a-glance) · [Azure services](#azure-services-what-and-when) · [Patterns](#patterns-i-actually-used) · [AI / RAG](#ai--rag-recall) · [Data & orchestration](#data--orchestration-recall) · [Hands-on code recall](#hands-on-code-recall) · [Performance recall](#performance-recall) · [AI-in-team recall](#ai-in-team-recall) · [NFR checklist](#the-nfr-checklist) · [Phrases](#phrases-that-land) · [Frameworks](#answer-frameworks)
 
 ---
 
@@ -126,7 +126,7 @@ The four pillars of my AI/LLM reference architecture — memorise the order:
 
 ## Hands-on code recall
 
-For the deep-technical / coding rounds. Full code in [Full-Stack Hands-On](14-fullstack-hands-on.md); go deeper per stack in [.NET & C#](15-deepdive-dotnet.md), [React & TypeScript](16-deepdive-react-typescript.md), [Python & Data](17-deepdive-python-data.md); prep both interview coding formats in [Coding-Round Prep](18-coding-round-prep.md). One line each:
+For the deep-technical / coding rounds. Full code in [Full-Stack Hands-On](14-fullstack-hands-on.md); go deeper per stack in [.NET & C#](15-deepdive-dotnet.md), [React & TypeScript](16-deepdive-react-typescript.md), [Python & Data](17-deepdive-python-data.md); prep both interview coding formats in [Coding-Round Prep](18-coding-round-prep.md); optimise in [Performance Deep Dive](19-performance-deep-dive.md). One line each:
 
 | Topic | The one thing to say |
 |-------|----------------------|
@@ -146,6 +146,41 @@ For the deep-technical / coding rounds. Full code in [Full-Stack Hands-On](14-fu
 **Sargable one-liner:** *"Keep the column bare — `WHERE d >= @x AND d < @x+1`, never `WHERE CONVERT(date, d) = @x` — or the index cannot be used."*
 
 **N+1 one-liner:** *"One screen firing fifty queries is an N+1 — project to a DTO in a single query instead."*
+
+---
+
+## Performance recall
+
+For the performance / optimisation round. Full stories + tools in [Performance Deep Dive](19-performance-deep-dive.md). The method never changes:
+
+> **Measure → find the one hotspot → fix that → measure again.** Never optimise on a guess.
+
+| Layer | The one move | Tool that proves it |
+|-------|-------------|---------------------|
+| **Front-end** | Ship less JS (code-split), virtualise long lists, cache server data (React Query), show a skeleton | Lighthouse, React Profiler, bundle analyzer, web-vitals |
+| **Backend** | Async all the way, cache stable results, kill N+1, bound concurrency | Application Insights, k6 / Azure Load Testing, dotnet-trace |
+| **Database** | Read the plan, make predicates sargable, index deliberately, split operational/analytical | SQL execution plan, Query Store, DMVs |
+
+**Performance one-liner:** *"I don't guess — I measure, fix the single biggest hotspot, then measure again. On the reporting platform that turned a slow screen fast without touching code that was already fine."*
+
+---
+
+## AI-in-team recall
+
+For the AI / ways-of-working leadership round. Full playbook in [AI-Assisted Development](20-ai-assisted-development.md).
+
+> **The golden rule:** *the human is accountable for every line, whether they typed it or the AI did.*
+
+| Question | The one thing to say |
+|----------|----------------------|
+| **How to start** | Small safe pilot, guardrails + baseline metrics first, review after 4–6 weeks — evidence, not hype. |
+| **Control the code** | Repo rules (coding-standards file) + developer owns every line + the same automated gates every commit faces. |
+| **QA with AI** | AI drafts tests and edge cases fast; a human must verify each test actually tests the right thing. |
+| **Security** | Nothing sensitive goes *into* the prompt; nothing insecure comes *out* unchecked — scan AI output harder. |
+| **Metrics** | Speed **and** quality together — faster delivery with defect rate flat-or-lower, else tighten guardrails. |
+| **PRD with AI** | AI drafts, structures and finds the gaps; the Product Owner owns every word. |
+
+**AI-in-team one-liner:** *"AI speeds up the engineer, it doesn't replace them — I set it up with clear roles, guardrails and metrics, the same way I run any production system. I already did this defining TCW's AI reference architecture."*
 
 ---
 
