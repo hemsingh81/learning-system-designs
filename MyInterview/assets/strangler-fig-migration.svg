@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 560" width="980" height="560" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="sf" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <path d="M0,0 L9,3.5 L0,7 z" fill="#4b5563"/>
+    </marker>
+  </defs>
+  <rect width="980" height="560" fill="#ffffff"/>
+  <text x="490" y="28" text-anchor="middle" font-size="18.5" font-weight="700" fill="#1f2937">Strangler Fig — move one capability at a time, roll back by changing a route</text>
+
+  <!-- Phase headers -->
+  <text x="150" y="62" text-anchor="middle" font-size="13" font-weight="700" fill="#6b7280">PHASE 1</text>
+  <text x="150" y="80" text-anchor="middle" font-size="11.5" fill="#6b7280">Façade in front. Nothing moves yet.</text>
+  <text x="490" y="62" text-anchor="middle" font-size="13" font-weight="700" fill="#0078D4">PHASE 2–3</text>
+  <text x="490" y="80" text-anchor="middle" font-size="11.5" fill="#0078D4">Extract capability by capability. Data last.</text>
+  <text x="830" y="62" text-anchor="middle" font-size="13" font-weight="700" fill="#107C10">PHASE 4</text>
+  <text x="830" y="80" text-anchor="middle" font-size="11.5" fill="#107C10">Retire the old code. Nobody does this. Do it.</text>
+
+  <!-- Phase 1 -->
+  <rect x="30" y="94" width="240" height="230" rx="9" fill="#f8fafc" stroke="#9ca3af" stroke-width="1.5"/>
+  <rect x="52" y="112" width="196" height="40" rx="6" fill="#e5e7eb" stroke="#6b7280" stroke-width="1.5"/>
+  <text x="150" y="137" text-anchor="middle" font-size="12" font-weight="700" fill="#374151">Routing façade</text>
+  <line x1="150" y1="152" x2="150" y2="172" stroke="#4b5563" stroke-width="1.6" marker-end="url(#sf)"/>
+  <rect x="52" y="176" width="196" height="130" rx="6" fill="#fdeaea" stroke="#D13438" stroke-width="2"/>
+  <text x="150" y="200" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f2937">Legacy monolith</text>
+  <text x="66" y="222" font-size="10.5" fill="#4b5563">• certificates</text>
+  <text x="66" y="240" font-size="10.5" fill="#4b5563">• transfers</text>
+  <text x="66" y="258" font-size="10.5" fill="#4b5563">• exceptions</text>
+  <text x="66" y="276" font-size="10.5" fill="#4b5563">• change notice</text>
+  <text x="66" y="296" font-size="10" fill="#D13438" font-weight="600">one big SQL Server</text>
+
+  <!-- Phase 2-3 -->
+  <rect x="300" y="94" width="380" height="230" rx="9" fill="#f0f7ff" stroke="#0078D4" stroke-width="1.5"/>
+  <rect x="322" y="112" width="336" height="40" rx="6" fill="#deecf9" stroke="#0078D4" stroke-width="2"/>
+  <text x="490" y="130" text-anchor="middle" font-size="12" font-weight="700" fill="#1f2937">Routing façade (Front Door / App Gateway)</text>
+  <text x="490" y="145" text-anchor="middle" font-size="9.5" fill="#0078D4">the seam — one route change = one rollback</text>
+
+  <line x1="400" y1="152" x2="400" y2="174" stroke="#107C10" stroke-width="1.8" marker-end="url(#sf)"/>
+  <line x1="580" y1="152" x2="580" y2="174" stroke="#4b5563" stroke-width="1.6" marker-end="url(#sf)"/>
+
+  <rect x="322" y="178" width="156" height="128" rx="6" fill="#eaf6ec" stroke="#107C10" stroke-width="2"/>
+  <text x="400" y="200" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1f2937">New service</text>
+  <text x="400" y="216" text-anchor="middle" font-size="10.5" fill="#4b5563">ASP.NET Core</text>
+  <text x="400" y="232" text-anchor="middle" font-size="10.5" fill="#4b5563">App Service</text>
+  <text x="400" y="252" text-anchor="middle" font-size="10.5" fill="#4b5563">own data</text>
+  <rect x="334" y="262" width="132" height="34" rx="4" fill="#ffffff" stroke="#107C10"/>
+  <text x="400" y="276" text-anchor="middle" font-size="9.5" font-weight="700" fill="#107C10">dual-write + reconcile</text>
+  <text x="400" y="289" text-anchor="middle" font-size="9.5" fill="#4b5563">before cutting reads over</text>
+
+  <rect x="502" y="178" width="156" height="128" rx="6" fill="#fdeaea" stroke="#D13438" stroke-width="2"/>
+  <text x="580" y="200" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1f2937">Shrinking monolith</text>
+  <text x="516" y="222" font-size="10.5" fill="#9ca3af" text-decoration="line-through">• certificates</text>
+  <text x="516" y="240" font-size="10.5" fill="#4b5563">• transfers</text>
+  <text x="516" y="258" font-size="10.5" fill="#4b5563">• exceptions</text>
+  <text x="516" y="276" font-size="10.5" fill="#4b5563">• change notice</text>
+  <text x="516" y="296" font-size="10" fill="#D13438" font-weight="600">still live, still changing</text>
+
+  <!-- Phase 4 -->
+  <rect x="710" y="94" width="240" height="230" rx="9" fill="#f0fdf4" stroke="#107C10" stroke-width="1.5"/>
+  <rect x="732" y="112" width="196" height="40" rx="6" fill="#deecf9" stroke="#0078D4" stroke-width="1.5"/>
+  <text x="830" y="137" text-anchor="middle" font-size="12" font-weight="700" fill="#1f2937">Routing façade</text>
+  <line x1="830" y1="152" x2="830" y2="172" stroke="#107C10" stroke-width="1.8" marker-end="url(#sf)"/>
+  <rect x="732" y="176" width="196" height="130" rx="6" fill="#eaf6ec" stroke="#107C10" stroke-width="2"/>
+  <text x="830" y="200" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f2937">Four services</text>
+  <text x="746" y="222" font-size="10.5" fill="#374151">• certificates ✓</text>
+  <text x="746" y="240" font-size="10.5" fill="#374151">• transfers ✓</text>
+  <text x="746" y="258" font-size="10.5" fill="#374151">• exceptions ✓</text>
+  <text x="746" y="276" font-size="10.5" fill="#374151">• change notice ✓</text>
+  <text x="746" y="296" font-size="10" fill="#107C10" font-weight="600">legacy code deleted</text>
+
+  <!-- arrows between phases -->
+  <line x1="274" y1="210" x2="296" y2="210" stroke="#4b5563" stroke-width="2" marker-end="url(#sf)"/>
+  <line x1="684" y1="210" x2="706" y2="210" stroke="#4b5563" stroke-width="2" marker-end="url(#sf)"/>
+
+  <!-- phase 0 note -->
+  <rect x="30" y="342" width="460" height="86" rx="8" fill="#fff9e6" stroke="#B7791F" stroke-width="1.8"/>
+  <text x="46" y="364" font-size="12" font-weight="700" fill="#B7791F">PHASE 0 — before you move anything</text>
+  <text x="46" y="386" font-size="11" fill="#374151">Add logging and telemetry to the legacy app first.</text>
+  <text x="46" y="404" font-size="11" fill="#374151">You cannot migrate safely what you cannot observe — and the</text>
+  <text x="46" y="420" font-size="11" fill="#374151">telemetry shows which features nobody uses. Retiring those is free.</text>
+
+  <rect x="506" y="342" width="444" height="86" rx="8" fill="#fdeaea" stroke="#D13438" stroke-width="1.8"/>
+  <text x="522" y="364" font-size="12" font-weight="700" fill="#D13438">THE ALTERNATIVE I REJECT: big-bang rewrite</text>
+  <text x="522" y="386" font-size="11" fill="#374151">The business keeps changing the legacy system while you rewrite it.</text>
+  <text x="522" y="404" font-size="11" fill="#374151">You aim at a moving target, deliver nothing for months, and lose</text>
+  <text x="522" y="420" font-size="11" fill="#374151">sponsorship. I have seen these run two years and get cancelled.</text>
+
+  <!-- bottom principles -->
+  <rect x="30" y="444" width="920" height="94" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="46" y="466" font-size="12.5" font-weight="700" fill="#1f2937">The rules that make this work</text>
+  <text x="46" y="490" font-size="11.5" fill="#374151"><tspan font-weight="700">1.</tspan> Keep the old code in place, disabled, for one release — rollback is a route change, not a redeployment.</text>
+  <text x="46" y="510" font-size="11.5" fill="#374151"><tspan font-weight="700">2.</tspan> Split the data LAST: dual-write → reconcile over real traffic → cut reads over → retire the old path.</text>
+  <text x="46" y="530" font-size="11.5" fill="#374151"><tspan font-weight="700">3.</tspan> Sequence the highest-visibility capability first, and publish "% of traffic on the new platform" monthly. Sponsorship is an architectural concern.</text>
+</svg>

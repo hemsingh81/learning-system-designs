@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="1000" height="620" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="ar" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#4b5563"/>
+    </marker>
+    <marker id="arb" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#0078D4"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="620" fill="#ffffff"/>
+  <text x="500" y="30" text-anchor="middle" font-size="19" font-weight="700" fill="#1f2937">Investment Reporting Platform — the read path never touches the third party</text>
+
+  <!-- ROW 1: users / read path -->
+  <rect x="30" y="52" width="940" height="118" rx="10" fill="#f0f7ff" stroke="#0078D4" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="46" y="72" font-size="12" font-weight="700" fill="#0078D4">READ PATH — must open in ~1 second, must never depend on the source system being up</text>
+
+  <rect x="60" y="86" width="150" height="66" rx="8" fill="#ffffff" stroke="#374151" stroke-width="1.5"/>
+  <text x="135" y="110" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2937">Portfolio Managers</text>
+  <text x="135" y="128" text-anchor="middle" font-size="11" fill="#6b7280">React SPA</text>
+  <text x="135" y="144" text-anchor="middle" font-size="11" fill="#6b7280">Entra ID sign-in</text>
+
+  <rect x="270" y="86" width="180" height="66" rx="8" fill="#deecf9" stroke="#0078D4" stroke-width="2"/>
+  <text x="360" y="108" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">ASP.NET Core Web API</text>
+  <text x="360" y="126" text-anchor="middle" font-size="11" fill="#374151">Shared controller pattern</text>
+  <text x="360" y="142" text-anchor="middle" font-size="11" fill="#374151">Server-side paging · policies</text>
+
+  <rect x="510" y="86" width="170" height="66" rx="8" fill="#eaf6ec" stroke="#107C10" stroke-width="2"/>
+  <text x="595" y="108" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">SQL Server / Azure SQL</text>
+  <text x="595" y="126" text-anchor="middle" font-size="11" fill="#374151">Curated operational store</text>
+  <text x="595" y="142" text-anchor="middle" font-size="11" fill="#374151">Indexed · pre-aggregated</text>
+
+  <rect x="740" y="86" width="200" height="66" rx="8" fill="#eaf6ec" stroke="#107C10" stroke-width="2"/>
+  <text x="840" y="108" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Snowflake</text>
+  <text x="840" y="126" text-anchor="middle" font-size="11" fill="#374151">Analytical / historical</text>
+  <text x="840" y="142" text-anchor="middle" font-size="11" fill="#374151">Derived — rebuildable</text>
+
+  <line x1="210" y1="119" x2="266" y2="119" stroke="#0078D4" stroke-width="2" marker-end="url(#arb)"/>
+  <line x1="450" y1="119" x2="506" y2="119" stroke="#0078D4" stroke-width="2" marker-end="url(#arb)"/>
+  <line x1="680" y1="132" x2="736" y2="132" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+  <text x="708" y="126" text-anchor="middle" font-size="9.5" fill="#6b7280">analysts</text>
+
+  <!-- ROW 2: pipeline -->
+  <rect x="30" y="192" width="940" height="196" rx="10" fill="#fbf7ff" stroke="#6b3fa0" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="46" y="212" font-size="12" font-weight="700" fill="#6b3fa0">INGESTION — idempotent, checkpointed, validated before anything downstream can see it</text>
+
+  <rect x="60" y="228" width="150" height="120" rx="8" fill="#ffffff" stroke="#C05621" stroke-width="2"/>
+  <text x="135" y="252" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f2937">BlackRock</text>
+  <text x="135" y="269" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f2937">Aladdin API</text>
+  <line x1="76" y1="280" x2="194" y2="280" stroke="#f3d7c0"/>
+  <text x="135" y="298" text-anchor="middle" font-size="10.5" fill="#6b7280">portfolio · position</text>
+  <text x="135" y="313" text-anchor="middle" font-size="10.5" fill="#6b7280">transaction</text>
+  <text x="135" y="333" text-anchor="middle" font-size="10" fill="#C05621" font-weight="600">third party — not my uptime</text>
+
+  <rect x="242" y="228" width="168" height="120" rx="8" fill="#f3eefd" stroke="#6b3fa0" stroke-width="2"/>
+  <text x="326" y="252" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f2937">FastAPI ETL</text>
+  <line x1="258" y1="262" x2="394" y2="262" stroke="#ddd0f0"/>
+  <text x="256" y="281" font-size="10.5" fill="#374151">• watermark + resume</text>
+  <text x="256" y="298" font-size="10.5" fill="#374151">• retry · backoff · breaker</text>
+  <text x="256" y="315" font-size="10.5" fill="#374151">• bounded concurrency</text>
+  <text x="256" y="332" font-size="10.5" fill="#374151">• run id on every log</text>
+
+  <rect x="442" y="228" width="168" height="120" rx="8" fill="#fff9e6" stroke="#B7791F" stroke-width="2"/>
+  <text x="526" y="252" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f2937">Staging + Validation</text>
+  <line x1="458" y1="262" x2="594" y2="262" stroke="#f0e0b8"/>
+  <text x="456" y="281" font-size="10.5" fill="#374151">• schema contract check</text>
+  <text x="456" y="298" font-size="10.5" fill="#374151">• business rules</text>
+  <text x="456" y="315" font-size="10.5" fill="#374151">• control totals</text>
+  <text x="456" y="332" font-size="10.5" fill="#B7791F" font-weight="600">fail → quarantine + alert</text>
+
+  <rect x="642" y="228" width="168" height="120" rx="8" fill="#eaf6ec" stroke="#107C10" stroke-width="2"/>
+  <text x="726" y="252" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f2937">Promote (MERGE)</text>
+  <line x1="658" y1="262" x2="794" y2="262" stroke="#c8e4cb"/>
+  <text x="656" y="281" font-size="10.5" fill="#374151">• upsert on natural key</text>
+  <text x="656" y="298" font-size="10.5" fill="#374151">• safe to re-run</text>
+  <text x="656" y="315" font-size="10.5" fill="#374151">• handles restatements</text>
+  <text x="656" y="332" font-size="10.5" fill="#374151">• audit of what changed</text>
+
+  <rect x="842" y="228" width="98" height="120" rx="8" fill="#ffffff" stroke="#0078D4" stroke-width="2"/>
+  <text x="891" y="256" text-anchor="middle" font-size="12" font-weight="700" fill="#1f2937">Reconcile</text>
+  <text x="891" y="278" text-anchor="middle" font-size="10.5" fill="#374151">totals vs</text>
+  <text x="891" y="293" text-anchor="middle" font-size="10.5" fill="#374151">source</text>
+  <text x="891" y="316" text-anchor="middle" font-size="10.5" fill="#374151">then publish</text>
+  <text x="891" y="331" text-anchor="middle" font-size="10.5" fill="#374151">"complete"</text>
+
+  <line x1="210" y1="288" x2="238" y2="288" stroke="#4b5563" stroke-width="2" marker-end="url(#ar)"/>
+  <line x1="410" y1="288" x2="438" y2="288" stroke="#4b5563" stroke-width="2" marker-end="url(#ar)"/>
+  <line x1="610" y1="288" x2="638" y2="288" stroke="#4b5563" stroke-width="2" marker-end="url(#ar)"/>
+  <line x1="810" y1="288" x2="838" y2="288" stroke="#4b5563" stroke-width="2" marker-end="url(#ar)"/>
+
+  <!-- promote up into stores -->
+  <path d="M726 228 L726 200 L595 200 L595 156" fill="none" stroke="#107C10" stroke-width="2" marker-end="url(#ar)"/>
+  <path d="M760 228 L760 200 L840 200 L840 156" fill="none" stroke="#107C10" stroke-width="2" marker-end="url(#ar)"/>
+
+  <!-- ROW 3: orchestration -->
+  <rect x="30" y="410" width="640" height="126" rx="10" fill="#f8fafc" stroke="#374151" stroke-width="1.5"/>
+  <text x="46" y="432" font-size="12" font-weight="700" fill="#1f2937">DEPENDENCY-AWARE ORCHESTRATION — steps wait on signals, not on the clock</text>
+
+  <rect x="52" y="446" width="180" height="70" rx="7" fill="#deecf9" stroke="#0078D4" stroke-width="1.5"/>
+  <text x="142" y="470" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2937">Azure Data Factory</text>
+  <text x="142" y="490" text-anchor="middle" font-size="10.5" fill="#6b7280">Azure-native movement</text>
+  <text x="142" y="506" text-anchor="middle" font-size="10.5" fill="#6b7280">and pipeline activities</text>
+
+  <rect x="246" y="446" width="180" height="70" rx="7" fill="#fdf1e7" stroke="#C05621" stroke-width="1.5"/>
+  <text x="336" y="470" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2937">Tidal Workload Automation</text>
+  <text x="336" y="490" text-anchor="middle" font-size="10.5" fill="#6b7280">Enterprise scheduler,</text>
+  <text x="336" y="506" text-anchor="middle" font-size="10.5" fill="#6b7280">cross-system dependencies</text>
+
+  <rect x="440" y="446" width="210" height="70" rx="7" fill="#eaf6ec" stroke="#107C10" stroke-width="1.5"/>
+  <text x="545" y="470" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2937">Apache Airflow</text>
+  <text x="545" y="490" text-anchor="middle" font-size="10.5" fill="#6b7280">Python transformation DAGs,</text>
+  <text x="545" y="506" text-anchor="middle" font-size="10.5" fill="#6b7280">code-defined dependencies</text>
+
+  <!-- deadline box -->
+  <rect x="690" y="410" width="280" height="126" rx="10" fill="#fdeaea" stroke="#D13438" stroke-width="2"/>
+  <text x="830" y="434" text-anchor="middle" font-size="13" font-weight="700" fill="#D13438">THE DEADLINE MONITOR</text>
+  <line x1="710" y1="444" x2="950" y2="444" stroke="#f3c9ca"/>
+  <text x="708" y="464" font-size="11" fill="#374151">Knows the pre-market cut-off.</text>
+  <text x="708" y="482" font-size="11" fill="#374151">Alerts say: which feed, which step,</text>
+  <text x="708" y="500" font-size="11" fill="#374151">and how much slack is left.</text>
+  <text x="708" y="521" font-size="10.5" font-weight="600" fill="#D13438">Independent of the orchestrator.</text>
+
+  <!-- footer -->
+  <rect x="30" y="552" width="940" height="46" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="46" y="572" font-size="11.5" font-weight="700" fill="#1f2937">Why this shape:</text>
+  <text x="146" y="572" font-size="11.5" fill="#374151">the third party is removed from user latency · bad data cannot reach a report · every run is re-runnable ·</text>
+  <text x="46" y="590" font-size="11.5" fill="#374151">operational and analytical workloads are isolated so neither can slow the other down.</text>
+</svg>

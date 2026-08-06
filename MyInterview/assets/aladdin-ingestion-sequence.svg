@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 690" width="980" height="690" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="s1" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <path d="M0,0 L9,3.5 L0,7 z" fill="#0078D4"/>
+    </marker>
+    <marker id="s2" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <path d="M0,0 L9,3.5 L0,7 z" fill="#6b7280"/>
+    </marker>
+    <marker id="s3" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <path d="M0,0 L9,3.5 L0,7 z" fill="#D13438"/>
+    </marker>
+  </defs>
+  <rect width="980" height="690" fill="#ffffff"/>
+  <text x="490" y="28" text-anchor="middle" font-size="18" font-weight="700" fill="#1f2937">One ingestion run — the watermark only moves after a successful promote</text>
+
+  <!-- lifelines -->
+  <g font-size="11.5" font-weight="700" fill="#1f2937" text-anchor="middle">
+    <rect x="20" y="46" width="126" height="38" rx="6" fill="#deecf9" stroke="#0078D4" stroke-width="1.5"/>
+    <text x="83" y="63">Orchestrator</text><text x="83" y="77" font-size="9.5" font-weight="400" fill="#6b7280">ADF / Tidal / Airflow</text>
+
+    <rect x="176" y="46" width="126" height="38" rx="6" fill="#f3eefd" stroke="#6b3fa0" stroke-width="1.5"/>
+    <text x="239" y="63">FastAPI ETL</text><text x="239" y="77" font-size="9.5" font-weight="400" fill="#6b7280">ingestion service</text>
+
+    <rect x="332" y="46" width="126" height="38" rx="6" fill="#fdf1e7" stroke="#C05621" stroke-width="1.5"/>
+    <text x="395" y="63">Aladdin API</text><text x="395" y="77" font-size="9.5" font-weight="400" fill="#6b7280">third party</text>
+
+    <rect x="488" y="46" width="126" height="38" rx="6" fill="#fff9e6" stroke="#B7791F" stroke-width="1.5"/>
+    <text x="551" y="63">Staging</text><text x="551" y="77" font-size="9.5" font-weight="400" fill="#6b7280">+ validation</text>
+
+    <rect x="644" y="46" width="140" height="38" rx="6" fill="#eaf6ec" stroke="#107C10" stroke-width="1.5"/>
+    <text x="714" y="63">Curated stores</text><text x="714" y="77" font-size="9.5" font-weight="400" fill="#6b7280">SQL Server + Snowflake</text>
+
+    <rect x="814" y="46" width="146" height="38" rx="6" fill="#fdeaea" stroke="#D13438" stroke-width="1.5"/>
+    <text x="887" y="63">Alerting</text><text x="887" y="77" font-size="9.5" font-weight="400" fill="#6b7280">deadline-aware</text>
+  </g>
+
+  <g stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4 4">
+    <line x1="83" y1="88" x2="83" y2="620"/>
+    <line x1="239" y1="88" x2="239" y2="620"/>
+    <line x1="395" y1="88" x2="395" y2="620"/>
+    <line x1="551" y1="88" x2="551" y2="620"/>
+    <line x1="714" y1="88" x2="714" y2="620"/>
+    <line x1="887" y1="88" x2="887" y2="620"/>
+  </g>
+
+  <g font-size="10.5" fill="#1f2937">
+    <!-- 1 trigger -->
+    <line x1="83" y1="112" x2="235" y2="112" stroke="#0078D4" stroke-width="1.8" marker-end="url(#s1)"/>
+    <text x="92" y="107">1 · trigger run (run_id, as_of_date)</text>
+
+    <!-- 2 read watermark -->
+    <path d="M239 132 L305 132 L305 152 L243 152" fill="none" stroke="#6b7280" stroke-width="1.6" marker-end="url(#s2)"/>
+    <text x="312" y="139">2 · read watermark — where did we get to last time?</text>
+
+    <!-- 3 fetch page -->
+    <line x1="239" y1="180" x2="391" y2="180" stroke="#0078D4" stroke-width="1.8" marker-end="url(#s1)"/>
+    <text x="248" y="175">3 · fetch page since watermark</text>
+    <line x1="395" y1="204" x2="243" y2="204" stroke="#6b7280" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#s2)"/>
+    <text x="252" y="199" fill="#6b7280">rows + next cursor</text>
+
+    <!-- retry loop box -->
+    <rect x="212" y="222" width="216" height="46" rx="5" fill="#fff5f5" stroke="#C05621" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="222" y="240" font-size="10" font-weight="700" fill="#C05621">on 429 / 5xx / timeout</text>
+    <text x="222" y="256" font-size="10" fill="#4b5563">retry w/ backoff + jitter · circuit breaker</text>
+
+    <!-- loop label -->
+    <rect x="196" y="152" width="60" height="18" rx="3" fill="#e5e7eb"/>
+    <text x="226" y="165" font-size="9.5" font-weight="700" fill="#374151" text-anchor="middle">loop pages</text>
+
+    <!-- 4 write staging -->
+    <line x1="239" y1="294" x2="547" y2="294" stroke="#0078D4" stroke-width="1.8" marker-end="url(#s1)"/>
+    <text x="248" y="289">4 · write raw rows to staging, tagged with run_id</text>
+
+    <!-- 5 validate -->
+    <path d="M551 314 L620 314 L620 336 L555 336" fill="none" stroke="#6b7280" stroke-width="1.6" marker-end="url(#s2)"/>
+    <text x="628" y="322">5 · validate: schema · rules · control totals</text>
+
+    <!-- fail branch -->
+    <line x1="551" y1="366" x2="883" y2="366" stroke="#D13438" stroke-width="1.8" stroke-dasharray="6 3" marker-end="url(#s3)"/>
+    <text x="560" y="361" fill="#D13438" font-weight="600">5a · FAIL → quarantine + alert (feed, key, slack left) — run stops here</text>
+
+    <!-- 6 promote -->
+    <line x1="551" y1="404" x2="710" y2="404" stroke="#107C10" stroke-width="1.8" marker-end="url(#s1)"/>
+    <text x="560" y="399">6 · MERGE on natural key (idempotent)</text>
+
+    <!-- 7 reconcile -->
+    <path d="M714 424 L790 424 L790 446 L718 446" fill="none" stroke="#6b7280" stroke-width="1.6" marker-end="url(#s2)"/>
+    <text x="560" y="452">7 · reconcile our totals against the source's totals</text>
+
+    <!-- 8 break alert -->
+    <line x1="714" y1="480" x2="883" y2="480" stroke="#D13438" stroke-width="1.6" stroke-dasharray="6 3" marker-end="url(#s3)"/>
+    <text x="722" y="475" fill="#D13438" font-weight="600">7a · break → alert</text>
+
+    <!-- 9 advance watermark -->
+    <path d="M239 512 L305 512 L305 532 L243 532" fill="none" stroke="#107C10" stroke-width="2" marker-end="url(#s2)"/>
+    <text x="312" y="519" font-weight="700" fill="#107C10">8 · advance watermark — ONLY now. A crash before this replays safely.</text>
+
+    <!-- 10 signal -->
+    <line x1="239" y1="566" x2="87" y2="566" stroke="#0078D4" stroke-width="1.8" marker-end="url(#s1)"/>
+    <text x="96" y="561">9 · publish "feed complete" signal + row counts</text>
+    <text x="96" y="586" font-size="10" fill="#6b7280">Downstream steps wait on this signal — never on a clock.</text>
+  </g>
+
+  <!-- footer -->
+  <rect x="20" y="622" width="940" height="52" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="36" y="642" font-size="11.5" font-weight="700" fill="#1f2937">The four rules on this page:</text>
+  <text x="36" y="662" font-size="11.5" fill="#374151">1. Watermark (restart from failure)  ·  2. Merge, never insert (re-runs and restatements are safe)  ·  3. Validate before promote  ·  4. Signal, do not schedule</text>
+</svg>

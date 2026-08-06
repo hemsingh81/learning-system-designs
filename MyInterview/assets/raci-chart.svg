@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 600" width="980" height="600" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="980" height="600" fill="#ffffff"/>
+  <text x="490" y="28" text-anchor="middle" font-size="18.5" font-weight="700" fill="#1f2937">Decision RACI — agreed in the first two weeks of every engagement</text>
+  <text x="490" y="49" text-anchor="middle" font-size="12" fill="#6b7280">Most delivery friction is not disagreement about the answer. It is disagreement about who decides.</text>
+
+  <!-- legend -->
+  <g font-size="11">
+    <circle cx="240" cy="70" r="9" fill="#107C10"/><text x="253" y="74" fill="#374151"><tspan font-weight="700">R</tspan> Responsible — does the work</text>
+    <circle cx="470" cy="70" r="9" fill="#0078D4"/><text x="483" y="74" fill="#374151"><tspan font-weight="700">A</tspan> Accountable — owns the call</text>
+    <circle cx="700" cy="70" r="9" fill="#B7791F"/><text x="713" y="74" fill="#374151"><tspan font-weight="700">C</tspan> Consulted</text>
+    <circle cx="820" cy="70" r="9" fill="#9ca3af"/><text x="833" y="74" fill="#374151"><tspan font-weight="700">I</tspan> Informed</text>
+  </g>
+
+  <!-- header row -->
+  <rect x="24" y="90" width="330" height="52" fill="#1f2937"/>
+  <text x="40" y="122" font-size="12.5" font-weight="700" fill="#ffffff">DECISION</text>
+  <g font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">
+    <rect x="354" y="90" width="126" height="52" fill="#0078D4"/>
+    <text x="417" y="112">Solution</text><text x="417" y="128">Architect (me)</text>
+    <rect x="480" y="90" width="118" height="52" fill="#374151"/>
+    <text x="539" y="112">Product</text><text x="539" y="128">Owner</text>
+    <rect x="598" y="90" width="118" height="52" fill="#374151"/>
+    <text x="657" y="112">Engineering</text><text x="657" y="128">Lead</text>
+    <rect x="716" y="90" width="120" height="52" fill="#374151"/>
+    <text x="776" y="112">Client</text><text x="776" y="128">Sponsor</text>
+    <rect x="836" y="90" width="120" height="52" fill="#374151"/>
+    <text x="896" y="112">Support</text><text x="896" y="128">Lead</text>
+  </g>
+
+  <!-- rows -->
+  <g font-size="11.5" fill="#1f2937">
+    <!-- row template values: x centres 417,539,657,776,896 -->
+    <rect x="24" y="142" width="932" height="38" fill="#f8fafc" stroke="#e5e7eb"/>
+    <text x="40" y="166">Architecture &amp; service boundaries</text>
+    <circle cx="417" cy="161" r="10" fill="#0078D4"/><text x="417" y="165" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">A</text>
+    <circle cx="539" cy="161" r="10" fill="#B7791F"/><text x="539" y="165" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">C</text>
+    <circle cx="657" cy="161" r="10" fill="#107C10"/><text x="657" y="165" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">R</text>
+    <circle cx="776" cy="161" r="10" fill="#9ca3af"/><text x="776" y="165" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">I</text>
+    <circle cx="896" cy="161" r="10" fill="#9ca3af"/><text x="896" y="165" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">I</text>
+
+    <rect x="24" y="180" width="932" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+    <text x="40" y="204">Non-functional requirements (SLA, RTO/RPO)</text>
+    <circle cx="417" cy="199" r="10" fill="#0078D4"/><text x="417" y="203" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">A</text>
+    <circle cx="539" cy="199" r="10" fill="#B7791F"/><text x="539" y="203" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">C</text>
+    <circle cx="657" cy="199" r="10" fill="#107C10"/><text x="657" y="203" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">R</text>
+    <circle cx="776" cy="199" r="10" fill="#B7791F"/><text x="776" y="203" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">C</text>
+    <circle cx="896" cy="199" r="10" fill="#B7791F"/><text x="896" y="203" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">C</text>
+
+    <rect x="24" y="218" width="932" height="38" fill="#f8fafc" stroke="#e5e7eb"/>
+    <text x="40" y="242">Technology selection (platform, data store)</text>
+    <circle cx="417" cy="237" r="10" fill="#0078D4"/><text x="417" y="241" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">A</text>
+    <circle cx="539" cy="237" r="10" fill="#9ca3af"/><text x="539" y="241" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">I</text>
+    <circle cx="657" cy="237" r="10" fill="#B7791F"/><text x="657" y="241" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">C</text>
+    <circle cx="776" cy="237" r="10" fill="#B7791F"/><text x="776" y="241" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">C</text>
+    <circle cx="896" cy="237" r="10" fill="#9ca3af"/><text x="896" y="241" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">I</text>
+
+    <rect x="24" y="256" width="932" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+    <text x="40" y="280">What we build next (backlog priority)</text>
+    <circle cx="417" cy="275" r="10" fill="#B7791F"/><text x="417" y="279" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">C</text>
+    <circle cx="539" cy="275" r="10" fill="#0078D4"/><text x="539" y="279" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">A</text>
+    <circle cx="657" cy="275" r="10" fill="#9ca3af"/><text x="657" y="279" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">I</text>
+    <circle cx="776" cy="275" r="10" fill="#B7791F"/><text x="776" y="279" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">C</text>
+    <circle cx="896" cy="275" r="10" fill="#9ca3af"/><text x="896" y="279" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">I</text>
+
+    <rect x="24" y="294" width="932" height="38" fill="#f8fafc" stroke="#e5e7eb"/>
+    <text x="40" y="318">Sprint scope &amp; estimates</text>
+    <circle cx="417" cy="313" r="10" fill="#B7791F"/><text x="417" y="317" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">C</text>
+    <circle cx="539" cy="313" r="10" fill="#0078D4"/><text x="539" y="317" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">A</text>
+    <circle cx="657" cy="313" r="10" fill="#107C10"/><text x="657" y="317" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">R</text>
+    <circle cx="776" cy="313" r="10" fill="#9ca3af"/><text x="776" y="317" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">I</text>
+    <circle cx="896" cy="313" r="10" fill="#9ca3af"/><text x="896" y="317" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">I</text>
+
+    <rect x="24" y="332" width="932" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+    <text x="40" y="356">Release approval to production</text>
+    <circle cx="417" cy="351" r="10" fill="#B7791F"/><text x="417" y="355" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">C</text>
+    <circle cx="539" cy="351" r="10" fill="#0078D4"/><text x="539" y="355" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">A</text>
+    <circle cx="657" cy="351" r="10" fill="#107C10"/><text x="657" y="355" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">R</text>
+    <circle cx="776" cy="351" r="10" fill="#9ca3af"/><text x="776" y="355" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">I</text>
+    <circle cx="896" cy="351" r="10" fill="#B7791F"/><text x="896" y="355" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">C</text>
+
+    <rect x="24" y="370" width="932" height="38" fill="#f8fafc" stroke="#e5e7eb"/>
+    <text x="40" y="394">Incident command (production down)</text>
+    <circle cx="417" cy="389" r="10" fill="#0078D4"/><text x="417" y="393" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">A</text>
+    <circle cx="539" cy="389" r="10" fill="#9ca3af"/><text x="539" y="393" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">I</text>
+    <circle cx="657" cy="389" r="10" fill="#107C10"/><text x="657" y="393" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">R</text>
+    <circle cx="776" cy="389" r="10" fill="#9ca3af"/><text x="776" y="393" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">I</text>
+    <circle cx="896" cy="389" r="10" fill="#107C10"/><text x="896" y="393" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">R</text>
+
+    <rect x="24" y="408" width="932" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+    <text x="40" y="432">Cloud cost ownership</text>
+    <circle cx="417" cy="427" r="10" fill="#0078D4"/><text x="417" y="431" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">A</text>
+    <circle cx="539" cy="427" r="10" fill="#B7791F"/><text x="539" y="431" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">C</text>
+    <circle cx="657" cy="427" r="10" fill="#107C10"/><text x="657" y="431" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">R</text>
+    <circle cx="776" cy="427" r="10" fill="#B7791F"/><text x="776" y="431" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">C</text>
+    <circle cx="896" cy="427" r="10" fill="#9ca3af"/><text x="896" y="431" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">I</text>
+
+    <rect x="24" y="446" width="932" height="38" fill="#f8fafc" stroke="#e5e7eb"/>
+    <text x="40" y="470">Accepting technical debt / a shortcut</text>
+    <circle cx="417" cy="465" r="10" fill="#0078D4"/><text x="417" y="469" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">A</text>
+    <circle cx="539" cy="465" r="10" fill="#B7791F"/><text x="539" y="469" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">C</text>
+    <circle cx="657" cy="465" r="10" fill="#B7791F"/><text x="657" y="469" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">C</text>
+    <circle cx="776" cy="465" r="10" fill="#9ca3af"/><text x="776" y="469" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">I</text>
+    <circle cx="896" cy="465" r="10" fill="#9ca3af"/><text x="896" y="469" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">I</text>
+
+    <rect x="24" y="484" width="932" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+    <text x="40" y="508">Handover to support / go-live readiness</text>
+    <circle cx="417" cy="503" r="10" fill="#107C10"/><text x="417" y="507" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">R</text>
+    <circle cx="539" cy="503" r="10" fill="#B7791F"/><text x="539" y="507" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">C</text>
+    <circle cx="657" cy="503" r="10" fill="#107C10"/><text x="657" y="507" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">R</text>
+    <circle cx="776" cy="503" r="10" fill="#9ca3af"/><text x="776" y="507" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">I</text>
+    <circle cx="896" cy="503" r="10" fill="#0078D4"/><text x="896" y="507" text-anchor="middle" font-weight="700" fill="#fff" font-size="11">A</text>
+  </g>
+
+  <!-- footer -->
+  <rect x="24" y="534" width="932" height="52" rx="8" fill="#f0f7ff" stroke="#0078D4" stroke-width="1.5"/>
+  <text x="40" y="554" font-size="12" font-weight="700" fill="#0078D4">The line I use in interviews:</text>
+  <text x="40" y="574" font-size="12" fill="#374151">"I own the HOW and the non-functional promises. The product owner owns the WHAT and the priority order. The trade-off conversation is joint — and it happens before the decision, not after."</text>
+</svg>

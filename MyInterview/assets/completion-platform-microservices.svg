@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" width="1000" height="640" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="ca" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <path d="M0,0 L9,3.5 L0,7 z" fill="#4b5563"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="640" fill="#ffffff"/>
+  <text x="500" y="28" text-anchor="middle" font-size="18.5" font-weight="700" fill="#1f2937">Construction Completion Platform — split by business capability, not by technical layer</text>
+  <text x="500" y="50" text-anchor="middle" font-size="12" fill="#6b7280">Four owners · four approval chains · four release rhythms → four services</text>
+
+  <!-- users -->
+  <rect x="30" y="68" width="940" height="52" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="46" y="90" font-size="11.5" font-weight="700" fill="#1f2937">USERS</text>
+  <text x="120" y="90" font-size="11.5" fill="#374151">Commissioning engineers · contractors · contracts team · project leadership</text>
+  <text x="120" y="108" font-size="11" fill="#6b7280">Angular + jQuery front ends · Entra ID sign-in · designed for site use, not office use</text>
+
+  <!-- four services -->
+  <g>
+    <rect x="30" y="140" width="222" height="150" rx="9" fill="#eaf6ec" stroke="#107C10" stroke-width="2"/>
+    <rect x="30" y="140" width="222" height="30" rx="9" fill="#107C10"/><rect x="30" y="158" width="222" height="12" fill="#107C10"/>
+    <text x="141" y="161" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Commissioning Certificates</text>
+    <text x="44" y="190" font-size="11" fill="#374151">ASP.NET Core · App Service</text>
+    <text x="44" y="209" font-size="11" fill="#374151">Own schema · own pipeline</text>
+    <text x="44" y="228" font-size="11" fill="#374151">Append-only approval history</text>
+    <rect x="44" y="240" width="194" height="36" rx="5" fill="#ffffff" stroke="#107C10"/>
+    <text x="54" y="255" font-size="10" font-weight="700" fill="#107C10">Why separate</text>
+    <text x="54" y="269" font-size="10" fill="#4b5563">changes when the standard changes</text>
+  </g>
+  <g>
+    <rect x="268" y="140" width="222" height="150" rx="9" fill="#deecf9" stroke="#0078D4" stroke-width="2"/>
+    <rect x="268" y="140" width="222" height="30" rx="9" fill="#0078D4"/><rect x="268" y="158" width="222" height="12" fill="#0078D4"/>
+    <text x="379" y="161" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Contract Transfer</text>
+    <text x="282" y="190" font-size="11" fill="#374151">ASP.NET Core · App Service</text>
+    <text x="282" y="209" font-size="11" fill="#374151">Own schema · own pipeline</text>
+    <text x="282" y="228" font-size="11" fill="#374151">Outbox → cross-service events</text>
+    <rect x="282" y="240" width="194" height="36" rx="5" fill="#ffffff" stroke="#0078D4"/>
+    <text x="292" y="255" font-size="10" font-weight="700" fill="#0078D4">Why separate</text>
+    <text x="292" y="269" font-size="10" fill="#4b5563">owned by the contracts team</text>
+  </g>
+  <g>
+    <rect x="506" y="140" width="222" height="150" rx="9" fill="#fff9e6" stroke="#B7791F" stroke-width="2"/>
+    <rect x="506" y="140" width="222" height="30" rx="9" fill="#B7791F"/><rect x="506" y="158" width="222" height="12" fill="#B7791F"/>
+    <text x="617" y="161" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Exception Handling</text>
+    <text x="520" y="190" font-size="11" fill="#374151">ASP.NET Core · App Service</text>
+    <text x="520" y="209" font-size="11" fill="#374151">Own schema · own pipeline</text>
+    <text x="520" y="228" font-size="11" fill="#374151">Punch-list &amp; deviation flow</text>
+    <rect x="520" y="240" width="194" height="36" rx="5" fill="#ffffff" stroke="#B7791F"/>
+    <text x="530" y="255" font-size="10" font-weight="700" fill="#B7791F">Why separate</text>
+    <text x="530" y="269" font-size="10" fill="#4b5563">highest change rate of the four</text>
+  </g>
+  <g>
+    <rect x="744" y="140" width="226" height="150" rx="9" fill="#fdf1e7" stroke="#C05621" stroke-width="2"/>
+    <rect x="744" y="140" width="226" height="30" rx="9" fill="#C05621"/><rect x="744" y="158" width="226" height="12" fill="#C05621"/>
+    <text x="857" y="161" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Change Notice</text>
+    <text x="758" y="190" font-size="11" fill="#374151">ASP.NET Core · App Service</text>
+    <text x="758" y="209" font-size="11" fill="#374151">Own schema · own pipeline</text>
+    <text x="758" y="228" font-size="11" fill="#374151">Cost / scope impact capture</text>
+    <rect x="758" y="240" width="198" height="36" rx="5" fill="#ffffff" stroke="#C05621"/>
+    <text x="768" y="255" font-size="10" font-weight="700" fill="#C05621">Why separate</text>
+    <text x="768" y="269" font-size="10" fill="#4b5563">tied to the commercial cycle</text>
+  </g>
+
+  <!-- contracts bar -->
+  <rect x="30" y="304" width="940" height="40" rx="7" fill="#f3eefd" stroke="#6b3fa0" stroke-width="1.5"/>
+  <text x="46" y="322" font-size="11.5" font-weight="700" fill="#6b3fa0">INTEGRATION CONTRACTS</text>
+  <text x="230" y="322" font-size="11.5" fill="#374151">Explicit REST contracts + outbox events between services. No cross-schema reads — enforced by database permissions, not by code review.</text>
+  <text x="230" y="338" font-size="10.5" fill="#6b7280">Rule I use: if two services always change together, they are one service.</text>
+
+  <!-- shared platform -->
+  <rect x="30" y="360" width="940" height="146" rx="9" fill="#f8fafc" stroke="#374151" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="46" y="381" font-size="11.5" font-weight="700" fill="#1f2937">SHARED AZURE PLATFORM</text>
+
+  <rect x="46" y="392" width="170" height="98" rx="7" fill="#deecf9" stroke="#0078D4" stroke-width="1.5"/>
+  <text x="131" y="414" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2937">Azure Functions</text>
+  <text x="60" y="435" font-size="10.5" fill="#4b5563">• document generation</text>
+  <text x="60" y="452" font-size="10.5" fill="#4b5563">• notification dispatch</text>
+  <text x="60" y="469" font-size="10.5" fill="#4b5563">• outbox relay + retry</text>
+  <text x="60" y="484" font-size="10" fill="#0078D4" font-weight="600">spiky work — pay per run</text>
+
+  <rect x="230" y="392" width="170" height="98" rx="7" fill="#eaf6ec" stroke="#107C10" stroke-width="1.5"/>
+  <text x="315" y="414" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2937">Azure SQL</text>
+  <text x="244" y="435" font-size="10.5" fill="#4b5563">• schema per service</text>
+  <text x="244" y="452" font-size="10.5" fill="#4b5563">• modelled for query perf</text>
+  <text x="244" y="469" font-size="10.5" fill="#4b5563">• integrity + governance</text>
+
+  <rect x="414" y="392" width="170" height="98" rx="7" fill="#fff9e6" stroke="#B7791F" stroke-width="1.5"/>
+  <text x="499" y="414" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2937">Blob + SharePoint</text>
+  <text x="428" y="435" font-size="10.5" fill="#4b5563">• certificates as files</text>
+  <text x="428" y="452" font-size="10.5" fill="#4b5563">• secure document mgmt</text>
+  <text x="428" y="469" font-size="10.5" fill="#4b5563">• DB holds metadata only</text>
+
+  <rect x="598" y="392" width="170" height="98" rx="7" fill="#f3eefd" stroke="#6b3fa0" stroke-width="1.5"/>
+  <text x="683" y="414" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2937">Azure Data Factory</text>
+  <text x="612" y="435" font-size="10.5" fill="#4b5563">• ETL + orchestration</text>
+  <text x="612" y="452" font-size="10.5" fill="#4b5563">• validation stage</text>
+  <text x="612" y="469" font-size="10" fill="#6b3fa0" font-weight="600">−25% processing errors</text>
+
+  <rect x="782" y="392" width="174" height="98" rx="7" fill="#fdf1e7" stroke="#C05621" stroke-width="1.5"/>
+  <text x="869" y="414" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2937">Azure DevOps</text>
+  <text x="796" y="435" font-size="10.5" fill="#4b5563">• one pipeline template</text>
+  <text x="796" y="452" font-size="10.5" fill="#4b5563">• slot deploy + swap</text>
+  <text x="796" y="469" font-size="10" fill="#C05621" font-weight="600">release cycle halved</text>
+
+  <!-- power bi -->
+  <rect x="30" y="522" width="460" height="86" rx="9" fill="#fffbe6" stroke="#B7791F" stroke-width="2"/>
+  <text x="46" y="544" font-size="12.5" font-weight="700" fill="#1f2937">Power BI — real-time completion tracking for leadership</text>
+  <text x="46" y="566" font-size="11" fill="#374151">Workdown · Mechanical Completion · RFO · Commissioning</text>
+  <text x="46" y="586" font-size="10.5" fill="#6b7280">Replaced a weekly spreadsheet. This is what made the platform visible to the sponsor.</text>
+
+  <rect x="506" y="522" width="464" height="86" rx="9" fill="#eaf6ec" stroke="#107C10" stroke-width="2"/>
+  <text x="522" y="544" font-size="12.5" font-weight="700" fill="#107C10">OUTCOME</text>
+  <text x="522" y="568" font-size="12" fill="#1f2937">Manual effort −60%  ·  Processing errors −25%  ·  Release cycle halved</text>
+  <text x="522" y="590" font-size="10.5" fill="#6b7280">Trade-off I accepted: four pipelines and a distributed failure mode, mitigated by one shared dashboard.</text>
+
+  <line x1="141" y1="120" x2="141" y2="136" stroke="#4b5563" stroke-width="1.6" marker-end="url(#ca)"/>
+  <line x1="379" y1="120" x2="379" y2="136" stroke="#4b5563" stroke-width="1.6" marker-end="url(#ca)"/>
+  <line x1="617" y1="120" x2="617" y2="136" stroke="#4b5563" stroke-width="1.6" marker-end="url(#ca)"/>
+  <line x1="857" y1="120" x2="857" y2="136" stroke="#4b5563" stroke-width="1.6" marker-end="url(#ca)"/>
+</svg>

@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 460" width="980" height="460" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="980" height="460" fill="#ffffff"/>
+  <text x="490" y="34" text-anchor="middle" font-size="21" font-weight="700" fill="#1f2937">My Four Anchor Projects — the story bank behind every answer</text>
+  <text x="490" y="58" text-anchor="middle" font-size="13" fill="#6b7280">19 years in software · last 7 years as Solution Architect</text>
+
+  <!-- A -->
+  <rect x="30" y="85" width="215" height="235" rx="10" fill="#eef4fd" stroke="#0078D4" stroke-width="2"/>
+  <rect x="30" y="85" width="215" height="34" rx="10" fill="#0078D4"/>
+  <rect x="30" y="105" width="215" height="14" fill="#0078D4"/>
+  <text x="137" y="108" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">A · Investment Reporting</text>
+  <text x="46" y="142" font-size="12.5" font-weight="600" fill="#1f2937">TCW Group, Los Angeles</text>
+  <text x="46" y="160" font-size="11.5" fill="#4b5563">2025 → now</text>
+  <line x1="46" y1="172" x2="229" y2="172" stroke="#c7d9f2" stroke-width="1"/>
+  <text x="46" y="192" font-size="11.5" fill="#374151">• ASP.NET Core Web API + React</text>
+  <text x="46" y="211" font-size="11.5" fill="#374151">• FastAPI ETL ← BlackRock Aladdin</text>
+  <text x="46" y="230" font-size="11.5" fill="#374151">• SQL Server + Snowflake</text>
+  <text x="46" y="249" font-size="11.5" fill="#374151">• ADF + Tidal + Airflow</text>
+  <rect x="46" y="263" width="183" height="42" rx="6" fill="#ffffff" stroke="#0078D4" stroke-width="1"/>
+  <text x="56" y="280" font-size="11" font-weight="700" fill="#0078D4">Headline result</text>
+  <text x="56" y="296" font-size="11" fill="#374151">Reports land pre-market, daily</text>
+
+  <!-- B -->
+  <rect x="262" y="85" width="215" height="235" rx="10" fill="#f3eefd" stroke="#6b3fa0" stroke-width="2"/>
+  <rect x="262" y="85" width="215" height="34" rx="10" fill="#6b3fa0"/>
+  <rect x="262" y="105" width="215" height="14" fill="#6b3fa0"/>
+  <text x="369" y="108" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">B · AI / LLM + RAG</text>
+  <text x="278" y="142" font-size="12.5" font-weight="600" fill="#1f2937">TCW Group</text>
+  <text x="278" y="160" font-size="11.5" fill="#4b5563">2025 → now</text>
+  <line x1="278" y1="172" x2="461" y2="172" stroke="#ddd0f0" stroke-width="1"/>
+  <text x="278" y="192" font-size="11.5" fill="#374151">• AI integration reference arch</text>
+  <text x="278" y="211" font-size="11.5" fill="#374151">• RAG support assistant</text>
+  <text x="278" y="230" font-size="11.5" fill="#374151">• LangChain / LangGraph / Smith</text>
+  <text x="278" y="249" font-size="11.5" fill="#374151">• Chroma DB vector store</text>
+  <rect x="278" y="263" width="183" height="42" rx="6" fill="#ffffff" stroke="#6b3fa0" stroke-width="1"/>
+  <text x="288" y="280" font-size="11" font-weight="700" fill="#6b3fa0">Headline result</text>
+  <text x="288" y="296" font-size="11" fill="#374151">Firm's first production RAG app</text>
+
+  <!-- C -->
+  <rect x="494" y="85" width="215" height="235" rx="10" fill="#eaf6ec" stroke="#107C10" stroke-width="2"/>
+  <rect x="494" y="85" width="215" height="34" rx="10" fill="#107C10"/>
+  <rect x="494" y="105" width="215" height="14" fill="#107C10"/>
+  <text x="601" y="108" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">C · Completion Platform</text>
+  <text x="510" y="142" font-size="12.5" font-weight="600" fill="#1f2937">TengizChevroil, Kazakhstan</text>
+  <text x="510" y="160" font-size="11.5" fill="#4b5563">2021 – 2025 · on-site</text>
+  <line x1="510" y1="172" x2="693" y2="172" stroke="#c8e4cb" stroke-width="1"/>
+  <text x="510" y="192" font-size="11.5" fill="#374151">• 4 cloud apps, microservices</text>
+  <text x="510" y="211" font-size="11.5" fill="#374151">• App Services + Functions + SQL</text>
+  <text x="510" y="230" font-size="11.5" fill="#374151">• ADF ETL + validation</text>
+  <text x="510" y="249" font-size="11.5" fill="#374151">• Azure DevOps CI/CD, Power BI</text>
+  <rect x="510" y="263" width="183" height="42" rx="6" fill="#ffffff" stroke="#107C10" stroke-width="1"/>
+  <text x="520" y="280" font-size="11" font-weight="700" fill="#107C10">Headline result</text>
+  <text x="520" y="296" font-size="11" fill="#374151">−60% manual effort, −25% errors</text>
+
+  <!-- D -->
+  <rect x="726" y="85" width="215" height="235" rx="10" fill="#fdf1e7" stroke="#C05621" stroke-width="2"/>
+  <rect x="726" y="85" width="215" height="34" rx="10" fill="#C05621"/>
+  <rect x="726" y="105" width="215" height="14" fill="#C05621"/>
+  <text x="833" y="108" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">D · Asset-Mgmt Reporting</text>
+  <text x="742" y="142" font-size="12.5" font-weight="600" fill="#1f2937">Sculptor Capital · Bain Capital</text>
+  <text x="742" y="160" font-size="11.5" fill="#4b5563">2016 – 2022</text>
+  <line x1="742" y1="172" x2="925" y2="172" stroke="#f3d7c0" stroke-width="1"/>
+  <text x="742" y="192" font-size="11.5" fill="#374151">• ASP.NET MVC + Web API</text>
+  <text x="742" y="211" font-size="11.5" fill="#374151">• Azure Data Factory ETL</text>
+  <text x="742" y="230" font-size="11.5" fill="#374151">• Power BI + IBM Cognos</text>
+  <text x="742" y="249" font-size="11.5" fill="#374151">• Scrum lead, sprint governance</text>
+  <rect x="742" y="263" width="183" height="42" rx="6" fill="#ffffff" stroke="#C05621" stroke-width="1"/>
+  <text x="752" y="280" font-size="11" font-weight="700" fill="#C05621">Headline result</text>
+  <text x="752" y="296" font-size="11" fill="#374151">−30% manual work, +20% velocity</text>
+
+  <!-- bottom band -->
+  <rect x="30" y="345" width="911" height="86" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="48" y="371" font-size="13.5" font-weight="700" fill="#1f2937">The thread that runs through all four</text>
+  <text x="48" y="394" font-size="12" fill="#374151">Regulated clients · Microsoft stack end to end · I own architecture → integration design → build → release → production governance</text>
+  <text x="48" y="416" font-size="12" fill="#374151">Every answer I give names one of these projects, one decision I made, one trade-off I accepted, and one number I moved.</text>
+</svg>
