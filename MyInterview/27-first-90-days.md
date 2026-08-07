@@ -1,6 +1,6 @@
 # 27 · My First 90 Days (the plan I bring to the room)
 
-[← Reverse-Interview Questions](26-reverse-interview-questions.md) · [Home](README.md) · [Next → Overview](01-overview-positioning.md)
+[← Reverse-Interview Questions](26-reverse-interview-questions.md) · [Home](README.md) · [Next → Concept: ReactJS](28-concept-reactjs.md)
 
 Near the end of most senior/architect interviews I get asked: *"If we hired you, what would you do in your first 90 days?"* They're checking that I already think like someone who **owns** the role — that I'll learn, earn trust, and deliver something visible early, not sit and wait to be told. This is my ready answer, in first person, split into three phases.
 
@@ -94,4 +94,4 @@ flowchart LR
 
 ---
 
-[← Reverse-Interview Questions](26-reverse-interview-questions.md) · [Home](README.md) · [Next → Overview](01-overview-positioning.md)
+[← Reverse-Interview Questions](26-reverse-interview-questions.md) · [Home](README.md) · [Next → Concept: ReactJS](28-concept-reactjs.md)

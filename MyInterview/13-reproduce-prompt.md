@@ -109,14 +109,39 @@ first 90 days?' — three phases: Days 0–30 Listen & Learn (meet people, trace
 ships, find the real pain, change nothing big), Days 30–60 Plan & Small Wins (agreed plan socialised not imposed,
 a few low-risk visible wins, gentle standards), Days 60–90 Deliver (ship one measurable improvement end to end,
 prove it with a number, set a team-owned direction), with a Mermaid three-phase diagram, a 90-second spoken
-version, follow-ups and a section index). Also add to README a 'Quick index by interview round' jump table mapping
-each round type to the right file(s), and wire files 19/20/21 into the study plan (a performance+AI day, a new
+version, follow-ups and a section index). Then add TEN concept deep-dive files, each with AT LEAST 30 top
+interview Q&As written in the same voice (simple English, first person, architecture and full-stack-developer
+lens, code samples where useful, all front-end code in TypeScript), each Q&A having a concise question, a
+model answer, and follow-up questions with short answers, and each file using a per-topic letter+number ID
+scheme with a 'Jump to' line and a 'Section index' table: 28-concept-reactjs.md (React fundamentals through
+advanced — components/JSX, state, hooks, useReducer/useRef, VDOM, effects, performance, routing, TypeScript,
+Suspense/lazy, error boundaries, security, testing, micro-frontends, design systems, real-time, and when to
+choose React); 29-concept-angular.md (modern Angular — components/modules, data binding, DI, RxJS + signals,
+change detection, lifecycle, standalone components, guards/resolvers, reactive forms, pipes/directives, i18n,
+CLI, SSR/Universal, Material, and when to choose Angular); 30-concept-react-vs-angular.md (a fair,
+feature-by-feature comparison — components, forms, routing, DI, reactivity, tooling, testing, SSR, ecosystem,
+bundle size, hiring, mobile, upgrades, security, accessibility, myths, TCO — ending in a one-minute decision
+framework); 31-concept-aspnet-webapi.md (ASP.NET Core Web API — controllers/minimal APIs, DI, middleware,
+model binding/validation, EF Core, auth with Entra ID, versioning, performance, testing, hosting/deployment);
+32-concept-fastapi.md (FastAPI — async, Pydantic, dependency injection, auth, background tasks, middleware,
+testing, deployment, and ETL usage grounded in projects A/D); 33-concept-webapi-vs-fastapi.md (when to pick
+.NET vs Python side by side, with a decision framework); 34-concept-sql-server.md (indexes, execution plans,
+transactions/isolation, tuning, concurrency, security, HA/DR, T-SQL); 35-concept-snowflake.md (architecture,
+virtual warehouses, micro-partitions, clustering, cost control, data sharing, performance, Time Travel);
+36-concept-sqlserver-vs-snowflake.md (OLTP vs analytics, cost models, when to use each, with a decision
+framework); and 37-concept-azure-services.md (Blob Storage, Key Vault, App Service, Service Bus, Functions,
+managed identity, App Insights, and Azure AI Foundry, grounded in the candidate's Azure projects). Wire file
+27's forward navigation to 28, chain 28→37 in order and loop 37 back to Home, and add the concept files to
+the README Contents table and a 'Concept deep-dives' quick-index row. Also add to README a 'Quick index by
+interview round' jump table mapping each round type to the right file(s), and wire files 19/20/21 into the
+study plan (a performance+AI day, a new
 'Mock E — AI-in-team leadership round', and objections drilling) and into the cheat sheets (a 'Performance
 recall' and an 'AI-in-team recall' section). Also weave the hands-on angle into README (title,
 positioning line), 01-overview-positioning.md (a hands-on 'who I am' and a deep-technical/coding positioning
 statement), 08-cheatsheets.md (a 'hands-on code recall' table and code one-liners), 09-study-plan.md (a
 hands-on coding mock), and 10-pitch-and-resume.md (a hands-on pitch version and hands-on resume/LinkedIn
-wording). Aim for roughly 150+ total interview questions across the Q&A sections;
+wording). Aim for roughly 440+ total interview questions across the Q&A sections (the ten concept files 28–37
+contribute 30 each);
 each question must have a concise interviewer-style prompt, a model answer of 2–6 short paragraphs following
 Story → Approach → Trade-off → Outcome-with-a-number → Lesson, and 2–4 follow-up prompts each with a short
 reply. Enforce these conventions in every file: a top H1 header stating the section number, title and

@@ -37,6 +37,7 @@ Under pressure, jump straight to the round you are in:
 | **Performance / optimisation** | [19 Performance Deep Dive](19-performance-deep-dive.md) |
 | **AI / ways-of-working leadership** | [20 AI-Assisted Development](20-ai-assisted-development.md) |
 | **Tough / challenge questions** | [21 Objections & Tough Questions](21-objections-and-tough-questions.md) |
+| **Concept deep-dives (30 Q&As each)** | [28 React](28-concept-reactjs.md) · [29 Angular](29-concept-angular.md) · [30 React vs Angular](30-concept-react-vs-angular.md) · [31 Web API](31-concept-aspnet-webapi.md) · [32 FastAPI](32-concept-fastapi.md) · [33 Web API vs FastAPI](33-concept-webapi-vs-fastapi.md) · [34 SQL Server](34-concept-sql-server.md) · [35 Snowflake](35-concept-snowflake.md) · [36 SQL vs Snowflake](36-concept-sqlserver-vs-snowflake.md) · [37 Azure Services](37-concept-azure-services.md) |
 | **Behavioural / "tell me about a time"** | [25 STAR Story Bank](25-star-story-bank.md) |
 | **Questions to ask them** | [26 Reverse-Interview Questions](26-reverse-interview-questions.md) |
 | **"First 90 days?" question** | [27 My First 90 Days](27-first-90-days.md) |
@@ -78,8 +79,18 @@ Under pressure, jump straight to the round you are in:
 | 25 | [STAR Story Bank](25-star-story-bank.md) | 10 fully-written behavioural stories in STAR-D form (failure, conflict, influence, deadline, crisis…) | 10 |
 | 26 | [Reverse-Interview Questions](26-reverse-interview-questions.md) | Sharp questions to ask them, grouped by interviewer, with a signal-reading table | — |
 | 27 | [My First 90 Days](27-first-90-days.md) | Ready answer to "what would you do in your first 90 days?" — Listen → Plan → Deliver | — |
+| 28 | [Concept: ReactJS](28-concept-reactjs.md) | React from the ground up: components, hooks, state, VDOM, performance, architecture, SSR, security, testing | 30 |
+| 29 | [Concept: Angular](29-concept-angular.md) | Modern Angular: components, DI, RxJS, signals, change detection, forms, guards, i18n, architecture | 30 |
+| 30 | [Concept: React vs Angular](30-concept-react-vs-angular.md) | Fair, feature-by-feature comparison + a one-minute decision framework | 30 |
+| 31 | [Concept: ASP.NET Core Web API](31-concept-aspnet-webapi.md) | Controllers, DI, middleware, EF, auth, versioning, performance, testing, hosting | 30 |
+| 32 | [Concept: FastAPI](32-concept-fastapi.md) | Async Python API: Pydantic, dependency injection, auth, background tasks, testing, deployment | 30 |
+| 33 | [Concept: Web API vs FastAPI](33-concept-webapi-vs-fastapi.md) | When I pick .NET vs Python, side-by-side, with a decision framework | 30 |
+| 34 | [Concept: SQL Server](34-concept-sql-server.md) | Indexes, execution plans, transactions, tuning, concurrency, security, HA, T-SQL | 30 |
+| 35 | [Concept: Snowflake](35-concept-snowflake.md) | Architecture, virtual warehouses, micro-partitions, cost, sharing, performance | 30 |
+| 36 | [Concept: SQL Server vs Snowflake](36-concept-sqlserver-vs-snowflake.md) | OLTP vs analytics, cost model, when to use each, with a decision framework | 30 |
+| 37 | [Concept: Azure Core Services](37-concept-azure-services.md) | Blob, Key Vault, App Service, Service Bus, Functions, AI Foundry and more | 30 |
 
-**Total: 149 questions with full answers and follow-ups.**
+**Total: 449 questions with full answers and follow-ups.**
 
 ---
 
