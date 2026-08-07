@@ -130,9 +130,35 @@ transactions/isolation, tuning, concurrency, security, HA/DR, T-SQL); 35-concept
 virtual warehouses, micro-partitions, clustering, cost control, data sharing, performance, Time Travel);
 36-concept-sqlserver-vs-snowflake.md (OLTP vs analytics, cost models, when to use each, with a decision
 framework); and 37-concept-azure-services.md (Blob Storage, Key Vault, App Service, Service Bus, Functions,
-managed identity, App Insights, and Azure AI Foundry, grounded in the candidate's Azure projects). Wire file
-27's forward navigation to 28, chain 28→37 in order and loop 37 back to Home, and add the concept files to
-the README Contents table and a 'Concept deep-dives' quick-index row. Also add to README a 'Quick index by
+managed identity, App Insights, and Azure AI Foundry, grounded in the candidate's Azure projects). Then add
+FOURTEEN more concept deep-dive files (same voice, at least 30 Q&As each, per-topic letter+number IDs,
+'Jump to' line and 'Section index' table), grounded especially in project B (the AI/LLM reference
+architecture and first production RAG assistant built with LangChain, LangGraph, LangSmith and Chroma):
+38-concept-ai-skills-workflow.md (the AI skills an architect needs and how AI workflows are designed end to
+end); 39-concept-ai-agents-agentic.md (agents, tools, planning, memory, multi-agent systems, autonomy and
+guardrails); 40-concept-rag.md (Retrieval-Augmented Generation — chunking, retrieval, hybrid search,
+re-ranking, grounding, evaluation, RAG vs fine-tuning); 41-concept-langchain.md (chains, prompt templates,
+retrievers, tools/agents, memory, output parsers, streaming, LCEL); 42-concept-langgraph.md (stateful
+graphs, nodes/edges, cycles, state, human-in-the-loop, durable agent orchestration); 43-concept-langsmith.md
+(tracing, datasets, evaluation, monitoring and debugging LLM apps); 44-concept-vector-databases-chroma.md
+(embeddings storage, similarity metrics, ANN/HNSW, metadata filtering, hybrid search, Chroma, Azure AI
+Search, pgvector); 45-concept-embeddings-semantic-search.md (embeddings, dimensions, semantic vs keyword,
+hybrid, re-ranking, multilingual/multimodal, model choice via MTEB, the same-model rule);
+46-concept-llm-application-integration.md (production engineering around an LLM — reliability, rate limits,
+fallbacks, caching, cost control, safety/guardrails, prompt-injection defence, evaluation, monitoring,
+rollout, reference architecture); 47-concept-system-design.md (requirements/NFRs, scalability, load
+balancing, statelessness, caching, databases, CAP, consistency, async, resilience, observability,
+trade-offs); 48-concept-redis-cache.md (caching, cache-aside, TTL/invalidation, eviction, sessions, rate
+limiting, locks, pub/sub, persistence, HA/cluster, Azure Cache for Redis); 49-concept-kafka.md (the log,
+topics, partitions, producers/consumers, consumer groups, offsets, ordering, retention, replication,
+delivery guarantees, idempotency, event-driven architecture, Event Hubs); 50-concept-data-design.md
+(conceptual/logical/physical modeling, normalization/denormalization, keys, indexing, NoSQL modeling,
+transactions, migrations, partitioning, OLTP vs OLAP, star schema, governance); and
+51-concept-dotnet-core.md (ASP.NET Core Web API, DI/lifetimes, middleware, async, EF Core with
+transactions/migrations, auth, resilience with Polly, health checks, background services, security, Docker,
+Azure hosting). Wire file 27's forward navigation to 28, chain 28→37→38→…→51 in order and loop file 51 back
+to Home (file 37's forward nav points to 38), and add all concept files (28–51) to the README Contents table
+and the 'Concept deep-dives' quick-index rows. Also add to README a 'Quick index by
 interview round' jump table mapping each round type to the right file(s), and wire files 19/20/21 into the
 study plan (a performance+AI day, a new
 'Mock E — AI-in-team leadership round', and objections drilling) and into the cheat sheets (a 'Performance

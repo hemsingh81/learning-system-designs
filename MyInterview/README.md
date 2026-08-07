@@ -38,6 +38,7 @@ Under pressure, jump straight to the round you are in:
 | **AI / ways-of-working leadership** | [20 AI-Assisted Development](20-ai-assisted-development.md) |
 | **Tough / challenge questions** | [21 Objections & Tough Questions](21-objections-and-tough-questions.md) |
 | **Concept deep-dives (30 Q&As each)** | [28 React](28-concept-reactjs.md) · [29 Angular](29-concept-angular.md) · [30 React vs Angular](30-concept-react-vs-angular.md) · [31 Web API](31-concept-aspnet-webapi.md) · [32 FastAPI](32-concept-fastapi.md) · [33 Web API vs FastAPI](33-concept-webapi-vs-fastapi.md) · [34 SQL Server](34-concept-sql-server.md) · [35 Snowflake](35-concept-snowflake.md) · [36 SQL vs Snowflake](36-concept-sqlserver-vs-snowflake.md) · [37 Azure Services](37-concept-azure-services.md) |
+| **AI & platform deep-dives (30 Q&As each)** | [38 AI Skills & Workflow](38-concept-ai-skills-workflow.md) · [39 AI Agents & Agentic AI](39-concept-ai-agents-agentic.md) · [40 RAG](40-concept-rag.md) · [41 LangChain](41-concept-langchain.md) · [42 LangGraph](42-concept-langgraph.md) · [43 LangSmith](43-concept-langsmith.md) · [44 Vector DBs & Chroma](44-concept-vector-databases-chroma.md) · [45 Embeddings & Semantic Search](45-concept-embeddings-semantic-search.md) · [46 LLM App Integration](46-concept-llm-application-integration.md) · [47 System Design](47-concept-system-design.md) · [48 Redis Cache](48-concept-redis-cache.md) · [49 Kafka](49-concept-kafka.md) · [50 Data Design](50-concept-data-design.md) · [51 .NET Core](51-concept-dotnet-core.md) |
 | **Behavioural / "tell me about a time"** | [25 STAR Story Bank](25-star-story-bank.md) |
 | **Questions to ask them** | [26 Reverse-Interview Questions](26-reverse-interview-questions.md) |
 | **"First 90 days?" question** | [27 My First 90 Days](27-first-90-days.md) |
@@ -89,8 +90,22 @@ Under pressure, jump straight to the round you are in:
 | 35 | [Concept: Snowflake](35-concept-snowflake.md) | Architecture, virtual warehouses, micro-partitions, cost, sharing, performance | 30 |
 | 36 | [Concept: SQL Server vs Snowflake](36-concept-sqlserver-vs-snowflake.md) | OLTP vs analytics, cost model, when to use each, with a decision framework | 30 |
 | 37 | [Concept: Azure Core Services](37-concept-azure-services.md) | Blob, Key Vault, App Service, Service Bus, Functions, AI Foundry and more | 30 |
+| 38 | [Concept: AI Skills & AI Workflow](38-concept-ai-skills-workflow.md) | The AI skills an architect needs and how AI workflows are designed end to end | 30 |
+| 39 | [Concept: AI Agents & Agentic AI](39-concept-ai-agents-agentic.md) | Agents, tools, planning, multi-agent systems, autonomy, guardrails | 30 |
+| 40 | [Concept: RAG](40-concept-rag.md) | Retrieval-Augmented Generation: chunking, retrieval, grounding, evaluation | 30 |
+| 41 | [Concept: LangChain](41-concept-langchain.md) | Chains, prompts, retrievers, tools, memory, output parsing | 30 |
+| 42 | [Concept: LangGraph](42-concept-langgraph.md) | Stateful graphs, nodes/edges, cycles, human-in-the-loop, agent orchestration | 30 |
+| 43 | [Concept: LangSmith](43-concept-langsmith.md) | Tracing, evaluation, datasets, monitoring for LLM apps | 30 |
+| 44 | [Concept: Vector Databases & Chroma](44-concept-vector-databases-chroma.md) | Embeddings storage, ANN/HNSW, metadata filters, Chroma, Azure AI Search | 30 |
+| 45 | [Concept: Embeddings & Semantic Search](45-concept-embeddings-semantic-search.md) | Embeddings, similarity, hybrid search, re-ranking, model choice | 30 |
+| 46 | [Concept: LLM Application Integration](46-concept-llm-application-integration.md) | Production engineering: reliability, safety, cost, streaming, monitoring | 30 |
+| 47 | [Concept: System Design](47-concept-system-design.md) | Scalability, caching, data, CAP, resilience, trade-offs | 30 |
+| 48 | [Concept: Redis Cache](48-concept-redis-cache.md) | Caching, cache-aside, TTL/invalidation, sessions, rate limiting, HA | 30 |
+| 49 | [Concept: Kafka](49-concept-kafka.md) | Topics, partitions, consumer groups, delivery guarantees, event-driven | 30 |
+| 50 | [Concept: Data Design (Data Modeling)](50-concept-data-design.md) | Normalization, keys, indexing, NoSQL modeling, transactions, warehousing | 30 |
+| 51 | [Concept: .NET Core](51-concept-dotnet-core.md) | ASP.NET Core, DI, async, EF Core, resilience, security, Azure hosting | 30 |
 
-**Total: 449 questions with full answers and follow-ups.**
+**Total: 869 questions with full answers and follow-ups.**
 
 ---
 

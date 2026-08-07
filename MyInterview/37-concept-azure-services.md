@@ -1,6 +1,6 @@
 # 37 · Concept: Azure Core Services & Azure AI Foundry (30 questions)
 
-[← SQL Server vs Snowflake](36-concept-sqlserver-vs-snowflake.md) · [Home](README.md) · [Next → Overview](01-overview-positioning.md)
+[← SQL Server vs Snowflake](36-concept-sqlserver-vs-snowflake.md) · [Home](README.md) · [Next → AI Skills & Workflow](38-concept-ai-skills-workflow.md)
 
 This file explains the **main Azure services** an architect must know, plus **Azure AI Foundry**, in simple English and real depth. My platforms run on Azure, so I answer from real use (Projects A, B, C).
 
@@ -413,4 +413,4 @@ resource kv 'Microsoft.KeyVault/vaults@2023-07-01' = {
 
 ---
 
-[← SQL Server vs Snowflake](36-concept-sqlserver-vs-snowflake.md) · [Home](README.md) · [Next → Overview](01-overview-positioning.md)
+[← SQL Server vs Snowflake](36-concept-sqlserver-vs-snowflake.md) · [Home](README.md) · [Next → AI Skills & Workflow](38-concept-ai-skills-workflow.md)
