@@ -37,6 +37,7 @@ About 45–60 minutes a day. Weekends lighter.
 | **11** | Client & pre-sales | [05 Client Engagement](05-client-engagement.md) + [06 RFP & Pre-Sales](06-rfp-presales.md). |
 | **12** | Support & post-delivery | [07 Support & Post-Delivery](07-support-post-delivery.md). Rehearse the incident story (S2) and the discrepancy story (S5). |
 | **13** | Performance & AI leadership | [19 Performance Deep Dive](19-performance-deep-dive.md) — front-end/back-end/DB stories with numbers — and [20 AI-Assisted Development](20-ai-assisted-development.md). Say how I'd set AI up in a team. |
+| **13b** | Case studies & decisions | Read the [52 Case Studies Hub](52-concept-case-studies-decision-making.md), then work each case study in its own file — [53 A](53-case-study-a-investment-reporting.md), [54 B](54-case-study-b-ai-rag-assistant.md), [55 C](55-case-study-c-completion-platform.md), [56 D](56-case-study-d-asset-management-reporting.md), [57 E](57-case-study-e-uk-web-platforms.md). For each project say the 8-beat story out loud (start → why the tech → who was involved → result), then defend one decision using the [decision lens](52-concept-case-studies-decision-making.md#the-decision-lens-five-filters) and the [decision-making playbook](58-case-study-decision-making.md). This is where stories become *defensible* decisions. |
 | **14** | Full mock + objections | Run the [mock scripts](#mock-interview-scripts) end to end, timed, out loud. Score myself. Then drill [21 Objections & Tough Questions](21-objections-and-tough-questions.md). |
 | **15** | Polish | [08 Cheat Sheets](08-cheatsheets.md) only. Re-drill the numbers and the [phrases](08-cheatsheets.md#phrases-that-land). Rest. |
 
@@ -50,7 +51,7 @@ When there is less runway. About 60 minutes a day, ruthless prioritisation.
 |-----|-------|-----------|
 | **1** | Core identity | [01 Overview](01-overview-positioning.md) + the [numbers table](08-cheatsheets.md#numbers-i-never-forget). Opening + all 5 stories, out loud. |
 | **2** | Technical breadth | [02 Technical Q&A](02-technical-qa.md) — skim all, drill Azure, data, and AI/RAG hardest (my strengths, so lead with them). |
-| **3** | System design | [03 System Design](03-system-design.md) — pick the 3 scenarios closest to the role. Draw and narrate each. |
+| **3** | System design & case studies | [03 System Design](03-system-design.md) — pick the 3 scenarios closest to the role, draw and narrate each. Then skim the [52 Case Studies Hub](52-concept-case-studies-decision-making.md) and rehearse *why* I chose the tech in [project A](53-case-study-a-investment-reporting.md) (deadline → data split) and [project B](54-case-study-b-ai-rag-assistant.md) (governance → RAG). |
 | **4** | People & clients | [04 Team](04-team-management.md) + [05 Client](05-client-engagement.md). One conflict story, one negotiation story. |
 | **5** | Pre-sales & support | [06 RFP](06-rfp-presales.md) + [07 Support](07-support-post-delivery.md). Estimation answer (R3) + incident answer (S2). |
 | **6** | Full mock + objections | Timed mock from the [scripts](#mock-interview-scripts). Score. Fix the two worst answers. Skim [21 Objections & Tough Questions](21-objections-and-tough-questions.md). |
@@ -77,10 +78,11 @@ Run these out loud, timed. Answer as if the interviewer is in front of me.
 ### Mock A — the architect screen (30 min)
 
 1. "Tell me about yourself." → the [2-minute pitch](10-pitch-and-resume.md).
-2. "Walk me through a system you own end to end." → Project A, the reporting platform.
-3. "How do you keep a deadline-driven data pipeline reliable?" → orchestration + [S1](07-support-post-delivery.md#s1--how-do-you-run-production-support-for-a-system-with-a-hard-daily-deadline).
+2. "Walk me through a system you own end to end." → Project A, the reporting platform — full case study, [53 Case Study A](53-case-study-a-investment-reporting.md).
+3. "How do you keep a deadline-driven data pipeline reliable?" → orchestration + [S1](07-support-post-delivery.md#s1--how-do-you-run-production-support-for-a-system-with-a-hard-daily-deadline) + [CA3](53-case-study-a-investment-reporting.md#ca3--how-did-you-meet-the-pre-market-deadline-reliably-day-after-day).
 4. "Design a data ingestion platform for a third-party feed." → C-QUAD, draw it, [03](03-system-design.md).
-5. "Tell me about a production incident." → [S2](07-support-post-delivery.md#s2--walk-me-through-a-real-incident-you-handled).
+5. "Why did you split into two data stores?" → [CA1](53-case-study-a-investment-reporting.md#ca1--why-did-you-split-the-data-tier-into-sql-server-and-snowflake).
+6. "Tell me about a production incident." → [S2](07-support-post-delivery.md#s2--walk-me-through-a-real-incident-you-handled).
 
 ### Mock B — the leadership panel (30 min)
 
@@ -92,11 +94,12 @@ Run these out loud, timed. Answer as if the interviewer is in front of me.
 
 ### Mock C — the deep-technical (30 min)
 
-1. "Microservices vs modular monolith — when each?" → [02](02-technical-qa.md), example from C.
-2. "How did you build a production RAG application?" → Project B, the 4 pillars.
-3. "A report is slow. Walk me through fixing it." → [S4](07-support-post-delivery.md#s4--how-do-you-tune-a-slow-query-in-production).
-4. "How do you split operational and analytical data?" → the store-split one-liner.
-5. "Design an AI feature for a regulated firm." → grounding + evaluation, [03](03-system-design.md).
+1. "Microservices vs modular monolith — when each?" → [02](02-technical-qa.md), example from C + [CC1](55-case-study-c-completion-platform.md#cc1--why-microservices-and-not-a-single-application-for-the-completion-platform).
+2. "How did you build a production RAG application?" → Project B, the 4 pillars + [54 Case Study B](54-case-study-b-ai-rag-assistant.md).
+3. "Why RAG instead of fine-tuning?" → [CB2](54-case-study-b-ai-rag-assistant.md#cb2--why-rag-instead-of-fine-tuning-the-model).
+4. "A report is slow. Walk me through fixing it." → [S4](07-support-post-delivery.md#s4--how-do-you-tune-a-slow-query-in-production).
+5. "How do you split operational and analytical data?" → [CA1](53-case-study-a-investment-reporting.md#ca1--why-did-you-split-the-data-tier-into-sql-server-and-snowflake).
+6. "Walk me through how you make a big technology decision." → [DM1](58-case-study-decision-making.md#dm1--whats-your-process-for-making-a-big-architecture-decision).
 
 ### Mock D — the hands-on coding round (45 min)
 

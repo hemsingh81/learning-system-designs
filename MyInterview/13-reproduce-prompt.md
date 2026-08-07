@@ -189,6 +189,22 @@ If the kit already exists and you only want to add or improve, do **not** paste 
 
 > "Here is my existing MyInterview kit. Keep the exact style, conventions, and anchor projects A–E. Add a new file `14-negotiation-deep-dive.md` with 6 questions on commercial negotiation, grounded only in the attached resume, following the same header/footer/jump-to/section-index conventions. Then update the README Contents table and the nav links in the adjacent files."
 
+### Case-studies chapter (files 52–58) — already built
+
+The kit includes a **case-studies chapter** that turns each anchor project into a full decision narrative. It is split across seven files so each case study can go deep:
+
+| File | Purpose |
+|------|---------|
+| `52-concept-case-studies-decision-making.md` | **Hub/index** — the 8-beat case-study template, the 5-filter decision lens, and links to 53–58 |
+| `53-case-study-a-investment-reporting.md` | **Case Study A** — TCW investment reporting (SQL+Snowflake split, FastAPI ETL) — 6 Q&As |
+| `54-case-study-b-ai-rag-assistant.md` | **Case Study B** — TCW AI reference architecture + first RAG app — 6 Q&As |
+| `55-case-study-c-completion-platform.md` | **Case Study C** — TengizChevroil microservices on managed Azure — 6 Q&As |
+| `56-case-study-d-asset-management-reporting.md` | **Case Study D** — Sculptor & Bain ETL + delivery uplift — 5 Q&As |
+| `57-case-study-e-uk-web-platforms.md` | **Case Study E** — Bupa/NHS/Unilever PoC-led, regulated delivery — 5 Q&As |
+| `58-case-study-decision-making.md` | **Cross-cutting decision-making** playbook (how I decide) — 7 Q&As |
+
+Each case-study file (53–57) follows the same shape: the 8-beat story, an *architecture at a glance* section, an **ADR-style decision log** table, interview Q&As with follow-ups, and a section index. Wiring: file 51 forward-nav → 52; chain 52→53→54→55→56→57→58; file 58 loops back to Home. Each case study uses per-project Q&A IDs (CA*, CB*, CC*, CD*, CE*) and file 58 uses DM* IDs. These files add 35 numbered Q&As to the kit total.
+
 ### Extension ideas that stay true to the resume
 
 | Idea | Grounded in |

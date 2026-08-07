@@ -1,6 +1,6 @@
 # 51 · Concept: .NET Core (30 questions)
 
-[← Data Design](50-concept-data-design.md) · [Home](README.md) · [Next → Home](README.md)
+[← Data Design](50-concept-data-design.md) · [Home](README.md) · [Next → Case Studies & Decision-Making](52-concept-case-studies-decision-making.md)
 
 This file explains **.NET (Core)** — the modern, cross-platform framework I build backend services and APIs with — in simple English and real depth. I answer from projects A–E, where I built .NET Core APIs and services for TCW's finance platforms.
 
@@ -351,4 +351,4 @@ This file explains **.NET (Core)** — the modern, cross-platform framework I bu
 
 ---
 
-[← Data Design](50-concept-data-design.md) · [Home](README.md) · [Next → Home](README.md)
+[← Data Design](50-concept-data-design.md) · [Home](README.md) · [Next → Case Studies & Decision-Making](52-concept-case-studies-decision-making.md)

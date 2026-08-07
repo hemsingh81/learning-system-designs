@@ -39,6 +39,7 @@ Under pressure, jump straight to the round you are in:
 | **Tough / challenge questions** | [21 Objections & Tough Questions](21-objections-and-tough-questions.md) |
 | **Concept deep-dives (30 Q&As each)** | [28 React](28-concept-reactjs.md) · [29 Angular](29-concept-angular.md) · [30 React vs Angular](30-concept-react-vs-angular.md) · [31 Web API](31-concept-aspnet-webapi.md) · [32 FastAPI](32-concept-fastapi.md) · [33 Web API vs FastAPI](33-concept-webapi-vs-fastapi.md) · [34 SQL Server](34-concept-sql-server.md) · [35 Snowflake](35-concept-snowflake.md) · [36 SQL vs Snowflake](36-concept-sqlserver-vs-snowflake.md) · [37 Azure Services](37-concept-azure-services.md) |
 | **AI & platform deep-dives (30 Q&As each)** | [38 AI Skills & Workflow](38-concept-ai-skills-workflow.md) · [39 AI Agents & Agentic AI](39-concept-ai-agents-agentic.md) · [40 RAG](40-concept-rag.md) · [41 LangChain](41-concept-langchain.md) · [42 LangGraph](42-concept-langgraph.md) · [43 LangSmith](43-concept-langsmith.md) · [44 Vector DBs & Chroma](44-concept-vector-databases-chroma.md) · [45 Embeddings & Semantic Search](45-concept-embeddings-semantic-search.md) · [46 LLM App Integration](46-concept-llm-application-integration.md) · [47 System Design](47-concept-system-design.md) · [48 Redis Cache](48-concept-redis-cache.md) · [49 Kafka](49-concept-kafka.md) · [50 Data Design](50-concept-data-design.md) · [51 .NET Core](51-concept-dotnet-core.md) |
+| **Case studies & decision-making (why I chose what I built)** | [52 Hub](52-concept-case-studies-decision-making.md) · [53 A: Investment Reporting](53-case-study-a-investment-reporting.md) · [54 B: AI/RAG](54-case-study-b-ai-rag-assistant.md) · [55 C: Completion Platform](55-case-study-c-completion-platform.md) · [56 D: AM Reporting](56-case-study-d-asset-management-reporting.md) · [57 E: UK Web](57-case-study-e-uk-web-platforms.md) · [58 Decision-Making](58-case-study-decision-making.md) |
 | **Behavioural / "tell me about a time"** | [25 STAR Story Bank](25-star-story-bank.md) |
 | **Questions to ask them** | [26 Reverse-Interview Questions](26-reverse-interview-questions.md) |
 | **"First 90 days?" question** | [27 My First 90 Days](27-first-90-days.md) |
@@ -104,8 +105,15 @@ Under pressure, jump straight to the round you are in:
 | 49 | [Concept: Kafka](49-concept-kafka.md) | Topics, partitions, consumer groups, delivery guarantees, event-driven | 30 |
 | 50 | [Concept: Data Design (Data Modeling)](50-concept-data-design.md) | Normalization, keys, indexing, NoSQL modeling, transactions, warehousing | 30 |
 | 51 | [Concept: .NET Core](51-concept-dotnet-core.md) | ASP.NET Core, DI, async, EF Core, resilience, security, Azure hosting | 30 |
+| 52 | [Case Studies Hub](52-concept-case-studies-decision-making.md) | The hub: the 8-beat case-study template, the 5-filter decision lens, and links to every case study | — |
+| 53 | [Case Study A: Investment Reporting](53-case-study-a-investment-reporting.md) | TCW investment reporting end to end — how it started, why SQL+Snowflake, FastAPI ETL, who was involved, decision log + Q&As | 6 |
+| 54 | [Case Study B: AI/RAG Assistant](54-case-study-b-ai-rag-assistant.md) | TCW's AI reference architecture + first production RAG app — RAG vs fine-tuning, the four pillars, decision log + Q&As | 6 |
+| 55 | [Case Study C: Completion Platform](55-case-study-c-completion-platform.md) | TengizChevroil microservices on managed Azure — why microservices, adoption, integration contracts, decision log + Q&As | 6 |
+| 56 | [Case Study D: Asset-Management Reporting](56-case-study-d-asset-management-reporting.md) | Sculptor & Bain ETL + delivery — +20% velocity/−15% defects by killing rework, ADF ETL, decision log + Q&As | 5 |
+| 57 | [Case Study E: UK Web Platforms](57-case-study-e-uk-web-platforms.md) | Bupa/NHS/Unilever — PoC-led direction, owned code standards, regulated delivery, decision log + Q&As | 5 |
+| 58 | [Cross-cutting Decision-Making](58-case-study-decision-making.md) | The reusable how-I-decide playbook — the decision lens, ADR habit, reversibility, buy-in, wrong decisions | 7 |
 
-**Total: 869 questions with full answers and follow-ups.**
+**Total: 904 questions with full answers and follow-ups.**
 
 ---
 
