@@ -14,6 +14,30 @@ This file explains **ASP.NET Core Web API** with **C#** simply and in depth. I b
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of ASP.NET Core Web API in plain English. I built the Web API layer on TCW (A) and a reusable controller pattern the team still reuses, so this is how I actually hold it in my head. Get these ideas and every question below is a detail hanging off one of them.
+
+**1. It's a framework for HTTP APIs in C#.** The job is simple: a client sends an HTTP request, my service does work, and returns data — usually JSON. It's cross-platform, open-source and very fast. Everything else is *how* the request gets from the wire to my code and back.
+
+**2. The request journey is the spine.** A request flows: **middleware pipeline** (auth, logging, exception handling) → **routing** picks a **controller action** → the action calls **services** to do work → returns a result that gets serialized to JSON. If I can draw that pipeline, I can explain almost anything in the file.
+
+**3. Dependency injection is built in.** Services are registered once and injected where needed, with lifetimes (singleton, scoped, transient) I choose deliberately. DI is what keeps controllers thin and code testable — I inject a service, not `new` it up.
+
+**4. async/await is not optional at scale.** API work is mostly I/O — database, HTTP, files. Async frees the thread while waiting, so the server handles far more concurrent requests with the same hardware. On A, everything touching the DB is async end to end.
+
+**5. Model binding and validation guard the boundary.** Incoming JSON is bound to typed C# models and validated (data annotations / FluentValidation) *before* my logic runs. Bad data is rejected at the door with a clean 400, so business code only ever sees valid input.
+
+**6. REST and status codes are the contract.** Good API design means predictable resources, correct verbs, honest status codes (200/201/204/400/404/409/500), versioning, and DTOs that decouple the wire shape from my entities. The contract is what clients depend on, so I treat it with care.
+
+**7. Architecture keeps it maintainable.** Layered/Clean architecture, repositories, CQRS/MediatR, minimal APIs vs controllers, configuration and options, background/hosted services — these are the patterns that stop a growing API turning into spaghetti. My reusable controller pattern on A is exactly this: structure so new reports plug in instead of being hand-coded.
+
+**The full-stack / architect lens:** the later Q&As go into production concerns — caching, performance tuning, resilience and retries (Polly), rate limiting, logging and observability, health checks, testing, security hardening, Azure deployment, and monolith vs microservices. That's the difference between "it works on my machine" and "it survives under load, at 3am, in production."
+
+**One rule I never break:** *keep controllers thin — they translate HTTP to a service call and back; all real logic lives in tested, injected services.*
+
+---
+
 ## W1 · What is ASP.NET Core Web API?
 
 **Simple explanation.** It's the part of ASP.NET Core for building **web APIs** — services that return data (JSON) rather than HTML pages. Other apps (a React front end, a mobile app, another service) call it over HTTP. It's **cross-platform** (Windows/Linux/Mac), open-source, and very fast.

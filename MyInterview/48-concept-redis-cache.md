@@ -12,6 +12,32 @@ This file explains **Redis** and **caching** — how I make systems fast and sca
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of Redis and caching in plain English. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. A cache is a fast copy that saves slow work.** Caching keeps hot data in memory so I don't hit a slow database or recompute the same thing on every request. On TCW's reporting platform (A) the same portfolio numbers were read again and again — caching them cut latency from hundreds of milliseconds to single digits and took a lot of load off SQL Server and Snowflake. The trade is always the same: a little freshness for a lot of speed.
+
+**2. Redis is an in-memory data store, not just a cache.** It holds data in RAM, so reads and writes are microsecond-fast. It's single-threaded for commands (so operations are atomic) and speaks rich data types — strings, hashes, lists, sets, sorted sets. I've used it as a cache, a session store, a rate limiter and a lightweight message bus, all from the same box.
+
+**3. Cache-aside is the pattern I reach for first.** The app asks Redis; on a miss it reads the database, writes the result back to Redis with a TTL, then returns it. The app owns the logic, the cache stays simple, and if Redis is down the system still works — just slower. This was my default on TCW APIs (A, B).
+
+**4. TTL and invalidation are the whole game.** Setting an expiry (TTL) is the easy, forgiving way to keep data fresh enough. Explicit invalidation — deleting or updating a key when the source changes — is precise but harder to get right. "There are only two hard things in computer science" and one of them is cache invalidation; I lean on TTL first and add targeted invalidation only where staleness actually hurts.
+
+**5. Memory is finite, so eviction matters.** Redis has a max memory limit and an eviction policy (LRU, LFU, etc.) that decides what to drop when it's full. I pick a policy that matches usage, watch memory, and design keys so hot data survives and cold data ages out cleanly.
+
+**6. Redis does more than caching.** Atomic counters give me rate limiting; SETNX with an expiry gives me a simple distributed lock; hashes make a natural session store; pub/sub and streams move events between services. On project C (microservices on Azure) I used Redis for sessions and rate limiting across instances.
+
+**7. It can be durable and highly available — within limits.** Persistence (RDB snapshots, AOF logs) means Redis can survive a restart, but I treat it as a cache first, not a system of record. For HA I use replication and Redis Sentinel or clustering; on Azure I usually reach for Azure Cache for Redis so the HA and patching are managed for me.
+
+**8. The dangerous failure modes are predictable.** Cache stampede (many misses hitting the DB at once), hot keys, big keys, and consistency drift between cache and database. I plan for these up front with jittered TTLs, locks around expensive rebuilds, and clear rules on who invalidates what.
+
+**The full-stack / architect lens:** the later Q&As go deeper into write strategies (write-through vs write-behind), clustering and sharding, pipelining, monitoring, security and the exact Azure Cache for Redis setup I use. The theme throughout is that Redis is easy to add and easy to misuse — the value is in disciplined key design and invalidation, not in the store itself.
+
+**One rule I never break:** *the cache must never be the source of truth — if it vanished, the system should still be correct, just slower.*
+
+---
+
 ## RC1 · What is caching?
 
 **Simple explanation.** **Caching** stores a copy of data somewhere fast (memory) so I don't recompute it or hit a slow source (database, API) every time. It trades a little **freshness** for a lot of **speed** and reduced load — one of the highest-impact performance tools.

@@ -12,6 +12,32 @@ This file explains **AI skills** (the reusable capabilities we give an AI system
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of AI skills and AI workflows in plain English. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. A skill is one small job the AI can do well.** Summarise, extract fields as JSON, classify, call a tool — each a clear input, a clear output, one responsibility. I treat skills like small functions: named, testable, reusable. That discipline is what makes an AI system maintainable instead of one giant unpredictable prompt.
+
+**2. A workflow is how I stitch skills into a reliable pipeline.** Instead of asking one prompt to do everything, I chain small skills in a predictable, testable order. On Project B the RAG assistant was retrieve, then ground, then answer, then cite — four skills, each provable on its own.
+
+**3. A workflow is a fixed path; an agent decides its own path.** In a workflow I control the steps and the order. In an agent the model decides what to do next. I reach for a workflow by default because it's predictable, and only use agent freedom when the task genuinely needs it.
+
+**4. Prompting is engineering, not wording.** System prompts set the role and rules, few-shot examples show the format, and structured output (JSON schemas) makes results machine-checkable. I design prompts like interfaces so the next step can trust the shape of what came before.
+
+**5. Composition patterns are the real toolkit.** Chaining, routing, parallelisation, orchestrator-worker and the evaluator-optimiser loop are the ways I combine skills. Picking the right pattern for the task is most of good AI design — the same way choosing the right data structure is most of good code.
+
+**6. Context is a scarce, precious resource.** The context window is finite, so I chunk inputs, manage memory, and only put the facts the step actually needs into the prompt. Wasted context means higher cost, more latency and more chances to hallucinate.
+
+**7. Guardrails and evaluation make it safe to ship.** Grounding, hallucination control, input/output validation, plus real evaluation, tracing and observability turn a clever demo into something I'd run in production. If I can't measure it and trace it, I don't trust it.
+
+**8. Production concerns are non-negotiable.** Cost control, latency and streaming, caching, idempotency and retries, security, testing and deployment are part of the design from day one — not afterthoughts. An AI feature is still software and gets held to software standards.
+
+**The full-stack / architect lens:** the later Q&As go deeper — human-in-the-loop, securing AI workflows, testing strategies, deployment, and my end-to-end reference workflow. They all come back to the same core: small tested skills, composed by clear patterns, kept inside guardrails, measured before I trust them.
+
+**One rule I never break:** *never solve with one giant prompt what I can solve with small, testable skills wired into a predictable workflow.*
+
+---
+
 ## AS1 · What is an AI skill?
 
 **Simple explanation.** A **skill** is one well-scoped capability I give the AI system — for example "summarise a document", "extract fields as JSON", "classify a ticket", or "call the search tool". Each skill has a clear input, a clear output, and one job.

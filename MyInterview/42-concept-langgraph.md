@@ -12,6 +12,30 @@ This file explains **LangGraph** — building LLM apps and agents as a **statefu
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of LangGraph in plain English. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. It's my AI app drawn as a graph, not a script.** A plain chain runs A then B then C and stops. LangGraph lets me draw the app as **nodes** (steps that do work) joined by **edges** (what runs next). On Project B I stopped fighting a black-box agent the moment I could see my flow as a picture I control.
+
+**2. Shared state is the thing that flows through.** Every node reads from and writes to one shared **state** object — the messages, the retrieved documents, the tool results, my own flags. Nodes don't pass arguments around; they update the state and the next node sees it. That single idea is what gives me memory and control.
+
+**3. Nodes do the work, edges make the decisions.** A node calls a model, runs a tool, or runs my own Python. An **edge** just says where to go next. A **conditional edge** looks at the current state and branches — "if the model asked for a tool, go run it; otherwise finish." This split keeps logic clean.
+
+**4. Cycles are the point — that's what makes it an agent.** A normal chain can't loop back. LangGraph can. The agent calls a tool, comes back, thinks again, calls another, and only exits when it's done. That loop, expressed as edges that return to an earlier node, is the whole ReAct agent pattern.
+
+**5. Persistence turns a run into something durable.** With a **checkpointer**, the state is saved at every step. So a graph can pause, survive a crash, and resume exactly where it left off. Threads give each conversation its own memory. This is how I get reliability instead of a fragile one-shot script.
+
+**6. Human-in-the-loop is a first-class feature, not a hack.** Because state is saved and the graph can pause, I can stop before a risky step, show a human the proposed action, wait for approval, then continue. For TCW that mattered — some actions must not run without a person saying yes.
+
+**7. Observability is built in through LangSmith.** Every node, every state change, every model call is traceable. When something goes wrong I don't guess — I open the trace and see exactly what each node saw and did.
+
+**The full-stack / architect lens:** the later Q&As go deeper into state reducers, subgraphs, multi-agent graphs, parallel branches, streaming, recursion limits, error handling, testing and deployment. The through-line is always the same: an agent becomes an explicit, inspectable **state machine** instead of an unpredictable loop, which is exactly the discipline production AI needs.
+
+**One rule I never break:** *if a step is risky or expensive, put a checkpoint and a human gate in front of it — never let the graph act on the real world without a way to pause, inspect and resume.*
+
+---
+
 ## LG1 · What is LangGraph?
 
 **Simple explanation.** **LangGraph** is a library (from the LangChain team) for building LLM apps as a **graph**: **nodes** do work (call a model, a tool, my code), **edges** decide what runs next, and a shared **state** flows through. It's built for loops, branches, memory and control — exactly what real agents need.

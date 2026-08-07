@@ -14,6 +14,30 @@ This file explains **Snowflake** simply and in depth. On TCW (Project A) Snowfla
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of Snowflake in plain English. On TCW (A) Snowflake is my **analytical/historical** store, sitting alongside SQL Server, so this is how I actually reason about it. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. It's a cloud data warehouse for OLAP.** Snowflake is built to store and analyse very large amounts of data — big queries over history for reporting and analytics (**OLAP**), not many small live transactions. It's fully managed SaaS on top of Azure/AWS/GCP, and you talk to it purely through SQL — no servers, indexes or tuning to babysit.
+
+**2. Separating storage from compute is the whole trick.** Storage sits in cheap cloud object storage; **compute** runs on separate, on-demand engines. This split is why huge queries don't slow anyone else down and why I pay only for what I use. Almost every other Snowflake advantage flows from this one idea.
+
+**3. Virtual warehouses are the compute.** A virtual warehouse is a cluster I size (XS→4XL) and spin up per workload. I can give ETL, dashboards and ad-hoc analysts their own warehouses so they never contend. They auto-suspend when idle and auto-resume on demand — no idle cost.
+
+**4. Three-layer architecture.** Storage (the data), Compute (virtual warehouses), and a Cloud Services layer (the brain — metadata, security, query planning, optimisation). Knowing which layer does what explains caching, scaling and how queries actually run.
+
+**5. Micro-partitions and pruning make it fast.** Snowflake automatically stores data in small immutable **micro-partitions** and keeps metadata on each. When a query has a filter, it **prunes** — skips partitions that can't match — so it reads a fraction of the data. Clustering keys help pruning on huge tables.
+
+**6. Scaling up vs out.** Scale **up** (bigger warehouse) for a single heavy query; scale **out** (multi-cluster) for many concurrent users. They solve different problems — size for query weight, cluster count for concurrency — and mixing them up wastes money.
+
+**7. The cost model is pay-for-use — so cost is a design concern.** You pay for compute per second a warehouse runs, plus storage. Auto-suspend, right-sizing, avoiding runaway queries and using caching are all cost decisions. On A, splitting stores by purpose keeps heavy analysis off SQL Server *and* keeps Snowflake spend honest.
+
+**The full-stack / architect lens:** the later Q&As go deeper — clustering keys, caching layers, query and cost tuning, concurrency and multi-cluster, loading (COPY/Snowpipe/streaming), Streams and Tasks, ELT and dbt, semi-structured data, data modelling, security and RBAC, data sharing, governance and masking, Azure integration, Snowpark and Cortex/AI — plus decision calls: accessing it from an app, warehouse vs lakehouse, versus Synapse/Databricks, and when *not* to use it. That's warehouse ownership, not just running SQL.
+
+**One rule I never break:** *right-size and auto-suspend every warehouse — in Snowflake, idle compute is money burning, so cost is part of the design, not an afterthought.*
+
+---
+
 ## K1 · What is Snowflake?
 
 **Simple explanation.** Snowflake is a **cloud-native data warehouse** — a system built to store and analyse very large amounts of data. It's designed for **OLAP** (*Online Analytical Processing*): big queries over history for reporting, dashboards and analytics.

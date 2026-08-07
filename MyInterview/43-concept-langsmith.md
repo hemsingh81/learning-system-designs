@@ -12,6 +12,30 @@ This file explains **LangSmith** — the platform to **trace, test, evaluate and
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of LangSmith in plain English. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. LLM apps have no logs, tests or APM by default — LangSmith is all three.** Normal code has logs I can read, unit tests that pass or fail, and APM to watch it live. An LLM app has none of that out of the box. LangSmith fills that gap: tracing, evaluation and monitoring for AI. On Project B it's the layer that made TCW's first production RAG assistant trustworthy.
+
+**2. Tracing records exactly what the model saw.** Every run is captured as **runs** and **spans** — the prompt, the retrieved chunks, the tool calls, the raw output, the tokens, the latency. When an answer is wrong I don't guess; I open the trace and see the exact input that produced it. Most "the model is dumb" bugs turn out to be bad retrieval or a bad prompt, and the trace shows that instantly.
+
+**3. Datasets are my test cases for AI.** A dataset is a set of inputs with expected outputs (or just good reference answers). I build them from real questions and from failures I catch in production. They are the fixed bar every change has to clear.
+
+**4. Evaluation scores quality so nothing ships on vibes.** I run my app over a dataset and score the results — with rules, with **LLM-as-judge**, or with human review. For RAG I score both retrieval (did it find the right chunks?) and the final answer (faithful, relevant, correct?). No change ships without passing the bar.
+
+**5. LLM-as-judge scales human judgement.** For fuzzy quality — is this answer helpful, faithful, on-tone? — I use another model as a grader against a clear rubric. It's not perfect, so I calibrate it against human ratings, but it lets me evaluate hundreds of cases cheaply.
+
+**6. Regression testing and experiments protect me from silent drift.** When I change a prompt, model or chunking strategy, I re-run the same dataset and compare experiments side by side. That catches the case where fixing one answer quietly breaks ten others.
+
+**7. Monitoring closes the loop in production.** Live traces, cost and latency tracking, user feedback capture, annotation queues and alerts. The gold is that production failures become tomorrow's dataset rows — the system gets better because I feed real misses back into evaluation.
+
+**The full-stack / architect lens:** the later Q&As go into tracing non-LangChain code, CI/CD gating, security and privacy of trace data, self-hosting, how it compares to App Insights and LangFuse, and how it pairs with LangGraph. The through-line: *you can't govern what you can't measure*, and LangSmith is how I measure AI.
+
+**One rule I never break:** *no prompt, model or retrieval change ships to production until it has passed the evaluation dataset — improvements are proven with numbers, never assumed.*
+
+---
+
 ## LS1 · What is LangSmith?
 
 **Simple explanation.** **LangSmith** is a platform for the LLM app lifecycle: **tracing** (record every run), **evaluation** (score quality on datasets), and **monitoring** (watch production). It's built by the LangChain team but works with any LLM code.

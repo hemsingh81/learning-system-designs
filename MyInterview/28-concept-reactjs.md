@@ -14,6 +14,32 @@ This file explains **React** from the ground up, in very simple English, in the 
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of React in plain English. If you hold these six ideas, every question below is just a detail hanging off one of them.
+
+**1. Components — the Lego brick.** React builds UI out of small, reusable functions called **components**. Each returns a piece of UI. You compose big screens from little bricks (a `Button` inside a `Row` inside a `DataGrid` inside a `ReportPage`). Build once, reuse everywhere. *On TCW I built one typed `DataGrid` reused across every report.*
+
+**2. Declarative UI — describe the what, not the how.** You don't write "find this cell and change its text". You describe *what the screen should look like for the current data*, and React works out the minimal DOM changes. Your job is to keep the data right; React keeps the screen right.
+
+**3. State & props — the data that drives the screen.** **Props** are inputs passed *into* a component (read-only). **State** is data a component *owns and can change* (`useState`). When state or props change, the component **re-renders**. This one rule — *UI is a function of state* — is the heart of React.
+
+**4. The Virtual DOM — why it's fast.** React keeps a lightweight copy of the UI in memory. On a change it builds a new copy, **diffs** it against the old one, and touches only the real DOM nodes that actually changed. That's why you can re-describe the whole screen cheaply.
+
+```
+state change → component re-runs → new virtual DOM → diff vs old → minimal real-DOM update
+```
+
+**5. Hooks — how function components get powers.** Hooks are functions starting with `use` that let a component remember state (`useState`), run side-effects like data fetching (`useEffect`), hold a mutable reference (`useRef`), or share logic (custom hooks). They run in order on every render, which is why the *rules of hooks* (call them at the top level, never in conditions) matter.
+
+**6. Data flow — one way, downward.** Data flows **down** via props; events flow **up** via callbacks. State lives at the lowest common parent that needs it ("lifting state up"). For data from the server, a cache library (React Query) is usually better than raw `useState`.
+
+**The full-stack lens (how I think as an architect):** beyond the basics I care about **performance** (avoiding needless re-renders, code-splitting), **architecture** (folder-by-feature, typed contracts with the Web API), **rendering strategy** (CSR vs SSR/Next.js), **security** (XSS, tokens), and **testing** (behaviour, not implementation). Those are the C9–C30 questions.
+
+**One rule I never break:** *every piece of UI is a function of state.* Get the state model right and the components fall out naturally.
+
+---
+
 ## C1 · What is React, and why use it?
 
 **Simple explanation.** React is a library (not a full framework) made by Meta for building the *view* — what the user sees. Its big idea is **components**: you break a page into small building blocks (a button, a table, a form), build each one once, and reuse it everywhere.

@@ -12,6 +12,32 @@ This file explains **Apache Kafka** — the distributed event streaming platform
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of Kafka in plain English. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. Kafka is a durable, append-only log.** At its heart it's just an ordered file of events that you keep appending to. Producers write to the end; consumers read forward at their own pace. Because the events are stored (not deleted when read), consumers can replay history. Once I stopped thinking "message queue" and started thinking "a log I can re-read," everything else clicked.
+
+**2. Topics and partitions are how it scales.** A topic is a named stream of events. Each topic is split into partitions, and partitions are the unit of parallelism — more partitions means more consumers can work at once. Order is only guaranteed *within* a partition, which is the single most important thing to understand.
+
+**3. The message key decides the partition — and therefore ordering.** Events with the same key land in the same partition and stay in order. On TCW integrations (A/C) I keyed by account or portfolio ID so all events for one entity processed in order, while different entities spread across partitions for throughput.
+
+**4. Consumers, groups and offsets.** Consumers read from partitions; a consumer group shares the work so each partition is handled by exactly one consumer in the group. An offset is a bookmark — where a consumer has read up to. Committing offsets is how a consumer remembers its place and how it can resume or replay.
+
+**5. Retention and replication give durability.** Kafka keeps events for a configured time or size regardless of who has read them, so slow or new consumers still get the data. Replication copies each partition across brokers, so a broker failure doesn't lose data. This durability is what lets services decouple safely.
+
+**6. Delivery guarantees are a choice, not a default.** At-most-once, at-least-once, and exactly-once each have costs. Most real systems run at-least-once and make consumers idempotent — I design handlers so processing the same event twice is safe. Kafka's idempotent producer and transactions enable exactly-once within Kafka when it's truly needed.
+
+**7. Kafka enables event-driven architecture.** Instead of services calling each other synchronously, one service emits an event and others react. This decouples teams and systems, smooths spikes, and lets me add new consumers without touching producers. On project C this turned tight service-to-service coupling into a clean publish/subscribe flow.
+
+**8. It's not a general message queue, and on Azure I have options.** Unlike a queue, Kafka retains and replays events and scales via partitions rather than competing consumers on one queue. On Azure I often use Event Hubs, which speaks the Kafka protocol, so I get the same model as a managed service without running brokers myself.
+
+**The full-stack / architect lens:** the later Q&As go deeper into Kafka Connect, stream processing, dead-letter handling, consumer lag and scaling, schemas/serialization, security, and the exact Azure/Event Hubs setup. The recurring theme is that Kafka's power comes from the log being replayable and partitioned — design around keys, ordering and idempotency and the rest follows.
+
+**One rule I never break:** *design every consumer to be idempotent — assume it will see the same event more than once.*
+
+---
+
 ## KF1 · What is Kafka?
 
 **Simple explanation.** **Apache Kafka** is a distributed **event streaming platform** — a durable, ordered **log** of events. Producers write events to **topics**; consumers read them independently and can replay history. It's built for high throughput, durability and decoupling.

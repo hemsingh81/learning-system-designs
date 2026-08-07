@@ -12,6 +12,32 @@ This file explains **RAG** — giving an LLM your own data so it answers from fa
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of RAG in plain English. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. RAG means: retrieve the facts first, then let the model answer from them.** Before the LLM writes anything, I fetch the relevant pieces of my own data and put them in the prompt, so the answer is grounded in those facts — not the model's training memory. Retrieve, augment, generate. On Project B this is how I let an LLM safely answer about TCW's own documents.
+
+**2. RAG turns a general model into a domain expert on my data — without retraining.** The model stays the same; I change what it can see. That's why RAG is the single biggest lever against hallucination: I make the model answer only from facts I retrieved.
+
+**3. RAG vs fine-tuning solve different problems.** RAG adds *knowledge* (facts that change and need citing); fine-tuning adds *behaviour* (tone, format, a skill). For "answer from our latest documents" I choose RAG almost every time, because I can update the data without touching the model.
+
+**4. The pipeline is ingest → chunk → embed → store → retrieve → rerank → prompt → generate.** Each stage is a place to win or lose quality. Good chunking and good retrieval matter far more than a fancier model — most bad RAG answers are really retrieval failures.
+
+**5. Chunking and embeddings decide what's findable.** I split documents into meaningful chunks and turn them into vectors so similar meaning sits near similar meaning. Chunk too big and retrieval is noisy; too small and it loses context. Getting chunk size right is quiet, unglamorous, high-impact work.
+
+**6. Better retrieval = hybrid search plus re-ranking.** Pure vector search misses exact terms; keyword search misses meaning — so I combine them (hybrid) and then re-rank the top hits so the best evidence lands at the top of the prompt. Metadata filters and query rewriting sharpen it further.
+
+**7. Grounding and citations are the whole point.** I instruct the model to answer only from the retrieved context and to cite its sources, so a human can verify every claim. No grounding, no trust — that's the line for anything I ship.
+
+**8. If I can't evaluate it, I can't improve it.** I measure retrieval quality and answer quality separately, so when something's wrong I know whether the fault is finding the facts or writing the answer. Evaluation is what lets me tune the pipeline instead of guessing.
+
+**The full-stack / architect lens:** the later Q&As go deeper — security and access control, cost, latency, agentic and graph RAG, RAG on Azure, failure modes, when *not* to use RAG, testing, and my full reference architecture. They all trace back to the core: retrieve the right facts, ground the answer in them, cite them, and measure both halves.
+
+**One rule I never break:** *the model answers only from retrieved, cited context — if the facts aren't there, it says so rather than guessing.*
+
+---
+
 ## RG1 · What is RAG?
 
 **Simple explanation.** **RAG (Retrieval-Augmented Generation)** means: before the LLM answers, I **retrieve** relevant facts from my own data and put them in the prompt, so the model **generates** an answer grounded in those facts — not its training memory. Retrieve, then generate.

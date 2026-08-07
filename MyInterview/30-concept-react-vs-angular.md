@@ -14,6 +14,30 @@ This file compares **React** and **Angular** simply and fairly. I've shipped bot
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of comparing React and Angular in plain English. I've shipped both — React on TCW (A), Angular on TengizChevroil (C) — so I frame this as the *axes I compare on*, not a fan cheering for one side. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. Library vs framework is the root of everything.** React is a **library** that does the view well and lets me assemble the rest (router, data layer, state). Angular is a **complete framework** that ships routing, forms, HTTP and DI in one opinionated box. Almost every other difference — flexibility, consistency, learning curve — flows straight out of this one fact.
+
+**2. The axes I actually compare on.** I never argue "which is better" in the abstract. I score both on a fixed set of axes: flexibility, consistency, team size and skill, hiring pool, ecosystem depth, bundle size, testing story, and long-term maintenance. React wins some axes; Angular wins others. The *project* decides which axes matter most.
+
+**3. Language and structure.** React is JavaScript/TypeScript with JSX — markup and logic live together, and structure is whatever I impose. Angular is TypeScript-first with templates, decorators and a prescribed file structure. Angular's structure is a gift on a big team and a tax on a tiny one.
+
+**4. Data flow and reactivity.** React uses one-way data flow with hooks (and libraries like Redux/Zustand/React Query for bigger state). Angular gives two-way binding, RxJS and now signals built in. Both end up reactive; the difference is whether reactivity is something I *choose* (React) or something *handed to me* (Angular).
+
+**5. Ecosystem vs batteries-included.** React's flexibility means a huge, fast-moving ecosystem — I pick best-of-breed parts but I own the choices and the churn. Angular gives fewer decisions and a coherent, versioned upgrade path — less freedom, more predictability.
+
+**6. Team and hiring reality.** React has the larger hiring pool and shorter ramp-up for JS developers; Angular rewards teams that value one enforced way of doing things. On C, Angular's consistency kept a large, rotating team aligned; on A, React's flexibility let a small team move fast.
+
+**7. The things that are actually the same.** Both are component-based, both do SSR, both are secure when used correctly, both scale to large apps, and both have strong tooling. Most "X is faster/safer than Y" claims are myths — the real differences are ergonomic and organisational, not capability.
+
+**The full-stack / architect lens:** the later Q&As go deeper — rendering models and performance, talking to the back end, scaling to large codebases, migration and coexistence, bundle size and load time, mobile story, accessibility, security parity, and total cost of ownership. That's where a senior answer lives: not "I like React" but "here's how each choice plays out in production over years."
+
+**One rule I never break:** *choose the framework that fits the team and the problem, not the one I personally enjoy — and be able to defend the choice on the axes, in one minute.*
+
+---
+
 ## V1 · The core difference
 
 **Simple explanation.** The single biggest difference: **React is a library, Angular is a framework.**

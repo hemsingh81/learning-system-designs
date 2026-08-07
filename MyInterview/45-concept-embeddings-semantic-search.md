@@ -12,6 +12,30 @@ This file explains **embeddings** (turning meaning into numbers) and **semantic 
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of embeddings and semantic search in plain English. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. An embedding turns meaning into numbers.** A model reads text and outputs a **vector** — a long list of numbers that captures what the text *means*. So "invoice" and "bill" land close together even though they share no letters. On Project B this is the trick that powers retrieval behind TCW's RAG assistant.
+
+**2. Similar meanings sit close in space.** Because meaning maps to position, comparing two texts becomes measuring the **distance** between two vectors — usually cosine similarity. Close means related; far means unrelated. That's the entire basis of semantic search.
+
+**3. Semantic search finds by meaning; keyword search finds by exact words.** Keyword search (like BM25) matches the literal tokens. Semantic search matches the idea, so it finds the right passage even when the user's words differ from the document's. Each is strong where the other is weak.
+
+**4. That's why hybrid search wins in real apps.** Semantic search struggles with exact things — a fund code, an error number, a surname. Keyword search nails those but misses paraphrases. I combine both so I get the meaning *and* the exact hit — the setup I trust on real corpora.
+
+**5. Re-ranking cleans up the shortlist.** First I fetch a broad set of candidates cheaply by vector similarity, then a stronger (slower) re-ranker reorders the top few for real relevance. Cheap-and-wide then precise-and-narrow gives better answers than either alone.
+
+**6. The same-model rule is non-negotiable.** The query and the stored documents must be embedded with the **same model**. Two models produce vectors in different spaces, so distances become meaningless and retrieval quietly breaks. If I change the embedding model, I must re-embed everything.
+
+**7. Dimensions, model choice and cost are trade-offs.** More dimensions can capture more nuance but cost more storage and compute. The best model depends on my domain, language and budget — I check leaderboards like MTEB but validate on my own data, because a general winner isn't always the winner for finance text.
+
+**The full-stack / architect lens:** the later Q&As go into chunking's link to embeddings, multilingual and multimodal embeddings, domain fit and fine-tuning, caching, latency, storage, quality evaluation, privacy, Azure, and model versioning. The through-line: embeddings are the **foundation of retrieval**, and their quality caps how good RAG can ever be.
+
+**One rule I never break:** *query and documents are always embedded by the exact same model and version — change the model, re-embed everything, or retrieval silently rots.*
+
+---
+
 ## EM1 · What is an embedding?
 
 **Simple explanation.** An **embedding** is a list of numbers (a **vector**) that represents the **meaning** of text (or an image/audio). A model reads the text and outputs the vector, so "invoice" and "bill" land near each other in vector space.

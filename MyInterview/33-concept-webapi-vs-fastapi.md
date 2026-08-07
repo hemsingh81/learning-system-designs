@@ -13,6 +13,30 @@ This file compares **ASP.NET Core Web API (C#)** and **FastAPI (Python)** fairly
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of comparing ASP.NET Core Web API and FastAPI in plain English. On TCW (A) I run **both** in one platform — C# for the app/API tier, FastAPI for the ETL — so I frame this as *when I pick each*, not a language argument. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. The concepts are nearly identical.** Both give routing, dependency injection, async/await, request validation (model annotations vs Pydantic), middleware and auto-generated docs. If you learn one, the other feels familiar in a day. So the choice is almost never about API mechanics.
+
+**2. The real difference is language and ecosystem.** ASP.NET Core is **C#** — compiled, statically typed, Microsoft-backed, with deep enterprise tooling (EF Core, Entra ID, Visual Studio). FastAPI is **Python** — type-hinted, fast to write, sitting in the ecosystem where data, ETL and AI/ML libraries live. That ecosystem gravity, not syntax, drives the decision.
+
+**3. When I pick Web API.** Large business applications, complex domain logic, long-lived enterprise systems, teams already in .NET, and anywhere I want compiled performance and strong static typing across a big codebase. On A, the app/API tier is C# for exactly these reasons.
+
+**4. When I pick FastAPI.** Data pipelines, ETL, scripting, and AI/ML serving — anywhere Python's libraries (pandas, SQLAlchemy, the ML stack) are the natural home. On A the Aladdin ingestion ETL is FastAPI; on D the ETL work is Python too. I go where the data tools live.
+
+**5. Performance is a wash for most APIs.** C#/.NET is faster raw, but FastAPI on async ASGI is plenty fast for typical I/O-bound APIs. Performance rarely decides it — the bottleneck is usually the database or network, not the framework. I choose on fit, then tune.
+
+**6. Type safety differs in kind.** C# enforces types at compile time — errors caught before it runs. Python/FastAPI uses hints plus Pydantic to validate at runtime at the boundary. Both give safety; one is compile-time guarantees, the other is boundary-time validation.
+
+**7. Running both together is a strength, not a mess.** A polyglot platform is fine when each service plays to its ecosystem and they talk over clean HTTP contracts. On A the C# tier and FastAPI ETL share a database and clear API boundaries — each does what it's best at.
+
+**The full-stack / architect lens:** the later Q&As go deeper — feature-by-feature (routing, DI, validation, async model, ORM, docs, auth, error handling, middleware), then architecture and ops (structure, config/secrets, background work, testing, Azure deployment, observability, resilience, tooling), then the decision questions: hiring and cost, running both together, migration, gRPC/GraphQL, AI workloads, startup vs enterprise. A senior answer picks deliberately and can defend it.
+
+**One rule I never break:** *pick the framework whose ecosystem fits the job — C#/.NET for enterprise apps, Python/FastAPI for data and AI — and never argue language loyalty over problem fit.*
+
+---
+
 ## P1 · The core difference
 
 **Simple explanation.** The biggest difference is the **language and ecosystem**, not the API concepts — which are strikingly similar.

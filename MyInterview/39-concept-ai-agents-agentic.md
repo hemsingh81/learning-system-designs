@@ -12,6 +12,32 @@ This file explains **AI agents** and **agentic AI** — systems where the model 
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of AI agents and agentic AI in plain English. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. An agent is an LLM running in a loop.** Give the model a goal, a set of tools, and a loop: it thinks, picks a tool, acts, reads the result, and repeats until the goal is met or a limit is hit. "Agentic" simply means the model — not my hard-coded path — decides the next step at runtime.
+
+**2. Agent = model + tools + memory + a control loop.** Those four parts are the whole thing. Tools are how it acts on the world (search, call an API, run code); memory is how it remembers across steps; the control loop is the fence I put around it. Take away the loop and it's just a single call.
+
+**3. The trade is flexibility for predictability.** A workflow follows my fixed steps and is easy to reason about. An agent chooses its own steps and handles messy, open-ended tasks — but it's less predictable, costs more and can wander. I use an agent deliberately, not because it's fashionable.
+
+**4. ReAct is the common loop: reason, then act.** The model reasons about what to do, acts by calling a tool, observes the result, and reasons again. Planning and reflection (self-critique) make this smarter for harder tasks, at the cost of more model calls.
+
+**5. Multi-agent means splitting work across specialists.** Instead of one do-everything agent, I can use several with clear roles coordinated by an orchestrator. It's powerful but adds cost and coordination complexity, so I only reach for it when a single agent genuinely can't cope.
+
+**6. Autonomy is a dial, not a switch.** I choose how much freedom to give — from a tightly scripted assistant to a highly autonomous agent — and I set stopping conditions (step limits, budgets, timeouts) so it can never loop forever or burn unbounded cost.
+
+**7. Guardrails and human-in-the-loop are mandatory, not optional.** Tool permissions, input/output validation, sandboxing, approvals for risky actions, and human review on anything sensitive. On Project B I ship *governed* AI — the guardrails are as much of the design as the agent itself.
+
+**8. If I can't observe and evaluate it, I don't run it.** Tracing every step, evaluating outcomes, and handling errors turn an impressive demo into something safe for production. Cost, latency and failure modes get designed for up front.
+
+**The full-stack / architect lens:** the later Q&As go deeper — frameworks, MCP, agentic RAG, coding agents, when to use an agent and when not to, common failure modes, testing, and deployment. They all trace back to the same core: a fenced loop of model-plus-tools, given only as much autonomy as the task truly needs.
+
+**One rule I never break:** *never give an agent an unbounded loop or an unfenced tool — always cap the steps and constrain what it's allowed to do.*
+
+---
+
 ## AG1 · What is an AI agent?
 
 **Simple explanation.** An **AI agent** is an LLM given a goal, a set of **tools**, and a **loop**. It decides the next action, uses a tool, reads the result, and repeats until it reaches the goal or hits a limit. The model — not my hard-coded path — drives the steps.

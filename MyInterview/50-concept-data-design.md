@@ -12,6 +12,32 @@ This file explains **data design / data modeling** — how I structure data so s
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of data design in plain English. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. The model is the foundation — get it right and everything downstream gets easier.** Data design is deciding what the entities are, how they relate, what the keys and types are, and how it's physically stored. A clean model makes queries fast, changes cheap and bugs rare. On TCW's reporting platform (A) the whole system was only as good as the model underneath it.
+
+**2. Design from the access patterns, not in a vacuum.** I start with the questions the system must answer — how data is read and written — and let that shape the model. The same data modelled for transactional writes looks very different from data modelled for analytical reads. Access patterns come first; the schema serves them.
+
+**3. Three levels: conceptual, logical, physical.** Conceptual is the business picture (entities and relationships), logical adds attributes, keys and normalization without a specific engine, and physical is the real tables, indexes and storage on SQL Server, Snowflake or a NoSQL store. Moving through the levels keeps design deliberate instead of accidental.
+
+**4. Keys are how data stays correct and connected.** A primary key uniquely identifies a row; foreign keys tie related data together and enforce integrity. Choosing the right identifier — natural vs surrogate, and the right type — is a decision I never rush, because keys are hard to change later.
+
+**5. Normalize for correctness, denormalize for speed — on purpose.** Normalization removes duplication so data can't contradict itself; it's my default for transactional systems (A, D). Denormalization deliberately duplicates data to make reads fast, which is what I do in warehouses and read models. The skill is knowing which trade you're making and why.
+
+**6. Relational and NoSQL model differently.** Relational modelling normalizes around relationships and joins. Document, key-value and wide-column stores model around access patterns — often embedding data to avoid joins, deciding embed-vs-reference per use case. Same discipline, different rules; I pick the store to fit the workload.
+
+**7. Indexing, transactions and integrity keep it fast and trustworthy.** Indexes make the reads I care about fast (at a write and storage cost); transactions keep multi-step changes all-or-nothing; constraints stop bad data getting in. On the ETL work (D) these were the difference between a pipeline you trust and one you babysit.
+
+**8. OLTP and OLAP are two different jobs.** Transactional systems (OLTP) are normalized for fast, correct writes; analytical systems (OLAP) are denormalized — often a star schema — for fast aggregate reads. Mixing them hurts both. On TCW (A) I kept the operational model separate from the Snowflake warehouse feeding reporting.
+
+**The full-stack / architect lens:** the later Q&As go deeper into normal forms, schema evolution and migrations, partitioning and sharding, star schemas, data security and governance. The thread through all of it is that data outlives code — a considered model, driven by access patterns and consistency needs, pays back for years.
+
+**One rule I never break:** *model for how the data is actually used — never design the schema before you know the questions it must answer.*
+
+---
+
 ## DD1 · What is data design?
 
 **Simple explanation.** **Data design (data modeling)** is deciding how to **structure data**: what the entities are, how they relate, what the keys and types are, and how it's physically stored. It's the blueprint for how data lives in the system.

@@ -12,6 +12,32 @@ This file explains **LangChain** — the framework for building LLM apps by comp
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of LangChain in plain English. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. LangChain gives me reusable parts plus a clean way to wire them.** Model wrappers, prompt templates, retrievers, tools, memory, output parsers — standard components — and a way to compose them into chains and agents. So I build LLM apps from tested pieces instead of raw API calls and string glue. On Project B I built TCW's first production RAG assistant this way, with LangGraph, LangSmith and Chroma.
+
+**2. It standardises how I talk to models and data.** Swap OpenAI for another provider, or one vector store for another, and most of my code stays the same because I'm coding against LangChain's interfaces. That portability is a big part of why I use it.
+
+**3. LCEL is the composition glue.** The LangChain Expression Language lets me pipe components together — prompt → model → parser — into a runnable chain that supports streaming, batching and async for free. It's the modern, clean way to build; I think of it like composing Unix pipes.
+
+**4. Prompts and output parsers make results trustworthy.** Prompt templates keep my prompts consistent and parameterised; output parsers (and structured output) force the model's reply into a schema I can validate. Together they turn free text into data the next step can rely on.
+
+**5. Retrievers, loaders, splitters and embeddings are the RAG toolkit.** Document loaders pull data in, text splitters chunk it, embeddings turn it into vectors, vector stores hold it, and retrievers fetch the relevant bits at query time. This is exactly the pipeline behind my RAG assistant.
+
+**6. Memory carries context across turns.** For a chat assistant I need it to remember earlier messages within the window. LangChain's memory abstractions handle that so a conversation feels continuous instead of amnesiac.
+
+**7. Tools and agents let the model act, not just talk.** A tool is a function the model can call (search, lookup, calculation); an agent decides which tools to use to reach a goal. LangChain gives me the wiring — though for complex, stateful control I graduate to LangGraph.
+
+**8. Production means callbacks, tracing, retries and caching.** LangSmith gives me tracing and evaluation; callbacks expose what's happening; retries and caching keep it reliable and cheap. I treat a LangChain app like any other service — observable, tested and hardened before it ships.
+
+**The full-stack / architect lens:** the later Q&As go deeper — structured output, LangChain vs LangGraph, LangSmith, error handling and retries, caching, testing, running in production, common pitfalls, alternatives, and how I actually use it. They all trace back to the core: reusable parts, composed cleanly with LCEL, wired into RAG or agents, and hardened for production.
+
+**One rule I never break:** *use LangChain for the plumbing, but keep my own logic and tests around it — never let the framework become a black box I can't reason about.*
+
+---
+
 ## LC1 · What is LangChain?
 
 **Simple explanation.** **LangChain** is an open-source framework for building applications with LLMs. It provides standard **components** — model wrappers, prompt templates, retrievers, tools, memory — and a way to **compose** them into chains and agents, so I don't hand-write the plumbing.

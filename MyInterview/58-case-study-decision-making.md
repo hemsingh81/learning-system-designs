@@ -1,8 +1,8 @@
 # 58 · Cross-cutting Architectural Decision-Making (7 questions + follow-ups)
 
-[← Case Study E: UK Web Platforms](57-case-study-e-uk-web-platforms.md) · [Home](README.md) · [Next → Home](README.md)
+[← Case Study E: UK Web Platforms](57-case-study-e-uk-web-platforms.md) · [Home](README.md) · [Next → SOLID Principles](59-concept-solid-principles.md)
 
-The case-study files (53–57) tell *what* I built on each project. This file is the **playbook underneath all of them** — *how* I make architectural decisions, told as reusable principles with evidence from projects A–E. When an interviewer asks *"how do you make decisions?"* rather than *"what did you build?"*, this is where I answer. It closes the case-study chapter and loops back to [Home](README.md).
+The case-study files (53–57) tell *what* I built on each project. This file is the **playbook underneath all of them** — *how* I make architectural decisions, told as reusable principles with evidence from projects A–E. When an interviewer asks *"how do you make decisions?"* rather than *"what did you build?"*, this is where I answer. It closes the case-study chapter and leads into the **principles & performance deep-dives** (files 59–65).
 
 > One-line: *"I choose the most boring technology that meets the hardest constraint, behind an interface I can change my mind about later — and I write down why."*
 
@@ -154,4 +154,4 @@ Every significant decision gets a short **Architecture Decision Record**: the co
 
 ---
 
-[← Case Study E: UK Web Platforms](57-case-study-e-uk-web-platforms.md) · [Home](README.md) · [Next → Home](README.md)
+[← Case Study E: UK Web Platforms](57-case-study-e-uk-web-platforms.md) · [Home](README.md) · [Next → SOLID Principles](59-concept-solid-principles.md)

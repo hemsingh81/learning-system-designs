@@ -14,6 +14,32 @@ This file explains the **main Azure services** an architect must know, plus **Az
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of Azure's core services in plain English. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. I don't learn 200+ services — I learn the building blocks.** As an architect I keep a small kit in my head: somewhere to store files, somewhere to keep secrets, somewhere to run code, and a way for parts to talk. Everything else is a variation. My platforms (Projects A, B, C) are built from that same handful of blocks.
+
+**2. Prefer PaaS — rent the platform, not the machine.** IaaS means I manage the VM; PaaS means Microsoft manages the platform and I just deploy code; SaaS is the finished app. I lean on PaaS (App Service, Functions, Azure SQL) so my team ships features instead of patching servers.
+
+**3. Storage and secrets are the foundation.** Blob Storage holds files, documents and AI source data cheaply and at scale. Key Vault holds secrets, keys and certificates so nothing sensitive ever sits in code or config. Get these two right and the rest of the system has somewhere safe to stand.
+
+**4. Hosting is a spectrum — pick by workload, not habit.** App Service for steady web apps and APIs, Functions for short event-driven bursts, containers (ACA/AKS) when I need portability or fine control. I choose the smallest thing that fits the traffic shape and scaling need.
+
+**5. Messaging decouples the system.** Service Bus (queues/topics) lets services hand off work without waiting on each other, so a slow or down component doesn't break the caller. On Project C's microservices this is what keeps the platform resilient under load.
+
+**6. Managed identity is how services prove who they are — without passwords.** Instead of storing credentials, an Azure resource gets its own identity and is granted least-privilege access to Key Vault, Storage or a database. It removes the biggest class of leaked-secret mistakes.
+
+**7. You can't run what you can't see — App Insights and monitoring.** Application Insights plus Azure Monitor give me traces, metrics, logs and alerts across the whole stack. Observability isn't an add-on; it's how I know the system is healthy and where it hurts.
+
+**8. AI Foundry (with Azure OpenAI and AI Search) is where I build governed AI.** Azure AI Foundry is the hub for models, deployments and evaluation; Azure OpenAI serves the models; AI Search powers retrieval for RAG. On Project B this is the backbone of TCW's AI reference architecture.
+
+**The full-stack / architect lens:** the later Q&As go deeper — API Management, Front Door/CDN, event-driven choices (Event Grid vs Service Bus vs Event Hubs), Redis, Cosmos, landing zones, infrastructure-as-code, cost management, the Well-Architected Framework, resilience across regions and zones, and a full reference architecture. Every one of them is just wiring the blocks above into something secure, scalable and observable.
+
+**One rule I never break:** *no secrets in code or config — use Key Vault and managed identity, always.*
+
+---
+
 ## Z1 · What is Azure?
 
 **Simple explanation.** Azure is Microsoft's **cloud platform** — you rent computing (servers, storage, databases, AI) instead of buying hardware. It offers three service models: **IaaS** (you manage the VM), **PaaS** (Microsoft manages the platform, you deploy code — my usual choice), and **SaaS** (ready-to-use software).

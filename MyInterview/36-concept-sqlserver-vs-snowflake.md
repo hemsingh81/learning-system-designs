@@ -13,6 +13,30 @@ This file compares **SQL Server** and **Snowflake** fairly. On TCW (Project A) I
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of SQL Server vs Snowflake in plain English. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. They are built for two different jobs, not one race.** SQL Server is an OLTP database — its job is many small, fast, correct reads and writes of live data. Snowflake is an OLAP data warehouse — its job is a few huge queries scanning years of history. On TCW (Project A) I run both on purpose, so I never pick a "winner" — I pick the right tool per workload.
+
+**2. The shape of the work decides the store.** If the pattern is "grab one record, update one record, do it thousands of times a second" that is OLTP and SQL Server wins. If the pattern is "scan millions of rows, group and aggregate for a dashboard" that is OLAP and Snowflake wins. I look at the query shape first, brand second.
+
+**3. Snowflake separates storage from compute — that is its superpower.** In Snowflake the data sits in cheap cloud storage and you spin up independent compute "warehouses" that scale up or out per team, then switch off. SQL Server ties storage and compute together on a server you size and keep running. That single design choice explains most of the cost and scaling differences.
+
+**4. The cost models are opposite, so you optimise them opposite ways.** SQL Server costs money whether busy or idle — you pay for the provisioned server, so you keep it well-sized and always-on. Snowflake bills per second of compute you use, so I make queries efficient, auto-suspend idle warehouses, and watch that nobody leaves a big warehouse running.
+
+**5. Tuning is a different craft on each.** On SQL Server I earn performance with indexes, statistics and query plans. On Snowflake there are no traditional indexes — I get speed from micro-partitions, clustering keys and right-sizing the warehouse. Skills do not transfer one-for-one; the mental model must switch with the engine.
+
+**6. Semi-structured and scale-out favour Snowflake; low-latency single-row work favours SQL Server.** Snowflake ingests JSON natively and scales analytical concurrency by adding warehouses. SQL Server gives millisecond single-row transactions and strong consistency for an app. Knowing which strength you need is the whole decision.
+
+**7. The best design uses both and keeps them in sync.** My real answer is rarely "one store". It is SQL Server for the operational app, Snowflake for reporting and AI, and a clean pipeline (CDC/ELT) moving data from one to the other — so each store does only what it is best at.
+
+**The full-stack / architect lens:** the later Q&As go deeper — HA/DR, security and governance, backup, monitoring, ETL vs ELT between the two, migration, real-time analytics, AI/ML workloads, and how both fit the Azure ecosystem. They all trace back to the seven ideas above: match the workload to the engine, respect the cost model, and keep the two stores in sync.
+
+**One rule I never break:** *never run heavy analytics on the database your live app depends on — separate the operational store from the analytical store.*
+
+---
+
 ## D1 · The core difference: OLTP vs OLAP
 
 **Simple explanation.** The single most important point:

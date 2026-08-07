@@ -12,6 +12,30 @@ This file explains how I **integrate LLMs into real applications** — not the m
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of LLM application integration in plain English. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. The model is 20% of the work; the engineering around it is the other 80%.** Getting a good answer in a playground is easy. Turning it into a feature that's reliable, safe and affordable in production is the real job. On projects A–E, especially TCW's RAG assistant, that engineering is what shipped, not the prompt.
+
+**2. Treat the LLM as an unreliable, non-deterministic, external, paid dependency.** It can be slow, wrong, or down; it costs money per call; and the same input can give different output. Once I accept that, I design like I would for any critical third-party service — with timeouts, retries, fallbacks and budgets.
+
+**3. Prompts are managed artefacts, and output must be validated.** I version prompts like code, not scatter them in strings. And I never trust the raw output — I ask for **structured output** (JSON to a schema) and validate it, so downstream code isn't parsing free text and hoping.
+
+**4. Reliability is built from timeouts, retries, rate-limit handling and fallbacks.** Providers throttle and occasionally fail. I set timeouts, retry with backoff, respect rate limits, and have a **fallback** — a smaller model, a cached answer, or a graceful "try again" — so one bad upstream moment doesn't take the feature down.
+
+**5. Caching and cost control are first-class, not afterthoughts.** Tokens are money and latency. I cache repeated calls, keep prompts tight, pick the cheapest model that clears the quality bar, and route hard cases to the expensive model only when needed. Cost is a design constraint from day one.
+
+**6. Safety and security are non-optional.** Guardrails on input and output, defence against **prompt injection** (especially when RAG pulls in outside text), no secrets or PII leaking into prompts, and never letting model output trigger real actions without checks. The model must not become a hole in the app.
+
+**7. If I can't measure it, I can't ship it safely.** Evaluation on datasets before release, plus monitoring, tracing, cost and latency dashboards in production. Failures feed back into tests. This is the same loop LangSmith gives me — measure, catch regressions, improve.
+
+**The full-stack / architect lens:** the later Q&As go into streaming, context-window management, tool calling, RAG integration, conversation state, latency, hallucination handling, async and queues, UX patterns, multi-model routing, deployment and a reference architecture. The through-line: I wrap a probabilistic component in deterministic engineering so the *product* behaves predictably even when the model doesn't.
+
+**One rule I never break:** *never let raw model output flow straight into a decision, a database, or a real-world action — always validate, guard and, when it matters, keep a human or a hard check in the loop.*
+
+---
+
 ## LI1 · What LLM integration means
 
 **Simple explanation.** **LLM integration** is the engineering that turns a model into a **reliable product feature**: calling the API, managing prompts, validating output, adding RAG/tools, handling errors and cost, keeping it safe, and monitoring it in production. The model is 20% of the work — this is the other 80%.

@@ -12,6 +12,32 @@ This file explains **.NET (Core)** — the modern, cross-platform framework I bu
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of .NET (Core) in plain English. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. It's the modern, cross-platform .NET.** .NET Core — just ".NET" from v5 onward — is Microsoft's fast, open-source, cross-platform framework. It runs on Windows, Linux and macOS, and it's my default for high-performance web APIs and services in the Azure ecosystem. On TCW's finance platforms (A, B) it was the backbone of the backend.
+
+**2. ASP.NET Core Web API is how I expose functionality.** Controllers (or minimal APIs) map HTTP requests to methods, with model binding and validation handling the input. It's fast, testable and cloud-ready out of the box. Most of what I built at TCW was HTTP APIs consumed by front-ends and other services.
+
+**3. Dependency injection is built in — and lifetimes matter.** The framework has a DI container at its core: I register services and it wires them up. The three lifetimes — singleton, scoped, transient — decide how long an instance lives, and getting them wrong (e.g. injecting a scoped service into a singleton) is a classic bug I design carefully to avoid.
+
+**4. The request flows through a middleware pipeline.** Every request passes through an ordered chain of middleware — authentication, logging, error handling, routing — before hitting my code, and back out again. Understanding the pipeline (and the order) is how I add cross-cutting concerns cleanly instead of scattering them through controllers.
+
+**5. Async/await keeps services scalable.** I/O — database, HTTP, storage — should be async so threads aren't blocked waiting. This lets a service handle far more concurrent requests with the same resources. On TCW APIs (A, B) async was the default for every call that touched SQL Server, Snowflake or an external service.
+
+**6. EF Core is my data access layer.** Entity Framework Core maps classes to tables, handles migrations, and lets me query with LINQ while still dropping to SQL when I need to. It manages transactions and change tracking, but I stay aware of what it generates so I don't get surprised by N+1 queries or slow reads.
+
+**7. Resilience and health are first-class.** Real services fail, so I add retries, timeouts and circuit breakers (Polly), health check endpoints for probes, and background services for scheduled or queue-driven work. On project C (microservices on Azure) resilience patterns were what kept the system standing when a dependency wobbled.
+
+**8. Security, containers and Azure hosting complete the picture.** Authentication/authorization (JWT, Azure AD), safe configuration and secrets, Docker for consistent packaging, and Azure hosting (App Service, Container Apps, AKS) with built-in integration. .NET on Azure is a smooth path from code to production, which is why it's my go-to stack.
+
+**The full-stack / architect lens:** the later Q&As go deeper into the CLR and runtime, configuration and the options pattern, minimal APIs vs controllers, error handling and logging, testing, performance tuning, gRPC/SignalR and the exact Azure deployment story. The theme throughout is that .NET gives me strong defaults — DI, async, middleware, resilience — and my job is to use them deliberately rather than fight them.
+
+**One rule I never break:** *make every I/O call async and every dependency injected — never block a thread or new-up what the container should own.*
+
+---
+
 ## DN1 · What is .NET Core?
 
 **Simple explanation.** **.NET Core** (from .NET 5 onward just **.NET**) is Microsoft's modern, **open-source, cross-platform** framework for building apps — especially high-performance web APIs and services. It runs on Windows, Linux and macOS, and it's fast, modular and cloud-ready.

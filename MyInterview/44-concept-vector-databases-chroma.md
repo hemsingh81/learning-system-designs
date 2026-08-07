@@ -12,6 +12,30 @@ This file explains **vector databases** — how AI apps store and search by mean
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of vector databases and Chroma in plain English. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. A vector DB searches by meaning, not by words.** A normal SQL database finds rows where a column *equals* something. A vector database stores **embeddings** — vectors that capture meaning — and finds the ones **closest** to my query vector. On Project B this is what let TCW's RAG assistant find the right passage even when the user's words didn't match the document's words.
+
+**2. It stores the vector, the original text, and metadata together.** Each record is: the embedding (for searching), the source chunk (to feed the model), and metadata like document, date, or client (to filter). That trio is what makes retrieval both accurate and governable.
+
+**3. Similarity is just distance in space.** "Closest" means a distance metric — usually cosine similarity. Two chunks about the same idea sit near each other; unrelated ones sit far apart. Searching is finding the nearest neighbours to the query point.
+
+**4. Exact nearest-neighbour is too slow, so we approximate.** Comparing a query to millions of vectors one by one won't scale. **ANN** indexes like **HNSW** build a smart graph so search jumps close to the answer in a few hops. I trade a tiny bit of accuracy (recall) for a massive speed win — and I can tune that trade-off.
+
+**5. Metadata filtering is what makes it safe and precise.** Pure similarity isn't enough in a real app. I filter first — only this client's documents, only current versions — then do the vector search. That's how I stop one user seeing another's data and how I keep answers on-scope.
+
+**6. Hybrid search covers what pure vectors miss.** Semantic search is weak on exact tokens — a specific fund code, an error number, a name. Combining vector search with keyword (BM25) search gets both the meaning and the exact match, which is why I lean on hybrid for real corpora.
+
+**7. Chroma is where I start; a managed store is where I scale.** Chroma is simple, local, developer-friendly — perfect for building and for the first version. When I need scale, security, and ops I don't want to run myself, I move to a managed store like **Azure AI Search** (or pgvector when I want it inside Postgres). Same concepts, different operational trade-offs.
+
+**The full-stack / architect lens:** the later Q&As go into Chroma's data model, persistence modes, LangChain integration, sizing and dimensions, performance tuning, recall-vs-speed, reindexing, multi-tenancy, cost and testing retrieval. The through-line: the vector DB is the **retrieval engine of RAG**, and retrieval quality decides answer quality.
+
+**One rule I never break:** *filter by metadata before I trust similarity — the closest vector is worthless if it belongs to data this user should never see.*
+
+---
+
 ## VD1 · What is a vector database?
 
 **Simple explanation.** A **vector database** stores **embeddings** (vectors representing meaning) and finds the ones **closest** to a query vector very fast. Instead of matching exact words, it matches by **meaning** — the core of semantic search and RAG.

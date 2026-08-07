@@ -14,6 +14,30 @@ This file explains **FastAPI** (Python) simply and in depth. I built the FastAPI
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of FastAPI in plain English. I built the FastAPI ETL services on TCW (A) that ingest BlackRock Aladdin data, and used FastAPI-style Python services on Sculptor/Bain ETL (D), so this is how I actually use it. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. Type hints do the heavy lifting.** FastAPI's standout trick is using ordinary **Python type hints** to validate incoming data, convert types, and generate documentation — automatically. I write a typed function signature and get validation and docs for free. Less code, more safety.
+
+**2. It stands on Starlette and Pydantic.** **Starlette** gives the fast async web machinery; **Pydantic** gives data validation and models. Understanding that split explains everything: web behaviour comes from Starlette, data correctness comes from Pydantic.
+
+**3. Pydantic validates at the boundary.** Request bodies become Pydantic models, validated before my code runs. Bad or malformed data is rejected with a clean 422 at the edge — so on A, dodgy Aladdin data is caught at ingestion, never reaching the database. That boundary check is the whole point for ETL.
+
+**4. async and the event loop are core.** FastAPI is async-native. For I/O-bound work (DB calls, HTTP fetches, file reads) `async def` frees the loop to handle other requests while waiting, giving throughput close to Node.js or Go. I must know when to use `async def` vs `def` (CPU-bound work belongs in threads/processes).
+
+**5. Dependency injection is elegant and everywhere.** FastAPI's `Depends` system injects database sessions, settings, auth and shared logic into endpoints — and dependencies can nest. It keeps endpoints small and makes testing easy by swapping dependencies.
+
+**6. Auto docs come free.** Because everything is typed, FastAPI generates interactive OpenAPI/Swagger docs automatically. The contract documents itself and stays in sync with the code — a real productivity and correctness win.
+
+**7. Structure and data access for real apps.** A large app needs routers for modular endpoints, settings/config management, SQLAlchemy (async) for the database, middleware and CORS, and OAuth2 auth. This is what turns a demo into a maintainable service.
+
+**The full-stack / architect lens:** the later Q&As go into production — ASGI servers (Uvicorn/Gunicorn), performance tuning, caching, error strategy, logging and observability, testing, containers and deployment, security hardening — plus the two things I use it *for*: real ETL patterns and serving AI/RAG. That's where FastAPI earns its place in a data platform, not just a tutorial.
+
+**One rule I never break:** *validate at the boundary with Pydantic — trust nothing that crosses into my service until types and rules have passed.*
+
+---
+
 ## F1 · What is FastAPI?
 
 **Simple explanation.** FastAPI is a Python web framework for building APIs quickly and with high performance. Its standout feature: it uses **Python type hints** to do a lot of work for you — validating incoming data, converting types, and generating documentation — automatically.

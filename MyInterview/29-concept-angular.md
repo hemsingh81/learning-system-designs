@@ -14,6 +14,30 @@ This file explains **Angular** simply and in depth. Note: modern **Angular** (v2
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of Angular in plain English. Hold these seven ideas and every question below is a detail hanging off one of them.
+
+**1. A full framework, not a library.** Where React gives you the view and you pick the rest, **Angular is opinionated and complete** — routing, forms, an HTTP client, and dependency injection are all in the box, and TypeScript is mandatory. That structure is its superpower for **large teams and large apps**: everyone builds the same way. *(Modern Angular = v2+; the old AngularJS v1 is a different, legacy thing.)*
+
+**2. Components & templates — the building block.** The UI is a tree of **components**, each with a TypeScript class (logic) and an HTML template (view). Templates use Angular syntax — `{{ }}` interpolation, `[prop]` property binding, `(event)` event binding, and `[(ngModel)]` two-way binding. Modern Angular favours **standalone components** over the older NgModules.
+
+**3. Dependency Injection — Angular's backbone.** You declare what a component needs (a service) in its constructor and Angular **provides** it. DI gives you shared singletons, easy mocking in tests, and clean separation of concerns. It is the single most important Angular concept to understand deeply.
+
+**4. RxJS & Observables — data over time.** Angular is built on **RxJS**. An **Observable** is a stream of values (HTTP responses, form changes, route params) you subscribe to and transform with operators (`map`, `switchMap`, `debounceTime`). The newer **Signals** add simpler, fine-grained reactivity alongside RxJS.
+
+**5. Change detection — how the screen stays in sync.** When something changes, Angular **checks the component tree** and updates the DOM. By default it checks a lot; you make it fast with the **OnPush** strategy (check only when inputs change), Signals, and — newest — **zoneless** change detection. This is the #1 performance topic.
+
+**6. Routing, forms & guards — the built-ins.** The **Router** maps URLs to components with **lazy-loaded** feature areas. **Reactive forms** model form state as objects you can validate and test. **Guards/resolvers** protect routes and pre-fetch data. You get all this without third-party libraries.
+
+**7. The toolchain — the Angular CLI.** One CLI scaffolds, builds, tests, and serves. It enforces a consistent project shape, which is exactly why enterprises pick Angular.
+
+**The full-stack lens (how I think as an architect):** beyond the basics I care about **architecture** (feature modules/standalone, lazy loading), **performance** (OnPush/Signals, trackBy), **HTTP** (interceptors for auth/errors), **state** (services vs NgRx), **security** (Angular's built-in XSS escaping, tokens), and **testing** (TestBed, DI-mocked specs). Those are the A9–A30 questions.
+
+**One rule I never break:** *lean on DI and let change detection do the least work possible.* Get those two right and a large Angular app stays fast and maintainable.
+
+---
+
 ## A1 · What is Angular (and AngularJS)?
 
 **Simple explanation.** Angular is a **framework** — a complete toolkit. Where React gives you just the view and you pick the rest, Angular ships routing, forms, an HTTP client, and dependency injection built in, and enforces a structure. This is great for **large teams and large apps** because everyone builds the same way.

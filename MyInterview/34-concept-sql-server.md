@@ -14,6 +14,30 @@ This file explains **Microsoft SQL Server** simply and in depth. On TCW (Project
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of SQL Server in plain English. On TCW (A) SQL Server is my **operational/transactional** store for time-critical reporting reads, and I do the query tuning myself, so this is how I actually think about it. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. It's a relational database for OLTP.** Data lives in **tables** (rows and columns) that relate to each other, queried with **T-SQL**. It's built for **OLTP** — lots of small, fast, correct reads and writes of live application data. Correctness and consistency come first. Heavy history goes to Snowflake instead.
+
+**2. Keys and the relational model.** Primary keys identify rows, foreign keys enforce relationships, and a schema sets the rules. This structure is what lets the engine guarantee integrity and join tables reliably — it's the foundation everything else sits on.
+
+**3. Indexes are how the engine finds data fast.** A **clustered** index *is* the table's physical order; **non-clustered** indexes are side lookups. The right index turns a table scan into a seek. Wrong or missing indexes are the number-one cause of slow queries I fix on A.
+
+**4. ACID and transactions guarantee correctness.** A transaction is all-or-nothing — Atomic, Consistent, Isolated, Durable. It's why money never half-moves. Isolation levels and locking control how concurrent transactions see each other, and that trade-off is where correctness meets concurrency.
+
+**5. Execution plans tell the truth.** When a query is slow, I read the **execution plan** — it shows whether the engine is seeking or scanning, where time and rows go, and whether statistics are stale or a parameter got sniffed wrong. Tuning is reading the plan, then giving the engine what it needs (an index, better stats, a rewrite).
+
+**6. T-SQL is the language of the data tier.** Stored procedures, views, functions, CTEs, window functions and set-based thinking let me push work to where the data lives instead of dragging rows to the app. Set-based beats row-by-row almost every time.
+
+**7. Normalization — and when to break it.** Normalize to remove duplication and protect integrity; denormalize deliberately when read performance demands it. Knowing *why* and *when* to bend the rule is the mark of someone who's tuned real systems, not just read the theory.
+
+**The full-stack / architect lens:** the later Q&As go deeper — index design decisions, statistics and parameter sniffing, isolation and deadlocks, partitioning, HA/DR, backups and recovery models, security and encryption, Azure SQL options, read scaling and replicas, monitoring with DMVs — plus the full-stack side: EF Core from the app, schema migrations, and bulk loading/ETL. That's the difference between writing SQL and *owning* a database in production.
+
+**One rule I never break:** *never ship a query without checking its execution plan — a seek instead of a scan is usually one well-chosen index away.*
+
+---
+
 ## S1 · What is SQL Server?
 
 **Simple explanation.** SQL Server is a **relational database management system (RDBMS)** from Microsoft. "Relational" means data lives in **tables** (rows and columns) that relate to each other. It uses **T-SQL** (Microsoft's SQL dialect) to query and change data.

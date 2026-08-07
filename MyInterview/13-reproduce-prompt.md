@@ -203,7 +203,38 @@ The kit includes a **case-studies chapter** that turns each anchor project into 
 | `57-case-study-e-uk-web-platforms.md` | **Case Study E** — Bupa/NHS/Unilever PoC-led, regulated delivery — 5 Q&As |
 | `58-case-study-decision-making.md` | **Cross-cutting decision-making** playbook (how I decide) — 7 Q&As |
 
-Each case-study file (53–57) follows the same shape: the 8-beat story, an *architecture at a glance* section, an **ADR-style decision log** table, interview Q&As with follow-ups, and a section index. Wiring: file 51 forward-nav → 52; chain 52→53→54→55→56→57→58; file 58 loops back to Home. Each case study uses per-project Q&A IDs (CA*, CB*, CC*, CD*, CE*) and file 58 uses DM* IDs. These files add 35 numbered Q&As to the kit total.
+Each case-study file (53–57) follows the same shape: the 8-beat story, an *architecture at a glance* section, an **ADR-style decision log** table, interview Q&As with follow-ups, and a section index. Wiring: file 51 forward-nav → 52; chain 52→53→54→55→56→57→58; file 58 forward-nav → 59 (the principles & performance chapter). Each case study uses per-project Q&A IDs (CA*, CB*, CC*, CD*, CE*) and file 58 uses DM* IDs. These files add 35 numbered Q&As to the kit total.
+
+### Principles & performance chapter (files 59–65) — already built
+
+The kit includes a **principles & performance chapter** of seven concept deep-dives. Each follows the standard concept-file shape: **concept-first** (explain all the concepts in plain English), then **at least 30 Q&As** with follow-ups, per-topic letter+number IDs, a *Jump to* line and a *Section index* table. All grounded in projects A–E.
+
+| File | Purpose | IDs | Q&As |
+|------|---------|-----|------|
+| `59-concept-solid-principles.md` | **SOLID** — SRP, OCP, LSP, ISP, DIP with real examples, code smells, refactoring, and when not to over-apply | SP1–SP30 | 30 |
+| `60-concept-design-principles.md` | **Design principles & patterns** — DRY/KISS/YAGNI/SoC + patterns I use (Strategy, Factory, Adapter, Decorator, Repository, CQRS, Circuit Breaker) | DP1–DP30 | 30 |
+| `61-concept-react-performance.md` | **React performance** — measure-first, bundle/code-splitting, re-renders, memoisation, virtualisation, caching, Web Vitals | RP1–RP30 | 30 |
+| `62-concept-angular-performance.md` | **Angular performance** — change detection (OnPush/Signals/zoneless), trackBy, lazy loading, virtual scroll, RxJS pitfalls, @defer | AP1–AP30 | 30 |
+| `63-concept-webapi-performance.md` | **Web API / C# performance** — async I/O, N+1/EF tuning, caching/Redis, payloads, resilience, memory/GC, load testing | WP1–WP30 | 30 |
+| `64-concept-sql-performance.md` | **SQL database performance** — execution plans, indexing (covering/composite/SARGable), locking/isolation, partitioning, OLTP vs OLAP, Snowflake | QP1–QP30 | 30 |
+| `65-concept-microservices-performance.md` | **Microservices / system architecture performance** — distributed tracing, cutting hops, independent scaling, caching, async, circuit breakers/bulkheads, CQRS | MP1–MP30 | 30 |
+
+Wiring: file 58 forward-nav → 59; chain 59→60→61→62→63→64→65; file 65 forward-nav → 66 (into the what's-new chapter). These files add 210 numbered Q&As to the kit total (bringing it to 1114).
+
+### What's new / version evolution chapter (files 66–71) — already built
+
+The kit includes a **"What's New / version evolution"** chapter of six concept deep-dives. For each technology they cover *what is new* (new frameworks, tools, support/LTS, known issues, new versions) and *compare against previous versions with code examples*, then give **at least 30 Q&As** with follow-ups. Each follows the standard concept-file shape: **concept-first** (a `## Concepts first` overview), per-topic letter+number IDs, a *Jump to* line and a *Section index* table. Grounded in the candidate's stack (projects A–E).
+
+| File | Purpose | IDs | Q&As |
+|------|---------|-----|------|
+| `66-concept-dotnet-whats-new.md` | **.NET & C# what's new** — release cadence/LTS, .NET 6→9, minimal APIs, Native AOT, keyed DI, records, nullable refs, primary constructors, collection expressions, EF Core — old-vs-new code | DW1–DW30 | 30 |
+| `67-concept-sqlserver-whats-new.md` | **SQL Server what's new** — 2016→2022, Query Store, Always Encrypted, Intelligent Query Processing, Ledger, PSP, compatibility level, Azure SQL evergreen — old-vs-new T-SQL | SW1–SW30 | 30 |
+| `68-concept-azure-whats-new.md` | **Azure services what's new** — Container Apps, Azure OpenAI/AI Foundry, Entra ID rename, managed identity, Bicep, Microsoft Fabric, retirements — shifts not buttons | AW1–AW30 | 30 |
+| `69-concept-react-whats-new.md` | **React what's new** — Hooks (16.8) → concurrent/automatic batching (18) → Server Components/Actions/`use` (19), React Compiler, Next.js/Vite — old-vs-new JSX | RW1–RW30 | 30 |
+| `70-concept-angular-whats-new.md` | **Angular what's new** — standalone components, Signals, `@if`/`@for` control flow, `@defer`, zoneless, SSR/hydration, esbuild builder, `ng update` migrations — old-vs-new | NW1–NW30 | 30 |
+| `71-concept-typescript-tooling-whats-new.md` | **TypeScript & frontend tooling what's new** — TS 4.x→5.x (`satisfies`, const type params, standard decorators, `using`), ESM, Vite/esbuild/SWC, pnpm, ESLint flat config, Vitest — safer types, faster tools | TW1–TW30 | 30 |
+
+Wiring: file 65 forward-nav → 66; chain 66→67→68→69→70→71; file 71 loops back to Home. These files add 180 numbered Q&As to the kit total (bringing it to 1294).
 
 ### Extension ideas that stay true to the resume
 

@@ -12,6 +12,32 @@ This file covers **system design** — how I design scalable, reliable, maintain
 
 ---
 
+## Concepts first — the whole idea before the questions
+
+Before the Q&As, here is the whole mental model of system design in plain English. Hold these ideas and every question below is a detail hanging off one of them.
+
+**1. Design starts from requirements, not from favourite tech.** Before I draw a box I ask: how many users, how much data, how fast, how available, how secure, how much budget? Those **non-functional requirements** decide everything. On projects A–E I've watched good tech fail because it answered a requirement nobody actually had.
+
+**2. It's building blocks and how they connect.** Services, databases, caches, queues, gateways, CDNs — the design is choosing these pieces and wiring them so the whole meets its needs while staying simple enough to run and change.
+
+**3. Scale horizontally, and to do that, stay stateless.** Vertical scaling (a bigger box) runs out fast. Horizontal scaling (more boxes behind a **load balancer**) is how real systems grow. The enabler is **stateless services** — no session stuck on one machine — so any request can hit any instance.
+
+**4. Caching is the cheapest big win, and the trickiest.** A cache in front of slow work cuts latency and load dramatically. The hard part is invalidation and staleness — so I cache what's read often and changes rarely, and I'm deliberate about how it expires.
+
+**5. The database choice and its guarantees drive the design.** SQL for strong consistency and relationships; NoSQL for scale and flexible shapes. **Replication** gives availability and read scale; **sharding** gives write scale. Each brings consistency trade-offs I have to own.
+
+**6. CAP forces an honest choice under failure.** When the network partitions, I pick availability or strong consistency — I can't have both at that moment. Most real systems lean on **eventual consistency** where it's safe, and demand strong consistency only where correctness is money (like a balance).
+
+**7. Async and resilience keep the system up under stress.** Queues decouple producers from consumers, absorb spikes and smooth load. Resilience patterns — timeouts, retries with backoff, circuit breakers, idempotency, rate limiting — stop one slow dependency from cascading into a full outage.
+
+**8. If I can't see it, I can't run it — and every choice is a trade-off.** Observability (logs, metrics, traces) is how I find bottlenecks and know the system is healthy. And there is no "right" design — only the best trade-off for *these* constraints, stated out loud so everyone understands the cost.
+
+**The full-stack / architect lens:** the later Q&As go into replication and sharding detail, consistency models, microservices vs monolith, API design, high availability, CDN and edge, capacity estimation, data flow and idempotency, security and cost. The through-line: **requirements-driven decision-making under trade-offs**, grounded in what the system actually has to do.
+
+**One rule I never break:** *I never pick the architecture before I know the numbers — requirements and trade-offs come first, technology second.*
+
+---
+
 ## SD1 · What is system design?
 
 **Simple explanation.** **System design** is deciding the **building blocks** of a system (services, databases, caches, queues, gateways) and **how they connect** so the whole meets its requirements — scale, speed, reliability, security, cost — while staying maintainable.
