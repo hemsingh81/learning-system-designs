@@ -49,8 +49,14 @@ Before the Q&As, here is the whole mental model of "what's new in SQL Server" in
 **Architect's view:** I track version + latest CU + compatibility level as a standing fact. On the reporting platform I stay on a modern, supported version so I get the self-tuning features.
 
 **Follow-ups**
-- *How do I check my version?* — `SELECT @@VERSION;` and `SELECT SERVERPROPERTY('ProductVersion');`.
-- *Is 2022 the newest box release?* — Yes at time of writing; Azure SQL is continuously updated ahead of it.
+- *How do I check my version?* — I run a couple of `SERVERPROPERTY` queries — `@@VERSION` gives the friendly banner, but `ProductVersion`, `ProductLevel` and `Edition` are the machine-readable facts I record in the architecture register. The major number tells me the release (13=2016, 14=2017, 15=2019, 16=2022) and the level tells me the CU/patch state.
+  ```sql
+  SELECT @@VERSION;
+  SELECT SERVERPROPERTY('ProductVersion')  AS Version,   -- e.g. 16.0.4120.1
+         SERVERPROPERTY('ProductLevel')    AS Level,     -- e.g. RTM-CU12
+         SERVERPROPERTY('Edition')         AS Edition;
+  ```
+- *Is 2022 the newest box release?* — Yes, 2022 is the newest boxed (installed) release at the time of writing. The important nuance is that Azure SQL Database and Managed Instance are *evergreen* — they get new engine features continuously, ahead of the box, so the cloud is effectively always "newer" than whatever the latest boxed version is. That is why I track the box on a version+CU cadence but treat Azure SQL as always-current.
 
 ---
 
@@ -61,8 +67,8 @@ Before the Q&As, here is the whole mental model of "what's new in SQL Server" in
 **Architect's view:** that change let me write one set of features and choose the edition by scale/HA needs, not by which T-SQL I could use.
 
 **Follow-ups**
-- *Enterprise-only now?* — Mostly scale and availability limits (more cores/memory, online operations, advanced HA).
-- *Developer edition?* — Free, full Enterprise features, non-production — what I test on.
+- *Enterprise-only now?* — After 2016 SP1 the split is mostly about *scale and availability* rather than *which T-SQL you can write*. Enterprise unlocks more cores and memory, online index rebuilds, resource governor, and advanced Always On HA (multiple synchronous replicas, read-scale), while Standard is capped (e.g. lower memory/core limits and fewer replicas). So my code is portable across editions — I choose the edition by how big and how highly-available the workload must be.
+- *Developer edition?* — Developer edition is free and has the *full* Enterprise feature set, but it is licensed for non-production (dev/test) use only. That is what I install locally and in CI so I can validate Enterprise-only features (like online operations or partitioning) before they ship to a licensed production server — no surprises at deploy time.
 
 ---
 

@@ -50,8 +50,14 @@ Before the Q&As, here is the whole mental model of "what's new in React" in plai
 **Architect's view:** I track which major we're on and whether we're using the *new* capabilities of it (e.g. on 18 but still not using transitions). Version + adopted-features is the real state.
 
 **Follow-ups**
-- *How do I check the version?* — `React.version` or `package.json`.
-- *Do I need every major?* — Upgrades are cumulative; I move forward but adopt features gradually.
+- *How do I check the version?* — At runtime I read the exported `React.version` string, and at project level I look at the `react`/`react-dom` entries in `package.json` (the installed version can differ from the range, so `npm ls react` is the source of truth). This matters because "what's new" depends entirely on the exact major I'm on.
+
+```jsx
+import React from 'react';
+console.log(React.version); // e.g. "19.0.0"
+```
+
+- *Do I need every major?* — No, I don't have to stop on each one, because React's versions are cumulative — jumping from 16.8 straight to 19 still gives me everything 17 and 18 added. What I *do* pace is the adoption of new features: I bump the version in one small step, then turn on concurrent features, Actions, RSC and so on gradually so each change stays reviewable.
 
 ---
 
@@ -62,8 +68,13 @@ Before the Q&As, here is the whole mental model of "what's new in React" in plai
 **Architect's view:** this is why upgrading React is usually low-drama — I can move the version and adopt new APIs at my own pace.
 
 **Follow-ups**
-- *Codemods?* — React ships automated codemods for many migrations.
-- *Deprecation warnings?* — React warns in dev before removing anything.
+- *Codemods?* — React ships automated **codemods** (via `npx react-codemod`) that rewrite my source for common migrations — renaming APIs, updating imports, converting `ReactDOM.render` to `createRoot`, and so on. This means many "breaking" changes are really one command plus a review of the diff, not hours of manual edits.
+
+```bash
+npx react-codemod update-react-imports   # e.g. new JSX transform cleanup
+```
+
+- *Deprecation warnings?* — React almost never removes something silently: it first logs a clear **dev-only warning** (often for a whole major version) telling me what's deprecated and what to use instead. So my process is simply to watch the console during development, clear warnings as they appear, and by the time the API is actually removed my code is already off it.
 
 ---
 

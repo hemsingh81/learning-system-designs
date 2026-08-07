@@ -49,8 +49,14 @@ Before the Q&As, here is the whole mental model of "what's new in Angular" in pl
 **Architect's view:** predictable, small hops — I keep enterprise apps on a supported version and let the CLI migrate most breaking changes.
 
 **Follow-ups**
-- *How do I upgrade?* — `ng update @angular/core @angular/cli` — it runs schematics automatically.
-- *Do I skip versions?* — The update guide supports stepping through; I usually go one major at a time.
+- *How do I upgrade?* — I run `ng update @angular/core @angular/cli`, which figures out the target version, bumps the packages, and automatically runs migration schematics that rewrite my code to match the new APIs. It's not just a version bump — it actively fixes breaking changes for me, so most upgrades are a review-and-test job rather than a manual rewrite.
+```bash
+# checks what can be updated first (safe, read-only)
+ng update
+# then perform the actual upgrade + auto-migrations
+ng update @angular/core @angular/cli
+```
+- *Do I skip versions?* — I avoid jumping several majors at once because each major ships its own migration schematics, and skipping means those code-mods never run. I step through one major at a time (v16 → v17 → v18), running tests between each hop; the official update guide at `angular.dev/update-guide` gives the exact per-version steps for the from/to pair I pick.
 
 ---
 
@@ -61,8 +67,8 @@ Before the Q&As, here is the whole mental model of "what's new in Angular" in pl
 **Architect's view:** any AngularJS left is pure legacy; migration is essentially a rewrite (or hybrid via ngUpgrade). All new work is modern Angular.
 
 **Follow-ups**
-- *ngUpgrade?* — Runs AngularJS and Angular side-by-side during a gradual migration.
-- *Is AngularJS supported?* — No — it reached end-of-life.
+- *ngUpgrade?* — `ngUpgrade` (the `@angular/upgrade` package) is a bridge that runs AngularJS (1.x) and modern Angular in the *same* app at the same time, so I can migrate one screen or component at a time instead of a risky big-bang rewrite. It lets the two frameworks share dependency injection and change detection, e.g. `downgradeComponent` exposes a new Angular component to old AngularJS templates and `upgradeComponent` does the reverse. It's a transition tool — the goal is always to finish and delete the AngularJS half.
+- *Is AngularJS supported?* — No — AngularJS (1.x) reached official end-of-life at the end of 2021, so it gets no more security patches or fixes. Any AngularJS still running is pure legacy risk, and my plan for it is migration to modern Angular (via ngUpgrade or a rewrite), not maintenance.
 
 ---
 
@@ -73,8 +79,14 @@ Before the Q&As, here is the whole mental model of "what's new in Angular" in pl
 **Architect's view:** Angular's automated migrations make upgrades unusually smooth — most breaking changes are code-modded for me.
 
 **Follow-ups**
-- *Biggest risk?* — Third-party libraries lagging the new major.
-- *Do schematics change my code?* — Yes — they refactor templates/TS to the new APIs; I review the diff.
+- *Biggest risk?* — The biggest risk is third-party libraries lagging the new major — Angular itself upgrades cleanly via `ng update`, but a UI library, state library, or wrapper that hasn't published a compatible version can block the whole app. So before I upgrade I check each key dependency's peer-dependency range against the target Angular version, and if a critical one isn't ready I either wait or find a replacement.
+- *Do schematics change my code?* — Yes — schematics are automated code-mods that edit my actual source: they rewrite templates (`*ngIf` → `@if`), convert TypeScript to new APIs (constructor DI → `inject()`), and update `angular.json`. Because they touch real code I always run them on a clean git branch and review the diff carefully, then run the test suite before committing:
+```bash
+git checkout -b upgrade/v18
+ng update @angular/core @angular/cli
+git diff        # review every schematic change
+npm test
+```
 
 ---
 

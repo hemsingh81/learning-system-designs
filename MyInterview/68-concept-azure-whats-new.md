@@ -51,8 +51,15 @@ Before the Q&As, here is the whole mental model of "what's new in Azure" in plai
 **Architect's view:** I follow the Azure Updates and roadmap feeds, not every blog. I care about changes that alter *design choices* — a new managed service, a retirement, a pricing shift.
 
 **Follow-ups**
-- *How do you keep current?* — Azure Updates RSS, Ignite/Build recaps, and the retirements page.
-- *Do you chase every new service?* — No — only ones that fit a real need and are GA.
+- *How do you keep current?* — I subscribe to the Azure Updates RSS feed and filter it to "Generally Available" and "Retirements", watch the short Ignite/Build recap sessions once a year, and skim the Azure roadmap. I deliberately ignore the noise and only capture updates that change a design choice. Roughly monthly I turn anything relevant into a short team note.
+
+  ```text
+  # Sources I actually track (in priority order)
+  https://azure.microsoft.com/updates/            # filter: Category=Retirements, Status=GA
+  Ignite/Build "what's new" recaps (yearly)
+  Well-Architected Framework updates
+  ```
+- *Do you chase every new service?* — No. A new service only earns a place if it removes real operational burden or improves security/cost for a workload I actually run, and it must be GA with an SLA before it touches the critical path. I'll trial interesting previews on internal tooling to learn them, but hype alone never wins. Proven-and-managed beats newest-and-shiny on production.
 
 ---
 
@@ -65,8 +72,8 @@ Before the Q&As, here is the whole mental model of "what's new in Azure" in plai
 **Architect's view:** GA only on the critical path. I'll trial a preview on internal tools to learn it, but production waits for GA and an SLA.
 
 **Follow-ups**
-- *Public vs private preview?* — Private = invite/limited; public = anyone can try.
-- *Support during preview?* — Best-effort, not guaranteed.
+- *Public vs private preview?* — A **private preview** is invite-only or gated (you request access, capacity is limited, and it's often under NDA), whereas a **public preview** is open to anyone with a subscription. Both carry the same caveats — no SLA and the feature can change or be removed — but public preview is usually closer to GA and safer to experiment with. I treat neither as production-ready.
+- *Support during preview?* — Support is **best-effort only**: preview features are explicitly excluded from the standard SLA and from formal Azure support commitments, so if something breaks there's no guaranteed fix time. Microsoft's preview terms (the Supplemental Terms of Use) spell this out. That's exactly why I keep previews off any customer-facing critical path and only run them where an outage costs me nothing.
 
 ---
 

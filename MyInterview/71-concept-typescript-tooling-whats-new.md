@@ -48,8 +48,18 @@ Before the Q&As, here is the whole mental model of "what's new in TypeScript and
 **Architect's view:** on any team over a few people, TS pays for itself in caught bugs and safe refactors. I keep it current for better inference and editor tooling.
 
 **Follow-ups**
-- *Does TS run at runtime?* — No — types are erased; it compiles to plain JS.
-- *Version check?* — `tsc --version` / `package.json`.
+- *Does TS run at runtime?* — No — TypeScript is a compile-time tool only. The `tsc` compiler checks your types and then *erases* them, emitting plain JavaScript that the browser or Node actually runs. This means types cost nothing at runtime (no performance hit, no bundle size), but it also means you cannot rely on a type to validate real data at runtime — for that you still need runtime checks (e.g. Zod or manual `typeof` guards).
+  ```ts
+  // TypeScript in
+  const add = (a: number, b: number): number => a + b;
+  // JavaScript out (types stripped)
+  const add = (a, b) => a + b;
+  ```
+- *Version check?* — I check the compiler version with `tsc --version` (or `npx tsc --version` to use the project-local copy), and I pin the exact version in `package.json` so everyone on the team and CI compiles with the same TS. Pinning matters because a newer TS can introduce stricter checks that suddenly "break" the build.
+  ```jsonc
+  // package.json
+  { "devDependencies": { "typescript": "5.4.5" } }
+  ```
 
 ---
 
